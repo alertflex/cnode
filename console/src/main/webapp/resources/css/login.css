@@ -1,0 +1,25 @@
+body {
+	margin: 0px;
+	padding: 0;
+        background: #eeeeee;
+        
+}
+
+#top {
+        color: #ffffff;
+        font-weight: bold;
+
+}
+
+/* Content */
+#content {
+    display: block;
+    margin: 50px auto auto auto;
+    width: 400px;
+}
+
+.ui-widget {
+    font-size: 14px !important;
+}
+
+

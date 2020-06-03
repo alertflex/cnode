@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="menu">  
+        <style type="text/css">
+            
+            .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+                background: #eeeeee;
+                color: #000;
+            }
+
+            .navbar-default .navbar-brand>li>a:hover, .navbar-default .navbar-brand>li>a:focus {
+                background: #eeeeee;
+                color: #000;
+            }
+
+            .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
+                background: #eeeeee;
+                color: #000;
+            }
+
+        </style>
+        
+        <b:navBar fixed="top" style="font-size: 18px;"  >
+            <b:navbarLinks pull="left">
+                <b:navLink value="Alerts" href="alerts.xhtml" > </b:navLink>
+                <b:dropMenu value="IDS" >
+                    <b:navLink value="configs" href="configs.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="filters" href="filters.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="rules" href="rules.xhtml" style="font-size: 16px;"></b:navLink>
+                </b:dropMenu>
+                <b:dropMenu value="Jobs" >
+                    <b:navLink value="add" href="add_job.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="delete" href="delete_job.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="edit" href="edit_job.xhtml" style="font-size: 16px;"></b:navLink>
+                </b:dropMenu>
+                <b:navLink value="Settings" href="settings.xhtml" > </b:navLink>
+            </b:navbarLinks>
+            <b:navbarLinks pull="right">
+                <b:navLink value="Sign out" href="signout.xhtml" > </b:navLink>
+            </b:navbarLinks>
+        </b:navBar>
+        
+    </ui:define>       
+                 
+                     
+    <ui:define name="content" >
+        <b:container >
+            <b:form id="add_job">
+            <p:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Add job" collapsible="false" >
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                    <b:commandButton look="primary" value="Save" actionListener="#{jobController.createJob()}" 
+                        update=":add_job" style="margin-bottom: 10px"/>
+                            
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%">
+                    
+                            <p:outputLabel value="Name:"/>
+                            <p:inputText value="#{jobController.selectedScanJob}"/>
+                            
+                            <p:outputLabel value="Job type:"/>
+                            <b:selectOneMenu value="#{jobController.selectedScanType}">
+                                <f:selectItem itemLabel="Select one" itemValue="" />
+                                <f:selectItems value="#{jobController.listScanType}" />
+                            </b:selectOneMenu>
+                            
+                            <p:outputLabel value="Description:" />
+                            <p:inputText value="#{jobController.desc}" />
+                    
+                            <p:outputLabel value="Type a 'netflow' or 'packetbeat':"/>
+                            <p:inputText value="#{jobController.value1}"/>
+                                    
+                            <p:outputLabel value="Index (valid only for Elasticsearch):"/>
+                            <p:inputText value="#{jobController.value2}"/>
+                                    
+                            <p:outputLabel value="Max number of records to analyse for one scan:" />
+                            <p:spinner value="#{jobController.value3}" min="0" max="10000"/>
+                    
+                        </p:panelGrid>
+                    </div>
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                </b:panel>
+                
+            </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>

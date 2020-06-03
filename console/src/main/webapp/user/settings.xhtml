@@ -1,0 +1,199 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="menu">  
+        <style type="text/css">
+            
+            .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+                background: #eeeeee;
+                color: #000;
+            }
+
+            .navbar-default .navbar-brand>li>a:hover, .navbar-default .navbar-brand>li>a:focus {
+                background: #eeeeee;
+                color: #000;
+            }
+
+            .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
+                background: #eeeeee;
+                color: #000;
+            }
+
+        </style>
+        
+        <b:navBar fixed="top" style="font-size: 18px;"  >
+            <b:navbarLinks pull="left">
+                <b:navLink value="Alerts" href="alerts.xhtml" > </b:navLink>
+                <b:dropMenu value="IDS" >
+                    <b:navLink value="configs" href="configs.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="filters" href="filters.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="rules" href="rules.xhtml" style="font-size: 16px;"></b:navLink>
+                </b:dropMenu>
+                <b:dropMenu value="Jobs" >
+                    <b:navLink value="add" href="add_job.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="delete" href="delete_job.xhtml" style="font-size: 16px;"></b:navLink>
+                    <b:navLink value="edit" href="edit_job.xhtml" style="font-size: 16px;"></b:navLink>
+                </b:dropMenu>
+                <b:navLink value="Settings" href="settings.xhtml" > </b:navLink>
+            </b:navbarLinks>
+            <b:navbarLinks pull="right">
+                <b:navLink value="Sign out" href="signout.xhtml" > </b:navLink>
+            </b:navbarLinks>
+        </b:navBar>
+        
+    </ui:define>       
+                 
+                     
+    <ui:define name="content" >
+        <b:container> 
+            <b:form id="profile">
+            <p:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Project settings" collapsible="false" >
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                    <b:commandButton look="primary" value="Save" actionListener="#{projectController.changeSetting()}" 
+                        update=":profile" style="margin-bottom: 10px"/>
+                            
+                    <p:tabView>
+                        <p:tab title="Certificates">     
+                            <div class="Card ui-fluid">
+                            <p:panelGrid  columns="2" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%">
+                                <p:outputLabel value="Certificate for Altprobe" />
+                                <b:commandButton value="download" ajax="false" >
+                                    <p:fileDownload value="#{projectController.fileAltprobe}"  />
+                                </b:commandButton>
+                                <p:outputLabel value="Certificate for Beats" />
+                                <b:commandButton value="download" ajax="false" >
+                                    <p:fileDownload value="#{projectController.fileBeats}"  />
+                                </b:commandButton>
+                            </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        
+                        <p:tab title="Elasticsearch">     
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%">
+                                
+                                    <p:outputLabel value="Host" for="elkHost" />
+                                    <p:inputText id="elkHost" value="#{projectController.elkHost}" />
+                                        
+                                    <p:outputLabel value="Port" for="elkPort" />
+                                    <p:inputText id="elkPort" value="#{projectController.elkPort}" />
+                                        
+                                    <p:outputLabel value="User" for="elkUsername" />
+                                    <p:inputText id="elkUsername" value="#{projectController.elkUsername}" />
+                                    
+                                    <p:outputLabel value="Password" for="elkPassword" />
+                                    <p:password id="elkPassword" value="#{projectController.elkPassword}"  />
+                                        
+                                    <p:outputLabel value="Store password" for="elkStorepass" />
+                                    <p:password id="elkStorepass" value="#{projectController.elkStorepass}"  />
+                                        
+                                    <p:outputLabel value="Keystore path" for="elkKeystore" />
+                                    <p:inputText id="elkKeystore" value="#{projectController.elkKeystore}" />
+                                        
+                                    <p:outputLabel value="Truststore path" for="elkTruststore" />
+                                    <p:inputText id="elkTruststore" value="#{projectController.elkTruststore}" />
+                                
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        
+                        <p:tab title="Graylog">     
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%">
+                                
+                                    <p:outputLabel value="Host" for="graylogHost" />
+                                    <p:inputText id="graylogHost" value="#{projectController.graylogHost}" />
+                                    
+                                    <p:outputLabel value="Port" for="graylogPort" />
+                                    <p:inputText id="graylogPort" value="#{projectController.graylogPort}" />
+                                      
+                                    <p:outputLabel value="User" for="graylogUsername" />
+                                    <p:inputText id="graylogUsername" value="#{projectController.graylogUsername}" />
+                                    
+                                    <p:outputLabel value="Password" for="graylogPassword" />
+                                    <p:password id="graylogPassword" value="#{projectController.graylogPassword}"  />
+                                
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        
+                        <p:tab title="Log server">     
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%">
+                                
+                                    <p:outputLabel value="Host" for="logHost" />
+                                    <p:inputText id="logHost" value="#{projectController.logHost}" />
+                                
+                                    <p:outputLabel value="Port" for="logPort" />
+                                    <p:inputText id="logPort" value="#{projectController.logPort}" />
+                                
+                                    <p:outputLabel for="sendNetflow" value="Send Netflow" />
+                                    <p:selectBooleanCheckbox id="sendNetflow" value="#{projectController.sendNetflow}" />
+                                
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        
+                        <p:tab title="Parameters"> 
+                            <div class="Card ui-fluid">
+                            <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%">
+                                
+                                <p:outputLabel value="Project ref:" />
+                                <p:outputLabel value="#{projectController.projectRef}" class="GrayBack" />
+                                
+                                <p:outputLabel for="path" value="Project directory:" />
+                                <p:inputText  id="path" value="#{projectController.projectPath}" />
+                                
+                                <p:outputLabel for="iprep_cat" value="Default IP reputation category (1 - 128):" />
+                                <p:spinner id="iprep_cat" value="#{projectController.iprepCat}" min="0" max="128" />
+                                
+                                <p:outputLabel for="inc_json" value="Include in alerts the JSON raw info:" />
+                                <p:selectBooleanCheckbox id="inc_json" value="#{projectController.incJson}" />
+                                
+                                <p:outputLabel for="stat_rest" value="Enable REST interface for metrics:" />
+                                <p:selectBooleanCheckbox id="stat_rest" value="#{projectController.statRest}" />
+                                
+                            </p:panelGrid>
+                            </div>
+                        </p:tab> 
+                            
+                        <p:tab title="Timers"> 
+                            <div class="Card ui-fluid">
+                            
+                            <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%"> 
+                                
+                                <p:outputLabel for="alert_timer" value="Time interval to store of alerts:" />
+                                <p:spinner id="alert_timer" value="#{projectController.alertTimerange}" min="0" max="365" />
+                                
+                                <p:outputLabel for="stat_timer" value="Timer interval to store of IDS statistics:" />
+                                <p:spinner id="stat_timer" value="#{projectController.statTimerange}" min="0" max="365" />
+                                
+                                <p:outputLabel for="logrep_timer" value="Timer interval of CTI scan for Log server:" />
+                                <p:spinner id="logrep_timer" value="#{projectController.logrepTimerange}" min="0" max="3000" />
+                                
+                                <p:outputLabel for="iprup_timer" value="Time interval to update of IP reputation lists:" />
+                                <p:spinner id="iprup_timer" value="#{projectController.iprepTimerange}" min="0" max="3000" />
+                                
+                            </p:panelGrid>
+                            
+                            </div>
+                        
+                        </p:tab> 
+                            
+                    </p:tabView>
+                        
+                </b:panel>
+                
+            </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>
