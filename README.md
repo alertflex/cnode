@@ -12,7 +12,7 @@ Alertflex controller was tested under Ubuntu version 16.04 and Centos 7
 
 ```
   git clone git://github.com/olegzhr/cnode.git
-  cd controller
+  cd cnode
 ```
 
 * Fill in project specific parameters in file ``env.sh``
