@@ -11,7 +11,7 @@ Alertflex controller was tested under Ubuntu version 16.04 and Centos 7
 * Download installation files
 
 ```
-  git clone git://github.com/olegzhr/controller.git
+  git clone git://github.com/olegzhr/cnode.git
   cd controller
 ```
 
