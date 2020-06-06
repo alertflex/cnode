@@ -1,37 +1,17 @@
-# Alertflex Cnode
+# Alertflex central node
 
-**Alertflex Cnode** is a part of the Alertflex project. For more information, please see [https://alertflex.org](https://alertflex.org)
+**Cnode** is a part of the Alertflex project. For more information, please see the [Alertflex presentation](https://github.com/olegzhr/cnode/blob/master/doc/alertflex.pdf)
 
 
-## Installation instructions
+## Installation
 
-* Requirements:
-Alertflex controller was tested under Ubuntu version 16.04 and Centos 7
-	
-* Download installation files
+Please see the [instructions](https://github.com/olegzhr/cnode/blob/master/doc/install.rst)
 
-```
-  git clone git://github.com/olegzhr/cnode.git
-  cd cnode
-```
+## Documentation
 
-* Fill in project specific parameters in file ``env.sh``
-
-* Only for Centos 7
-
-```
-  sudo yum -y install epel-release
-  sudo yum -y update
-```
-
-* Start installation
-	
-```
-  chmod u+x install_ubuntu16.sh
-  ./install_ubuntu16.sh
-```
+Coming soon.
 	
 ## Support
 
-Please [open an issue on GitHub](https://github.com/olegzhr/controller/issues), if you'd like to report a bug or request a feature. 
+Please [open an issue on GitHub](https://github.com/olegzhr/cnode/issues), if you'd like to report a bug or request a feature. 
 Have a question or need tech support, please send an email to address: info@alertflex.org
