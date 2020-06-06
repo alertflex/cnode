@@ -14,9 +14,9 @@ export AMQ_USER=xxxxx
 export AMQ_PWD=*****
 
 # web admin user and password for Alertflex Web console, Glassfish and ActiveMQ 
-# NOTE! please, do not change ADMIN_USER (keep admin user name as admin)
+# NOTE! please, do not change ADMIN_USER (keep user name as admin)
 export ADMIN_HOST=xxxxx
-export ADMIN_USER=xxxxx
+export ADMIN_USER=admin
 export ADMIN_PWD=*****
 
 # user and password for MySQL database (Alertflex and Afevents DB)
