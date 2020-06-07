@@ -1,7 +1,6 @@
 # Alertflex central node
 
-**Cnode** is a part of the Alertflex project. For more information, please see the [Alertflex project presentation](https://github.com/olegzhr/cnode/blob/master/doc/alertflex.pdf)
-
+**Cnode** is a part of the Alertflex project. Cnode setup includes controller, management console, ActiveMQ and MISP docker container. For more information, please see the [Alertflex project presentation](https://github.com/olegzhr/cnode/blob/master/doc/alertflex.pdf)
 
 ## Installation
 
