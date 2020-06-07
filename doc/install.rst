@@ -65,20 +65,3 @@ Perform several steps to put the Cnode into service:
 
 .. image:: /images/misp-feeds.png
 
-|
-
-Troubleshooting
----------------
-
-* Open ActiveMQ console (default user ``admin``, password was set in ``env.sh`` file). Check messages in **Queues** panel, the amount of **Messages Enqueued** should be equal to the amount **Messages Dequeued**.
-
-.. image:: /images/activemq.png
-
-* Check logs of Alertflex applications
-
-.. parsed-literal::
-    tail -f /opt/payara41/glassfish/domains/domain1/logs/server.log
-
-* For restarting Alertflex applications, login to Payara AS admin console (default user ``admin``, password was set in ``env.sh`` file).
-
-.. image:: /images/payara-reload.png
