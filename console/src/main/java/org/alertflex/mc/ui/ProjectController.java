@@ -382,6 +382,7 @@ public class ProjectController implements Serializable {
             
             project.setLogHost(logHost);
             project.setLogPort(logPort);
+            project.setSendNetflow((sendNetflow) ? 1 : 0);
             
             project.setGraylogHost(graylogHost);
             project.setGraylogPort(graylogPort);
