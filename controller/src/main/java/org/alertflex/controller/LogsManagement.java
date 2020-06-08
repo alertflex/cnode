@@ -434,6 +434,8 @@ public class LogsManagement {
                         }
                     }
                     
+                    break;
+                    
                 case "file-nids":
                     nodename = obj.getString("host");
                     dstip = obj.getString("_dstip");

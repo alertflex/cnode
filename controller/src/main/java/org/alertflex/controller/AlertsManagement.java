@@ -341,9 +341,16 @@ public class AlertsManagement  {
                             if (!a.getAction().equals("log-mgmt") && project.getSemActive() > 0) {
                             
                                 alertFacade.create(a);
+                                
+                                // send alert to log server
+                                LogServer ls = new LogServer(project);
+                                ls.SendAlertToLog(a);
+                                ls.close();
                     
                                 if (project.getSemActive() >= 2) searchResponse(a);
                             }
+                            
+                            
                         }
                         
                         if (msg_type == 2) {
@@ -353,12 +360,6 @@ public class AlertsManagement  {
                             
                             if(a != null && project.getSemActive() >= 2) searchResponse(a);
                         }
-                        
-                        // send alert to log server
-                        LogServer ls = new LogServer(project);
-                        ls.SendAlertToLog(a);
-                        ls.close();
-                        
                     }
                 }
                 
