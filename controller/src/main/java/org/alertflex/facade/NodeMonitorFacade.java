@@ -5,6 +5,7 @@
  */
 package org.alertflex.facade;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,22 +54,24 @@ public class NodeMonitorFacade extends AbstractFacade<NodeMonitor> {
         return deletedCount;
     }
      
-    public NodeMonitor getLastRecord(String r, String n) {
+    public NodeMonitor getLastRecord(String r, String n, Timestamp  start, Timestamp end) {
         
         NodeMonitor nm = null;
         
         try {
+            
             em.flush();
             
             Query qry = em.createQuery(
-                "SELECT n FROM NodeMonitor n WHERE n.refId = :ref AND n.nodeId = :node ORDER BY n.timeOfSurvey DESC")
-                    .setParameter("ref", r).setParameter("node", n).setMaxResults(1);
+                "SELECT n FROM NodeMonitor n WHERE n.refId = :ref AND n.nodeId = :node AND n.timeOfSurvey BETWEEN :start AND :end ORDER BY n.timeOfSurvey")
+                    .setParameter("ref", r).setParameter("node", n).setParameter("start", start).setParameter("end", end);
                             
         // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            nm =  (NodeMonitor) qry.getSingleResult();
+            List<NodeMonitor> nml =  qry.getResultList();
             
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
+            if (nml != null && nml.size() > 0) nm = nml.get(nml.size() - 1);
+                        
         } catch (Exception e) {
 
             return null;

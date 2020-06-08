@@ -5,6 +5,9 @@
  */
 package org.alertflex.rest;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -65,7 +68,7 @@ public class MetricsFacadeREST {
     StringBuilder sb;
     
     public MetricsFacadeREST() {
-        sb = new StringBuilder("# HELP Alertflex metrics\n");
+        
     }
     
     @GET
@@ -83,22 +86,31 @@ public class MetricsFacadeREST {
         
         if (nodeList == null || nodeList.isEmpty()) return sb.toString();
         
+        sb = new StringBuilder("# HELP Alertflex metrics\n");
+        
         for(Node node: nodeList) {
             
             String nodeId = node.getNodePK().getName();
                
             if (nodeId != null || !nodeId.isEmpty()) {
                 
-                NodeFilters nf  = nodeFiltersFacade.getLastRecord(prj, nodeId);
+                Date endDate = new Date();
+                long millis = endDate.getTime() - 300*1000;
+                Date startDate = new Date(millis);
+                Timestamp end = new Timestamp(endDate.getTime());
+                Timestamp start = new Timestamp(startDate.getTime());
+                
+                NodeFilters nf  = nodeFiltersFacade.getLastRecord(prj, nodeId, start, end);
                 if (nf != null) metricsNodeFilters(nodeId, nf);
                 
-                NodeAlerts nal  = nodeAlertsFacade.getLastRecord(prj, nodeId);
+                NodeAlerts nal  = nodeAlertsFacade.getLastRecord(prj, nodeId, start, end);
                 if (nal != null) metricsNodeAlerts(nodeId, nal);
                 
-                NodeMonitor nmon  = nodeMonitorFacade.getLastRecord(prj, nodeId);
+                NodeMonitor nmon  = nodeMonitorFacade.getLastRecord(prj, nodeId, start, end);
                 if (nmon != null) metricsNodeMonitor(nodeId, nmon);
                 
-                List<Sensor> sensorsList = sensorFacade.findSensorsByType(prj, nodeId, "suricata");
+                try {
+                    List<Sensor> sensorsList = sensorFacade.findSensorsByType(prj, nodeId, "suricata");
                 
                 if (sensorsList != null || !sensorsList.isEmpty()) {
                     for (Sensor sensor: sensorsList) {
@@ -112,6 +124,10 @@ public class MetricsFacadeREST {
                         }
                     }
                 }
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+                
             }
         }
        

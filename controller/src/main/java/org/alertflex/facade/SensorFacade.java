@@ -98,8 +98,7 @@ public class SensorFacade extends AbstractFacade<Sensor> {
             
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            
+            return null;
         }
         
         return l;

@@ -380,6 +380,9 @@ public class ProjectController implements Serializable {
             project.setIprepCat(iprepCat);
             project.setIprepTimerange(iprepTimerange);
             
+            project.setLogHost(logHost);
+            project.setLogPort(logPort);
+            
             project.setGraylogHost(graylogHost);
             project.setGraylogPort(graylogPort);
             project.setGraylogUser(graylogUsername);
