@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author root
  */
 @Stateless
-@Path("stix")
+@Path("stix-alerts")
 public class StixFacadeREST {
 
     private static final Logger logger = LoggerFactory.getLogger(StixFacadeREST.class);
@@ -132,33 +132,21 @@ public class StixFacadeREST {
                 
                 try {
                     
-                    JSONObject artifacts = new JSONObject(a.getInfo());
-                    JSONArray fileInfo = artifacts.getJSONArray("artifacts");
-
                     if (a.getAlertSource().equals("Wazuh")) { 
+                        
+                        if (!a.getHashSha1().isEmpty()) obj.put("sha1", a.getHashSha1());
+                        
+                        if (!a.getHashSha256().isEmpty()) obj.put("sha256", a.getHashSha256());
+                        
+                        if (!a.getHashMd5().isEmpty()) obj.put("md5", a.getHashMd5());
+                        
                     
-                        for (int i = 0; i < fileInfo.length(); i++) {
-                         
-                            String dataType = fileInfo.getJSONObject(i).getString("dataType");
-                            String msg = fileInfo.getJSONObject(i).getString("message");
-                        
-                            if (dataType.equals("md5")) {
-                                
-                                String md5 = fileInfo.getJSONObject(i).getString("data");
-                                
-                                if (msg.equals("Message digest after") && !md5.isEmpty()) obj.put("md5", md5);
-                            }
-                        
-                            if (dataType.equals("sha1")) {
-                                
-                                String sha1 = fileInfo.getJSONObject(i).getString("data");
-                                
-                                if (msg.equals("Secure hash after") && !sha1.isEmpty()) obj.put("sha1", sha1);
-                            }
-                        } 
                     } else {
                         
                         if (a.getAlertSource().equals("MISP")) { 
+                            
+                            JSONObject artifacts = new JSONObject(a.getInfo());
+                            JSONArray fileInfo = artifacts.getJSONArray("artifacts");
                     
                             for (int i = 0; i < fileInfo.length(); i++) {
                          
