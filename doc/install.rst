@@ -48,9 +48,7 @@ Next TCP/UDP ports should be open for interaction between solution components an
 Post-installation
 -----------------
 
-Perform several steps to put the Cnode into service:
-
-* Go to the landing page of the Cnode by typing hostname/IP address in a browser. Via a menu of the page, you can get access to Alertflex web console or admin consoles of ActiveMQ, MISP, Payara AS. For login to Alertflex console use default user ``admin``, password was set in ``env.sh`` file.
+* Open the landing page of the Cnode by typing hostname/IP address in a browser. Via a menu of the page, you can get access to Alertflex web console or admin consoles of ActiveMQ, MISP, Payara AS. For login to Alertflex console use default user ``admin``, password was set in ``env.sh`` file.
 .. image:: /images/main-page.png
 
 * In Alertflex console select "Settings" and download SSL certificate for Alertlex collector (altprobe).
@@ -64,4 +62,6 @@ Perform several steps to put the Cnode into service:
 * For enabling of MISP feeds, login to MISP admin console  (default user ``admin@admin.test``, password ``admin``).
 
 .. image:: /images/misp-feeds.png
+
+* Now, Cnode should be ready for service and you can start the installation of collectors (altprobe)
 
