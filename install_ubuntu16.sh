@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# load technical project data for Alertflex controller
+# load technical project data for Alertflex cnode
 source ./env.sh
 export GLASSFISH_PATH=/opt/payara41
 export PROJECT_NAME=csm_solution
@@ -12,7 +12,7 @@ then
     exit 0
 fi
 
-echo "*** Installation Alertflex controller started***"
+echo "*** Installation Alertflex cnode started***"
 
 # create project work directory 
 sudo mkdir -p /opt
@@ -25,10 +25,31 @@ sudo cp ./reports/alerts_subrep2.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep3.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 
-sudo apt-get update
-
 #set project id
-PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
+export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
+
+if [[ $INSTALL_ALTPROBE == yes ]]
+then
+    echo "*** Installation Altprobe ***"
+    cd $INSTALL_PATH
+    git clone git://github.com/olegzhr/altprobe.git
+    cp ./configs/env.sh ./altprobe/
+    cd ./altprobe
+    chmod u+x install_deb.sh
+    export INSTALL_PATH="$INSTALL_PATH/altprobe"
+    export NODE_ID=collr01
+    export PROBE_ID=master
+    export AMQ_URL='tcp:\/\/127.0.0.1:61616'
+    export AMQ_CERT=indef
+    export CERT_VERIFY=false
+    export AMQ_KEY=indef
+    export KEY_PWD=indef
+    ./install_deb.sh
+	export INSTALL_PATH=$CURRENT_PATH
+	cd $INSTALL_PATH 
+fi
+
+sudo apt-get update
 
 # install java 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9
@@ -50,11 +71,12 @@ sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
 sudo service nginx restart
 
-echo "*** installation Redis ***"
-sudo apt-get -y install redis-server 
-
 echo "*** Installation Maven ***"
-sudo apt-get -y install maven unzip
+sudo apt-get -y install maven
+
+echo "*** installation Redis ***"
+sudo apt-get -y install redis-server
+sudo systemctl enable redis-server.service 
 
 echo "*** Installation Mysql ***"
 echo mysql-server mysql-server/root_password password $DB_PWD | sudo debconf-set-selections
@@ -72,7 +94,66 @@ sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
-if [[ $MISP == false ]]
+if [[ $INSTALL_ZAP == yes ]]
+then
+	echo "*** Installation OWASP ZAP ***"
+	wget https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/ZAP_2.9.0_Linux.tar.gz
+	tar zxf ZAP_2.9.0_Linux.tar.gz
+	sudo mv ./ZAP_2.9.0 /opt/zap
+	
+	sudo bash -c 'cat << EOF > /lib/systemd/system/zap.service
+[Unit]
+Description=OWASP ZAP Proxy
+After=syslog.target network-online.target
+
+[Service]
+ExecStart=/opt/zap/zap.sh -daemon -host 127.0.0.1 -port 8090 -config api.disablekey=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
+EOF'
+	sudo systemctl enable zap
+	sudo sed -i "s/_zap_host/localhost/g" ./configs/alertflex.sql
+else
+	sudo sed -i "s/_zap_host/indef/g" ./configs/alertflex.sql
+fi
+
+if [[ $INSTALL_NMAP == yes ]]
+then
+	echo "*** Installation Nmap ***"
+	sudo apt-get -y install nmap
+fi
+
+if [[ $INSTALL_GRAFANA == yes ]]
+then
+	echo "*** Installation Grafana ***"
+	sudo apt-get install -y apt-transport-https
+	sudo apt-get install -y software-properties-common wget
+	wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+	sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
+	sudo apt-get update
+	sudo apt-get -y install grafana
+	sudo systemctl daemon-reload
+	sudo systemctl enable grafana-server.service
+	sudo sed -i "s/_grafana_pwd/$DB_PWD/g" ./configs/grafana.ini
+	sudo cp ./configs/grafana.ini /etc/grafana
+	sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/grafana-db.sql
+	sudo mysql -u root -p$DB_PWD < ./configs/grafana-db.sql
+	sudo sed -i "s/_db_user/$DB_USER/g" ./configs/datasource.yaml
+	sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/datasource.yaml
+	sudo cp ./configs/datasource.yaml /etc/grafana/provisioning/datasources
+	sudo mkdir /var/lib/grafana/dashboards
+	sudo cp ./configs/dashboards/alertflex.yaml /etc/grafana/provisioning/dashboards
+	sudo cp ./configs/dashboards/alerts_dashboard.json /var/lib/grafana/dashboards
+	sudo chown -R grafana:grafana /var/lib/grafana/dashboards
+	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
+	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
+	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
+fi
+
+
+if [[ $INSTALL_MISP == no ]]
 then
 	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
 	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./configs/misp-db.sql
@@ -207,20 +288,16 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
 
-echo "* Installion Alertflex controller *"  
+echo "* Installion Alertflex applications *"  
+cd $INSTALL_PATH
+git clone git://github.com/olegzhr/mc.git
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy console/target/alertflex-mc.war
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy mc/target/alertflex-mc.war
 
 echo "*** clean env ***"
 rm password.txt
 rm -r ./configs
 
-echo "Project id:"
-echo $PROJECT_ID 
-
-echo "* Please, reboot the controller *"
+echo "* Please, reboot the cnode *"
 exit 0
-
-
-

@@ -14,6 +14,11 @@ fi
 
 echo "*** Installation Alertflex controller started***"
 
+sudo bash -c 'echo "Defaults timestamp_timeout=50" >> /etc/sudoers.d/99_sudo_include_file'
+
+sudo yum -y install epel-release
+sudo yum -y update
+
 # create project work directory 
 sudo mkdir -p /opt
 sudo mkdir -p $PROJECT_PATH
@@ -29,6 +34,8 @@ sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 sudo firewall-cmd --add-service=ntp
 sudo firewall-cmd --add-service=http
 sudo firewall-cmd --add-service=https
+sudo firewall-cmd --add-port=1514/udp
+sudo firewall-cmd --add-port=3000/tcp
 sudo firewall-cmd --add-port=3306/tcp
 sudo firewall-cmd --add-port=4848/tcp
 sudo firewall-cmd --add-port=8181/tcp
@@ -37,7 +44,28 @@ sudo firewall-cmd --add-port=61617/tcp
 sudo firewall-cmd --runtime-to-permanent
 
 #set project id
-PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
+export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
+
+if [[ $INSTALL_ALTPROBE == yes ]]
+then
+    echo "*** Installation Altprobe ***"
+    cd $INSTALL_PATH
+    git clone git://github.com/olegzhr/altprobe.git
+    cp ./configs/env.sh ./altprobe/
+    cd ./altprobe
+    chmod u+x install_rpm.sh
+    export INSTALL_PATH="$INSTALL_PATH/altprobe"
+    export NODE_ID=collr01
+    export PROBE_ID=master
+    export AMQ_URL='tcp:\/\/127.0.0.1:61616'
+    export AMQ_CERT=indef
+    export CERT_VERIFY=false
+    export AMQ_KEY=indef
+    export KEY_PWD=indef
+    ./install_rpm.sh
+	export INSTALL_PATH=$CURRENT_PATH
+	cd $INSTALL_PATH 
+fi
 
 echo "*** install java  ***"
 sudo rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems
@@ -88,7 +116,73 @@ sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
-if [[ $MISP == false ]]
+if [[ $INSTALL_ZAP == yes ]]
+then
+	echo "*** Installation OWASP ZAP ***"
+	wget https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/ZAP_2.9.0_Linux.tar.gz
+	tar zxf ZAP_2.9.0_Linux.tar.gz
+	sudo mv ./ZAP_2.9.0 /opt/zap
+	
+	sudo bash -c 'cat << EOF > /lib/systemd/system/zap.service
+[Unit]
+Description=OWASP ZAP Proxy
+After=syslog.target network-online.target
+
+[Service]
+ExecStart=/opt/zap/zap.sh -daemon -host 127.0.0.1 -port 8090 -config api.disablekey=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
+EOF'
+	sudo systemctl enable zap
+	sudo sed -i "s/_zap_host/localhost/g" ./configs/alertflex.sql
+else
+	sudo sed -i "s/_zap_host/indef/g" ./configs/alertflex.sql
+fi
+
+if [[ $INSTALL_NMAP == yes ]]
+then
+	echo "*** Installation Nmap ***"
+	sudo yum -y install nmap
+fi
+
+if [[ $INSTALL_GRAFANA == yes ]]
+then
+	echo "*** Installation Grafana ***"
+	sudo touch /etc/yum.repos.d/grafana.repo
+	sudo bash -c 'cat << EOF > /etc/yum.repos.d/grafana.repo
+[grafana]
+name=grafana
+baseurl=https://packages.grafana.com/oss/rpm
+repo_gpgcheck=1
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.grafana.com/gpg.key
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+EOF'
+	sudo yum -y update
+	sudo yum -y install grafana
+	sudo systemctl daemon-reload
+	sudo systemctl enable grafana-server
+	sudo sed -i "s/_grafana_pwd/$DB_PWD/g" ./configs/grafana.ini
+	sudo cp ./configs/grafana.ini /etc/grafana
+	sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/grafana-db.sql
+	sudo mysql -u root -p$DB_PWD < ./configs/grafana-db.sql
+	sudo sed -i "s/_db_user/$DB_USER/g" ./configs/datasource.yaml
+	sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/datasource.yaml
+	sudo cp ./configs/datasource.yaml /etc/grafana/provisioning/datasources
+	sudo mkdir /var/lib/grafana/dashboards
+	sudo cp ./configs/dashboards/alertflex.yaml /etc/grafana/provisioning/dashboards
+	sudo cp ./configs/dashboards/alerts_dashboard.json /var/lib/grafana/dashboards
+	sudo chown -R grafana:grafana /var/lib/grafana/dashboards
+	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
+	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
+	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
+fi
+
+if [[ $INSTALL_MISP == no ]]
 then
 	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
 	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./configs/misp-db.sql
@@ -237,18 +331,18 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
 
-echo "* Installion Alertflex controller *"  
+echo "* Installion Alertflex applications *"  
+cd $INSTALL_PATH
+git clone git://github.com/olegzhr/mc.git
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy console/target/alertflex-mc.war
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy mc/target/alertflex-mc.war
 
 echo "*** clean env ***"
 rm password.txt
 rm reset_pass.sql
 rm -r ./configs
-
-echo "Project id:"
-echo $PROJECT_ID 
+sudo rm /etc/sudoers.d/99_sudo_include_file
 
 echo "Please, reboot the controller"
 exit 0

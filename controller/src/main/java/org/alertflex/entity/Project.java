@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange")
     , @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange")
     , @NamedQuery(name = "Project.findByIprepTimerange", query = "SELECT p FROM Project p WHERE p.iprepTimerange = :iprepTimerange")
-    , @NamedQuery(name = "Project.findByLogrepTimerange", query = "SELECT p FROM Project p WHERE p.logrepTimerange = :logrepTimerange")
     , @NamedQuery(name = "Project.findByIncJson", query = "SELECT p FROM Project p WHERE p.incJson = :incJson")
     , @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck")
     , @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent")
@@ -121,10 +120,6 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "iprep_timerange")
     private int iprepTimerange;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "logrep_timerange")
-    private int logrepTimerange;
     @Basic(optional = false)
     @NotNull
     @Column(name = "inc_json")
@@ -381,7 +376,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int logrepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -389,7 +384,6 @@ public class Project implements Serializable {
         this.statTimerange = statTimerange;
         this.taskTimerange = taskTimerange;
         this.iprepTimerange = iprepTimerange;
-        this.logrepTimerange = logrepTimerange;
         this.incJson = incJson;
         this.iocCheck = iocCheck;
         this.iocEvent = iocEvent;
@@ -498,14 +492,6 @@ public class Project implements Serializable {
 
     public void setIprepTimerange(int iprepTimerange) {
         this.iprepTimerange = iprepTimerange;
-    }
-
-    public int getLogrepTimerange() {
-        return logrepTimerange;
-    }
-
-    public void setLogrepTimerange(int logrepTimerange) {
-        this.logrepTimerange = logrepTimerange;
     }
 
     public int getIncJson() {

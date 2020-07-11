@@ -10,9 +10,8 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
-        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap.css">
 		<link rel="stylesheet" href="css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/style.css">
         
 		<link rel="icon" href="img/box.ico">
 		<link rel="shortcut icon" href="img/box.ico" />
@@ -22,27 +21,20 @@
     
 	<!-- Static navbar -->
     
-    <nav class="navbar navbar-default navbar-fixed-top" style="height: 60px;" >
+    <nav class="navbar navbar-default navbar-fixed-top"  >
 		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#" data-toggle="tooltip" title="Click to open Alertflex console" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');">
-					<img src="img/logo.png" style="display: inline-block; max-width:20px;">
-					<span display: inline-block;" >Alertflex Console</span>
-				</a>
-			</div> <!-- /.navbar-header -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >
+				<ul class="nav navbar-nav navbar-left" >
+					<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');" ><i class="fa fa-sitemap"></i> Alertflex</a></li>
+					<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':3000');" ><i class="fa fa-bar-chart"></i> Grafana</a></li>
+					<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':8443');" ><i class="fa fa-comments"></i> MISP</a></li>
+				</ul>
 				<ul class="nav navbar-nav navbar-right" >
 					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Services <span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-cogs"></i> Services<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':4848');" ><i class="fa fa-cubes"></i> Application server (Payara)</a></li>
 							<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/admin');" ><i class="fa fa-paper-plane"></i> Message broker (ActiveMQ)</a></li>
-							<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':8443');" ><i class="fa fa-comments"></i> Threat intelligence (MISP)</a></li>
 						</ul>
 					</li>
 				</ul>
@@ -50,15 +42,17 @@
 		</div> <!-- /.container -->
     </nav> <!-- /.navbar -->
 	
-	<div id="home" class="jumbotron">
+	<div id="home" >
         <div class="container">
+		
 			<div class="row" style="margin-top: 10%;">
-				<div class="col-md-12" class="img-responsive" style="margin: auto;">
+				<div class="col-md-12" class="img-responsive" align="center">
 					<a href="#" title="Click to open Alertflex console" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');">
 						<img src="img/back.svg" height="350" width="350" >
 					</a>
                 </div>
 			</div>
+			
 		</div> <!-- /.container -->
     </div> <!-- /.jumbotron -->
 	

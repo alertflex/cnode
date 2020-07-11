@@ -14,7 +14,7 @@
     <class>org.alertflex.entity.SensorPK</class>
     <class>org.alertflex.entity.CatProfile</class>
     <class>org.alertflex.entity.AlertsCategory</class>
-    <class>org.alertflex.entity.AlertsSeverity</class>
+    <class>org.alertflex.entity.AlertsSource</class>
     <class>org.alertflex.entity.EventCategory</class>
     <class>org.alertflex.entity.Response</class>
     <class>org.alertflex.entity.HomeNetwork</class>

@@ -31,12 +31,6 @@ Next TCP/UDP ports should be open for interaction between solution components an
 
 * Fill in project-specific parameters in file ``env.sh``, as an example see file ``example_env.sh``
 
-* This step only for Centos 7 and Amazon Linux.
-
-.. parsed-literal::
-  sudo yum -y install epel-release
-  sudo yum -y update
-
 * Start installation
 	
 .. parsed-literal::

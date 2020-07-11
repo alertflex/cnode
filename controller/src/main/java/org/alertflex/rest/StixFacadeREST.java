@@ -105,6 +105,7 @@ public class StixFacadeREST {
             obj.put("source", a.getAlertSource());
             obj.put("type", a.getAlertType());
             obj.put("node", a.getNodeId());
+            obj.put("user", a.getUserName());
             obj.put("severity", a.getAlertSeverity());
             obj.put("description", a.getDescription());
             obj.put("create_time", a.getTimeCollr().getTime());

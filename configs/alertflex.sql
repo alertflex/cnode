@@ -161,7 +161,6 @@ CREATE TABLE `project` (
   `stat_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `iprep_timerange` int(10) unsigned NOT NULL DEFAULT '0',
-  `logrep_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `inc_json` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_check` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_event` int(10) unsigned NOT NULL DEFAULT '0',
@@ -217,7 +216,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 8090, "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -447,11 +446,12 @@ CREATE TABLE `agent_packages` (
 
 CREATE TABLE `incident` (
   `inc_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `alert_uuid` char(37) NOT NULL DEFAULT '',
+  `inc_uuid` char(37) NOT NULL DEFAULT '', -- id of incident
+  `alert_uuid` char(37) NOT NULL DEFAULT '', 
   `ref_id` varchar(256) NOT NULL DEFAULT '',
   `ref_ext` varchar(256) NOT NULL DEFAULT '',
   `ref_type` varchar(32) NOT NULL DEFAULT '', -- internal, thehive, jira
-  `action` varchar(32) NOT NULL DEFAULT '', -- status, notify, escalate
+  `action` varchar(32) NOT NULL DEFAULT '', -- change status, notify, escalate to external system, add new alert, asign new user
   `severity` int(10) unsigned NOT NULL DEFAULT '0',
   `category` varchar(512) NOT NULL DEFAULT '',
   `status` varchar(32) NOT NULL DEFAULT '', -- new, action, inprogress, pending, resolved, closed
@@ -507,6 +507,9 @@ CREATE TABLE `playbook` (
   `msg_error` varchar(512) DEFAULT NULL,
   `slack_channel` varchar(512) DEFAULT NULL,
   `enable` int(2) unsigned NOT NULL DEFAULT '0',
+  `num_runs` int(10) unsigned NOT NULL DEFAULT '0',
+  `num_errors` int(10) unsigned NOT NULL DEFAULT '0',
+  `job_error` int(10) unsigned NOT NULL DEFAULT '0',
   `time_of_run` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -517,6 +520,7 @@ CREATE TABLE `report_job` (
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
   `notify_users` varchar(1024) DEFAULT NULL,
   `alerts_report` int(2) unsigned NOT NULL DEFAULT '0',
@@ -527,16 +531,50 @@ CREATE TABLE `report_job` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `logic_job` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `playbook` varchar(255) NOT NULL,
+  `play_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `type_logic`  int(2) unsigned NOT NULL DEFAULT '0', -- 0 - condition based on alert, 1 - new parameters based on alert
+  `script` text,
+  `new_playbook` varchar(512) NOT NULL DEFAULT '',
+  `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `script_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
   `host` varchar(255) NOT NULL DEFAULT '',
-  `args` varchar(512) NOT NULL DEFAULT '',
-  `script` varchar(512) NOT NULL DEFAULT '',
+  `script_params` varchar(1024) NOT NULL DEFAULT '',
+  `script_name` varchar(512) NOT NULL DEFAULT '',
+  `script` text,
+  `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
+  `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ar_job` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `playbook` varchar(255) NOT NULL,
+  `play_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `type_response` int(2) unsigned NOT NULL DEFAULT '0',
+  `command_params` varchar(1024) NOT NULL DEFAULT '',
+  `command_name` varchar(1024) NOT NULL DEFAULT '',
+  `expire_ip` int(10) unsigned NOT NULL DEFAULT '0',
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
@@ -548,8 +586,10 @@ CREATE TABLE `files_job` (
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `src_hostname` varchar(255) NOT NULL DEFAULT '',
+  `src_hostname` varchar(255) NOT NULL DEFAULT '', -- if src_hostname = localhost copy from local dir
+  
   `src_filepath` varchar(512) NOT NULL DEFAULT '',
   `file_regex` varchar(1024) NOT NULL DEFAULT '',
   `file_del` int(2) unsigned NOT NULL DEFAULT '0',
@@ -569,6 +609,7 @@ CREATE TABLE `scan_job` (
   `value1` varchar(512) NOT NULL,
   `value2` varchar(512) NOT NULL,
   `value3` int(10) unsigned NOT NULL DEFAULT '0',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
@@ -582,6 +623,7 @@ CREATE TABLE `rules_job` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `node` varchar(512) NOT NULL DEFAULT '',
   `sensor` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
   `host_name` varchar(255) NOT NULL DEFAULT '',
   `file_path` varchar(512) NOT NULL DEFAULT '',
@@ -598,6 +640,7 @@ CREATE TABLE `sandbox_job` (
   `sensor_type` varchar(255) NOT NULL DEFAULT '',
   `sandbox_type` varchar(255) NOT NULL DEFAULT '',
   `host_name` varchar(255) NOT NULL DEFAULT '',
+  `timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
   `file_path` varchar(512) NOT NULL DEFAULT '',
   `file_ext` varchar(1024) NOT NULL DEFAULT '',
@@ -689,7 +732,7 @@ CREATE TABLE `nmap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `alerts_severity` (
+CREATE TABLE `alerts_source` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `source` varchar(512) NOT NULL DEFAULT '',
@@ -700,8 +743,21 @@ CREATE TABLE `alerts_severity` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `alerts_severity` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (1,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
-INSERT INTO `alerts_severity` (`rec_id`,`ref_id`,`source`,`description`,`minor`, `major`, `critical`) VALUES (2,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (1,'_project_id','Alertflex','Alertflex', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (3,'_project_id','Falco','Falco', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (4,'_project_id','HybridAnalysis','HybridAnalysis', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (5,'_project_id','Nmap','Nmap', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (6,'_project_id','Misc','Misc', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (7,'_project_id','MISP','MISP', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (8,'_project_id','Modsecurity','Modsecurity', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`,`description`,`minor`, `major`, `critical`) VALUES (9,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (10,'_project_id','SonarQube','SonarQube', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (11,'_project_id','Suricata','Suricata', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (12,'_project_id','Syslog','Syslog', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (13,'_project_id','Vmray','Vmray', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (14,'_project_id','Wazuh','Wazuh', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (15,'_project_id','ZAP','ZAP', 0, 0, 0);
 
 CREATE TABLE `cat_profile` (
   `cp_id` int(10) unsigned NOT NULL AUTO_INCREMENT,

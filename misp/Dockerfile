@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
-# 80/443 - MISP web server, 6379 - redis, 50000 - MISP ZeroMQ
-EXPOSE 80 443 6379 50000
+# 80/443 - MISP web server, 50000 - MISP ZeroMQ
+EXPOSE 80 443 50000
 
 # User supplied inputs
 ARG MYSQL_MISP_HOST=ChangeThisDefaultHost9564ebc3289b7a14551baf8ad5ec60a
@@ -13,7 +13,7 @@ ARG MISP_GPG_PASSWORD=ChangeThisDefaultPasswordXuJBao5Q2bps89LWFqWkKgDZwAFpNHvc
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBIAN_PRIORITY critical
-RUN apt-get update && apt-get install -y supervisor cron logrotate syslog-ng-core postfix curl gcc git gnupg-agent make python3 openssl redis-server sudo vim zip wget mariadb-client mariadb-server sqlite3 moreutils apache2 apache2-doc apache2-utils libapache2-mod-php php php-cli php-gnupg php-dev php-json php-mysql php7.2-opcache php-readline php-redis php-xml php-mbstring rng-tools python3-dev python3-pip python3-yara python3-redis python3-zmq libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools libpq5 libjpeg-dev libfuzzy-dev ruby asciidoctor tesseract-ocr imagemagick libpoppler-cpp-dev
+RUN apt-get update && apt-get install -y supervisor cron logrotate syslog-ng-core postfix curl gcc git gnupg-agent make python3 openssl redis-server sudo vim zip wget mariadb-client sqlite3 moreutils apache2 apache2-doc apache2-utils libapache2-mod-php php php-cli php-gnupg php-dev php-json php-mysql php7.2-opcache php-readline php-redis php-xml php-mbstring rng-tools python3-dev python3-pip python3-yara python3-redis python3-zmq libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools libpq5 libjpeg-dev libfuzzy-dev ruby asciidoctor tesseract-ocr imagemagick libpoppler-cpp-dev
 
 # Edit the php.ini file to adjust initial PHP settings to MISP recommended settings
 RUN sed -i "s/max_execution_time = 30/max_execution_time = 300/" /etc/php/7.2/apache2/php.ini ; \
@@ -87,7 +87,7 @@ RUN sed -i -e "s/bind 127.0.0.1 ::1/bind 0.0.0.0/" /etc/redis/redis.conf ; \
     sudo chown -R www-data:www-data /var/www/MISP/app/Config ; \
     sudo chmod -R 750 /var/www/MISP/app/Config ; \
 	sudo -u www-data -H wget https://github.com/ssdeep-project/ssdeep/releases/download/release-2.14.1/ssdeep-2.14.1.tar.gz ; \
-    tar zxvf ssdeep-2.14.1.tar.gz && cd ssdeep-2.14.1.tar.gz && ./configure && make && sudo make install ; \
+    tar zxvf ssdeep-2.14.1.tar.gz && cd ssdeep-2.14.1 && ./configure && make && sudo make install ; \
     sudo pecl install ssdeep ; \
     sudo echo "extension=ssdeep.so" > /etc/php/7.2/mods-available/ssdeep.ini ; \
     sudo phpenmod ssdeep ;
@@ -170,5 +170,6 @@ RUN sudo -u www-data -H mkdir /var/www/MISP/.gnupg ; \
 
 WORKDIR /var/www/MISP
 COPY supervisord.conf /etc/supervisor/conf.d/
+COPY bootstrap.css /var/www/MISP/app/webroot/css/
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

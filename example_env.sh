@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#########################################
-# Technical project data for Controller #
-#########################################
+####################################
+# Technical project data for Cnode #
+####################################
 
 export INSTALL_PATH=/home/alertflex/cnode
 export PROJECT_PATH=/home/alertflex/
@@ -26,7 +26,21 @@ export DB_PORT=3306
 export DB_USER=admin
 export DB_PWD=Password1234
 
-# MISP parameters, use for url a hostname the same as for ALERTFLEX_HOST
-export MISP=true
+###########################
+# install add-on packages #
+###########################
+
+# install in appliance configuration - altprobe and wazuh manager
+export INSTALL_ALTPROBE=yes
+
+# MISP parameters, for MISP_URL use ip or url a hostname the same as for ALERTFLEX_HOST
+export INSTALL_MISP=yes
 export MISP_URL='af-ctrl:8443'
 export MISP_GPG='XuJBao5Q2bps89LWFqWkKg'
+
+export INSTALL_GRAFANA=yes
+export INSTALL_NMAP=yes
+export INSTALL_ZAP=yes
+
+
+
