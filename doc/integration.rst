@@ -10,6 +10,14 @@ Below several examples using Alertflex stix-shifter adapter:
 .. parsed-literal:: 
 	curl -k -v GET -u admin:XXXXXXX https://192.168.1.10:8181/alertflex-ctrl/rest/stix-alerts/status
 
+* Ping service from STIX-shifter
+
+.. parsed-literal:: 
+	python main.py transmit alertflex
+	'{"host":"192.168.1.10", "port":"8181"}'
+	'{"auth": {"username": "admin","password": "XXXXXXXX"}}'
+	ping
+
 * Get info about alerts where a certain file's md5 hash is presented
 
 .. parsed-literal:: 
@@ -18,21 +26,13 @@ Below several examples using Alertflex stix-shifter adapter:
 	'{"host":"192.168.1.10", "port":"8181"}' '{"auth": {"username": "admin","password": "XXXXXXX"}}'
 	"[file:hashes.MD5 = '02d2a1d8b353ba2bf59ca381f1836ebd']"
 
-* Get info about alerts where a certain IP address is presented
+* Get info about alerts with type "HOST" raised during a fixed interval of time
 
 .. parsed-literal:: 
 	python main.py execute alertflex alertflex
 	'{"type": "identity", "id": "identity--3532c56d-ea72-48be-a2ad-1a53f4c9c6d3", "name": "Alertflex", "identity_class": "events"}'
 	'{"host":"192.168.1.10", "port":"8181"}' '{"auth": {"username": "admin","password": "XXXXXXX"}}'
-	"[ipv4-addr:ip = '192.168.1.100']"
-
-* Get info about critical alerts raised during a fixed interval of time
-
-.. parsed-literal:: 
-	python main.py execute alertflex alertflex
-	'{"type": "identity", "id": "identity--3532c56d-ea72-48be-a2ad-1a53f4c9c6d3", "name": "Alertflex", "identity_class": "events"}'
-	'{"host":"192.168.1.10", "port":"8181"}' '{"auth": {"username": "admin","password": "XXXXXXX"}}'
-	"[alert:severity = 3] START t'2020-06-09T00:00:00Z' STOP t'2020-06-09T20:11:11Z'"
+	"[x_org_alertflex:type = 'HOST'] START t'2020-06-09T00:00:00Z' STOP t'2020-06-09T20:11:11Z'"
 
 |
 
