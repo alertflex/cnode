@@ -55,7 +55,7 @@ sudo apt-get update
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9
 sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
 sudo apt-get update
-sudo apt-get -y install zulu-8
+sudo apt-get -y install zulu-8 unzip
 
 echo "*** Installation Nginx and web site ***"
 sudo apt-get -y install nginx
