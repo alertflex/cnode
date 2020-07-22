@@ -112,14 +112,20 @@ public class StixFacadeREST {
                         
             if (!a.getCategories().isEmpty()) obj.put("category", a.getCategories());
             
-            if (!a.getSrcIp().isEmpty()) {
+            if (!a.getSrcIp().isEmpty() && !a.getSrcIp().equals("indef")) {
                 obj.put("srcip", a.getSrcIp());
                 obj.put("srcport", a.getSrcPort());
+            } else {
+                obj.put("srcip", "0.0.0.0");
+                obj.put("srcport", 0);
             }
             
-            if (!a.getDstIp().isEmpty()) {
+            if (!a.getDstIp().isEmpty()  && !a.getDstIp().equals("indef")) {
                 obj.put("dstip", a.getDstIp());
                 obj.put("dstport", a.getDstPort());
+            } else {
+                obj.put("dstip", "0.0.0.0");
+                obj.put("dstport", 0);
             }
             
             if (!a.getDstIp().isEmpty() || !a.getSrcIp().isEmpty()) obj.put("protocol", "ip");
