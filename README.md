@@ -23,15 +23,15 @@ Alertflex implements two main functionality:
 
 ## Cnode documentation:
 
-* [installation](https://github.com/olegzhr/cnode/blob/master/doc/install.rst)
+* [installation](https://github.com/alertflex/cnode/blob/master/doc/install.rst)
 
-* [configuration](https://github.com/olegzhr/cnode/blob/master/doc/config.rst)
+* [configuration](https://github.com/alertflex/cnode/blob/master/doc/config.rst)
 
-* [integration](https://github.com/olegzhr/cnode/blob/master/doc/integration.rst)
+* [integration](https://github.com/alertflex/cnode/blob/master/doc/integration.rst)
 
 For more information, please see the [Alertflex project presentation](https://github.com/alertflex/cnode/blob/master/doc/alertflex.pdf)
 	
 ## Support
 
-Please [open an issue on GitHub](https://github.com/olegzhr/cnode/issues), if you'd like to report a bug or request a feature. 
+Please [open an issue on GitHub](https://github.com/alertflex/cnode/issues), if you'd like to report a bug or request a feature. 
 Have a question or need tech support, please send an email to address: info@alertflex.org
