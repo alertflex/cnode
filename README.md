@@ -29,7 +29,7 @@ Alertflex implements two main functionality:
 
 * [integration](https://github.com/olegzhr/cnode/blob/master/doc/integration.rst)
 
-For more information, please see the [Alertflex project presentation](https://github.com/olegzhr/cnode/blob/master/doc/alertflex.pdf)
+For more information, please see the [Alertflex project presentation](https://github.com/alertflex/cnode/blob/master/doc/alertflex.pdf)
 	
 ## Support
 
