@@ -37,9 +37,9 @@ import org.alertflex.facade.AgentOpenscapFacade;
 import org.alertflex.facade.AgentPackagesFacade;
 import org.alertflex.facade.AgentProcessesFacade;
 import org.alertflex.facade.AgentScaFacade;
+import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
-import org.alertflex.facade.EventCategoryFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +92,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private AgentOpenscapFacade agentOpenscapFacade;
+    
+    @EJB
+    private DockerScanFacade dockerScanFacade;
     
     @EJB
     private ProjectFacade projectFacade;
@@ -169,6 +172,10 @@ public class InfoMessageBean implements MessageListener {
     
     public AgentProcessesFacade getAgentProcessesFacade() {
         return this.agentProcessesFacade;
+    }
+    
+    public DockerScanFacade getDockerScanFacade() {
+        return this.dockerScanFacade;
     }
     
     public Project getProject() {
@@ -310,6 +317,16 @@ public class InfoMessageBean implements MessageListener {
                                 String rule = bytesMessage.getStringProperty("rule");
                            
                                 rm.saveRule(sensor, rule,data);
+                            }
+                            break;
+                            
+                        case 12: {
+                            
+                                DockerBench db = new DockerBench(this);
+                                                            
+                                String sensor = bytesMessage.getStringProperty("sensor");
+                                
+                                db.saveReport(sensor, data);
                             }
                             break;
                             

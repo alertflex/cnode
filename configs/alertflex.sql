@@ -167,14 +167,14 @@ CREATE TABLE `project` (
   `iprep_cat` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_rest` int(2) unsigned NOT NULL DEFAULT '0',
   `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
-  `log_host` varchar(512) NOT NULL DEFAULT '',
+  `log_host` varchar(255) NOT NULL DEFAULT '',
   `log_port` int(10) unsigned NOT NULL DEFAULT '0',
   `send_netflow` int(2) unsigned NOT NULL DEFAULT '0',
-  `graylog_host` varchar(512) NOT NULL DEFAULT '',
+  `graylog_host` varchar(255) NOT NULL DEFAULT '',
   `graylog_port` int(10) unsigned NOT NULL DEFAULT '0',
   `graylog_user` varchar(512) NOT NULL DEFAULT '',
   `graylog_pass` varchar(512) NOT NULL DEFAULT '',
-  `elk_host` varchar(512) NOT NULL DEFAULT '',
+  `elk_host` varchar(255) NOT NULL DEFAULT '',
   `elk_port` int(10) unsigned NOT NULL DEFAULT '0',
   `elk_user` varchar(512) NOT NULL DEFAULT '',
   `elk_pass` varchar(512) NOT NULL DEFAULT '',
@@ -186,7 +186,7 @@ CREATE TABLE `project` (
   `hive_key` varchar(512) NOT NULL DEFAULT '',
   `misp_url` varchar(512) NOT NULL DEFAULT '',
   `misp_key` varchar(512) NOT NULL DEFAULT '',
-  `jira_url` varchar(255) NOT NULL DEFAULT '',
+  `jira_url` varchar(512) NOT NULL DEFAULT '',
   `jira_user` varchar(512) NOT NULL DEFAULT '',
   `jira_pass` varchar(512) NOT NULL DEFAULT '',
   `jira_project` varchar(512) NOT NULL DEFAULT '',
@@ -196,13 +196,16 @@ CREATE TABLE `project` (
   `sms_token` varchar(512) NOT NULL DEFAULT '',
   `sms_from` varchar(512) NOT NULL DEFAULT '',
   `slack_hook` varchar(512) NOT NULL DEFAULT '',
-  `zap_host` varchar(512) NOT NULL DEFAULT '',
+  `zap_host` varchar(255) NOT NULL DEFAULT '',
   `zap_port` int(10) unsigned NOT NULL DEFAULT '0',
-  `zap_key` varchar(1024) NOT NULL DEFAULT '',
+  `zap_key` varchar(512) NOT NULL DEFAULT '',
   `sonar_url` varchar(512) NOT NULL DEFAULT '',
   `sonar_user` varchar(512) NOT NULL DEFAULT '',
   `sonar_pass` varchar(512) NOT NULL DEFAULT '',
-  `cuckoo_host` varchar(512) NOT NULL DEFAULT '',
+  `nessus_url` varchar(512) NOT NULL DEFAULT '',
+  `nessus_accesskey` varchar(512) NOT NULL DEFAULT '',
+  `nessus_secretkey` varchar(512) NOT NULL DEFAULT '',
+  `cuckoo_host` varchar(255) NOT NULL DEFAULT '',
   `cuckoo_port` int(10) unsigned NOT NULL DEFAULT '0',
   `falcon_url` varchar(512) NOT NULL DEFAULT '',
   `falcon_key` varchar(512) NOT NULL DEFAULT '',
@@ -216,7 +219,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -289,6 +292,7 @@ CREATE TABLE `hosts` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `node` varchar(255) NOT NULL DEFAULT '',
   `cred` varchar(255) NOT NULL DEFAULT '',
+  `sensor` varchar(255) NOT NULL,
   `agent` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
   `address` varchar(512) NOT NULL DEFAULT '',
@@ -645,8 +649,8 @@ CREATE TABLE `sandbox_job` (
   `file_path` varchar(512) NOT NULL DEFAULT '',
   `file_ext` varchar(1024) NOT NULL DEFAULT '',
   `files_limit` int(10) unsigned NOT NULL DEFAULT '0',
-  `rem_del` int(2) unsigned NOT NULL DEFAULT '0',
-  `loc_del` int(2) unsigned NOT NULL DEFAULT '0',
+  `del_file` int(2) unsigned NOT NULL DEFAULT '0',
+  `del_infect` int(2) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -657,7 +661,9 @@ CREATE TABLE `sandbox_task` (
   `sandbox_job` varchar(255) NOT NULL,
   `sandbox_type` varchar(255) NOT NULL DEFAULT '',
   `sandbox_id` varchar(255) NOT NULL,
-  `file_name` varchar(256) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `host_name` varchar(512) NOT NULL DEFAULT '',
+  `file_name` varchar(512) NOT NULL DEFAULT '',
   `time_of_creation` datetime DEFAULT NULL,
   `time_of_action` datetime DEFAULT NULL,
   `status` varchar(128) NOT NULL DEFAULT '',
@@ -732,6 +738,38 @@ CREATE TABLE `nmap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `nessus_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_name` varchar(512) NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  `vuln_index` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity_index` int(10) unsigned NOT NULL DEFAULT '0',
+  `plugin_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `plugin_name` varchar(1024) NOT NULL DEFAULT '',
+  `plugin_family` varchar(512) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `docker_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `sensor` varchar(128) NOT NULL DEFAULT '',
+  `test_desc` varchar(512) NOT NULL DEFAULT '',
+  `result_id` varchar(128) NOT NULL DEFAULT '',
+  `result_desc` varchar(1024) NOT NULL DEFAULT '',
+  `result` varchar(128) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `details` varchar(1024) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `alerts_source` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
@@ -748,16 +786,18 @@ INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, 
 INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (3,'_project_id','Falco','Falco', 0, 0, 0);
 INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (4,'_project_id','HybridAnalysis','HybridAnalysis', 0, 0, 0);
 INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (5,'_project_id','Nmap','Nmap', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (6,'_project_id','Misc','Misc', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (7,'_project_id','MISP','MISP', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (8,'_project_id','Modsecurity','Modsecurity', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`,`description`,`minor`, `major`, `critical`) VALUES (9,'_project_id','RITA','RITA', 1, 3, 7);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (10,'_project_id','SonarQube','SonarQube', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (11,'_project_id','Suricata','Suricata', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (12,'_project_id','Syslog','Syslog', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (13,'_project_id','Vmray','Vmray', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (14,'_project_id','Wazuh','Wazuh', 0, 0, 0);
-INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (15,'_project_id','ZAP','ZAP', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (6,'_project_id','Nessus','Nessus', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (7,'_project_id','Misc','Misc', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (8,'_project_id','MISP','MISP', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (9,'_project_id','Modsecurity','Modsecurity', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (10,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (11,'_project_id','SonarQube','SonarQube', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (12,'_project_id','Suricata','Suricata', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (13,'_project_id','Syslog','Syslog', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (14,'_project_id','Vmray','Vmray', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (15,'_project_id','Wazuh','Wazuh', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (16,'_project_id','ZAP','ZAP', 0, 0, 0);
+INSERT INTO `alerts_source` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (17,'_project_id','DockerBench','DockerBench', 0, 0, 0);
 
 CREATE TABLE `cat_profile` (
   `cp_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -773,16 +813,18 @@ INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VA
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (3,'_project_id','all_falco','Falco','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (4,'_project_id','all_ha','HybridAnalysis','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (5,'_project_id','all_nmap','Nmap','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (6,'_project_id','all_misc','Misc','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (7,'_project_id','all_misp','MISP','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (8,'_project_id','all_modsec','Modsecurity','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (9,'_project_id','all_rita','RITA','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (10,'_project_id','all_sq','SonarQube','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (11,'_project_id','all_suri','Suricata','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (12,'_project_id','all_syslog','Syslog','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (13,'_project_id','all_vmray','Vmray','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (14,'_project_id','all_wazuh','Wazuh','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (15,'_project_id','all_zap','ZAP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (6,'_project_id','all_nessus','Nessus','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (7,'_project_id','all_misc','Misc','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (8,'_project_id','all_misp','MISP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (9,'_project_id','all_modsec','Modsecurity','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (10,'_project_id','all_rita','RITA','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (11,'_project_id','all_sq','SonarQube','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (12,'_project_id','all_suri','Suricata','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (13,'_project_id','all_syslog','Syslog','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (14,'_project_id','all_vmray','Vmray','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (15,'_project_id','all_wazuh','Wazuh','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (16,'_project_id','all_zap','ZAP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (17,'_project_id','all_dockerbench','DockerBench','*');
 
 CREATE TABLE `alerts_category` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -805,15 +847,19 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('rita', '
 
 INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('nmap', 'indef', 'Nmap');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('owasp zap', 'indef', 'ZAP');
+INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('nessus', 'indef', 'Nessus');
+
+INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('owasp_zap', 'indef', 'ZAP');
 
 INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('sonarqube', 'indef', 'SonarQube');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('falcon sandbox', 'indef', 'HybridAnalysis'); 
+INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('falcon_sandbox', 'indef', 'HybridAnalysis'); 
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('vmray sandbox', 'indef', 'Vmray'); 
+INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('vmray_sandbox', 'indef', 'Vmray'); 
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('cuckoo sandbox', 'indef', 'Cuckoo'), 
+INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('docker_bench', 'indef', 'DockerBench');
+
+INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('cuckoo_sandbox', 'indef', 'Cuckoo'), 
 ('foobar', 'indef', 'Cuckoo'), 
 ('file', 'indef', 'Cuckoo'), 
 ('process', 'indef', 'Cuckoo'), 

@@ -74,6 +74,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findBySonarUrl", query = "SELECT p FROM Project p WHERE p.sonarUrl = :sonarUrl")
     , @NamedQuery(name = "Project.findBySonarUser", query = "SELECT p FROM Project p WHERE p.sonarUser = :sonarUser")
     , @NamedQuery(name = "Project.findBySonarPass", query = "SELECT p FROM Project p WHERE p.sonarPass = :sonarPass")
+    , @NamedQuery(name = "Project.findByNessusUrl", query = "SELECT p FROM Project p WHERE p.nessusUrl = :nessusUrl")
+    , @NamedQuery(name = "Project.findByNessusAccesskey", query = "SELECT p FROM Project p WHERE p.nessusAccesskey = :nessusAccesskey")
+    , @NamedQuery(name = "Project.findByNessusSecretkey", query = "SELECT p FROM Project p WHERE p.nessusSecretkey = :nessusSecretkey")
     , @NamedQuery(name = "Project.findByCuckooHost", query = "SELECT p FROM Project p WHERE p.cuckooHost = :cuckooHost")
     , @NamedQuery(name = "Project.findByCuckooPort", query = "SELECT p FROM Project p WHERE p.cuckooPort = :cuckooPort")
     , @NamedQuery(name = "Project.findByFalconUrl", query = "SELECT p FROM Project p WHERE p.falconUrl = :falconUrl")
@@ -146,7 +149,7 @@ public class Project implements Serializable {
     private int semActive;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 255)
     @Column(name = "log_host")
     private String logHost;
     @Basic(optional = false)
@@ -159,7 +162,7 @@ public class Project implements Serializable {
     private int sendNetflow;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 255)
     @Column(name = "graylog_host")
     private String graylogHost;
     @Basic(optional = false)
@@ -178,7 +181,7 @@ public class Project implements Serializable {
     private String graylogPass;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 255)
     @Column(name = "elk_host")
     private String elkHost;
     @Basic(optional = false)
@@ -237,7 +240,7 @@ public class Project implements Serializable {
     private String mispKey;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 512)
     @Column(name = "jira_url")
     private String jiraUrl;
     @Basic(optional = false)
@@ -287,7 +290,7 @@ public class Project implements Serializable {
     private String slackHook;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 255)
     @Column(name = "zap_host")
     private String zapHost;
     @Basic(optional = false)
@@ -296,7 +299,7 @@ public class Project implements Serializable {
     private int zapPort;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 1024)
+    @Size(min = 1, max = 512)
     @Column(name = "zap_key")
     private String zapKey;
     @Basic(optional = false)
@@ -317,6 +320,21 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
+    @Column(name = "nessus_url")
+    private String nessusUrl;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "nessus_accesskey")
+    private String nessusAccesskey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "nessus_secretkey")
+    private String nessusSecretkey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
     @Column(name = "cuckoo_host")
     private String cuckooHost;
     @Basic(optional = false)
@@ -376,7 +394,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String nessusUrl, String nessusAccesskey, String nessusSecretkey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -425,6 +443,9 @@ public class Project implements Serializable {
         this.sonarUrl = sonarUrl;
         this.sonarUser = sonarUser;
         this.sonarPass = sonarPass;
+        this.nessusUrl = nessusUrl;
+        this.nessusAccesskey = nessusAccesskey;
+        this.nessusSecretkey = nessusSecretkey;
         this.cuckooHost = cuckooHost;
         this.cuckooPort = cuckooPort;
         this.falconUrl = falconUrl;
@@ -820,6 +841,30 @@ public class Project implements Serializable {
 
     public void setSonarPass(String sonarPass) {
         this.sonarPass = sonarPass;
+    }
+
+    public String getNessusUrl() {
+        return nessusUrl;
+    }
+
+    public void setNessusUrl(String nessusUrl) {
+        this.nessusUrl = nessusUrl;
+    }
+
+    public String getNessusAccesskey() {
+        return nessusAccesskey;
+    }
+
+    public void setNessusAccesskey(String nessusAccesskey) {
+        this.nessusAccesskey = nessusAccesskey;
+    }
+
+    public String getNessusSecretkey() {
+        return nessusSecretkey;
+    }
+
+    public void setNessusSecretkey(String nessusSecretkey) {
+        this.nessusSecretkey = nessusSecretkey;
     }
 
     public String getCuckooHost() {

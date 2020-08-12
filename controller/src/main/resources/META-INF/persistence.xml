@@ -8,6 +8,7 @@
     <class>org.alertflex.entity.AgentProcesses</class>
     <class>org.alertflex.entity.AgentPackages</class>
     <class>org.alertflex.entity.AgentVul</class>
+    <class>org.alertflex.entity.DockerScan</class>
     <class>org.alertflex.entity.Node</class>
     <class>org.alertflex.entity.NodePK</class>
     <class>org.alertflex.entity.Sensor</class>
