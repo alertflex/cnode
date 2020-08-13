@@ -26,7 +26,7 @@ Next TCP/UDP ports should be open for interaction between solution components an
 * Download installation files
 
 .. parsed-literal::
-  git clone git://github.com/alertflex/cnode.git
+  git clone https://github.com/alertflex/cnode.git
   cd cnode
 
 * Fill in project-specific parameters in file ``env.sh``, as an example see file ``example_env.sh``
