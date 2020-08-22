@@ -1,6 +1,8 @@
 # Alertflex central node
 
-Alertflex project is a continuous security monitoring solution designed for use in Hybrid Clouds. By monitoring events near real-time from well-known open-source security applications, Alertflex provides end-to-end security visibility for on-premises and cloud-based IT infrastructure. 
+Alertflex project is a free, open-source continuous security monitoring solution designed for use in Hybrid Clouds (on-premises and cloud-based IT infrastructure). By monitoring security events and reports from well-known cybersecurity applications, Alertflex gives companies end-to-end security visibility. The project adapts of third-party software products into a unified solution based on the CTI EDR SOAR technology stack and DevSecOps best practices.
+
+The solution requires fewer system resources compared with similar products and mostly integrates free open-source third-party software. It can significantly reduce costs for your cybersecurity monitoring.
 
 Alertflex implements two main functionality:
 
@@ -21,15 +23,7 @@ Alertflex implements two main functionality:
 
 **Central node** includes Alertflex controller and console, ActiveMQ server, MISP docker container. Additionally can be installed Grafana, Nmap, OWASP ZAP 
 
-## Cnode documentation:
-
-* [installation](https://github.com/alertflex/cnode/blob/master/doc/install.rst)
-
-* [configuration](https://github.com/alertflex/cnode/blob/master/doc/config.rst)
-
-* [integration](https://github.com/alertflex/cnode/blob/master/doc/integration.rst)
-
-For more information, please see the [Alertflex project presentation](https://github.com/alertflex/cnode/blob/master/doc/alertflex.pdf)
+For more information, please see the [Alertflex project documentation](https://alertflex/doc/index.html)
 	
 ## Support
 
