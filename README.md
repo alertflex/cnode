@@ -23,7 +23,7 @@ Alertflex implements two main functionality:
 
 **Central node** includes Alertflex controller and console, ActiveMQ server, MISP docker container. Additionally can be installed Grafana, Nmap, OWASP ZAP 
 
-For more information, please see the [Alertflex project documentation](https://alertflex/doc/index.html)
+For more information, please see the [Alertflex project documentation](https://alertflex.org/doc/index.html)
 	
 ## Support
 
