@@ -13,13 +13,13 @@ Alertflex implements two main functionality:
 * Storage (MySQL)
 * Access  (Alertflex controller and console)
 
-**Security operations automation and orchestration**
+**Security automation and orchestration**
 * IDS centralized management for rules, configs, filtering policies, IP address blocking lists
 * CTI functions which are based on integration with MISP. Performs a reputation checks for IP addresses, DNS records, MD5, SHA1 SHA256 hashes of files. Creates an alert, in case of suspicious data has been found.
 * Can redirect alerts, Netflow, logs  to open-source Log Management and monitoring systems ( Graylog, ElasticStack, Prometheus/Grafana)
-* Can periodically to run scanning of remote files in Malware Analysis Sandbox (Cuckoo, Hybrid Analysis, VMRay)
-* Integrates with SAST and DAST tools (Nmap, SonarQube, OWASP ZAP)
-* Provides REST API for IDS alerts, compatible with Open Cybersecurity Alliance ecosystem
+* Can periodically run scanning of remote files in Malware Analysis Sandbox (Cuckoo, Hybrid Analysis, VMRay)
+* Integrates SAST and DAST tools (Nmap, SonarQube, OWASP ZAP)
+* Provides REST API and interface compatible with Open Cybersecurity Alliance ecosystem for IDS alerts
 
 **Central node** includes Alertflex controller and console, ActiveMQ server, MISP docker container. Additionally can be installed Grafana, Nmap, OWASP ZAP 
 
