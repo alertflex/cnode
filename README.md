@@ -1,6 +1,6 @@
 # Alertflex central node
 
-Alertflex project is an open-source continuous monitoring security solution designed for use in Hybrid Clouds (on-premises and cloud-based IT infrastructure). By monitoring security events and reports from well-known cybersecurity applications, Alertflex gives companies end-to-end security visibility. The project adapts of third-party software products into a unified solution based on the CTI EDR SOAR technology stack and DevSecOps best practices.
+Alertflex project is an open-source continuous security monitoring solution designed for use in Hybrid Clouds (on-premises and cloud-based IT infrastructure). By monitoring security events and reports from well-known cybersecurity applications, Alertflex gives companies end-to-end security visibility. The project adapts of third-party software products into a unified solution based on the CTI EDR SOAR technology stack and DevSecOps best practices.
 
 Alertflex requires fewer system resources compared with similar products and mostly integrates of free open-source third-party software. It can significantly reduce costs for your cybersecurity monitoring.
 
