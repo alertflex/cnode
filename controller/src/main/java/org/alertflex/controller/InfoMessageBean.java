@@ -38,6 +38,7 @@ import org.alertflex.facade.AgentPackagesFacade;
 import org.alertflex.facade.AgentProcessesFacade;
 import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.DockerScanFacade;
+import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -95,6 +96,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private DockerScanFacade dockerScanFacade;
+    
+    @EJB
+    private TrivyScanFacade trivyScanFacade;
     
     @EJB
     private ProjectFacade projectFacade;
@@ -176,6 +180,10 @@ public class InfoMessageBean implements MessageListener {
     
     public DockerScanFacade getDockerScanFacade() {
         return this.dockerScanFacade;
+    }
+    
+    public TrivyScanFacade getTrivyScanFacade() {
+        return this.trivyScanFacade;
     }
     
     public Project getProject() {
@@ -327,6 +335,16 @@ public class InfoMessageBean implements MessageListener {
                                 String sensor = bytesMessage.getStringProperty("sensor");
                                 
                                 db.saveReport(sensor, data);
+                            }
+                            break;
+                            
+                        case 14: {
+                            
+                                Trivy trivy = new Trivy(this);
+                                                            
+                                String sensor = bytesMessage.getStringProperty("sensor");
+                                
+                                trivy.saveReport(sensor, data);
                             }
                             break;
                             

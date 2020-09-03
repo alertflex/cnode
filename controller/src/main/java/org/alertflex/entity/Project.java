@@ -74,6 +74,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findBySonarUrl", query = "SELECT p FROM Project p WHERE p.sonarUrl = :sonarUrl")
     , @NamedQuery(name = "Project.findBySonarUser", query = "SELECT p FROM Project p WHERE p.sonarUser = :sonarUser")
     , @NamedQuery(name = "Project.findBySonarPass", query = "SELECT p FROM Project p WHERE p.sonarPass = :sonarPass")
+    , @NamedQuery(name = "Project.findBySnykKey", query = "SELECT p FROM Project p WHERE p.snykKey = :snykKey")
+    , @NamedQuery(name = "Project.findBySnykOrgid", query = "SELECT p FROM Project p WHERE p.snykOrgid = :snykOrgid")
     , @NamedQuery(name = "Project.findByNessusUrl", query = "SELECT p FROM Project p WHERE p.nessusUrl = :nessusUrl")
     , @NamedQuery(name = "Project.findByNessusAccesskey", query = "SELECT p FROM Project p WHERE p.nessusAccesskey = :nessusAccesskey")
     , @NamedQuery(name = "Project.findByNessusSecretkey", query = "SELECT p FROM Project p WHERE p.nessusSecretkey = :nessusSecretkey")
@@ -225,7 +227,7 @@ public class Project implements Serializable {
     private String hiveUrl;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "hive_key")
     private String hiveKey;
     @Basic(optional = false)
@@ -235,7 +237,7 @@ public class Project implements Serializable {
     private String mispUrl;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "misp_key")
     private String mispKey;
     @Basic(optional = false)
@@ -265,7 +267,7 @@ public class Project implements Serializable {
     private String jiraType;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "vt_key")
     private String vtKey;
     @Basic(optional = false)
@@ -299,7 +301,7 @@ public class Project implements Serializable {
     private int zapPort;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "zap_key")
     private String zapKey;
     @Basic(optional = false)
@@ -317,6 +319,16 @@ public class Project implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "sonar_pass")
     private String sonarPass;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 256)
+    @Column(name = "snyk_key")
+    private String snykKey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 256)
+    @Column(name = "snyk_orgid")
+    private String snykOrgid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -348,7 +360,7 @@ public class Project implements Serializable {
     private String falconUrl;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "falcon_key")
     private String falconKey;
     @Basic(optional = false)
@@ -358,7 +370,7 @@ public class Project implements Serializable {
     private String vmrayUrl;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "vmray_key")
     private String vmrayKey;
     @Basic(optional = false)
@@ -394,7 +406,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String nessusUrl, String nessusAccesskey, String nessusSecretkey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String snykKey, String snykOrgid, String nessusUrl, String nessusAccesskey, String nessusSecretkey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -443,6 +455,8 @@ public class Project implements Serializable {
         this.sonarUrl = sonarUrl;
         this.sonarUser = sonarUser;
         this.sonarPass = sonarPass;
+        this.snykKey = snykKey;
+        this.snykOrgid = snykOrgid;
         this.nessusUrl = nessusUrl;
         this.nessusAccesskey = nessusAccesskey;
         this.nessusSecretkey = nessusSecretkey;
@@ -841,6 +855,22 @@ public class Project implements Serializable {
 
     public void setSonarPass(String sonarPass) {
         this.sonarPass = sonarPass;
+    }
+
+    public String getSnykKey() {
+        return snykKey;
+    }
+
+    public void setSnykKey(String snykKey) {
+        this.snykKey = snykKey;
+    }
+
+    public String getSnykOrgid() {
+        return snykOrgid;
+    }
+
+    public void setSnykOrgid(String snykOrgid) {
+        this.snykOrgid = snykOrgid;
     }
 
     public String getNessusUrl() {

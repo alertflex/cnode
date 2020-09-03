@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AgentSca.findByRefId", query = "SELECT a FROM AgentSca a WHERE a.refId = :refId")
     , @NamedQuery(name = "AgentSca.findByAgent", query = "SELECT a FROM AgentSca a WHERE a.agent = :agent")
     , @NamedQuery(name = "AgentSca.findByName", query = "SELECT a FROM AgentSca a WHERE a.name = :name")
+    , @NamedQuery(name = "AgentSca.findBySeverity", query = "SELECT a FROM AgentSca a WHERE a.severity = :severity")
     , @NamedQuery(name = "AgentSca.findByInvalid", query = "SELECT a FROM AgentSca a WHERE a.invalid = :invalid")
     , @NamedQuery(name = "AgentSca.findByFail", query = "SELECT a FROM AgentSca a WHERE a.fail = :fail")
     , @NamedQuery(name = "AgentSca.findByTotalChecks", query = "SELECT a FROM AgentSca a WHERE a.totalChecks = :totalChecks")
@@ -46,8 +47,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AgentSca.findByPolicyId", query = "SELECT a FROM AgentSca a WHERE a.policyId = :policyId")
     , @NamedQuery(name = "AgentSca.findByStartScan", query = "SELECT a FROM AgentSca a WHERE a.startScan = :startScan")
     , @NamedQuery(name = "AgentSca.findByEndScan", query = "SELECT a FROM AgentSca a WHERE a.endScan = :endScan")
-    , @NamedQuery(name = "AgentSca.findByDateAdd", query = "SELECT a FROM AgentSca a WHERE a.dateAdd = :dateAdd")
-    , @NamedQuery(name = "AgentSca.findByDateUpdate", query = "SELECT a FROM AgentSca a WHERE a.dateUpdate = :dateUpdate")})
+    , @NamedQuery(name = "AgentSca.findByReportAdded", query = "SELECT a FROM AgentSca a WHERE a.reportAdded = :reportAdded")
+    , @NamedQuery(name = "AgentSca.findByReportUpdated", query = "SELECT a FROM AgentSca a WHERE a.reportUpdated = :reportUpdated")})
 public class AgentSca implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -76,6 +77,10 @@ public class AgentSca implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "name")
     private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "severity")
+    private int severity;
     @Basic(optional = false)
     @NotNull
     @Column(name = "invalid")
@@ -117,12 +122,12 @@ public class AgentSca implements Serializable {
     @Column(name = "end_scan")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endScan;
-    @Column(name = "date_add")
+    @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateAdd;
-    @Column(name = "date_update")
+    private Date reportAdded;
+    @Column(name = "report_updated")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateUpdate;
+    private Date reportUpdated;
 
     public AgentSca() {
     }
@@ -131,12 +136,13 @@ public class AgentSca implements Serializable {
         this.recId = recId;
     }
 
-    public AgentSca(Long recId, String nodeId, String refId, String agent, String name, int invalid, int fail, int totalChecks, int pass, int score, String description, String refUrl, String policyId) {
+    public AgentSca(Long recId, String nodeId, String refId, String agent, String name, int severity, int invalid, int fail, int totalChecks, int pass, int score, String description, String refUrl, String policyId) {
         this.recId = recId;
         this.nodeId = nodeId;
         this.refId = refId;
         this.agent = agent;
         this.name = name;
+        this.severity = severity;
         this.invalid = invalid;
         this.fail = fail;
         this.totalChecks = totalChecks;
@@ -185,6 +191,14 @@ public class AgentSca implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(int severity) {
+        this.severity = severity;
     }
 
     public int getInvalid() {
@@ -267,20 +281,20 @@ public class AgentSca implements Serializable {
         this.endScan = endScan;
     }
 
-    public Date getDateAdd() {
-        return dateAdd;
+    public Date getReportAdded() {
+        return reportAdded;
     }
 
-    public void setDateAdd(Date dateAdd) {
-        this.dateAdd = dateAdd;
+    public void setReportAdded(Date reportAdded) {
+        this.reportAdded = reportAdded;
     }
 
-    public Date getDateUpdate() {
-        return dateUpdate;
+    public Date getReportUpdated() {
+        return reportUpdated;
     }
 
-    public void setDateUpdate(Date dateUpdate) {
-        this.dateUpdate = dateUpdate;
+    public void setReportUpdated(Date reportUpdated) {
+        this.reportUpdated = reportUpdated;
     }
 
     @Override

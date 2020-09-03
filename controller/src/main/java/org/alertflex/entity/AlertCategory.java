@@ -24,18 +24,20 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author root
  */
 @Entity
-@Table(name = "alerts_category")
+@Table(name = "alert_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AlertsCategory.findAll", query = "SELECT a FROM AlertsCategory a")
-    , @NamedQuery(name = "AlertsCategory.findByRecId", query = "SELECT a FROM AlertsCategory a WHERE a.recId = :recId")
-    , @NamedQuery(name = "AlertsCategory.findByRefId", query = "SELECT a FROM AlertsCategory a WHERE a.refId = :refId")
-    , @NamedQuery(name = "AlertsCategory.findByCatName", query = "SELECT a FROM AlertsCategory a WHERE a.catName = :catName")
-    , @NamedQuery(name = "AlertsCategory.findByCatSource", query = "SELECT a FROM AlertsCategory a WHERE a.catSource = :catSource")
-    , @NamedQuery(name = "AlertsCategory.findByCatDesc", query = "SELECT a FROM AlertsCategory a WHERE a.catDesc = :catDesc")
-    , @NamedQuery(name = "AlertsCategory.findByTaxonomy", query = "SELECT a FROM AlertsCategory a WHERE a.taxonomy = :taxonomy")
-    , @NamedQuery(name = "AlertsCategory.findByGalaxy", query = "SELECT a FROM AlertsCategory a WHERE a.galaxy = :galaxy")})
-public class AlertsCategory implements Serializable {
+    @NamedQuery(name = "AlertCategory.findAll", query = "SELECT a FROM AlertCategory a")
+    , @NamedQuery(name = "AlertCategory.findByRecId", query = "SELECT a FROM AlertCategory a WHERE a.recId = :recId")
+    , @NamedQuery(name = "AlertCategory.findByRefId", query = "SELECT a FROM AlertCategory a WHERE a.refId = :refId")
+    , @NamedQuery(name = "AlertCategory.findByCatName", query = "SELECT a FROM AlertCategory a WHERE a.catName = :catName")
+    , @NamedQuery(name = "AlertCategory.findByCatSource", query = "SELECT a FROM AlertCategory a WHERE a.catSource = :catSource")
+    , @NamedQuery(name = "AlertCategory.findByCatDesc", query = "SELECT a FROM AlertCategory a WHERE a.catDesc = :catDesc")
+    , @NamedQuery(name = "AlertCategory.findByMitreTactics", query = "SELECT a FROM AlertCategory a WHERE a.mitreTactics = :mitreTactics")
+    , @NamedQuery(name = "AlertCategory.findByMitreTechniques", query = "SELECT a FROM AlertCategory a WHERE a.mitreTechniques = :mitreTechniques")
+    , @NamedQuery(name = "AlertCategory.findByMispTaxonomy", query = "SELECT a FROM AlertCategory a WHERE a.mispTaxonomy = :mispTaxonomy")
+    , @NamedQuery(name = "AlertCategory.findByMispGalaxy", query = "SELECT a FROM AlertCategory a WHERE a.mispGalaxy = :mispGalaxy")})
+public class AlertCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -66,29 +68,41 @@ public class AlertsCategory implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
-    @Column(name = "taxonomy")
-    private String taxonomy;
+    @Column(name = "mitre_tactics")
+    private String mitreTactics;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
-    @Column(name = "galaxy")
-    private String galaxy;
+    @Column(name = "mitre_techniques")
+    private String mitreTechniques;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(name = "misp_taxonomy")
+    private String mispTaxonomy;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(name = "misp_galaxy")
+    private String mispGalaxy;
 
-    public AlertsCategory() {
+    public AlertCategory() {
     }
 
-    public AlertsCategory(Integer recId) {
+    public AlertCategory(Integer recId) {
         this.recId = recId;
     }
 
-    public AlertsCategory(Integer recId, String refId, String catName, String catSource, String catDesc, String taxonomy, String galaxy) {
+    public AlertCategory(Integer recId, String refId, String catName, String catSource, String catDesc, String mitreTactics, String mitreTechniques, String mispTaxonomy, String mispGalaxy) {
         this.recId = recId;
         this.refId = refId;
         this.catName = catName;
         this.catSource = catSource;
         this.catDesc = catDesc;
-        this.taxonomy = taxonomy;
-        this.galaxy = galaxy;
+        this.mitreTactics = mitreTactics;
+        this.mitreTechniques = mitreTechniques;
+        this.mispTaxonomy = mispTaxonomy;
+        this.mispGalaxy = mispGalaxy;
     }
 
     public Integer getRecId() {
@@ -131,20 +145,36 @@ public class AlertsCategory implements Serializable {
         this.catDesc = catDesc;
     }
 
-    public String getTaxonomy() {
-        return taxonomy;
+    public String getMitreTactics() {
+        return mitreTactics;
     }
 
-    public void setTaxonomy(String taxonomy) {
-        this.taxonomy = taxonomy;
+    public void setMitreTactics(String mitreTactics) {
+        this.mitreTactics = mitreTactics;
     }
 
-    public String getGalaxy() {
-        return galaxy;
+    public String getMitreTechniques() {
+        return mitreTechniques;
     }
 
-    public void setGalaxy(String galaxy) {
-        this.galaxy = galaxy;
+    public void setMitreTechniques(String mitreTechniques) {
+        this.mitreTechniques = mitreTechniques;
+    }
+
+    public String getMispTaxonomy() {
+        return mispTaxonomy;
+    }
+
+    public void setMispTaxonomy(String mispTaxonomy) {
+        this.mispTaxonomy = mispTaxonomy;
+    }
+
+    public String getMispGalaxy() {
+        return mispGalaxy;
+    }
+
+    public void setMispGalaxy(String mispGalaxy) {
+        this.mispGalaxy = mispGalaxy;
     }
 
     @Override
@@ -157,10 +187,10 @@ public class AlertsCategory implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AlertsCategory)) {
+        if (!(object instanceof AlertCategory)) {
             return false;
         }
-        AlertsCategory other = (AlertsCategory) object;
+        AlertCategory other = (AlertCategory) object;
         if ((this.recId == null && other.recId != null) || (this.recId != null && !this.recId.equals(other.recId))) {
             return false;
         }
@@ -169,7 +199,7 @@ public class AlertsCategory implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.AlertsCategory[ recId=" + recId + " ]";
+        return "org.alertflex.entity.AlertCategory[ recId=" + recId + " ]";
     }
     
 }

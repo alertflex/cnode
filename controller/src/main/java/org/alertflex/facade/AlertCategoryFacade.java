@@ -12,14 +12,14 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.AlertsCategory;
+import org.alertflex.entity.AlertCategory;
 
 /**
  *
  * @author root
  */
 @Stateless
-public class AlertsCategoryFacade extends AbstractFacade<AlertsCategory> {
+public class AlertCategoryFacade extends AbstractFacade<AlertCategory> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -29,18 +29,18 @@ public class AlertsCategoryFacade extends AbstractFacade<AlertsCategory> {
         return em;
     }
 
-    public AlertsCategoryFacade() {
-        super(AlertsCategory.class);
+    public AlertCategoryFacade() {
+        super(AlertCategory.class);
     }
     
-    public List<AlertsCategory> findCatsBySourceAndRef(String r, String source) {
+    public List<AlertCategory> findCatsBySourceAndRef(String r, String source) {
         
-        List<AlertsCategory> lac = null;
+        List<AlertCategory> lac = null;
         
         try {
             em.flush();
             
-            Query alertsCatListQry = em.createQuery("SELECT a FROM AlertsCategory a WHERE a.catSource = :source AND a.refId = :ref")
+            Query alertsCatListQry = em.createQuery("SELECT a FROM AlertCategory a WHERE a.catSource = :source AND a.refId = :ref")
                 .setParameter("source", source)
                 .setParameter("ref", r);
         // Enable forced database query
@@ -57,15 +57,15 @@ public class AlertsCategoryFacade extends AbstractFacade<AlertsCategory> {
     }
     
         
-    public List<AlertsCategory> findCatsBySource(String r, String source) {
+    public List<AlertCategory> findCatsBySource(String r, String source) {
         
-        List<AlertsCategory> lac = null;
+        List<AlertCategory> lac = null;
         
         try {
             em.flush();
             
             Query alertsCatListQry = em.createQuery(
-                    "SELECT a FROM AlertsCategory a WHERE a.catSource = :source AND (a.refId = :ref OR a.refId = :empty)")
+                    "SELECT a FROM AlertCategory a WHERE a.catSource = :source AND (a.refId = :ref OR a.refId = :empty)")
                     .setParameter("source", source)
                     .setParameter("ref", r)
                     .setParameter("empty", "");
@@ -90,7 +90,7 @@ public class AlertsCategoryFacade extends AbstractFacade<AlertsCategory> {
             em.flush();
             
             Query alertsCatListQry = em.createQuery(
-                    "SELECT a.catName FROM AlertsCategory a WHERE a.catSource = :source AND (a.refId = :ref OR a.refId = :empty)")
+                    "SELECT a.catName FROM AlertCategory a WHERE a.catSource = :source AND (a.refId = :ref OR a.refId = :empty)")
                     .setParameter("source", source)
                     .setParameter("ref", r)
                     .setParameter("empty", "");

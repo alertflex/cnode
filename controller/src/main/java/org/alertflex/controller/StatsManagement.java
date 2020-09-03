@@ -147,81 +147,6 @@ public class StatsManagement {
                     break;
                 }    
                 
-                case "sca": {
-                    
-                    String ref = eventBean.getRefId();
-                    String node = eventBean.getNode();
-                    String agent = obj.getString("agent");
-                    
-                    Date date = new Date();
-                    
-                    JSONObject data = obj.getJSONObject("data");
-                    
-                    int totalItems = data.getInt("totalItems");
-                    
-                    if (totalItems == 0) break;
-                    
-                    JSONArray arr = data.getJSONArray("items");
-                    
-                    for (int i = 0; i < arr.length(); i++) {
-                            
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date startScan = formatter.parse(arr.getJSONObject(i).getString("start_scan"));
-                        Date endScan = formatter.parse(arr.getJSONObject(i).getString("end_scan"));
-                        
-                        int invalid = arr.getJSONObject(i).getInt("invalid");
-                        int fail = arr.getJSONObject(i).getInt("fail");
-                        int totalChecks = arr.getJSONObject(i).getInt("total_checks");
-                        int pass = arr.getJSONObject(i).getInt("pass");
-                        int score = arr.getJSONObject(i).getInt("score");
-                        String description = arr.getJSONObject(i).getString("description");
-                        String references = arr.getJSONObject(i).getString("references");
-                        String policyId = arr.getJSONObject(i).getString("policy_id");
-                        String name = arr.getJSONObject(i).getString("name");
-                        
-                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, node, agent, name, policyId);
-                        
-                        if (scaExisting == null) {
-                            
-                            AgentSca a = new AgentSca();
-                            
-                            a.setRefId(ref);
-                            a.setNodeId(node);
-                            a.setAgent(agent);
-                            a.setInvalid(invalid);
-                            a.setFail(fail);
-                            a.setTotalChecks(totalChecks);
-                            a.setPass(pass);
-                            a.setScore(score);
-                            a.setDescription(description);
-                            a.setName(name);
-                            a.setRefUrl(references);
-                            a.setPolicyId(policyId);
-                            a.setStartScan(startScan);
-                            a.setEndScan(endScan);
-                            a.setDateAdd(date);
-                            a.setDateUpdate(date);
-                            
-                            eventBean.getAgentScaFacade().create(a);
-                            
-                        } else {
-                            
-                            scaExisting.setInvalid(invalid);
-                            scaExisting.setFail(fail);
-                            scaExisting.setTotalChecks(totalChecks);
-                            scaExisting.setPass(pass);
-                            scaExisting.setScore(score);
-                            scaExisting.setStartScan(startScan);
-                            scaExisting.setEndScan(endScan);
-                            scaExisting.setDateUpdate(date);
-                            
-                            eventBean.getAgentScaFacade().edit(scaExisting);
-                        }
-                    }
-                    
-                    break;
-                } 
-                
                 case "packages": {
                     
                     String ref = eventBean.getRefId();
@@ -290,6 +215,8 @@ public class StatsManagement {
                             p.setDateUpdate(date);
                             
                             eventBean.getAgentPackagesFacade().create(p);
+                            
+                            // createNewPackageAlert(p); Wazuh care
                             
                         } else {
                             
@@ -452,6 +379,8 @@ public class StatsManagement {
                             
                             eventBean.getAgentProcessesFacade().create(p);
                             
+                            // createNewProcessAlert(p); Wazuh care
+                            
                         } else {
                             
                             pExisting.setProcessState(state);
@@ -487,7 +416,84 @@ public class StatsManagement {
                     }
                     
                     break;
-                }    
+                }   
+                
+                case "sca": {
+                    
+                    String ref = eventBean.getRefId();
+                    String node = eventBean.getNode();
+                    String agent = obj.getString("agent");
+                    
+                    Date date = new Date();
+                    
+                    JSONObject data = obj.getJSONObject("data");
+                    
+                    int totalItems = data.getInt("totalItems");
+                    
+                    if (totalItems == 0) break;
+                    
+                    JSONArray arr = data.getJSONArray("items");
+                    
+                    for (int i = 0; i < arr.length(); i++) {
+                            
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date startScan = formatter.parse(arr.getJSONObject(i).getString("start_scan"));
+                        Date endScan = formatter.parse(arr.getJSONObject(i).getString("end_scan"));
+                        
+                        int invalid = arr.getJSONObject(i).getInt("invalid");
+                        int fail = arr.getJSONObject(i).getInt("fail");
+                        int totalChecks = arr.getJSONObject(i).getInt("total_checks");
+                        int pass = arr.getJSONObject(i).getInt("pass");
+                        int score = arr.getJSONObject(i).getInt("score");
+                        String description = arr.getJSONObject(i).getString("description");
+                        String references = arr.getJSONObject(i).getString("references");
+                        String policyId = arr.getJSONObject(i).getString("policy_id");
+                        String name = arr.getJSONObject(i).getString("name");
+                        
+                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, node, agent, name, policyId);
+                        
+                        if (scaExisting == null) {
+                            
+                            AgentSca a = new AgentSca();
+                            
+                            a.setRefId(ref);
+                            a.setNodeId(node);
+                            a.setAgent(agent);
+                            a.setInvalid(invalid);
+                            a.setFail(fail);
+                            a.setTotalChecks(totalChecks);
+                            a.setPass(pass);
+                            a.setScore(score);
+                            a.setDescription(description);
+                            a.setName(name);
+                            a.setRefUrl(references);
+                            a.setPolicyId(policyId);
+                            a.setStartScan(startScan);
+                            a.setEndScan(endScan);
+                            a.setReportAdded(date);
+                            a.setReportUpdated(date);
+                            
+                            eventBean.getAgentScaFacade().create(a);
+                            
+                            // createScaAlert(a);
+                            
+                        } else {
+                            
+                            scaExisting.setInvalid(invalid);
+                            scaExisting.setFail(fail);
+                            scaExisting.setTotalChecks(totalChecks);
+                            scaExisting.setPass(pass);
+                            scaExisting.setScore(score);
+                            scaExisting.setStartScan(startScan);
+                            scaExisting.setEndScan(endScan);
+                            scaExisting.setReportUpdated(date);
+                            
+                            eventBean.getAgentScaFacade().edit(scaExisting);
+                        }
+                    }
+                    
+                    break;
+                } 
                
                 case "vulnerability": {
                     
@@ -515,7 +521,7 @@ public class StatsManagement {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = formatter.parse(jv.getString("time_of_survey"));
                     
-                    v.setReportCreated(date);
+                    v.setReportAdded(date);
                     v.setReportUpdated(date);
                     
                     AgentVul vExisting = eventBean.getAgentVulFacade().findVulnerability(v.getRefId(), 
@@ -526,8 +532,9 @@ public class StatsManagement {
                     
                     if (vExisting == null) {
                         
-                        // create alert
                         eventBean.getAgentVulFacade().create(v);
+                        
+                        // createVulnAlert(v);
                     
                     } else {
                         
@@ -576,8 +583,10 @@ public class StatsManagement {
                         ao.getCheckId());
                     
                     if (aoExisting == null) {
-                        // create alert
+                        
                         eventBean.getAgentOpenscapFacade().create(ao);
+                        
+                        // createOpenscapAlert(ao);
                     
                     } else {
                         

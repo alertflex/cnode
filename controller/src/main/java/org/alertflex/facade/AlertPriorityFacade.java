@@ -8,14 +8,14 @@ package org.alertflex.facade;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.alertflex.entity.AlertsSource;
+import org.alertflex.entity.AlertPriority;
 
 /**
  *
  * @author root
  */
 @Stateless
-public class AlertsSourceFacade extends AbstractFacade<AlertsSource> {
+public class AlertPriorityFacade extends AbstractFacade<AlertPriority> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -25,8 +25,8 @@ public class AlertsSourceFacade extends AbstractFacade<AlertsSource> {
         return em;
     }
 
-    public AlertsSourceFacade() {
-        super(AlertsSource.class);
+    public AlertPriorityFacade() {
+        super(AlertPriority.class);
     }
     
 }

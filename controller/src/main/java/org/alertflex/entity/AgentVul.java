@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AgentVul.findByPackageCondition", query = "SELECT a FROM AgentVul a WHERE a.packageCondition = :packageCondition")
     , @NamedQuery(name = "AgentVul.findByCvePublished", query = "SELECT a FROM AgentVul a WHERE a.cvePublished = :cvePublished")
     , @NamedQuery(name = "AgentVul.findByCveUpdated", query = "SELECT a FROM AgentVul a WHERE a.cveUpdated = :cveUpdated")
-    , @NamedQuery(name = "AgentVul.findByReportCreated", query = "SELECT a FROM AgentVul a WHERE a.reportCreated = :reportCreated")
+    , @NamedQuery(name = "AgentVul.findByReportAdded", query = "SELECT a FROM AgentVul a WHERE a.reportAdded = :reportAdded")
     , @NamedQuery(name = "AgentVul.findByReportUpdated", query = "SELECT a FROM AgentVul a WHERE a.reportUpdated = :reportUpdated")})
 public class AgentVul implements Serializable {
 
@@ -130,9 +130,9 @@ public class AgentVul implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "cve_updated")
     private String cveUpdated;
-    @Column(name = "report_created")
+    @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date reportCreated;
+    private Date reportAdded;
     @Column(name = "report_updated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportUpdated;
@@ -291,12 +291,12 @@ public class AgentVul implements Serializable {
         this.cveUpdated = cveUpdated;
     }
 
-    public Date getReportCreated() {
-        return reportCreated;
+    public Date getReportAdded() {
+        return reportAdded;
     }
 
-    public void setReportCreated(Date reportCreated) {
-        this.reportCreated = reportCreated;
+    public void setReportAdded(Date reportAdded) {
+        this.reportAdded = reportAdded;
     }
 
     public Date getReportUpdated() {

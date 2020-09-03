@@ -34,12 +34,12 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.alertflex.entity.AlertsCategory;
+import org.alertflex.entity.AlertCategory;
 import org.alertflex.entity.CatProfile;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Alert;
 import org.alertflex.facade.AlertFacade;
-import org.alertflex.facade.AlertsCategoryFacade;
+import org.alertflex.facade.AlertCategoryFacade;
 import org.alertflex.facade.CatProfileFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.ResponseFacade;
@@ -92,7 +92,7 @@ public class AlertsManagement  {
     Map<String,List<CatProfile>> catProfileZAPMap;
     
     @EJB
-    private AlertsCategoryFacade alertsCategoryFacade;
+    private AlertCategoryFacade alertsCategoryFacade;
     
     Map<String,List<String>> catAlertflexMap;
     Map<String,List<String>> catCuckooMap;
@@ -726,7 +726,7 @@ public class AlertsManagement  {
     
     public void createCat (String cat, String type, String ref) {
         
-       AlertsCategory new_catAlerts = new AlertsCategory (0, ref, cat, type, "cat was created automatically", "indef", "indef");
+       AlertCategory new_catAlerts = new AlertCategory (0, ref, cat, type, "cat was created automatically", "indef", "indef", "indef", "indef");
             
        alertsCategoryFacade.create(new_catAlerts);
     }

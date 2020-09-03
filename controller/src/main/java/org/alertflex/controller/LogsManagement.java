@@ -90,9 +90,10 @@ public class LogsManagement {
                 log_record = arr.getJSONObject(i).toString();
                                 
                 boolean isAlert = false;
+                
                 // Check IOC
                 if (doCheckIOC) isAlert = CheckIoc(log_record);
-                else isAlert = CheckAlert(log_record);
+                else isAlert = CheckAlert(log_record); 
                 
                 // Send to Log Management
                 if (doSendLogs && !isAlert)  {
