@@ -16,7 +16,7 @@ echo "*** Installation Alertflex controller started***"
 
 sudo bash -c 'echo "Defaults timestamp_timeout=50" >> /etc/sudoers.d/99_sudo_include_file'
 
-sudo yum -y install epel-release unzip
+sudo yum -y install epel-release unzip wget
 sudo yum -y update
 
 # create project work directory 
