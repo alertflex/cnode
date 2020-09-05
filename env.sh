@@ -20,7 +20,9 @@ export ADMIN_USER=admin
 export ADMIN_PWD=*****
 
 # user and password for MySQL database (Alertflex and Afevents DB)
-# NOTE! password DB_PWD also will be used as root password for MySQL and MISP
+# password DB_PWD also will be used as root password for MySQL and MISP
+# NOTE! some of MySQL password policy require to use password special char in password for example - ! or &. 
+# Installation procedures can be interrupted if the password does not suite the policy
 export DB_HOST=xxxxx
 export DB_PORT=3306
 export DB_USER=xxxxx
