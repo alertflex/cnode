@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AlertPriority.findByRefId", query = "SELECT a FROM AlertPriority a WHERE a.refId = :refId")
     , @NamedQuery(name = "AlertPriority.findBySource", query = "SELECT a FROM AlertPriority a WHERE a.source = :source")
     , @NamedQuery(name = "AlertPriority.findByDescription", query = "SELECT a FROM AlertPriority a WHERE a.description = :description")
+    , @NamedQuery(name = "AlertPriority.findByThreshold", query = "SELECT a FROM AlertPriority a WHERE a.threshold = :threshold")
     , @NamedQuery(name = "AlertPriority.findByMinor", query = "SELECT a FROM AlertPriority a WHERE a.minor = :minor")
     , @NamedQuery(name = "AlertPriority.findByMajor", query = "SELECT a FROM AlertPriority a WHERE a.major = :major")
     , @NamedQuery(name = "AlertPriority.findByCritical", query = "SELECT a FROM AlertPriority a WHERE a.critical = :critical")
@@ -65,6 +66,10 @@ public class AlertPriority implements Serializable {
     @Size(min = 1, max = 1024)
     @Column(name = "description")
     private String description;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "threshold")
+    private int threshold;
     @Basic(optional = false)
     @NotNull
     @Column(name = "minor")
@@ -120,11 +125,12 @@ public class AlertPriority implements Serializable {
         this.recId = recId;
     }
 
-    public AlertPriority(Integer recId, String refId, String source, String description, int minor, int major, int critical, String priority1, String priority2, String priority3, String priority4, String priority5, String priority6, String priority7) {
+    public AlertPriority(Integer recId, String refId, String source, String description, int threshold, int minor, int major, int critical, String priority1, String priority2, String priority3, String priority4, String priority5, String priority6, String priority7) {
         this.recId = recId;
         this.refId = refId;
         this.source = source;
         this.description = description;
+        this.threshold = threshold;
         this.minor = minor;
         this.major = major;
         this.critical = critical;
@@ -167,6 +173,14 @@ public class AlertPriority implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
     }
 
     public int getMinor() {
