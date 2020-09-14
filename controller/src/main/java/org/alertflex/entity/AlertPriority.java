@@ -32,17 +32,25 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AlertPriority.findByRefId", query = "SELECT a FROM AlertPriority a WHERE a.refId = :refId")
     , @NamedQuery(name = "AlertPriority.findBySource", query = "SELECT a FROM AlertPriority a WHERE a.source = :source")
     , @NamedQuery(name = "AlertPriority.findByDescription", query = "SELECT a FROM AlertPriority a WHERE a.description = :description")
-    , @NamedQuery(name = "AlertPriority.findByThreshold", query = "SELECT a FROM AlertPriority a WHERE a.threshold = :threshold")
-    , @NamedQuery(name = "AlertPriority.findByMinor", query = "SELECT a FROM AlertPriority a WHERE a.minor = :minor")
-    , @NamedQuery(name = "AlertPriority.findByMajor", query = "SELECT a FROM AlertPriority a WHERE a.major = :major")
-    , @NamedQuery(name = "AlertPriority.findByCritical", query = "SELECT a FROM AlertPriority a WHERE a.critical = :critical")
-    , @NamedQuery(name = "AlertPriority.findByPriority1", query = "SELECT a FROM AlertPriority a WHERE a.priority1 = :priority1")
-    , @NamedQuery(name = "AlertPriority.findByPriority2", query = "SELECT a FROM AlertPriority a WHERE a.priority2 = :priority2")
-    , @NamedQuery(name = "AlertPriority.findByPriority3", query = "SELECT a FROM AlertPriority a WHERE a.priority3 = :priority3")
-    , @NamedQuery(name = "AlertPriority.findByPriority4", query = "SELECT a FROM AlertPriority a WHERE a.priority4 = :priority4")
-    , @NamedQuery(name = "AlertPriority.findByPriority5", query = "SELECT a FROM AlertPriority a WHERE a.priority5 = :priority5")
-    , @NamedQuery(name = "AlertPriority.findByPriority6", query = "SELECT a FROM AlertPriority a WHERE a.priority6 = :priority6")
-    , @NamedQuery(name = "AlertPriority.findByPriority7", query = "SELECT a FROM AlertPriority a WHERE a.priority7 = :priority7")})
+    , @NamedQuery(name = "AlertPriority.findByLog", query = "SELECT a FROM AlertPriority a WHERE a.log = :log")
+    , @NamedQuery(name = "AlertPriority.findByAlertThreshold", query = "SELECT a FROM AlertPriority a WHERE a.alertThreshold = :alertThreshold")
+    , @NamedQuery(name = "AlertPriority.findByMinorThreshold", query = "SELECT a FROM AlertPriority a WHERE a.minorThreshold = :minorThreshold")
+    , @NamedQuery(name = "AlertPriority.findByMajorThreshold", query = "SELECT a FROM AlertPriority a WHERE a.majorThreshold = :majorThreshold")
+    , @NamedQuery(name = "AlertPriority.findByCriticalThreshold", query = "SELECT a FROM AlertPriority a WHERE a.criticalThreshold = :criticalThreshold")
+    , @NamedQuery(name = "AlertPriority.findBySeverity1", query = "SELECT a FROM AlertPriority a WHERE a.severity1 = :severity1")
+    , @NamedQuery(name = "AlertPriority.findBySeverity2", query = "SELECT a FROM AlertPriority a WHERE a.severity2 = :severity2")
+    , @NamedQuery(name = "AlertPriority.findBySeverity3", query = "SELECT a FROM AlertPriority a WHERE a.severity3 = :severity3")
+    , @NamedQuery(name = "AlertPriority.findBySeverity4", query = "SELECT a FROM AlertPriority a WHERE a.severity4 = :severity4")
+    , @NamedQuery(name = "AlertPriority.findBySeverity5", query = "SELECT a FROM AlertPriority a WHERE a.severity5 = :severity5")
+    , @NamedQuery(name = "AlertPriority.findBySeverity6", query = "SELECT a FROM AlertPriority a WHERE a.severity6 = :severity6")
+    , @NamedQuery(name = "AlertPriority.findBySeverity7", query = "SELECT a FROM AlertPriority a WHERE a.severity7 = :severity7")
+    , @NamedQuery(name = "AlertPriority.findByValue1", query = "SELECT a FROM AlertPriority a WHERE a.value1 = :value1")
+    , @NamedQuery(name = "AlertPriority.findByValue2", query = "SELECT a FROM AlertPriority a WHERE a.value2 = :value2")
+    , @NamedQuery(name = "AlertPriority.findByValue3", query = "SELECT a FROM AlertPriority a WHERE a.value3 = :value3")
+    , @NamedQuery(name = "AlertPriority.findByValue4", query = "SELECT a FROM AlertPriority a WHERE a.value4 = :value4")
+    , @NamedQuery(name = "AlertPriority.findByValue5", query = "SELECT a FROM AlertPriority a WHERE a.value5 = :value5")
+    , @NamedQuery(name = "AlertPriority.findByValue6", query = "SELECT a FROM AlertPriority a WHERE a.value6 = :value6")
+    , @NamedQuery(name = "AlertPriority.findByValue7", query = "SELECT a FROM AlertPriority a WHERE a.value7 = :value7")})
 public class AlertPriority implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -68,55 +76,87 @@ public class AlertPriority implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "threshold")
-    private int threshold;
+    @Column(name = "log")
+    private int log;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "minor")
-    private int minor;
+    @Column(name = "alert_threshold")
+    private int alertThreshold;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "major")
-    private int major;
+    @Column(name = "minor_threshold")
+    private int minorThreshold;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "critical")
-    private int critical;
+    @Column(name = "major_threshold")
+    private int majorThreshold;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "priority1")
-    private String priority1;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "priority2")
-    private String priority2;
+    @Column(name = "critical_threshold")
+    private int criticalThreshold;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "priority3")
-    private String priority3;
+    @Column(name = "severity1")
+    private String severity1;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "priority4")
-    private String priority4;
+    @Column(name = "severity2")
+    private String severity2;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "priority5")
-    private String priority5;
+    @Column(name = "severity3")
+    private String severity3;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "priority6")
-    private String priority6;
+    @Column(name = "severity4")
+    private String severity4;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "priority7")
-    private String priority7;
+    @Column(name = "severity5")
+    private String severity5;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "severity6")
+    private String severity6;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "severity7")
+    private String severity7;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value1")
+    private int value1;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value2")
+    private int value2;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value3")
+    private int value3;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value4")
+    private int value4;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value5")
+    private int value5;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value6")
+    private int value6;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "value7")
+    private int value7;
 
     public AlertPriority() {
     }
@@ -125,22 +165,30 @@ public class AlertPriority implements Serializable {
         this.recId = recId;
     }
 
-    public AlertPriority(Integer recId, String refId, String source, String description, int threshold, int minor, int major, int critical, String priority1, String priority2, String priority3, String priority4, String priority5, String priority6, String priority7) {
+    public AlertPriority(Integer recId, String refId, String source, String description, int log, int alertThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, String severity1, String severity2, String severity3, String severity4, String severity5, String severity6, String severity7, int value1, int value2, int value3, int value4, int value5, int value6, int value7) {
         this.recId = recId;
         this.refId = refId;
         this.source = source;
         this.description = description;
-        this.threshold = threshold;
-        this.minor = minor;
-        this.major = major;
-        this.critical = critical;
-        this.priority1 = priority1;
-        this.priority2 = priority2;
-        this.priority3 = priority3;
-        this.priority4 = priority4;
-        this.priority5 = priority5;
-        this.priority6 = priority6;
-        this.priority7 = priority7;
+        this.log = log;
+        this.alertThreshold = alertThreshold;
+        this.minorThreshold = minorThreshold;
+        this.majorThreshold = majorThreshold;
+        this.criticalThreshold = criticalThreshold;
+        this.severity1 = severity1;
+        this.severity2 = severity2;
+        this.severity3 = severity3;
+        this.severity4 = severity4;
+        this.severity5 = severity5;
+        this.severity6 = severity6;
+        this.severity7 = severity7;
+        this.value1 = value1;
+        this.value2 = value2;
+        this.value3 = value3;
+        this.value4 = value4;
+        this.value5 = value5;
+        this.value6 = value6;
+        this.value7 = value7;
     }
 
     public Integer getRecId() {
@@ -175,92 +223,156 @@ public class AlertPriority implements Serializable {
         this.description = description;
     }
 
-    public int getThreshold() {
-        return threshold;
+    public int getLog() {
+        return log;
     }
 
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
+    public void setLog(int log) {
+        this.log = log;
     }
 
-    public int getMinor() {
-        return minor;
+    public int getAlertThreshold() {
+        return alertThreshold;
     }
 
-    public void setMinor(int minor) {
-        this.minor = minor;
+    public void setAlertThreshold(int alertThreshold) {
+        this.alertThreshold = alertThreshold;
     }
 
-    public int getMajor() {
-        return major;
+    public int getMinorThreshold() {
+        return minorThreshold;
     }
 
-    public void setMajor(int major) {
-        this.major = major;
+    public void setMinorThreshold(int minorThreshold) {
+        this.minorThreshold = minorThreshold;
     }
 
-    public int getCritical() {
-        return critical;
+    public int getMajorThreshold() {
+        return majorThreshold;
     }
 
-    public void setCritical(int critical) {
-        this.critical = critical;
+    public void setMajorThreshold(int majorThreshold) {
+        this.majorThreshold = majorThreshold;
     }
 
-    public String getPriority1() {
-        return priority1;
+    public int getCriticalThreshold() {
+        return criticalThreshold;
     }
 
-    public void setPriority1(String priority1) {
-        this.priority1 = priority1;
+    public void setCriticalThreshold(int criticalThreshold) {
+        this.criticalThreshold = criticalThreshold;
     }
 
-    public String getPriority2() {
-        return priority2;
+    public String getSeverity1() {
+        return severity1;
     }
 
-    public void setPriority2(String priority2) {
-        this.priority2 = priority2;
+    public void setSeverity1(String severity1) {
+        this.severity1 = severity1;
     }
 
-    public String getPriority3() {
-        return priority3;
+    public String getSeverity2() {
+        return severity2;
     }
 
-    public void setPriority3(String priority3) {
-        this.priority3 = priority3;
+    public void setSeverity2(String severity2) {
+        this.severity2 = severity2;
     }
 
-    public String getPriority4() {
-        return priority4;
+    public String getSeverity3() {
+        return severity3;
     }
 
-    public void setPriority4(String priority4) {
-        this.priority4 = priority4;
+    public void setSeverity3(String severity3) {
+        this.severity3 = severity3;
     }
 
-    public String getPriority5() {
-        return priority5;
+    public String getSeverity4() {
+        return severity4;
     }
 
-    public void setPriority5(String priority5) {
-        this.priority5 = priority5;
+    public void setSeverity4(String severity4) {
+        this.severity4 = severity4;
     }
 
-    public String getPriority6() {
-        return priority6;
+    public String getSeverity5() {
+        return severity5;
     }
 
-    public void setPriority6(String priority6) {
-        this.priority6 = priority6;
+    public void setSeverity5(String severity5) {
+        this.severity5 = severity5;
     }
 
-    public String getPriority7() {
-        return priority7;
+    public String getSeverity6() {
+        return severity6;
     }
 
-    public void setPriority7(String priority7) {
-        this.priority7 = priority7;
+    public void setSeverity6(String severity6) {
+        this.severity6 = severity6;
+    }
+
+    public String getSeverity7() {
+        return severity7;
+    }
+
+    public void setSeverity7(String severity7) {
+        this.severity7 = severity7;
+    }
+
+    public int getValue1() {
+        return value1;
+    }
+
+    public void setValue1(int value1) {
+        this.value1 = value1;
+    }
+
+    public int getValue2() {
+        return value2;
+    }
+
+    public void setValue2(int value2) {
+        this.value2 = value2;
+    }
+
+    public int getValue3() {
+        return value3;
+    }
+
+    public void setValue3(int value3) {
+        this.value3 = value3;
+    }
+
+    public int getValue4() {
+        return value4;
+    }
+
+    public void setValue4(int value4) {
+        this.value4 = value4;
+    }
+
+    public int getValue5() {
+        return value5;
+    }
+
+    public void setValue5(int value5) {
+        this.value5 = value5;
+    }
+
+    public int getValue6() {
+        return value6;
+    }
+
+    public void setValue6(int value6) {
+        this.value6 = value6;
+    }
+
+    public int getValue7() {
+        return value7;
+    }
+
+    public void setValue7(int value7) {
+        this.value7 = value7;
     }
 
     @Override

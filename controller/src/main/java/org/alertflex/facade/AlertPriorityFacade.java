@@ -5,9 +5,12 @@
  */
 package org.alertflex.facade;
 
+import java.util.List;
 import javax.ejb.Stateless;
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.alertflex.entity.AlertPriority;
 
 /**
@@ -27,6 +30,50 @@ public class AlertPriorityFacade extends AbstractFacade<AlertPriority> {
 
     public AlertPriorityFacade() {
         super(AlertPriority.class);
+    }
+    
+    public List<String> findSourcesNameByRef(String r) {
+        
+        List<String> las = null;
+        
+        try {
+            em.flush();
+            
+            Query alertsCatListQry = em.createQuery("SELECT a.source FROM AlertPriority a WHERE a.refId = :ref")
+                .setParameter("ref", r);
+        // Enable forced database query
+            alertsCatListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            las =  alertsCatListQry.getResultList();
+
+            
+        } catch (Exception e) {
+            return null;
+        }
+        
+        return las;
+    }
+    
+    public AlertPriority findPriorityBySource(String ref, String source) {
+        
+        AlertPriority ap = null;
+        
+        try {
+            em.flush();
+            
+            Query alertsServerityQry = em.createQuery("SELECT a FROM AlertPriority a WHERE a.refId = :ref AND a.source = :source")
+                .setParameter("source", source)
+                .setParameter("ref", ref);
+        // Enable forced database query
+            alertsServerityQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            ap = (AlertPriority) alertsServerityQry.getSingleResult();
+
+            
+        } catch (Exception e) {
+
+            return null;
+        }
+        
+        return ap;
     }
     
 }

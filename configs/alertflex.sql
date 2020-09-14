@@ -804,36 +804,45 @@ CREATE TABLE `alert_priority` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `source` varchar(512) NOT NULL DEFAULT '',
   `description` varchar(1024) NOT NULL DEFAULT '',
-  `threshold` int(10) unsigned NOT NULL DEFAULT '0',
-  `minor` int(10) unsigned NOT NULL DEFAULT '0',
-  `major` int(10) unsigned NOT NULL DEFAULT '0',
-  `critical` int(10) unsigned NOT NULL DEFAULT '0',
-  `priority1` varchar(128) NOT NULL DEFAULT 'indef',
-  `priority2` varchar(128) NOT NULL DEFAULT 'indef',
-  `priority3` varchar(128) NOT NULL DEFAULT 'indef',
-  `priority4` varchar(128) NOT NULL DEFAULT 'indef',
-  `priority5` varchar(128) NOT NULL DEFAULT 'indef',
-  `priority6` varchar(128) NOT NULL DEFAULT 'indef',
-  `priority7` varchar(128) NOT NULL DEFAULT 'indef',
+  `log` int(2) unsigned NOT NULL DEFAULT '0',
+  `alert_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `minor_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `major_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `critical_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity1` varchar(128) NOT NULL DEFAULT 'indef',
+  `severity2` varchar(128) NOT NULL DEFAULT 'indef',
+  `severity3` varchar(128) NOT NULL DEFAULT 'indef',
+  `severity4` varchar(128) NOT NULL DEFAULT 'indef',
+  `severity5` varchar(128) NOT NULL DEFAULT 'indef',
+  `severity6` varchar(128) NOT NULL DEFAULT 'indef',
+  `severity7` varchar(128) NOT NULL DEFAULT 'indef',
+  `value1` int(10) unsigned NOT NULL DEFAULT '0',
+  `value2` int(10) unsigned NOT NULL DEFAULT '0',
+  `value3` int(10) unsigned NOT NULL DEFAULT '0',
+  `value4` int(10) unsigned NOT NULL DEFAULT '0',
+  `value5` int(10) unsigned NOT NULL DEFAULT '0',
+  `value6` int(10) unsigned NOT NULL DEFAULT '0',
+  `value7` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (1,'_project_id','Alertflex','Alertflex', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (3,'_project_id','HybridAnalysis','HybridAnalysis', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (4,'_project_id','Nmap','Nmap', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (5,'_project_id','Nessus','Nessus', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (6,'_project_id','Misc','Misc', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (7,'_project_id','MISP','MISP', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (8,'_project_id','RITA','RITA', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (9,'_project_id','SonarQube','SonarQube', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (10,'_project_id','Syslog','Syslog', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (11,'_project_id','Vmray','Vmray', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (12,'_project_id','ZAP','ZAP', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (13,'_project_id','DockerBench','DockerBench', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (14,'_project_id','Trivy','Trivy', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (15,'_project_id','Snyk','Snyk', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (1,'_project_id','Alertflex','Alertflex', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity1`, `severity2`, `severity3`,`value1`, `value2`, `value3`) VALUES (3,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (4,'_project_id','Nmap','Nmap', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (5,'_project_id','Nessus','Nessus', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (6,'_project_id','Misc','Misc', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','MISP','MISP', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (8,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (9,'_project_id','SonarQube','SonarQube', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (10,'_project_id','Syslog','Syslog', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (11,'_project_id','Vmray','Vmray', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (12,'_project_id','ZAP','ZAP', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (13,'_project_id','DockerBench','DockerBench', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (14,'_project_id','Trivy','Trivy', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (15,'_project_id','Snyk','Snyk', 0, 0, 0);
+
 
 
 CREATE TABLE `cat_profile` (
