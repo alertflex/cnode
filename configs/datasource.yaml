@@ -6,7 +6,8 @@ datasources:
     url: localhost:3306
     database: afevents
     user: _db_user
-    password: _db_pwd
+    secureJsonData:
+      password: _db_pwd
     jsonData:
       maxOpenConns: 0         # Grafana v5.4+
       maxIdleConns: 2         # Grafana v5.4+
@@ -16,7 +17,8 @@ datasources:
     url: localhost:3306
     database: alertflex
     user: _db_user
-    password: _db_pwd
+    secureJsonData:
+      password: _db_pwd
     jsonData:
       maxOpenConns: 0         # Grafana v5.4+
       maxIdleConns: 2         # Grafana v5.4+
