@@ -856,7 +856,7 @@ INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) V
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (2,'_project_id','all_cuckoo','Cuckoo','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (3,'_project_id','all_falco','Falco','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (4,'_project_id','all_ha','HybridAnalysis','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (5,'_project_id','all_nmap','Nmap','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (5,'_project_id','all_nmap','Nmap','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (6,'_project_id','all_nessus','Nessus','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (7,'_project_id','all_misc','Misc','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (8,'_project_id','all_misp','MISP','*');
