@@ -28,27 +28,6 @@ sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 #set project id
 export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
 
-if [[ $INSTALL_ALTPROBE == yes ]]
-then
-    echo "*** Installation Altprobe ***"
-    cd $INSTALL_PATH
-    git clone git://github.com/olegzhr/altprobe.git
-    cp ./configs/env.sh ./altprobe/
-    cd ./altprobe
-    chmod u+x install_deb.sh
-    export INSTALL_PATH="$INSTALL_PATH/altprobe"
-    export NODE_ID=collr01
-    export PROBE_ID=master
-    export AMQ_URL='tcp:\/\/127.0.0.1:61616'
-    export AMQ_CERT=indef
-    export CERT_VERIFY=false
-    export AMQ_KEY=indef
-    export KEY_PWD=indef
-    ./install_deb.sh
-	export INSTALL_PATH=$CURRENT_PATH
-	cd $INSTALL_PATH 
-fi
-
 sudo apt-get update
 
 # install java 
@@ -150,6 +129,8 @@ then
 	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
 	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
 	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
+	sudo chown -R grafana:grafana /etc/grafana/grafana.key
+	sudo chown -R grafana:grafana /etc/grafana/grafana.pem
 fi
 
 

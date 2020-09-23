@@ -32,9 +32,6 @@ export DB_PWD=*****
 # install add-on packages #
 ###########################
 
-# install in appliance configuration - altprobe and wazuh manager
-export INSTALL_ALTPROBE=no
-
 # MISP parameters, for MISP_URL use ip or url a hostname the same as for ALERTFLEX_HOST
 export INSTALL_MISP=yes
 export MISP_URL='xxxxx:8443'
