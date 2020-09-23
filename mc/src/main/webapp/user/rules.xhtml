@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+           
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-dialog .ui-dialog-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-tabs .ui-tabs-panels {
+                background-color: #3f3f3f;
+            }
+               
+        </style>
+        
+        
+        <b:container style="background: #3f3f3f; margin-top: 60px">
+            <b:form id="sensor_rules">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="IDS rules" collapsible="false" >
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                    
+                            <p:panelGrid  columns="3" layout="grid" styleClass="ui-panelgrid-blank">
+                                <p:commandButton value="Open" update="editRule" actionListener="#{sensorRulesController.initListRules()}" oncomplete="PF('editDialog').show()" /> 
+                                <p:commandButton value="Save" update=":sensor_rules" actionListener="#{sensorRulesController.saveRule()}" /> 
+                                <p:commandButton value="Send" update=":sensor_rules" actionListener="#{sensorRulesController.sendRule()}" />
+                            </p:panelGrid>
+                    
+                            <div class="EmptyBox10"></div>
+                    
+                            <p:selectOneMenu id="node" value="#{sensorRulesController.selectedNodeId}" filter="true">
+                                <f:selectItem itemLabel="Select node" itemValue="" />
+                                <f:selectItems value="#{sensorRulesController.listNodeId}" />
+                                <p:ajax  update="sensor" listener="#{sensorRulesController.updateListSensorNames()}"/>
+                            </p:selectOneMenu>
+                    
+                            <div class="EmptyBox10"></div>   
+                    
+                            <p:selectOneMenu id="sensor" value="#{sensorRulesController.selectedSensor}" filter="true">
+                                <f:selectItem itemLabel="Select sensor" itemValue="" />
+                                <f:selectItems value="#{sensorRulesController.listSensor}" />
+                            </p:selectOneMenu>
+                    
+                            <h:panelGrid columns="2"  >
+                                <p:selectBooleanCheckbox value="#{sensorRulesController.fileType}" />
+                                <p:outputLabel value="Decoder (only for HIDS)" style="font-weight: normal; margin-left: 10px"/>
+                            </h:panelGrid>    
+                    
+                            <b:inputTextarea  value="#{sensorRulesController.rulePayload}"/>
+                    
+                            <p:outputLabel value="Select file to upload" style="font-weight: normal;"/>
+                                <p:fileUpload fileUploadListener="#{sensorRulesController.uploadRule}" dragDropSupport="false"
+                                    sizeLimit="100000000" fileLimit="1" update=":sensor_rules" style="font-weight: normal;" />
+                            
+                            <p:dialog header="Select rule" widgetVar="editDialog" modal="true" showEffect="fade" 
+                                      hideEffect="fade" resizable="false" closable="true" width="500px">
+                        
+                                <b:panel id="editRule" >
+                                    <div class="Card ui-fluid">
+                                        <p:panelGrid  columns="2" layout="grid" styleClass="ui-panelgrid-blank" >
+                                            <p:selectOneMenu value="#{sensorRulesController.selectedRule}" filter="true" >
+                                                <f:selectItem itemLabel="Select rule: " itemValue="#{sensorRulesController.selectedRule}" />
+                                                <f:selectItems value="#{sensorRulesController.listRules}" />
+                                            </p:selectOneMenu>
+                                
+                                            <p:commandButton value="Submit" update=":sensor_rules" action="#{sensorRulesController.openRule()}" onclick="PF('editDialog').hide();" />
+                                        </p:panelGrid>
+                                    </div>
+                                </b:panel>
+                            </p:dialog>
+                                
+                        </p:panelGrid>
+                    </div>
+                </b:panel>
+             </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>

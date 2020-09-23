@@ -4,6 +4,7 @@ package org.alertflex.controller;
 import java.util.Date;
 import java.util.UUID;
 import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.TrivyScan;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
@@ -85,32 +86,6 @@ public class Trivy {
                     String description = arrVuln.getJSONObject(j).getString("Description");
                     ts.setDescription(description);
                     
-                    String severityTrivy = arrVuln.getJSONObject(j).getString("Severity");
-                                        
-                    int severity = 0;
-                    
-                    switch (severityTrivy) {
-                        case "INFO":
-                            severity = 0;
-                            break;
-                        case "LOW":
-                            severity = 1;
-                            break;
-                        case "MEDIUM":
-                            severity = 2;
-                            break;
-                        case "HIGH":
-                            severity = 3;
-                            break;
-                        case "CRITICAL":
-                            severity = 3;
-                            break;
-                        default:
-                            break;
-                    }
-                    
-                    ts.setSeverity(severity);
-                    
                     ts.setReportAdded(date);
                     ts.setReportUpdated(date);
                     
@@ -119,10 +94,31 @@ public class Trivy {
                     
                     if (tsExisting == null) {
                         
-                        eventBean.getTrivyScanFacade().create(ts);
-                        
-                        createTrivyScanAlert(ts);
+                        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(project.getRefId(), "Snyk");
+                        int sev = 0;
+                        String severityTrivy = arrVuln.getJSONObject(j).getString("Severity");
+                
+                        if (!severityTrivy.isEmpty() && ap != null) {
+                            
+                            sev = ap.getSeverityDefault();
+                            
+                            if(ap.getText1().equals(severityTrivy)) {
+                                sev = ap.getValue1();
+                            } else if(ap.getText2().equals(severityTrivy)) {
+                                sev = ap.getValue2();
+                            } else if(ap.getText3().equals(severityTrivy)) {
+                                sev = ap.getValue3();
+                            } else if(ap.getText4().equals(severityTrivy)) {
+                                sev = ap.getValue4();
+                            } else if(ap.getText5().equals(severityTrivy)) {
+                                sev = ap.getValue5();
+                            } 
                     
+                            ts.setSeverity(sev);
+                            eventBean.getTrivyScanFacade().create(ts);
+                    
+                            if (sev >= ap.getSeverityThreshold()) createTrivyScanAlert(ts, severityTrivy);
+                        }
                     } else {
                         
                         tsExisting.setReportUpdated(date);
@@ -136,7 +132,7 @@ public class Trivy {
     }
     
     
-public void createTrivyScanAlert(TrivyScan ts) {
+public void createTrivyScanAlert(TrivyScan ts, String sev) {
     
        
         Alert a = new Alert();
@@ -147,6 +143,7 @@ public void createTrivyScanAlert(TrivyScan ts) {
         
         a.setAlertSeverity(ts.getSeverity());
         a.setEventId("1");
+        a.setEventSeverity(sev);
         a.setCategories("trivy");
         a.setDescription(ts.getTitle());
         a.setAlertSource("Trivy");

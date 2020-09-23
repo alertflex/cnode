@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .ui-datatable-header {
+                height: 50px
+            }
+                   
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-paginator .ui-paginator-current, body .ui-paginator .ui-paginator-rpp-options {
+                color: #3f3f3f;
+            }
+               
+        </style>
+        
+        <b:jumbotron style="background: #3f3f3f; padding: 60px;">
+            <b:form id="snyk_report">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Snyk report" collapsible="false" >
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                    <div class="Card ui-fluid">
+                        
+                        <p:panelGrid  columns="2" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%; margin-bottom: 15px">
+                            
+                            <p:selectOneMenu id="name_node" value="#{snykProjectController.selectedProjectKey}" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="Select project key" itemValue="" />
+                                <f:selectItems value="#{snykProjectController.listProjects}" />
+                            </p:selectOneMenu>
+                            
+                            <p:commandButton value="Submit" update=":snyk_report" actionListener="#{snykProjectController.updateVulList()}" />
+                            
+                        </p:panelGrid>
+                                
+                        <p:dataTable id="tbl_snyk" value="#{snykProjectController.listVulnerability}" var="vul" >
+                                
+                            <f:facet name="header">
+                                Project vulnerabilities
+                                <p:commandButton id="toggler" type="button" style="float:right; width:35px" icon="pi pi-align-justify" />
+                                <p:columnToggler datasource="tbl_snyk" trigger="toggler" />
+                            </f:facet>
+                            
+                                <p:column headerText="Vuln ID">
+                                    <h:outputText value="#{vul.vulnerabilityId}" />
+                                </p:column>
+                            
+                                <p:column headerText="Severity" >
+                                    <h:outputText value="#{vul.severity}"/>
+                                </p:column>
+                            
+                                <p:column headerText="IssueSeverity" >
+                                    <h:outputText value="#{vul.issueSeverity}"/>
+                                </p:column>
+                                    
+                                <p:column headerText="PkgName">
+                                    <h:outputText value="#{vul.pkgName}" />
+                                </p:column>
+                                    
+                                <p:column headerText="IssueType">
+                                    <h:outputText value="#{vul.issueType}" />
+                                </p:column>
+                            
+                                <p:column headerText="PkgVersions">
+                                    <h:outputText value="#{vul.pkgVersions}" />
+                                </p:column>
+                                
+                                <p:column headerText="Score">
+                                    <h:outputText value="#{vul.priorityScore}" />
+                                </p:column>
+                                
+                                <p:column headerText="IssueData">
+                                    <h:outputText value="#{vul.issueData}" />
+                                </p:column>
+                                    
+                                <p:column headerText="Title">
+                                    <h:outputText value="#{vul.issueTitle}" />
+                                </p:column>
+                            
+                                <p:column headerText="URL">
+                                    <h:outputText value="#{vul.issueUrl}" />
+                                </p:column>
+                            
+                                <p:column headerText="CVE">
+                                    <h:outputText value="#{vul.issueCve}" />
+                                </p:column>
+                            
+                                <p:column headerText="PublicationTime">
+                                    <h:outputText value="#{vul.publicationTime}" />
+                                </p:column>
+                            
+                                <p:column headerText="disclosureTime">
+                                    <h:outputText value="#{vul.disclosureTime}" />
+                                </p:column>
+                            
+                                <p:column headerText="Cvssv3">
+                                    <h:outputText value="#{vul.issueCvssv3}" />
+                                </p:column>
+                            
+                                <p:column headerText="Language">
+                                    <h:outputText value="#{vul.issueLanguage}" />
+                                </p:column>
+                                
+                                <p:column headerText="Updated">
+                                    <h:outputText value="#{vul.reportUpdated}" />
+                                </p:column>
+                                    
+                                <p:column style="width:42px">
+                                    <p:commandButton 
+                                        title="Delete this item"
+                                        styleClass="GrayButton Black" icon="fa fa-trash" 
+                                        update=":snyk_report"
+                                        actionListener="#{snykProjectController.deleteRecord(vul)}"
+                                        ajax="false" />
+                                </p:column>
+                                
+                        </p:dataTable>
+                        
+                    </div>
+                </b:panel>
+            </b:form>
+        </b:jumbotron>
+    </ui:define>
+
+</ui:composition>

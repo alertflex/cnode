@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:b="http://bootsfaces.net/ui"
+	xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <link href="../resources/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="../resources/css/login.css" rel="stylesheet" type="text/css" />
+        <title>Alertflex</title>
+    </h:head>
+        
+    
+    <h:body style="background: #3f3f3f;">
+        
+        <div id="content" align ="center">
+           
+           <style type="text/css">
+           
+               body .ui-panel .ui-panel-content {
+                border: 1px solid #191919;
+                border-top-color: rgb(25, 25, 25);
+                border-top-style: solid;
+                border-top-width: 1px;
+                background-color: #fff;
+                color: #dedede;
+                padding: .571em 1em;
+                border-top: 0 none;
+                line-height: 1.5;
+            }
+               
+           </style>
+           
+           
+            <h:form >
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <p:panel >
+                    <div id="top" style=" padding: 5px;">
+                        <div align="center">
+                            <img src="../resources/img/logo.png" style="max-width:140px;"  />	
+                        </div>
+                    </div>
+                    
+                    <h:form >
+                        <div class="Container100">
+                            <div class="EmptyBox10"></div>
+                            <div class="Card ">
+                                <p:inputText value="#{sessionController.username}"  id="j_username" placeholder="Username" styleClass="Wid90 TexAlCenter"/>
+                                <div class="EmptyBox10"></div>
+                                <p:password value="#{sessionController.password}" id="j_password" placeholder="Password" styleClass="Wid90 TexAlCenter" feedback="false"/>
+                                <div class="EmptyBox20"></div>
+                                <p:commandButton value="Login" actionListener="#{sessionController.login()}" ajax="false" styleClass="Wid90"/>
+                            </div>
+                        </div>
+                    </h:form>
+                    <div class="EmptyBox10"></div>
+                    <p:outputLabel value="management console open-source version" styleClass="Wid90 TexAlCenter"/>
+                </p:panel>
+            </h:form>
+        </div>
+        
+    </h:body>
+</html>

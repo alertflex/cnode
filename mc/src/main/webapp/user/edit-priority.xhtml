@@ -1,0 +1,154 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+    
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+           
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-dialog .ui-dialog-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-tabs .ui-tabs-panels {
+                background-color: #3f3f3f;
+            }
+               
+        </style>
+        
+        
+        <b:container style="background: #3f3f3f; margin-top: 60px">
+            <b:form id="edit_priority">
+            
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                
+                <b:panel title="Alerts priority" collapsible="false" >
+                    
+                    <p:commandButton value="Save" update=":edit_priority"  style="margin-bottom: 15px" actionListener="#{alertsPriorityController.createPriority()}" />
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                           
+                            <p:selectOneMenu value="#{alertsPriorityController.selectedSource}" >
+                                <f:selectItem itemLabel="Select source" itemValue="" />
+                                <f:selectItems value="#{alertsPriorityController.listSources}" />
+                                <p:ajax  update=":edit_priority" listener="#{alertsPriorityController.loadParameters()}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:outputLabel value="Description:" for="desc" />
+                            
+                            <p:inputText id="desc" value="#{alertsPriorityController.desc}" />
+                            
+			</p:panelGrid>
+                    </div>
+                    
+                    <br/>
+                    
+                    <p:tabView>
+                        
+                        <p:tab title="Thresholds"> 
+                            <div class="Card ui-fluid">
+                    
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                                    
+                                    <h:outputLabel for="al_sev" value="Default severity for alerts" />
+                                    <p:spinner id="al_sev" value="#{alertsPriorityController.severityDefault}" min="0" max="3" />
+                                    
+                                    <h:outputLabel for="threshold" value="Severity threshold for alerts" />
+                                    <p:spinner id="threshold" value="#{alertsPriorityController.severityThreshold}" min="0" max="3" />
+                                    
+                                    <h:outputLabel for="minor_score" value="Threshold for minor alert (level 1)" />
+                                    <p:spinner id="minor_score" value="#{alertsPriorityController.minorThreshold}" min="0" max="1000" />
+                                
+                                    <h:outputLabel for="major_score" value="Threshold for major alert (level 2)" />
+                                    <p:spinner id="major_score" value="#{alertsPriorityController.majorThreshold}" min="0" max="1000" />
+                            
+                                    <h:outputLabel for="critical_score" value="Threshold for critical alert (level 3)" />
+                                    <p:spinner id="critical_score" value="#{alertsPriorityController.criticalThreshold}" min="0" max="1000" />
+                                    
+                                    <p:outputLabel value="Enable loging of alerts:" />
+                                    <p:selectBooleanCheckbox value="#{alertsPriorityController.log}" />
+                            
+                                </p:panelGrid>
+                            </div>
+                        </p:tab> 
+                            
+                        <p:tab title="Severity text"> 
+                            <div class="Card ui-fluid">
+                                
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                            
+                                    <p:outputLabel value="Text1" for="text1" />
+                                    <p:inputText id="text1" value="#{alertsPriorityController.text1}" />
+                                    
+                                    <p:outputLabel value="Text2" for="text2" />
+                                    <p:inputText id="text2" value="#{alertsPriorityController.text2}" />
+                                    
+                                    <p:outputLabel value="Text3" for="text3" />
+                                    <p:inputText id="text3" value="#{alertsPriorityController.text3}" />
+                                    
+                                    <p:outputLabel value="Text4" for="text4" />
+                                    <p:inputText id="text4" value="#{alertsPriorityController.text4}" />
+                                    
+                                    <p:outputLabel value="Text5" for="text5" />
+                                    <p:inputText id="text5" value="#{alertsPriorityController.text5}" />
+                                    
+                                </p:panelGrid>
+                            </div>
+                        
+                        </p:tab> 
+                        
+                        <p:tab title="Converted value"> 
+                            <div class="Card ui-fluid">
+                                
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                            
+                                    <p:outputLabel value="Value1" for="val1" />
+                                    <p:spinner id="val1" value="#{alertsPriorityController.value1}" min="0" max="3" />
+                                                                        
+                                    <p:outputLabel value="Value2" for="val2" />
+                                    <p:spinner id="val2" value="#{alertsPriorityController.value2}" min="0" max="3" />
+                                    
+                                    <p:outputLabel value="Value3" for="val3" />
+                                    <p:spinner id="val3" value="#{alertsPriorityController.value3}" min="0" max="3" />
+                                    
+                                    <p:outputLabel value="Value4" for="val4" />
+                                    <p:spinner id="val4" value="#{alertsPriorityController.value4}" min="0" max="3" />
+                                    
+                                    <p:outputLabel value="Value5" for="val5" />
+                                    <p:spinner id="val5" value="#{alertsPriorityController.value5}" min="0" max="3" />
+                                    
+                                </p:panelGrid>
+                            </div>
+                        </p:tab> 
+                    </p:tabView>
+                </b:panel>
+             </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>

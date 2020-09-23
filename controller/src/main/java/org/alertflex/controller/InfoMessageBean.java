@@ -21,6 +21,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentFacade;
 import org.alertflex.facade.HomeNetworkFacade;
@@ -37,6 +38,7 @@ import org.alertflex.facade.AgentOpenscapFacade;
 import org.alertflex.facade.AgentPackagesFacade;
 import org.alertflex.facade.AgentProcessesFacade;
 import org.alertflex.facade.AgentScaFacade;
+import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
@@ -66,6 +68,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private AlertFacade alertFacade;
+    
+    @EJB
+    private AlertPriorityFacade alertPriorityFacade;
     
     @EJB
     private NodeMonitorFacade nodeMonitorFacade;
@@ -140,6 +145,10 @@ public class InfoMessageBean implements MessageListener {
     
     public AlertFacade getAlertFacade() {
         return this.alertFacade;
+    }   
+    
+    public AlertPriorityFacade getAlertPriorityFacade() {
+        return this.alertPriorityFacade;
     }   
     
     public NodeMonitorFacade getNodeMonitorFacade() {
@@ -250,7 +259,7 @@ public class InfoMessageBean implements MessageListener {
                             
                             break;
                             
-                        case 4: {
+                        case 4: { // falco config
                                 ConfigsManagement cm = new ConfigsManagement(this);
                             
                                 String sensor = bytesMessage.getStringProperty("sensor");
@@ -259,7 +268,7 @@ public class InfoMessageBean implements MessageListener {
                             }
                             break;
                             
-                        case 5: {
+                        case 5: { // wazuh config
                                 ConfigsManagement cm = new ConfigsManagement(this);
                             
                                 String sensor = bytesMessage.getStringProperty("sensor");
@@ -267,7 +276,7 @@ public class InfoMessageBean implements MessageListener {
                                 cm.saveConfig(sensor, 1, data);
                             }
                             break;
-                        case 6: {
+                        case 6: { // suricata config
                                 ConfigsManagement cm = new ConfigsManagement(this);
                             
                                 String sensor = bytesMessage.getStringProperty("sensor");
@@ -275,7 +284,7 @@ public class InfoMessageBean implements MessageListener {
                                 cm.saveConfig(sensor, 2, data);
                             }
                             break;
-                        case 7: {
+                        case 7: { // modsec config
                                 ConfigsManagement cm = new ConfigsManagement(this);
                             
                                 String sensor = bytesMessage.getStringProperty("sensor");

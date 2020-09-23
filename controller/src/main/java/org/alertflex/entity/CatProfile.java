@@ -35,6 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "CatProfile.findByCatName", query = "SELECT c FROM CatProfile c WHERE c.catName = :catName")})
 public class CatProfile implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "cp_desc")
+    private String cpDesc;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "cat_names")
+    private String catNames;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -140,6 +151,22 @@ public class CatProfile implements Serializable {
     @Override
     public String toString() {
         return "org.alertflex.entity.CatProfile[ cpId=" + cpId + " ]";
+    }
+
+    public String getCpDesc() {
+        return cpDesc;
+    }
+
+    public void setCpDesc(String cpDesc) {
+        this.cpDesc = cpDesc;
+    }
+
+    public String getCatNames() {
+        return catNames;
+    }
+
+    public void setCatNames(String catNames) {
+        this.catNames = catNames;
     }
     
 }

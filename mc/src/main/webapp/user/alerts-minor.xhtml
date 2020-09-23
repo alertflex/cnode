@@ -1,0 +1,301 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .ui-datatable-header {
+                height: 50px
+            }
+                   
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-paginator .ui-paginator-current, body .ui-paginator .ui-paginator-rpp-options {
+                color: #3f3f3f;
+            }
+               
+        </style>
+        
+        <b:jumbotron style="background: #3f3f3f; padding: 60px;">
+            <b:form id="minor_alerts">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                
+                <b:panel title="New minor alerts" collapsible="false" >
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="3" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%" >
+                           
+                            <p:commandButton value="Confirm all alerts" actionListener="#{alertsNewController.confirmAllMinorAlerts()}" update=":minor_alerts:messages" >
+                                <p:confirm header="Confirmation" message="Are you sure about confirming all alerts?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                                
+                            <p:commandButton value="Confirm shown alerts" actionListener="#{alertsNewController.confirmShownMinorAlerts()}" update=":minor_alerts:messages" >
+                                <p:confirm header="Confirmation" message="Are you sure about confirming all alerts?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                                
+                            <p:confirmDialog global="true" >
+                                <p:commandButton value="Yes, sure" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No, not sure" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                            </p:confirmDialog>
+                            
+                        </p:panelGrid>
+                    </div>
+                    
+                    <br/>
+                    
+                    <p:dataTable id="tbl_alerts" var="alertsData" value="#{alertsNewController.minorAlertsList}" editable="true" paginator="true" rows="10"  
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                        rowsPerPageTemplate="5,10,15,20,30,40,50,100">
+                    
+                            <p:ajax event="rowEdit" listener="#{alertsNewController.onRowEdit}" update=":minor_alerts:messages" />
+                    
+                            <p:column style="width:20px">  
+                                <p:rowToggler />  
+                            </p:column> 
+                            
+                            <p:column headerText="Response" style="width:55px">
+                                <p:commandButton  styleClass="GrayButton" icon="fa fa-bolt" ajax="false" action="/user/add-response.xhtml"> 
+                                    <f:param name="alertId" value="#{alertsData.alertId}" />
+                                </p:commandButton>
+                            </p:column>
+                    
+                            <p:column headerText="Severity" sortBy="#{alertsData.alertSeverity}" style="#{alertsData.colorSeverity}">
+                                <h:outputText value="#{alertsData.digitSeverity}" />
+                            </p:column>
+                    
+                            <p:column >  
+                                <f:facet name="header">  
+                                    <h:outputText value="Event" />  
+                                </f:facet>  
+                                <h:outputText value="#{alertsData.eventId}" />  
+                            </p:column>
+                    
+                            <p:column >  
+                                <f:facet name="header">  
+                                    <h:outputText value="Source" />  
+                                </f:facet>  
+                                <h:outputText value="#{alertsData.alertSource}" />  
+                            </p:column> 
+                            
+                             <p:column >  
+                                <f:facet name="header">  
+                                    <h:outputText value="Type" />  
+                                </f:facet>  
+                                <h:outputText value="#{alertsData.alertType}" />  
+                            </p:column> 
+                            
+                             <p:column >  
+                                <f:facet name="header">  
+                                    <h:outputText value="Agent" />  
+                                </f:facet>  
+                                 <h:outputText value="#{alertsData.dstHostname}" />  
+                            </p:column> 
+                    
+                            <p:column >  
+                                <f:facet name="header">  
+                                    <h:outputText value="Category" />  
+                                </f:facet>  
+                                <h:outputText value="#{alertsData.categories}" />  
+                            </p:column> 
+                    
+                            <p:column >  
+                                <f:facet name="header">  
+                                    <h:outputText value="Timestamp" />  
+                                </f:facet>  
+                                <h:outputText value="#{alertsData.timeCollr}" />  
+                            </p:column> 
+                    
+                            <p:column headerText="Status" filterBy="#{alertsData.status}" filterMatchMode="contains">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{alertsData.status}" /></f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{alertsData.status}" style="color: #000000;">
+                                            <f:selectItems value="#{alertsNewController.changeStatus()}" var="status" itemLabel="#{status}" itemValue="#{status}"  />
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            
+                            <p:column style="width:32px">
+                                <p:rowEditor />
+                            </p:column>
+                            
+                            <p:rowExpansion>  
+                                <p:panelGrid style="width:100%">
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Alert ID</p:column>
+                                        <p:column colspan="9">#{alertsData.alertId}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Alert UUID</p:column>
+                                        <p:column colspan="9">#{alertsData.alertUuid}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Score</p:column>
+                                        <p:column colspan="9">#{alertsData.eventSeverity}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Node</p:column>
+                                        <p:column colspan="9">#{alertsData.nodeId}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Source</p:column>
+                                        <p:column colspan="9">#{alertsData.alertSource}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Type</p:column>
+                                        <p:column colspan="9">#{alertsData.alertType}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Sensor</p:column>
+                                        <p:column colspan="9">#{alertsData.sensorId}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Event</p:column>
+                                        <p:column colspan="9">#{alertsData.eventId}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Category</p:column>
+                                        <p:column colspan="9">#{alertsData.categories}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Description</p:column>
+                                        <p:column colspan="9">#{alertsData.description}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Location</p:column>
+                                        <p:column colspan="9">#{alertsData.location}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Agent</p:column>
+                                        <p:column colspan="9">#{alertsData.agentName}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Process</p:column>
+                                        <p:column colspan="9">#{alertsData.processName}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">File</p:column>
+                                        <p:column colspan="9">#{alertsData.fileName}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Container</p:column>
+                                        <p:column colspan="9">#{alertsData.containerName}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">User</p:column>
+                                        <p:column colspan="9">#{alertsData.userName}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">IP src</p:column>
+                                        <p:column colspan="9">#{alertsData.srcIp}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Source agent</p:column>
+                                        <p:column colspan="9">#{alertsData.srcHostname}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Source port</p:column>
+                                        <p:column colspan="9">#{alertsData.srcPort}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">IP dst</p:column>
+                                        <p:column colspan="9">#{alertsData.dstIp}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Dest agent</p:column>
+                                        <p:column colspan="9">#{alertsData.dstHostname}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Dest port</p:column>
+                                        <p:column colspan="9">#{alertsData.dstPort}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Action</p:column>
+                                        <p:column colspan="9">#{alertsData.action}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Filter</p:column>
+                                        <p:column colspan="9">#{alertsData.filter}</p:column>
+                                    </p:row>
+                                
+                                    <p:row>
+                                        <p:column colspan="1">Info</p:column>
+                                        <p:column colspan="9">#{alertsData.info}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Event time</p:column>
+                                        <p:column colspan="9">#{alertsData.timeEvent}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Collr time</p:column>
+                                        <p:column colspan="9">#{alertsData.timeCollr}</p:column>
+                                    </p:row>
+                                    
+                                    <p:row>
+                                        <p:column colspan="1">Ctrl time</p:column>
+                                        <p:column colspan="9">#{alertsData.timeCntrl}</p:column>
+                                    </p:row>
+                                    
+                                </p:panelGrid>
+                                  
+                            </p:rowExpansion> 
+                    </p:dataTable>
+                    
+                </b:panel>
+                
+            </b:form>
+        </b:jumbotron>
+    </ui:define>
+
+</ui:composition>

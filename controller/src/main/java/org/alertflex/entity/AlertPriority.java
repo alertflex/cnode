@@ -33,24 +33,21 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AlertPriority.findBySource", query = "SELECT a FROM AlertPriority a WHERE a.source = :source")
     , @NamedQuery(name = "AlertPriority.findByDescription", query = "SELECT a FROM AlertPriority a WHERE a.description = :description")
     , @NamedQuery(name = "AlertPriority.findByLog", query = "SELECT a FROM AlertPriority a WHERE a.log = :log")
-    , @NamedQuery(name = "AlertPriority.findByAlertThreshold", query = "SELECT a FROM AlertPriority a WHERE a.alertThreshold = :alertThreshold")
+    , @NamedQuery(name = "AlertPriority.findBySeverityDefault", query = "SELECT a FROM AlertPriority a WHERE a.severityDefault = :severityDefault")
+    , @NamedQuery(name = "AlertPriority.findBySeverityThreshold", query = "SELECT a FROM AlertPriority a WHERE a.severityThreshold = :severityThreshold")
     , @NamedQuery(name = "AlertPriority.findByMinorThreshold", query = "SELECT a FROM AlertPriority a WHERE a.minorThreshold = :minorThreshold")
     , @NamedQuery(name = "AlertPriority.findByMajorThreshold", query = "SELECT a FROM AlertPriority a WHERE a.majorThreshold = :majorThreshold")
     , @NamedQuery(name = "AlertPriority.findByCriticalThreshold", query = "SELECT a FROM AlertPriority a WHERE a.criticalThreshold = :criticalThreshold")
-    , @NamedQuery(name = "AlertPriority.findBySeverity1", query = "SELECT a FROM AlertPriority a WHERE a.severity1 = :severity1")
-    , @NamedQuery(name = "AlertPriority.findBySeverity2", query = "SELECT a FROM AlertPriority a WHERE a.severity2 = :severity2")
-    , @NamedQuery(name = "AlertPriority.findBySeverity3", query = "SELECT a FROM AlertPriority a WHERE a.severity3 = :severity3")
-    , @NamedQuery(name = "AlertPriority.findBySeverity4", query = "SELECT a FROM AlertPriority a WHERE a.severity4 = :severity4")
-    , @NamedQuery(name = "AlertPriority.findBySeverity5", query = "SELECT a FROM AlertPriority a WHERE a.severity5 = :severity5")
-    , @NamedQuery(name = "AlertPriority.findBySeverity6", query = "SELECT a FROM AlertPriority a WHERE a.severity6 = :severity6")
-    , @NamedQuery(name = "AlertPriority.findBySeverity7", query = "SELECT a FROM AlertPriority a WHERE a.severity7 = :severity7")
+    , @NamedQuery(name = "AlertPriority.findByText1", query = "SELECT a FROM AlertPriority a WHERE a.text1 = :text1")
+    , @NamedQuery(name = "AlertPriority.findByText2", query = "SELECT a FROM AlertPriority a WHERE a.text2 = :text2")
+    , @NamedQuery(name = "AlertPriority.findByText3", query = "SELECT a FROM AlertPriority a WHERE a.text3 = :text3")
+    , @NamedQuery(name = "AlertPriority.findByText4", query = "SELECT a FROM AlertPriority a WHERE a.text4 = :text4")
+    , @NamedQuery(name = "AlertPriority.findByText5", query = "SELECT a FROM AlertPriority a WHERE a.text5 = :text5")
     , @NamedQuery(name = "AlertPriority.findByValue1", query = "SELECT a FROM AlertPriority a WHERE a.value1 = :value1")
     , @NamedQuery(name = "AlertPriority.findByValue2", query = "SELECT a FROM AlertPriority a WHERE a.value2 = :value2")
     , @NamedQuery(name = "AlertPriority.findByValue3", query = "SELECT a FROM AlertPriority a WHERE a.value3 = :value3")
     , @NamedQuery(name = "AlertPriority.findByValue4", query = "SELECT a FROM AlertPriority a WHERE a.value4 = :value4")
-    , @NamedQuery(name = "AlertPriority.findByValue5", query = "SELECT a FROM AlertPriority a WHERE a.value5 = :value5")
-    , @NamedQuery(name = "AlertPriority.findByValue6", query = "SELECT a FROM AlertPriority a WHERE a.value6 = :value6")
-    , @NamedQuery(name = "AlertPriority.findByValue7", query = "SELECT a FROM AlertPriority a WHERE a.value7 = :value7")})
+    , @NamedQuery(name = "AlertPriority.findByValue5", query = "SELECT a FROM AlertPriority a WHERE a.value5 = :value5")})
 public class AlertPriority implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -80,8 +77,12 @@ public class AlertPriority implements Serializable {
     private int log;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "alert_threshold")
-    private int alertThreshold;
+    @Column(name = "severity_default")
+    private int severityDefault;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "severity_threshold")
+    private int severityThreshold;
     @Basic(optional = false)
     @NotNull
     @Column(name = "minor_threshold")
@@ -97,38 +98,28 @@ public class AlertPriority implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "severity1")
-    private String severity1;
+    @Column(name = "text1")
+    private String text1;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "severity2")
-    private String severity2;
+    @Column(name = "text2")
+    private String text2;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "severity3")
-    private String severity3;
+    @Column(name = "text3")
+    private String text3;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "severity4")
-    private String severity4;
+    @Column(name = "text4")
+    private String text4;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "severity5")
-    private String severity5;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "severity6")
-    private String severity6;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "severity7")
-    private String severity7;
+    @Column(name = "text5")
+    private String text5;
     @Basic(optional = false)
     @NotNull
     @Column(name = "value1")
@@ -149,14 +140,6 @@ public class AlertPriority implements Serializable {
     @NotNull
     @Column(name = "value5")
     private int value5;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "value6")
-    private int value6;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "value7")
-    private int value7;
 
     public AlertPriority() {
     }
@@ -165,30 +148,27 @@ public class AlertPriority implements Serializable {
         this.recId = recId;
     }
 
-    public AlertPriority(Integer recId, String refId, String source, String description, int log, int alertThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, String severity1, String severity2, String severity3, String severity4, String severity5, String severity6, String severity7, int value1, int value2, int value3, int value4, int value5, int value6, int value7) {
+    public AlertPriority(Integer recId, String refId, String source, String description, int log, int severityDefault, int severityThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, String text1, String text2, String text3, String text4, String text5, int value1, int value2, int value3, int value4, int value5) {
         this.recId = recId;
         this.refId = refId;
         this.source = source;
         this.description = description;
         this.log = log;
-        this.alertThreshold = alertThreshold;
+        this.severityDefault = severityDefault;
+        this.severityThreshold = severityThreshold;
         this.minorThreshold = minorThreshold;
         this.majorThreshold = majorThreshold;
         this.criticalThreshold = criticalThreshold;
-        this.severity1 = severity1;
-        this.severity2 = severity2;
-        this.severity3 = severity3;
-        this.severity4 = severity4;
-        this.severity5 = severity5;
-        this.severity6 = severity6;
-        this.severity7 = severity7;
+        this.text1 = text1;
+        this.text2 = text2;
+        this.text3 = text3;
+        this.text4 = text4;
+        this.text5 = text5;
         this.value1 = value1;
         this.value2 = value2;
         this.value3 = value3;
         this.value4 = value4;
         this.value5 = value5;
-        this.value6 = value6;
-        this.value7 = value7;
     }
 
     public Integer getRecId() {
@@ -231,12 +211,20 @@ public class AlertPriority implements Serializable {
         this.log = log;
     }
 
-    public int getAlertThreshold() {
-        return alertThreshold;
+    public int getSeverityDefault() {
+        return severityDefault;
     }
 
-    public void setAlertThreshold(int alertThreshold) {
-        this.alertThreshold = alertThreshold;
+    public void setSeverityDefault(int severityDefault) {
+        this.severityDefault = severityDefault;
+    }
+
+    public int getSeverityThreshold() {
+        return severityThreshold;
+    }
+
+    public void setSeverityThreshold(int severityThreshold) {
+        this.severityThreshold = severityThreshold;
     }
 
     public int getMinorThreshold() {
@@ -263,60 +251,44 @@ public class AlertPriority implements Serializable {
         this.criticalThreshold = criticalThreshold;
     }
 
-    public String getSeverity1() {
-        return severity1;
+    public String getText1() {
+        return text1;
     }
 
-    public void setSeverity1(String severity1) {
-        this.severity1 = severity1;
+    public void setText1(String text1) {
+        this.text1 = text1;
     }
 
-    public String getSeverity2() {
-        return severity2;
+    public String getText2() {
+        return text2;
     }
 
-    public void setSeverity2(String severity2) {
-        this.severity2 = severity2;
+    public void setText2(String text2) {
+        this.text2 = text2;
     }
 
-    public String getSeverity3() {
-        return severity3;
+    public String getText3() {
+        return text3;
     }
 
-    public void setSeverity3(String severity3) {
-        this.severity3 = severity3;
+    public void setText3(String text3) {
+        this.text3 = text3;
     }
 
-    public String getSeverity4() {
-        return severity4;
+    public String getText4() {
+        return text4;
     }
 
-    public void setSeverity4(String severity4) {
-        this.severity4 = severity4;
+    public void setText4(String text4) {
+        this.text4 = text4;
     }
 
-    public String getSeverity5() {
-        return severity5;
+    public String getText5() {
+        return text5;
     }
 
-    public void setSeverity5(String severity5) {
-        this.severity5 = severity5;
-    }
-
-    public String getSeverity6() {
-        return severity6;
-    }
-
-    public void setSeverity6(String severity6) {
-        this.severity6 = severity6;
-    }
-
-    public String getSeverity7() {
-        return severity7;
-    }
-
-    public void setSeverity7(String severity7) {
-        this.severity7 = severity7;
+    public void setText5(String text5) {
+        this.text5 = text5;
     }
 
     public int getValue1() {
@@ -357,22 +329,6 @@ public class AlertPriority implements Serializable {
 
     public void setValue5(int value5) {
         this.value5 = value5;
-    }
-
-    public int getValue6() {
-        return value6;
-    }
-
-    public void setValue6(int value6) {
-        this.value6 = value6;
-    }
-
-    public int getValue7() {
-        return value7;
-    }
-
-    public void setValue7(int value7) {
-        this.value7 = value7;
     }
 
     @Override

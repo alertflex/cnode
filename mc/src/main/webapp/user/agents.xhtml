@@ -1,0 +1,205 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .ui-datatable-header {
+                height: 50px
+            }
+                   
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-dialog .ui-dialog-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-tabs .ui-tabs-panels {
+                background-color: #3f3f3f;
+            }
+            
+        </style>
+        
+        <b:jumbotron style="background: #3f3f3f; padding: 60px;">
+            <b:form id="agents">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                
+                <b:panel title="Endpoint agents (Wazuh)" collapsible="false" >
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="2" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%" >
+                            
+                            <p:selectOneMenu id="name_node" value="#{hidsAgentsController.selectedNodeId}" >
+                                <f:selectItem itemLabel="Select node" itemValue="" />
+                                <f:selectItems value="#{hidsAgentsController.listNodeId}" />
+                            </p:selectOneMenu>
+                            
+                            <p:commandButton value="Submit" update=":agents" actionListener="#{hidsAgentsController.updateListAgents()}" />
+					
+			</p:panelGrid>
+                    </div>
+                    
+                    <br/>
+                    
+                    <p:contextMenu for="aliases" > 
+                        <p:menuitem value="Add agent" icon="fa fa-plus-circle" update="agentDetail" oncomplete="PF('addDialog').show()"/>
+                        <p:menuitem value="Delete agent" icon="fa fa-minus-circle" update="aliases" actionListener="#{hidsAgentsController.deleteSelectedAgent()}"/>  
+                        <p:menuitem value="Edit alias" icon="fa fa-pencil-square" update="aliasDetail" oncomplete="PF('editDialog').show()"/>
+                        <p:menuitem value="View key" icon="fa fa-key " update="keyDetail" oncomplete="PF('keyDialog').show()"/>
+                    </p:contextMenu> 
+                    
+                    <p:dataTable id="aliases" value="#{hidsAgentsController.listAgents}" var="agent" rowKey="#{agent.recId}"
+                        selection="#{hidsAgentsController.selectedAgent}" selectionMode="single" > 
+                                            
+                        <f:facet name="header">
+                            Agents list                          
+                            <p:commandButton id="toggler" type="button" style="float:right; width:35px" icon="pi pi-align-justify" />
+                            <p:columnToggler datasource="aliases" trigger="toggler" />
+                        </f:facet>
+                        
+                        
+                        <p:column headerText="Agent ID">
+                                        <h:outputText value="#{agent.agentId}" />
+                        </p:column>
+                        
+                        <p:column headerText="Status">
+                            <h:outputText value="#{agent.status}" />
+                        </p:column>
+                        
+                        <p:column headerText="Name">
+                            <h:outputText value="#{agent.name}" />
+                        </p:column>
+                        
+                        <p:column headerText="IP">
+                            <h:outputText value="#{agent.ip}" />
+                        </p:column>
+                        
+                        <p:column headerText="Manager">
+                            <h:outputText value="#{agent.manager}" />
+                        </p:column>
+                        
+                        <p:column headerText="IP linked">
+                            <h:outputText value="#{agent.ipLinked}" />
+                        </p:column>
+                        
+                        <p:column headerText="Host linked">
+                            <h:outputText value="#{agent.hostLinked}" />
+                        </p:column>
+                        
+                        <p:column headerText="Container linked">
+                            <h:outputText value="#{agent.containerLinked}" />
+                        </p:column>
+                        
+                        <p:column headerText="Version">
+                            <h:outputText value="#{agent.version}" />
+                        </p:column>
+                        
+                        <p:column headerText="OS name">
+                            <h:outputText value="#{agent.osName}" />
+                        </p:column>
+                        
+                        <p:column headerText="OS platform">
+                            <h:outputText value="#{agent.osPlatform}" />
+                        </p:column>
+                        
+                        <p:column headerText="OS version">
+                            <h:outputText value="#{agent.osVersion}" />
+                        </p:column>
+                        
+                        
+                        <p:column headerText="Date add">
+                            <h:outputText value="#{agent.dateAdd}" />
+                        </p:column>
+                        
+                        <p:column headerText="Date update">
+                            <h:outputText value="#{agent.dateUpdate}" />
+                        </p:column>
+                        
+                    </p:dataTable>
+                    
+                    <p:dialog header="Add agent" widgetVar="addDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" closable="false">
+                        
+                        <p:outputPanel id="agentDetail" >
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="2" layout="grid" styleClass="ui-panelgrid-blank" >
+                                
+                                    <p:outputLabel value="Agent name" />
+                                    <p:inputText value="#{hidsAgentsController.agentName}" />
+                                
+                                    <p:outputLabel value="IP" />
+                                    <p:inputText value="#{hidsAgentsController.agentIp}" />
+                                
+                                    <p:commandButton value="Submit" update="aliases" action="#{hidsAgentsController.addAgent()}" onclick="PF('addDialog').hide();" />
+                                    <p:commandButton value="Cancel" onclick="PF('addDialog').hide();" />
+                                
+                                </p:panelGrid>
+                            </div>
+                        </p:outputPanel>
+                    </p:dialog>
+                    
+                    <p:dialog header="Edit alias" widgetVar="editDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" closable="false">
+                        
+                        <p:outputPanel id="aliasDetail">
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="2" layout="grid" rendered="#{not empty hidsAgentsController.selectedAgent}" styleClass="ui-panelgrid-blank" >
+                        
+                                    <p:outputLabel value="IP linked" />
+                                    <p:inputText value="#{hidsAgentsController.agentIpLinked}" />
+                                
+                                    <p:outputLabel value="Host linked" />
+                                    <p:inputText value="#{hidsAgentsController.agentHostLinked}" />
+                                
+                                    <p:outputLabel value="Container linked" />
+                                    <p:inputText value="#{hidsAgentsController.agentContainerLinked}" />
+                                
+                                    <p:commandButton value="Submit" update="aliases" action="#{hidsAgentsController.updateSelectedAgent()}" onclick="PF('editDialog').hide();" />
+                                    <p:commandButton value="Cancel" onclick="PF('editDialog').hide();" />
+                                </p:panelGrid>
+                            </div>
+                        </p:outputPanel>
+                    </p:dialog>
+                    
+                    <p:dialog header="Agent key" widgetVar="keyDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" closable="false">
+                        <p:outputPanel id="keyDetail" >
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="1" layout="grid" rendered="#{not empty hidsAgentsController.selectedAgent}" styleClass="ui-panelgrid-blank" >
+                                
+                                    <p:outputLabel value="#{hidsAgentsController.selectedAgent.agentKey}" class="GrayBack"/>
+                                
+                                    <p:commandButton value="Close" onclick="PF('keyDialog').hide();" />
+                                </p:panelGrid>
+                            </div>
+                        </p:outputPanel>
+                    </p:dialog>
+                    
+                </b:panel>
+                
+            </b:form>
+        </b:jumbotron>
+    </ui:define>
+
+</ui:composition>

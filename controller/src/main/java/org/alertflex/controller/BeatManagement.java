@@ -43,9 +43,11 @@ import org.alertflex.entity.Alert;
 import org.alertflex.facade.AlertFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.common.Netflow;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Attributes;
 import org.alertflex.entity.Events;
 import org.alertflex.facade.AgentFacade;
+import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.AttributesFacade;
 import org.alertflex.facade.EventsFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -71,6 +73,9 @@ public class BeatManagement  {
     
     @EJB
     private AlertFacade alertFacade;
+    
+    @EJB
+    private AlertPriorityFacade alertPriorityFacade;
     
     ActiveMQConnectionFactory connectionFactory = null;
     Connection connection = null;
@@ -261,90 +266,95 @@ public class BeatManagement  {
             Integer score = syslog.getInt("priority");
             String severity = syslog.getString("severity_label");
             String facility = syslog.getString("facility_label");
-           
+            
             // save alert
             prj = projectFacade.findProjectByRef(refId);
         
             if (prj != null ) {
                 
-                Alert a = new Alert();
-                
-                a.setRefId(refId);
-                a.setNodeId(node);
-                a.setAlertUuid(UUID.randomUUID().toString());
-                a.setAlertSource("Syslog");
-                a.setAlertType("MISC");
-                a.setSensorId("filebeat");
-                int srv = 0;
-                switch(severity) {
-                    case "Emergency":
-                        srv = 3;
-                        break;
-                    case "Alert":
-                        srv = 3;
-                        break;
-                    case "Critical":
-                        srv = 3;
-                        break;
-                    case "Error": 
-                        srv = 2;
-                        break;
-                    case "Warning":
-                        srv = 1;
-                        break;
-                    default:
-                        srv = 0;
-                        break;
-                }
-                a.setAlertSeverity(srv);
-                a.setDescription(message);
-                a.setEventId("1");
-                a.setEventSeverity(score);
-                a.setLocation(address);
-                a.setAction("indef");
-                a.setStatus("processed");
-                a.setFilter("");
-                a.setInfo(severity);
-                a.setTimeEvent(timestamp);
-                Date date = new Date(); 
-                a.setTimeCollr(date);
-                a.setTimeCntrl(date);
-                a.setAgentName(hostname);
-                a.setUserName("indef");
+                AlertPriority ap = alertPriorityFacade.findPriorityBySource(refId, "Syslog");
             
-                a.setCategories(facility);
-                a.setSrcIp("indef");
-                a.setDstIp("indef");
-                a.setDstPort(0);
-                a.setSrcPort(0);
-                a.setSrcHostname("");
-                a.setDstHostname("");
-                a.setFileName("indef");
-                a.setFilePath("indef");
-                a.setHashMd5("indef");
-                a.setHashSha1("indef");
-                a.setHashSha256("indef");
-                a.setProcessId(0);
-                a.setProcessName("indef");
-                a.setProcessCmdline("indef");
-                a.setProcessPath("indef");
-                a.setUrlHostname("indef");
-                a.setUrlPath("indef");
-                a.setContainerId("indef");
-                a.setContainerName("indef");
-                a.setJsonEvent("indef");
+                int sev = ap.getSeverityDefault();
+            
+                if (!severity.isEmpty() && ap != null) {
+            
+                    if(ap.getText1().equals(severity)) {
+                        sev = ap.getValue1();
+                    } else if(ap.getText2().equals(severity)) {
+                        sev = ap.getValue2();
+                    } else if(ap.getText3().equals(severity)) {
+                        sev = ap.getValue3();
+                    } else if(ap.getText4().equals(severity)) {
+                        sev = ap.getValue4();
+                    } else if(ap.getText5().equals(severity)) {
+                        sev = ap.getValue5();
+                    } 
                 
-                // save alert in MySQL 
-                if (prj.getSemActive() > 0) {
+                    if (sev >= ap.getSeverityThreshold()) { 
+                        
+                        Alert a = new Alert();
+                
+                        a.setRefId(refId);
+                        a.setNodeId(node);
+                        a.setAlertUuid(UUID.randomUUID().toString());
+                        a.setAlertSource("Syslog");
+                        a.setAlertType("MISC");
+                        a.setSensorId("filebeat");
+                
+                        a.setAlertSeverity(sev);
+                        a.setEventSeverity(severity);
+                
+                        a.setDescription(message);
+                        a.setEventId("1");
+                        a.setLocation(address);
+                        a.setAction("indef");
+                        a.setStatus("processed");
+                        a.setFilter("");
+                        a.setInfo(severity);
+                        a.setTimeEvent(timestamp);
+                        Date date = new Date(); 
+                        a.setTimeCollr(date);
+                        a.setTimeCntrl(date);
+                        a.setAgentName(hostname);
+                        a.setUserName("indef");
+            
+                        a.setCategories(facility);
+                        a.setSrcIp("indef");
+                        a.setDstIp("indef");
+                        a.setDstPort(0);
+                        a.setSrcPort(0);
+                        a.setSrcHostname("");
+                        a.setDstHostname("");
+                        a.setFileName("indef");
+                        a.setFilePath("indef");
+                        a.setHashMd5("indef");
+                        a.setHashSha1("indef");
+                        a.setHashSha256("indef");
+                        a.setProcessId(0);
+                        a.setProcessName("indef");
+                        a.setProcessCmdline("indef");
+                        a.setProcessPath("indef");
+                        a.setUrlHostname("indef");
+                        a.setUrlPath("indef");
+                        a.setContainerId("indef");
+                        a.setContainerName("indef");
+                        a.setJsonEvent("indef");
+                
+                        // save alert in MySQL 
+                        if (prj.getSemActive() > 0) {
                     
-                    alertFacade.create(a);
+                            alertFacade.create(a);
                     
-                    // send alert for response processing to Worker
-                    if (prj.getSemActive() >= 2) {
-                        sendAlertToMQ(a);
+                            // send alert for response processing to Worker
+                            if (prj.getSemActive() >= 2) {
+                                sendAlertToMQ(a);
+                            }
+                        }
                     }
                 }
-            }
+            }  
+            
+            return;
         }
         
         if (!filebeat.equals("netflow") && packetbeat.equals("flow")) return;
@@ -489,8 +499,11 @@ public class BeatManagement  {
         
             int srv = 0;
             if(event != null) {
+                
                 srv = event.getThreatLevelId();
-                a.setEventSeverity(srv);
+                
+                a.setEventSeverity(Integer.toString(srv));
+                
                 switch(srv) {
                     case 1:
                         srv = 3;

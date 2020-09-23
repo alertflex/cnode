@@ -1,0 +1,415 @@
+.Card {
+  padding: 30px;
+  display: block;
+  background-color: #ffffff;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  color: #666f77;
+  border: solid 1px #e0e0e0;
+}
+
+/*li{list-style:none;}*/
+/* text colors */
+.White {
+  color: #ffffff;
+}
+.WhiteBlue {
+  color: #E1F5FE;
+}
+.SoftBlue {
+  color: #03A9F4;
+}
+.Blue {
+  color: #0288D1;
+}
+.Turquoise {
+  color: #26C6DA;
+}
+.SoftGray {
+  color: #ECEFF1;
+}
+.Gray {
+  color: #90A4AE;
+}
+.BoldGray {
+  color: #546E7A;
+}
+.SoftOrange {
+  color: #FFCC80;
+}
+.Orange {
+  color: #FB8C00;
+}
+.SoftGreen {
+  color: #A5D6A7;
+}
+.Green {
+  color: #43A047;
+}
+.LeadenGreen {
+  color: #26A69A;
+}
+.SoftRed {
+  color: #EF9A9A;
+}
+.Red {
+  color: #E53935;
+}
+.Pink {
+  color: #FF4081;
+}
+.SoftPurple {
+  color: #CE93D8;
+}
+.Purple {
+  color: #8E24AA;
+}
+.Yellow {
+  color: #F7D100;
+}
+.WhiteOpac {
+  color: rgba(255, 255, 255, 0.4);
+}
+.BlackOpac {
+  color: rgba(0, 0, 0, 0.4);
+}
+/* background colors */
+.WhiteBlueBack {
+  background-color: #E1F5FE;
+}
+.SoftBlueBack {
+  background-color: #03A9F4;
+}
+.BlueBack {
+  background-color: #0288D1;
+}
+.TurquoiseBack {
+  background-color: #26C6DA;
+}
+.SoftGrayBack {
+  background-color: #f5f5f5;
+}
+.GrayBack {
+  background-color: #90A4AE;
+}
+.BoldGrayBack {
+  background-color: #546E7A;
+}
+.SoftOrangeBack {
+  background-color: #FFCC80;
+}
+.OrangeBack {
+  background-color: #FB8C00;
+}
+.SoftGreenBack {
+  background-color: #A5D6A7;
+}
+.GreenBack {
+  background-color: #43A047;
+}
+.LeadenGreenBack {
+  background-color: #26A69A;
+}
+.SoftRedBack {
+  background-color: #EF9A9A;
+}
+.RedBack {
+  background-color: #E53935;
+}
+.PinkBack {
+  background-color: #FF4081;
+}
+.SoftPurpleBack {
+  background-color: #CE93D8;
+}
+.PurpleBack {
+  background-color: #8E24AA;
+}
+.YellowBack {
+  background-color: #F7D100;
+}
+
+/* button colors */
+.BlueTextButton {
+  background-color: #ffffff;
+  color: #0091EA;
+}
+.BlueTextButton .ui-icon {
+  color: #0091EA;
+}
+.BlueTextButton.ui-state-hover,
+.BlueTextButton.ui-state-focus {
+  background-color: #F5F5F5;
+}
+.BlueTextButton.ui-state-active {
+  background-color: #EEEEEE;
+}
+.GrayButton {
+  background-color: #ECEFF1;
+  color: #455A64;
+}
+.GrayButton.ui-state-hover,
+.GrayButton.ui-state-focus {
+  background-color: #EEEEEE;
+}
+.GrayButton.ui-state-active {
+  background-color: #bdbdbd;
+}
+.GreenButton {
+  background-color: #66BB6A;
+}
+.GreenButton.ui-state-hover,
+.GreenButton.ui-state-focus {
+  background-color: #81C784;
+}
+.GreenButton.ui-state-active {
+  background-color: #4CAF50;
+}
+.RedButton {
+  background-color: #E53935;
+}
+.RedButton.ui-state-hover,
+.RedButton.ui-state-focus {
+  background-color: #F44336;
+}
+.RedButton.ui-state-active {
+  background-color: #D32F2F;
+}
+.PinkButton {
+  background-color: #FF4081;
+}
+.PinkButton.ui-state-hover,
+.PinkButton.ui-state-focus {
+  background-color: #EC407A;
+}
+.PinkButton.ui-state-active {
+  background-color: #D81B60;
+}
+.OrangeButton {
+  background-color: #FB8C00;
+}
+.OrangeButton.ui-state-hover,
+.OrangeButton.ui-state-focus {
+  background-color: #FF9800;
+}
+.OrangeButton.ui-state-active {
+  background-color: #F57C00;
+}
+.PurpleButton {
+  background-color: #8E24AA;
+}
+.PurpleButton.ui-state-hover,
+.PurpleButton.ui-state-focus {
+  background-color: #A94CC2;
+}
+.PurpleButton.ui-state-active {
+  background-color: #6A1B9A;
+}
+.CyanButton {
+  background-color: #00ACC1;
+}
+.CyanButton.ui-state-hover,
+.CyanButton.ui-state-focus {
+  background-color: #26C6DA;
+}
+.CyanButton.ui-state-active {
+  background-color: #00ACC1;
+}
+.BrownButton {
+  background-color: #6D4C41;
+}
+.BrownButton.ui-state-hover,
+.BrownButton.ui-state-focus {
+  background-color: #795548;
+}
+.BrownButton.ui-state-active {
+  background-color: #5D4037;
+}
+
+/* Empty Boxes */
+.EmptyBox5{ display:block; width:100%; height:5px; overflow:hidden;}
+.EmptyBox10{ display:block; width:100%; height:10px; overflow:hidden;}
+.EmptyBox20{ display:block; width:100%; height:20px; overflow:hidden;}
+.EmptyBox30{ display:block; width:100%; height:30px; overflow:hidden;}
+.EmptyBox40{ display:block; width:100%; height:40px; overflow:hidden;}
+.EmptyBox50{ display:block; width:100%; height:50px; overflow:hidden;}
+.EmptyBox60{ display:block; width:100%; height:60px; overflow:hidden;}
+.EmptyBox70{ display:block; width:100%; height:70px; overflow:hidden;}
+.EmptyBox80{ display:block; width:100%; height:80px; overflow:hidden;}
+.EmptyBox90{ display:block; width:100%; height:90px; overflow:hidden;}
+.EmptyBox100{ display:block; width:100%; height:100px; overflow:hidden;}
+.EmptyBox110{ display:block; width:100%; height:100px; overflow:hidden;}
+.EmptyBox120{ display:block; width:100%; height:100px; overflow:hidden;}
+.EmptyBox130{ display:block; width:100%; height:100px; overflow:hidden;}
+.EmptyBox140{ display:block; width:100%; height:100px; overflow:hidden;}
+.EmptyBox150{ display: block; width: 100%; height:150px; overflow:hidden;}
+
+/* Opacity */
+.Opac100{ opacity:1; -webkit-opacity:1; -moz-opacity:1;}
+.Opac95{ opacity:0.95; -webkit-opacity:0.95; -moz-opacity:0.95;}
+.Opac90{ opacity:0.9; -webkit-opacity:0.9; -moz-opacity:0.9;}
+.Opac80{ opacity:0.8; -webkit-opacity:0.8; -moz-opacity:0.8;}
+.Opac70{ opacity:0.7; -webkit-opacity:0.7; -moz-opacity:0.7;}
+.Opac60{ opacity:0.6; -webkit-opacity:0.6; -moz-opacity:0.6;}
+.Opac50{ opacity:0.5; -webkit-opacity:0.5; -moz-opacity:0.5;}
+.Opac40{ opacity:0.4; -webkit-opacity:0.4; -moz-opacity:0.4;}
+.Opac30{ opacity:0.3; -webkit-opacity:0.3; -moz-opacity:0.3;}
+.Opac20{ opacity:0.2; -webkit-opacity:0.2; -moz-opacity:0.2;}
+.Opac10{ opacity:0.1; -webkit-opacity:0.1; -moz-opacity:0.1;}
+.OpacZero{ opacity:0; -webkit-opacity:0; -moz-opacity:0;}
+
+/* Border Radius */
+.BordRad3{ border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}
+.BordRad4{ border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px;}
+.BordRad5{ border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
+.BordRad10{ border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px;}
+.BordRad15{ border-radius:15px; -webkit-border-radius:15px; -moz-border-radius:15px;}
+.BordRadHalf{ border-radius:50%; -webkit-border-radius:50%; -moz-border-radius:50%;}
+
+.BordRight{ border-right:solid 1px transparent; box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+.BordLeft{ border-left:solid 1px transparent; box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+.BordTop{ border-top:solid 1px transparent; box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+.BordBottom{ border-top:solid 1px transparent; box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+.BordAll{ border:solid 1px transparent; box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+
+/* Width */
+.Wid100{ width:100%;}
+.Wid90{ width:90%;}
+.Wid80{ width:80%;}
+.Wid70{ width:70%;}
+.Wid60{ width:60%;}
+.Wid50{ width:50%;}
+.Wid45{ width:45%;}
+.Wid40{ width:40%;}
+.Wid30{ width:30%;}
+
+/* Width Special Values */
+.Wid33{ width:33.3%;}
+.Wid25{ width:25%;}
+.Wid20{ width:20%;}
+.Wid10{ width:10%;}
+
+.MaxWid500{max-width:500px;}
+
+/* Height */
+.Hei100{ height:100%;}
+.Hei90{ height:90%;}
+.Hei80{ height:80%;}
+.Hei70{ height:70%;}
+.Hei60{ height:60%;}
+.Hei40{ height:40%;}
+.Hei50{ height:50%;}
+.Hei30{ height:30%;}
+.Hei20{ height:20%;}
+.Hei10{ height:10%;}
+
+/* Margins */
+.MarTopPerc5{ margin-top:5%;}
+.MarTopPerc10{ margin-top:10%;}
+.MarTopPerc20{ margin-top:20%;}
+.MarTopPerc30{ margin-top:30%;}
+.MarTopPerc40{ margin-top:40%;}
+.MarTopPerc50{ margin-top:50%;}
+
+.MarAuto{ margin-left:auto; margin-right:auto;}
+
+.MarTop5{ margin-top:5px;}
+.MarTop10{ margin-top:10px;}
+.MarTop20{ margin-top:20px;}
+.MarTop30{ margin-top:30px;}
+.MarTop40{ margin-top:40px;}
+.MarTop50{ margin-top:50px;}
+
+.MarTopQuarter{ margin-top:25%;}
+.MarTopHalf{ margin-top:50%;}
+
+.MarBot10{ margin-bottom:10px;}
+.MarBot20{ margin-bottom:20px;}
+.MarBot30{ margin-bottom:20px;}
+.MarRight10{ margin-right:10px;}
+.MarRight20{ margin-right:20px;}
+.MarRigh30{ margin-right:30px;}
+
+
+/* Paddings */
+.NoPadding{padding:0px !important;}
+.PaddingTopPercent10{ padding-top: 10%;}
+
+/* Containers */
+.Container100{ width:100%; float:left;}
+.Container96{ width:96%; float:left;}
+.Container90{ width:90%; float:left;}
+.Container85{ width:85%; float:left;}
+.Container80{ width:80%; float:left;}
+.Container75{ width:75%; float:left;}
+.Container70{ width:70%; float:left;}
+.Container66{ width:66.66%; float:left;}
+.Container60{ width:60%; float:left;}
+.Container50{ width:50%; float:left;}
+.Container40{ width:40%; float:left;}
+.Container33{ width:33.33%; float:left;}
+.Container30{ width:30%; float:left;}
+.Container25{ width:25%; float:left;}
+.Container20{ width:20%; float:left;}
+.Container10{ width:10%; float:left;}
+.Container5{ width:5%; float:left;}
+
+.ContainerIndent{display:block; margin:0px auto; padding:10px;}
+
+/* Text Aligns */
+.TexAlCenter{ text-align:center;}
+.TexAlLeft{ text-align:left;}
+.TexAlRight{ text-align:right !important;}
+
+/* Padding With Transparent Border*/
+.PadWithBorder1{ border:solid 1px transparent;}
+.PadWithBorder2{ border:solid 2px transparent;}
+.PadWithBorder3{ border:solid 3px transparent;}
+.PadWithBorder4{ border:solid 4px transparent;}
+.PadWithBorder5{ border:solid 5px transparent;}
+.PadWithBorder10{ border:solid 10px transparent;}
+
+/* Box Sizing */
+.BoxSizeContent{ box-sizing:content-box; -webkit-box-sizing:content-box; -moz-box-sizing:content-box;}
+.BoxSizeBorder{ box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+
+/* Font Sizes */
+.Fs9{font-size:9px !important;} 
+.Fs10{font-size:10px !important;} 
+.Fs11{font-size:11px !important;} 
+.Fs12{font-size:12px !important;} 
+.Fs13{font-size:13px !important;} 
+.Fs14{font-size:14px !important;} 
+.Fs15{font-size:15px !important;} 
+.Fs16{font-size:16px !important;} 
+.Fs17{font-size:17px !important;} 
+.Fs18{font-size:18px !important;} 
+.Fs19{font-size:19px !important;} 
+.Fs20{font-size:20px !important;} 
+.Fs21{font-size:21px !important;} 
+.Fs22{font-size:22px !important;} 
+.Fs23{font-size:23px !important;} 
+.Fs24{font-size:24px !important;} 
+.Fs25{font-size:25px !important;} 
+.Fs26{font-size:26px !important;} 
+.Fs27{font-size:27px !important;} 
+.Fs28{font-size:28px !important;} 
+.Fs29{font-size:29px !important;} 
+.Fs30{font-size:30px !important;}
+.Fs40{font-size:40px !important;}
+.Fs50{font-size:50px !important;}
+.Fs60{font-size:60px !important;}
+.Fs100{font-size:100px !important;}
+.Fs130{font-size:130px !important;}
+
+/* Font Type */
+.FontBold{ font-weight:bold;}
+.FontLight{ font-weight:lighter;}
+.FontNormal{ font-weight:normal;}
+
+/* Animated */
+.Animated03{-webkit-transition: all 0.3s ease; -moz-transition: all 0.3s ease; -ms-transition: all 0.3s ease; -o-transition: all 0.3s ease; transition: all 0.3s ease;}
+.Animated05{-webkit-transition: all 0.5s ease; -moz-transition: all 0.5s ease; -ms-transition: all 0.5s ease; -o-transition: all 0.5s ease; transition: all 0.5s ease;}
+.Animated1{-webkit-transition: all 1s ease; -moz-transition: all 1s ease; -ms-transition: all 1s ease; -o-transition: all 1s ease; transition: all 1s ease;}
+

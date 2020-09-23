@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .ui-datatable-header {
+                height: 50px
+            }
+                   
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-paginator .ui-paginator-current, body .ui-paginator .ui-paginator-rpp-options {
+                color: #3f3f3f;
+            }
+            
+        </style>
+        
+        <b:jumbotron style="background: #3f3f3f; padding: 60px;">
+            <b:form id="processes_report">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                
+                <b:panel title="Processes report" collapsible="false" >
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="3" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%" >
+                            <p:selectOneMenu id="name_node" value="#{agentProcessesController.selectedNodeId}" >
+                                <f:selectItem itemLabel="Select node" itemValue="" />
+                                <f:selectItems value="#{agentProcessesController.listNodeId}" />
+                                <p:ajax  update=":processes_report" listener="#{agentProcessesController.updateListAgentNames()}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:selectOneMenu id="name_agent" value="#{agentProcessesController.selectedAgentName}" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="select agent" itemValue="" />
+                                <f:selectItems value="#{agentProcessesController.listAgentNames}" />
+                            </p:selectOneMenu>
+                            
+                            <p:commandButton value="Submit" update=":processes_report" actionListener="#{agentProcessesController.updateList()}" />
+					
+			</p:panelGrid>
+                    </div>
+                    
+                    <br/>
+                    
+                    <p:dataTable id="tbl" value="#{agentProcessesController.listAgentProcesses}" var="proc" paginator="true" rows="10"  
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                        rowsPerPageTemplate="5,10,15,20,30,40,50,100"  >
+                        
+                        <f:facet name="header">
+                            Processes list                          
+                            <p:commandButton id="toggler" type="button" style="float:right; width:35px" icon="pi pi-align-justify" />
+                            <p:columnToggler datasource="tbl" trigger="toggler" />
+                        </f:facet>
+                        
+                        
+                        <p:column id="filterColumn" filterBy="#{proc.name}" headerText="Name" filterMatchMode="contains"  >  
+                                    <h:outputText value="#{proc.name}" />  
+                                </p:column> 
+                                    
+                                <p:column headerText="Pid">
+                                    <h:outputText value="#{proc.pid}" />
+                                </p:column>
+                                
+                                <p:column headerText="State">
+                                    <h:outputText value="#{proc.processState}" />
+                                </p:column>
+                                
+                                <p:column headerText="Size">
+                                    <h:outputText value="#{proc.processSize}" />
+                                </p:column>
+                                
+                                <p:column headerText="Cmd">
+                                    <h:outputText value="#{proc.cmd}" />
+                                </p:column>
+                                
+                                <p:column headerText="Add">
+                                    <h:outputText value="#{proc.dateAdd}" />
+                                </p:column>
+                                
+                                <p:column headerText="Updated">
+                                    <h:outputText value="#{proc.dateUpdate}" />
+                                </p:column>
+                                
+                                <p:column style="width:42px">
+                                    <p:commandButton 
+                                        title="Delete this item"
+                                        styleClass="GrayButton Black" icon="fa fa-trash" 
+                                        update=":processes_report"
+                                        actionListener="#{agentProcessesController.deleteRecord(proc)}"
+                                        ajax="false" />
+                                </p:column>
+                        
+                    </p:dataTable>
+                    
+                </b:panel>
+                
+            </b:form>
+        </b:jumbotron>
+    </ui:define>
+
+</ui:composition>

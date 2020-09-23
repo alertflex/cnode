@@ -24,7 +24,7 @@ CREATE TABLE `alert` (
   `alert_source` varchar(32) NOT NULL DEFAULT '',
   `alert_type` varchar(32) NOT NULL DEFAULT '',
   `event_id` varchar(512) NOT NULL DEFAULT '',
-  `event_severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `event_severity` varchar(255) NOT NULL DEFAULT '',
   `src_ip` varchar(128) NOT NULL DEFAULT '',
   `dst_ip` varchar(128) NOT NULL DEFAULT '',
   `src_hostname` varchar(128) NOT NULL DEFAULT '',
@@ -805,43 +805,40 @@ CREATE TABLE `alert_priority` (
   `source` varchar(512) NOT NULL DEFAULT '',
   `description` varchar(1024) NOT NULL DEFAULT '',
   `log` int(2) unsigned NOT NULL DEFAULT '0',
-  `alert_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity_default` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `minor_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `major_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `critical_threshold` int(10) unsigned NOT NULL DEFAULT '0',
-  `severity1` varchar(128) NOT NULL DEFAULT 'indef',
-  `severity2` varchar(128) NOT NULL DEFAULT 'indef',
-  `severity3` varchar(128) NOT NULL DEFAULT 'indef',
-  `severity4` varchar(128) NOT NULL DEFAULT 'indef',
-  `severity5` varchar(128) NOT NULL DEFAULT 'indef',
-  `severity6` varchar(128) NOT NULL DEFAULT 'indef',
-  `severity7` varchar(128) NOT NULL DEFAULT 'indef',
+  `text1` varchar(128) NOT NULL DEFAULT 'indef',
+  `text2` varchar(128) NOT NULL DEFAULT 'indef',
+  `text3` varchar(128) NOT NULL DEFAULT 'indef',
+  `text4` varchar(128) NOT NULL DEFAULT 'indef',
+  `text5` varchar(128) NOT NULL DEFAULT 'indef',
   `value1` int(10) unsigned NOT NULL DEFAULT '0',
   `value2` int(10) unsigned NOT NULL DEFAULT '0',
   `value3` int(10) unsigned NOT NULL DEFAULT '0',
   `value4` int(10) unsigned NOT NULL DEFAULT '0',
   `value5` int(10) unsigned NOT NULL DEFAULT '0',
-  `value6` int(10) unsigned NOT NULL DEFAULT '0',
-  `value7` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (1,'_project_id','Alertflex','Alertflex', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (1,'_project_id','Alertflex','Alertflex', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity1`, `severity2`, `severity3`,`value1`, `value2`, `value3`) VALUES (3,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (4,'_project_id','Nmap','Nmap', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (5,'_project_id','Nessus','Nessus', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (6,'_project_id','Misc','Misc', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','MISP','MISP', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (3,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (4,'_project_id','Nmap','Nmap', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (5,'_project_id','Nessus','Nessus', 1, 2, 3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (6,'_project_id','Misc','Misc', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','MISP','MISP', 3, 2, 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (8,'_project_id','RITA','RITA', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (9,'_project_id','SonarQube','SonarQube', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (10,'_project_id','Syslog','Syslog', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (11,'_project_id','Vmray','Vmray', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (12,'_project_id','ZAP','ZAP', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (13,'_project_id','DockerBench','DockerBench', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (14,'_project_id','Trivy','Trivy', 0, 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (15,'_project_id','Snyk','Snyk', 0, 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (9,'_project_id','SonarQube','SonarQube', 'INFO', 'MINOR', 'MAJOR', 'CRITICAL', 'BLOCKER', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (10,'_project_id','Syslog','Syslog', 'Warning', 'Error', 'Critical', 'Alert', 'Emergency', 1,2,3,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (11,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (12,'_project_id','ZAP','ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (13,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (14,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`,`value1`, `value2`, `value3` , `value4`) VALUES (15,'_project_id','Snyk','Snyk', 'low', 'medium', 'high','critical',1,2,3,3);
 
 
 
@@ -849,8 +846,9 @@ CREATE TABLE `cat_profile` (
   `cp_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `cp_name` varchar(128) NOT NULL DEFAULT '',
+  `cp_desc` varchar(512) NOT NULL DEFAULT '',
   `cp_source` varchar(128) NOT NULL DEFAULT '',
-  `cat_name` varchar(512) NOT NULL DEFAULT '',
+  `cat_names` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`cp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -873,16 +871,27 @@ INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VA
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (17,'_project_id','all_dockerbench','DockerBench','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (18,'_project_id','all_trivy','Trivy','*');
 
+CREATE TABLE `mitre` (
+  `tactic_id` varchar(255) NOT NULL,
+  `mitre_type` varchar(255) NOT NULL DEFAULT '',
+  `tactic_name` varchar(1024) NOT NULL DEFAULT '',
+  `technique_id` varchar(255) NOT NULL,
+  `technique_name` varchar(512) NOT NULL DEFAULT '',
+  `desc` varchar(2048) NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `mitre` (`tactic_id`,`mitre_type`,`tactic_name`, `technique_id`,`technique_name`, `description`) VALUES ('T1329','ATT&CK','Acquire and/or use 3rd party infrastructure services','TA0022','Establish & Maintain Infrastructure','A wide variety of cloud, virtual private services, hosting, compute, and storage solutions are available. Additionally botnets are available for rent or purchase. Use of these solutions allow an adversary to stage, launch, and execute an attack from infrastructure that does not physically tie back to them and can be rapidly provisioned, modified, and shut down.');
+INSERT INTO `mitre` (`tactic_id`,`mitre_type`,`tactic_name`, `technique_id`,`technique_name`, `description`) VALUES ('T1330','ATT&CK','Acquire and/or use 3rd party infrastructure services','TA0022','Establish & Maintain Infrastructure','A wide variety of 3rd party software services are available (e.g., Twitter, Dropbox, GoogleDocs). Use of these solutions allow an adversary to stage, launch, and execute an attack from infrastructure that does not physically tie back to them and can be rapidly provisioned, modified, and shut down.');
+INSERT INTO `mitre` (`tactic_id`,`mitre_type`,`tactic_name`, `technique_id`,`technique_name`, `description`) VALUES ('T1332','ATT&CK','Acquire or compromise 3rd party signing certificates','TA0022','Establish & Maintain Infrastructure','Code signing is the process of digitally signing executables and scripts to confirm the software author and guarantee that the code has not been altered or corrupted. Users may trust a signed piece of code more than an unsigned piece of code even if they do not know who issued the certificate or who the author is.');
+
+
 CREATE TABLE `alert_category` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `cat_name` varchar(512) NOT NULL DEFAULT '',
-  `cat_source` varchar(128) NOT NULL DEFAULT '',
   `cat_desc` varchar(1024) NOT NULL DEFAULT '',
-  `mitre_tactics` varchar(1024) NOT NULL DEFAULT '',
-  `mitre_techniques` varchar(1024) NOT NULL DEFAULT '',
-  `misp_taxonomy` varchar(1024) NOT NULL DEFAULT '',
-  `misp_galaxy` varchar(1024) NOT NULL DEFAULT '',
+  `cat_source` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -917,6 +926,7 @@ INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('cuckoo_sa
 ('file', 'indef', 'Cuckoo'), 
 ('process', 'indef', 'Cuckoo'), 
 ('network', 'indef', 'Cuckoo'); 
+
 
 INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('unknown cat', 'indef', 'Alertflex'), 
 ('successful user login', 'indef', 'Alertflex'), 

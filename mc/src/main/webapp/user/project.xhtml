@@ -1,0 +1,157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+           
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-dialog .ui-dialog-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-tabs .ui-tabs-panels {
+                background-color: #3f3f3f;
+            }
+               
+        </style>
+        
+        
+        <b:container style="background: #3f3f3f; margin-top: 60px">
+            <b:form id="profile">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Project settings" collapsible="false" >
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                    <p:commandButton value="Save" actionListener="#{projectController.changeSetting()}" 
+                        update=":profile" style="margin-bottom: 15px"/>
+                            
+                    <p:tabView>
+                        
+                        <p:tab title="Parameters"> 
+                            <div class="Card ui-fluid">
+                            <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                                
+                                <p:outputLabel value="Project ref:" />
+                                <p:outputLabel value="#{projectController.projectRef}" class="GrayBack" />
+                                
+                                <p:outputLabel value="Certificate for Altprobe: " />
+                                <p:commandButton value="download" ajax="false" >
+                                    <p:fileDownload value="#{projectController.fileAltprobe}"  />
+                                </p:commandButton>
+                                
+                                <p:outputLabel for="path" value="Project directory:" />
+                                <p:inputText  id="path" value="#{projectController.projectPath}" />
+                                
+                                <p:outputLabel for="iprep_cat" value="Default IP reputation category (1 - 128):" />
+                                <p:spinner id="iprep_cat" value="#{projectController.iprepCat}" min="0" max="128" />
+                                
+                                <p:outputLabel for="inc_json" value="Include in alerts the JSON raw info:" />
+                                <p:selectBooleanCheckbox id="inc_json" value="#{projectController.incJson}" />
+                                
+                                <p:outputLabel for="stat_rest" value="Enable REST interface for metrics:" />
+                                <p:selectBooleanCheckbox id="stat_rest" value="#{projectController.statRest}" />
+                                
+                                <p:outputLabel value="Enable IOC check:" />
+                                <p:selectBooleanCheckbox value="#{projectController.iocCheck}" />
+                                
+                            </p:panelGrid>
+                            </div>
+                        </p:tab> 
+                        
+                        <p:tab title="Notifications"> 
+                            <div class="Card ui-fluid">
+                                <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank">   
+                                
+                                    <p:outputLabel value="Mail SMTP server" for="mailSmtp" />
+                                    <p:inputText id="mailSmtp" value="#{projectController.mailSmtp}" />
+                                   
+                                    <p:outputLabel value="Mail SMTP port" for="mailPort" />
+                                    <p:inputText id="mailPort" value="#{projectController.mailPort}" />
+                                   
+                                    <p:outputLabel value="Mail user" for="mailUser" />
+                                    <p:inputText id="mailUser" value="#{projectController.mailUser}" />
+                                
+                                    <p:outputLabel value="Mail password" for="mailPass" />
+                                    <p:password id="mailPass" value="#{projectController.mailPass}"  />
+                                   
+                                    <p:outputLabel value="Mail from" for="mailFrom" />
+                                    <p:inputText id="mailFrom" value="#{projectController.mailFrom}" />
+                                   
+                                    <br/>
+                                    
+                                    <p:outputLabel value="Slack hook" for="slackHook" />
+                                    <p:password id="slackHook" value="#{projectController.slackHook}"  />
+                                        
+                                    <br/>
+                                    
+                                    <p:outputLabel value="Twilio sid" for="smsSid" />
+                                    <p:inputText id="smsSid" value="#{projectController.smsAccount}" />
+                                    
+                                    <p:outputLabel value="Twilio token" for="smsToken" />
+                                    <p:password id="smsToken" value="#{projectController.smsToken}"  />
+                                        
+                                    <p:outputLabel value="Twilio from" for="smsFrom" />
+                                    <p:inputText id="smsFrom" value="#{projectController.smsFrom}" />
+                            
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                            
+                        <p:tab title="Timers"> 
+                            <div class="Card ui-fluid">
+                            
+                            <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" > 
+                                
+                                <p:outputLabel for="alert_timer" value="Time interval to store of alerts:" />
+                                <p:spinner id="alert_timer" value="#{projectController.alertTimerange}" min="0" max="365" />
+                                
+                                <p:outputLabel for="stat_timer" value="Timer interval to store of IDS statistics:" />
+                                <p:spinner id="stat_timer" value="#{projectController.statTimerange}" min="0" max="365" />
+                                
+                                <p:outputLabel for="task_timer" value="Timer interval to store of Tasks records:" />
+                                <p:spinner id="task_timer" value="#{projectController.taskTimerange}" min="0" max="365" />
+                                
+                                <p:outputLabel for="iprup_timer" value="Time interval to update of IP reputation lists:" />
+                                <p:spinner id="iprup_timer" value="#{projectController.iprepTimerange}" min="0" max="3000" />
+                                
+                            </p:panelGrid>
+                            
+                            </div>
+                        
+                        </p:tab> 
+                            
+                    </p:tabView>
+                        
+                </b:panel>
+                
+            </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>

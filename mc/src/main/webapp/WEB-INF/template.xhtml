@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:b="http://bootsfaces.net/ui">
+
+    <f:view contentType="text/html" locale="en">
+        <h:head>
+            <f:facet name="first">
+                <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+                <meta http-equiv="pragma" content="no-cache"/>
+                <meta http-equiv="cache-control" content="no-cache"/>
+                <meta http-equiv="expires" content="0"/>
+            </f:facet>
+            <link href="/resources/css/default.css" rel="stylesheet" type="text/css" />
+            <ui:insert name="head"/>
+        </h:head>
+
+        <h:body style="background: #3f3f3f;">
+            
+            <div id="panel">
+                
+                <style type="text/css">
+                    
+                    .brand-img-style {
+                        padding-top: 0px;
+                        overflow: visible;
+                        max-height: 20px;
+                        width: auto;
+                    }
+                    
+                    .navbar-default .navbar-brand {
+                        color: #1f7ed0;
+                        font-weight: bold;
+                    }
+                    
+                </style>
+                
+                 <!--<b:navBar fixed="top"  fluid="true">-->
+                <!-- <b:navBar fixed="top" brand="Alertflex" brandHref="alerts.xhtml" brand-img="../resources/img/logo1.png" brandImgStyleClass="brand-img-style">-->
+                <b:navBar fluid="true" brand="Alertflex" brandHref="alerts.xhtml" brand-img="../resources/img/logo1.png" brandImgStyleClass="brand-img-style">    
+                    <b:navbarLinks pull="left">
+                        <b:dropMenu value="Alerts" iconAwesome="exclamation-triangle">
+                            <b:navLink value="Priority" href="edit-priority.xhtml" ></b:navLink>
+                            <b:dropMenu value="Response">
+                                <b:navLink value="add" href="add-response.xhtml" ></b:navLink>
+                                <b:navLink value="delete" href="delete-response.xhtml" ></b:navLink>
+                                <b:navLink value="edit" href="edit-response.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:navLink value="Search" href="alerts.xhtml" ></b:navLink>
+                        </b:dropMenu>
+                        <b:dropMenu value="Jobs" iconAwesome="cogs" >
+                            <b:dropMenu value="Run scanners">
+                                <b:navLink value="add" href="add-scanner.xhtml" ></b:navLink>
+                                <b:navLink value="delete" href="delete-scanner.xhtml" ></b:navLink>
+                                <b:navLink value="edit" href="edit-scanner.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:dropMenu value="Run scripts">
+                                <b:navLink value="add" href="add-script.xhtml" ></b:navLink>
+                                <b:navLink value="delete" href="delete-script.xhtml" ></b:navLink>
+                                <b:navLink value="edit" href="edit-script.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:dropMenu value="Sandbox analysis">
+                                <b:navLink value="add" href="add-sandbox.xhtml" ></b:navLink>
+                                <b:navLink value="delete" href="delete-sandbox.xhtml" ></b:navLink>
+                                <b:navLink value="edit" href="edit-sandbox.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                        </b:dropMenu>
+                        <b:dropMenu value="Reports" iconAwesome="table" >
+                            <b:dropMenu value="Container">
+                                <b:navLink value="Docker Bench" href="docker-report.xhtml" ></b:navLink>
+                                <b:navLink value="Trivy" href="trivy-report.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:dropMenu value="DAST">
+                                <b:navLink value="Nessus" href="nessus-report.xhtml" ></b:navLink>
+                                <b:navLink value="Nmap" href="nmap-report.xhtml" ></b:navLink>
+                                <b:navLink value="ZAP" href="zap-report.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:dropMenu value="Endpoint">
+                                <b:navLink value="OpenScap" href="openscap-report.xhtml" ></b:navLink>
+                                <b:navLink value="Packages" href="packages-report.xhtml" ></b:navLink>
+                                <b:navLink value="Processes" href="processes-report.xhtml" ></b:navLink>
+                                <b:navLink value="SCA Wazuh" href="sca-report.xhtml" ></b:navLink>
+                                <b:navLink value="Vulnerabilities" href="vuln-report.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:dropMenu value="Sandbox">
+                                <b:navLink value="Cuckoo" href="cuckoo-report.xhtml" ></b:navLink>
+                                <b:navLink value="HybridAnalysis" href="falcon-report.xhtml" ></b:navLink>
+                                <b:navLink value="VMRay" href="vmray-report.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:dropMenu value="SAST">
+                                <b:navLink value="SonarQube" href="sonar-report.xhtml" ></b:navLink>
+                                <b:navLink value="Snyk" href="snyk-report.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                        </b:dropMenu>
+                        <b:dropMenu value="Sensors" iconAwesome="eye">
+                            <b:navLink value="Collector filters" href="filters.xhtml" ></b:navLink>
+                            <b:navLink value="Endpoint agents" href="agents.xhtml" ></b:navLink>
+                            <b:navLink value="IDS configs" href="configs.xhtml" ></b:navLink>
+                            <b:navLink value="IDS rules" href="rules.xhtml" ></b:navLink>
+                        </b:dropMenu>
+                        <b:dropMenu value="Settings" iconAwesome="sliders" >
+                            <b:dropMenu value="Credentials">
+                                <b:navLink value="add" href="add-cred.xhtml" ></b:navLink>
+                                <b:navLink value="delete" href="delete-cred.xhtml" ></b:navLink>
+                                <b:navLink value="edit" href="edit-cred.xhtml" ></b:navLink>
+                            </b:dropMenu> 
+                            <b:navLink value="Integrations" href="integration.xhtml" ></b:navLink>
+                            <b:dropMenu value="Hosts">
+                                <b:navLink value="add" href="add-host.xhtml" ></b:navLink>
+                                <b:navLink value="delete" href="delete-host.xhtml" ></b:navLink>
+                                <b:navLink value="edit" href="edit-host.xhtml" ></b:navLink>
+                            </b:dropMenu>
+                            <b:navLink value="Project" href="project.xhtml" ></b:navLink>
+                            <b:navLink value="User" href="user.xhtml" ></b:navLink>
+                        </b:dropMenu>
+                    </b:navbarLinks>
+                    <b:navbarLinks pull="right">
+                        <b:navLink href="alerts-critical.xhtml" ><span class="badge badge-pill" style="background-color: orangered">#{alertsNewController.getCriticalAlerts()}</span></b:navLink>
+                        <b:navLink href="alerts-major.xhtml" ><span class="badge badge-pill" style="background-color: orange">#{alertsNewController.getMajorAlerts()}</span></b:navLink>
+                        <b:navLink href="alerts-minor.xhtml" ><span class="badge badge-pill" style="background-color: #1f7ed0">#{alertsNewController.getMinorAlerts()}</span></b:navLink>
+                        <b:navLink href="alerts-normal.xhtml" ><span class="badge badge-pill" style="background-color: olivedrab">#{alertsNewController.getNormalAlerts()}</span></b:navLink>
+                        <b:navLink value="Sign out" href="signout.xhtml" iconAwesome="sign-out"></b:navLink>
+                    </b:navbarLinks>
+                </b:navBar>
+                
+                <ui:insert name="content">Content</ui:insert>
+            </div>
+                
+        </h:body>
+
+    </f:view>
+</html>

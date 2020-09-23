@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .ui-datatable-header {
+                height: 50px
+            }
+                   
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-paginator .ui-paginator-current, body .ui-paginator .ui-paginator-rpp-options {
+                color: #3f3f3f;
+            }
+               
+        </style>
+        
+        <b:jumbotron style="background: #3f3f3f; padding: 60px;">
+            <b:form id="trivy_report">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Trivy report" collapsible="false" >
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                    <div class="Card ui-fluid">
+                        
+                        <p:panelGrid  columns="3" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%; margin-bottom: 15px">
+                            
+                            <p:selectOneMenu id="name_node" value="#{trivyController.selectedNodeId}" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="Select node" itemValue="" />
+                                <f:selectItems value="#{trivyController.listNodeId}" />
+                                <p:ajax  update="name_sensor" listener="#{trivyController.updateListSensorNames()}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:selectOneMenu id="name_sensor" value="#{trivyController.selectedSensorName}" filter="true" filterMatchMode="startsWith" >
+                                 <f:selectItem itemLabel="Select sensor" itemValue="" />
+                                 <f:selectItems value="#{trivyController.listSensorNames}" />
+                             </p:selectOneMenu>
+                            
+                            <p:commandButton value="Submit" update=":trivy_report" actionListener="#{trivyController.updateVulList()}" />
+                            
+                        </p:panelGrid>
+                                
+                        <p:dataTable id="tbl_trivy" value="#{trivyController.listVulnerability}" var="vul" >
+                                
+                            <f:facet name="header">
+                                Docker vulnerabilities
+                                <p:commandButton id="toggler" type="button" style="float:right; width:35px" icon="pi pi-align-justify" />
+                                <p:columnToggler datasource="tbl_trivy" trigger="toggler" />
+                            </f:facet>
+                            
+                            <p:column headerText="Severity" sortBy="#{vul.severity}" style="#{vul.colorSeverity}" >
+                                <h:outputText value="#{vul.digitSeverity}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Vuln ID">
+                                <h:outputText value="#{vul.vulnerabilityId}" />
+                            </p:column>
+                            
+                            <p:column headerText="Package">
+                                <h:outputText value="#{vul.pkgName}" />
+                            </p:column>
+                            
+                            <p:column headerText="Target">
+                                <h:outputText value="#{vul.target}" />
+                            </p:column>
+                            
+                            <p:column headerText="Type">
+                                <h:outputText value="#{vul.targetType}" />
+                            </p:column>
+                            
+                            <p:column headerText="Source">
+                                <h:outputText value="#{vul.severitySource}" />
+                            </p:column>
+                            
+                            <p:column headerText="Title">
+                                <h:outputText value="#{vul.title}" />
+                            </p:column>
+                            
+                            <p:column headerText="Desc">
+                                <h:outputText value="#{vul.description}" />
+                            </p:column>
+                            
+                            <p:column headerText="Fixed ver">
+                                <h:outputText value="#{vul.fixedVersion}" />
+                            </p:column>
+                            
+                            <p:column headerText="Installed ver">
+                                <h:outputText value="#{vul.installedVersion}" />
+                            </p:column>
+                                
+                            <p:column headerText="Created">
+                                <h:outputText value="#{vul.reportAdded}" />
+                            </p:column>
+                            
+                            <p:column headerText="Updated">
+                                <h:outputText value="#{vul.reportUpdated}" />
+                            </p:column>
+                                
+                            <p:column style="width:42px">
+                                <p:commandButton 
+                                    title="Delete this item"
+                                    styleClass="GrayButton Black" icon="fa fa-trash" 
+                                    update=":trivy_report"
+                                    actionListener="#{trivyController.deleteRecord(vul)}"
+                                    ajax="false" />
+                            </p:column>
+                                
+                        </p:dataTable>
+                        
+                    </div>
+                </b:panel>
+            </b:form>
+        </b:jumbotron>
+    </ui:define>
+
+</ui:composition>

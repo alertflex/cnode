@@ -90,6 +90,10 @@ public class AlertsManagement  {
     Map<String,List<CatProfile>> catProfileVmrayMap;
     Map<String,List<CatProfile>> catProfileWazuhMap;
     Map<String,List<CatProfile>> catProfileZAPMap;
+    Map<String,List<CatProfile>> catProfileNessusMap;
+    Map<String,List<CatProfile>> catProfileDockerBenchMap;
+    Map<String,List<CatProfile>> catProfileTrivyMap;
+    Map<String,List<CatProfile>> catProfileSnykMap;
     
     @EJB
     private AlertCategoryFacade alertsCategoryFacade;
@@ -109,6 +113,10 @@ public class AlertsManagement  {
     Map<String,List<String>> catVmrayMap;
     Map<String,List<String>> catWazuhMap;
     Map<String,List<String>> catZAPMap;
+    Map<String,List<String>> catNessusMap;
+    Map<String,List<String>> catDockerBenchMap;
+    Map<String,List<String>> catSnykMap;
+    Map<String,List<String>> catTrivyMap;
             
     String[] catArray;
     
@@ -130,9 +138,9 @@ public class AlertsManagement  {
     public AlertsManagement () {
         
         catProfileAlertflexMap = new HashMap<String,List<CatProfile>>();
-        catProfileCuckooMap = new HashMap<String,List<CatProfile>>();
+        catProfileCuckooMap = new HashMap<String,List<CatProfile>>();  
         catProfileFalcoMap = new HashMap<String,List<CatProfile>>();
-        catProfileHybridAnalysisMap = new HashMap<String,List<CatProfile>>();
+        catProfileHybridAnalysisMap = new HashMap<String,List<CatProfile>>(); 
         catProfileMiscMap = new HashMap<String,List<CatProfile>>();
         catProfileMISPMap = new HashMap<String,List<CatProfile>>();
         catProfileModSecurityMap = new HashMap<String,List<CatProfile>>();
@@ -143,6 +151,11 @@ public class AlertsManagement  {
         catProfileVmrayMap = new HashMap<String,List<CatProfile>>();
         catProfileWazuhMap = new HashMap<String,List<CatProfile>>();
         catProfileZAPMap = new HashMap<String,List<CatProfile>>();
+        catProfileNmapMap = new HashMap<String,List<CatProfile>>();
+        catProfileNessusMap = new HashMap<String,List<CatProfile>>();
+        catProfileDockerBenchMap = new HashMap<String,List<CatProfile>>();
+        catProfileTrivyMap = new HashMap<String,List<CatProfile>>();
+        catProfileSnykMap = new HashMap<String,List<CatProfile>>();
         
         catAlertflexMap = new HashMap<String,List<String>>();
         catCuckooMap = new HashMap<String,List<String>>();
@@ -158,6 +171,11 @@ public class AlertsManagement  {
         catVmrayMap = new HashMap<String,List<String>>();
         catWazuhMap = new HashMap<String,List<String>>();
         catZAPMap = new HashMap<String,List<String>>();
+        catNmapMap = new HashMap<String,List<String>>();
+        catNessusMap = new HashMap<String,List<String>>();
+        catDockerBenchMap = new HashMap<String,List<String>>();
+        catTrivyMap = new HashMap<String,List<String>>();
+        catSnykMap = new HashMap<String,List<String>>();
         
         responseForEventMap = new HashMap<String,List<Response>>();
         responseForCatMap = new HashMap<String,List<Response>>();
@@ -267,7 +285,8 @@ public class AlertsManagement  {
                                 a.setDescription(desc);
                             }
                             a.setEventId(((TextMessage) message).getStringProperty("event_id"));
-                            a.setEventSeverity(((TextMessage) message).getIntProperty("event_severity"));
+                            int sev = ((TextMessage) message).getIntProperty("event_severity");
+                            a.setEventSeverity(Integer.toString(sev));
                             String loc = ((TextMessage) message).getStringProperty("location");
                             if (loc.length() >= 1024) {
                                 loc.substring(0, 1022);
@@ -395,6 +414,10 @@ public class AlertsManagement  {
             catProfileVmrayMap = new HashMap<String,List<CatProfile>>();
             catProfileWazuhMap = new HashMap<String,List<CatProfile>>();
             catProfileZAPMap = new HashMap<String,List<CatProfile>>();
+            catProfileNessusMap = new HashMap<String,List<CatProfile>>();
+            catProfileDockerBenchMap = new HashMap<String,List<CatProfile>>();
+            catProfileTrivyMap = new HashMap<String,List<CatProfile>>();
+            catProfileSnykMap = new HashMap<String,List<CatProfile>>();
             
             catAlertflexMap = new HashMap<String,List<String>>();
             catCuckooMap = new HashMap<String,List<String>>();
@@ -411,6 +434,10 @@ public class AlertsManagement  {
             catVmrayMap = new HashMap<String,List<String>>();
             catWazuhMap = new HashMap<String,List<String>>();
             catZAPMap = new HashMap<String,List<String>>();
+            catNessusMap = new HashMap<String,List<String>>();
+            catDockerBenchMap = new HashMap<String,List<String>>();
+            catTrivyMap = new HashMap<String,List<String>>();
+            catSnykMap = new HashMap<String,List<String>>();
         
             responseForEventMap = new HashMap<String,List<Response>>();
             responseForCatMap = new HashMap<String,List<Response>>();
@@ -447,6 +474,14 @@ public class AlertsManagement  {
                 if (catList != null) catWazuhMap.put(project.getRefId(),catList);
                 catList = alertsCategoryFacade.findCatNames(project.getRefId(),"ZAP");
                 if (catList != null) catZAPMap.put(project.getRefId(),catList);
+                catList = alertsCategoryFacade.findCatNames(project.getRefId(),"Nessus");
+                if (catList != null) catNessusMap.put(project.getRefId(),catList);
+                catList = alertsCategoryFacade.findCatNames(project.getRefId(),"DockerBench");
+                if (catList != null) catDockerBenchMap.put(project.getRefId(),catList);
+                catList = alertsCategoryFacade.findCatNames(project.getRefId(),"Trivy");
+                if (catList != null) catTrivyMap.put(project.getRefId(),catList);
+                catList = alertsCategoryFacade.findCatNames(project.getRefId(),"Snyk");
+                if (catList != null) catSnykMap.put(project.getRefId(),catList);
                 
                 List<CatProfile> catProfileList = catProfileFacade.findProfileBySource(project.getRefId(), "Alertflex");
                 if (catProfileList != null) catProfileAlertflexMap.put(project.getRefId(),catProfileList);
@@ -478,8 +513,15 @@ public class AlertsManagement  {
                 if (catProfileList != null) catProfileWazuhMap.put(project.getRefId(),catProfileList);
                 catProfileList = catProfileFacade.findProfileBySource(project.getRefId(), "ZAP");
                 if (catProfileList != null) catProfileZAPMap.put(project.getRefId(),catProfileList);
+                catProfileList = catProfileFacade.findProfileBySource(project.getRefId(), "Nessus");
+                if (catProfileList != null) catProfileNessusMap.put(project.getRefId(),catProfileList);
+                catProfileList = catProfileFacade.findProfileBySource(project.getRefId(), "DockerBench");
+                if (catProfileList != null) catProfileDockerBenchMap.put(project.getRefId(),catProfileList);
+                catProfileList = catProfileFacade.findProfileBySource(project.getRefId(), "Trivy");
+                if (catProfileList != null) catProfileTrivyMap.put(project.getRefId(),catProfileList);
+                catProfileList = catProfileFacade.findProfileBySource(project.getRefId(), "Snyk");
+                if (catProfileList != null) catProfileSnykMap.put(project.getRefId(),catProfileList);
                 
-            
                 List<Response> responseList = responseFacade.findResponseForEvent(project.getRefId());
                 if (responseList != null) responseForEventMap.put(project.getRefId(),responseList);
                 responseList = responseFacade.findResponseForCat(project.getRefId());
@@ -577,6 +619,18 @@ public class AlertsManagement  {
             case "ZAP":
                 catList = catZAPMap.get(alert.getRefId());
                 break;
+            case "Nessus":
+                catList = catNessusMap.get(alert.getRefId());
+                break;
+            case "DockerBench":
+                catList = catDockerBenchMap.get(alert.getRefId());
+                break;
+            case "Trivy":
+                catList = catTrivyMap.get(alert.getRefId());
+                break;
+            case "Snyk":
+                catList = catSnykMap.get(alert.getRefId());
+                break;
             default:
                 break;
         }
@@ -670,6 +724,22 @@ public class AlertsManagement  {
                 createCat(c, "ZAP", alert.getRefId());
                 catZAPMap.get(alert.getRefId()).add(c);
                 break;
+            case "Nessus":
+                createCat(c, "Nessus", alert.getRefId());
+                catSyslogMap.get(alert.getRefId()).add(c);
+                break;
+            case "DockerBench":
+                createCat(c, "DockerBench", alert.getRefId());
+                catVmrayMap.get(alert.getRefId()).add(c);
+                break;
+            case "Trivy":
+                createCat(c, "Trivy", alert.getRefId());
+                catWazuhMap.get(alert.getRefId()).add(c);
+                break;
+            case "Snyk":
+                createCat(c, "Snyk", alert.getRefId());
+                catZAPMap.get(alert.getRefId()).add(c);
+                break;
             default:
                 break;
         }
@@ -686,7 +756,7 @@ public class AlertsManagement  {
             a.setAlertSeverity(1);
             a.setDescription("Unknown category: " + c);
             a.setEventId("4");
-            a.setEventSeverity(1);
+            a.setEventSeverity("1");
             a.setLocation("Response from controller");
             a.setAction("indef");
             a.setStatus("processed");
@@ -867,7 +937,23 @@ public class AlertsManagement  {
             case "ZAP":
                 catProfileList = catProfileZAPMap.get(a.getRefId());
                 break;
-                                
+                
+            case "Nessus":
+                catProfileList = catProfileNessusMap.get(a.getRefId());
+                break;
+                
+            case "DockerBench":
+                catProfileList = catProfileDockerBenchMap.get(a.getRefId());
+                break;
+            
+            case "Trivy":
+                catProfileList = catProfileTrivyMap.get(a.getRefId());
+                break;
+                
+            case "Snyk":
+                catProfileList = catProfileSnykMap.get(a.getRefId());
+                break;    
+                
             default:
                 break;
         }

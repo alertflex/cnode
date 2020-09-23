@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+    
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+           
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-dialog .ui-dialog-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-tabs .ui-tabs-panels {
+                background-color: #3f3f3f;
+            }
+               
+        </style>
+        
+        
+        <b:container style="background: #3f3f3f; margin-top: 60px">
+            <b:form id="delete_cred">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Delete credential" collapsible="false" >
+                    
+                    <p:commandButton value="Delete" actionListener="#{credentialController.deleteCredential()}" 
+                        style="margin-bottom: 15px" update=":delete_cred"/>
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                        
+                            <p:selectOneMenu value="#{credentialController.selectedCredentialName}" filter="true" >
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{credentialController.listCredentialsName}" />
+                            </p:selectOneMenu>
+                    
+                        </p:panelGrid>
+                    </div>
+                    
+                </b:panel>
+             </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>

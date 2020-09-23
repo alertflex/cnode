@@ -132,8 +132,9 @@ public class Alert implements Serializable {
     private String eventId;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 255)
     @Column(name = "event_severity")
-    private int eventSeverity;
+    private String eventSeverity;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -282,7 +283,7 @@ public class Alert implements Serializable {
         this.alertId = alertId;
     }
 
-    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, int eventSeverity, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String fileName, String filePath, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String userName, String agentName, String containerId, String containerName, String location, String status, String action, String filter, String info, String timeEvent) {
+    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String fileName, String filePath, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String userName, String agentName, String containerId, String containerName, String location, String status, String action, String filter, String info, String timeEvent) {
         this.alertId = alertId;
         this.alertUuid = alertUuid;
         this.refId = refId;
@@ -411,11 +412,11 @@ public class Alert implements Serializable {
         this.eventId = eventId;
     }
 
-    public int getEventSeverity() {
+    public String getEventSeverity() {
         return eventSeverity;
     }
 
-    public void setEventSeverity(int eventSeverity) {
+    public void setEventSeverity(String eventSeverity) {
         this.eventSeverity = eventSeverity;
     }
 

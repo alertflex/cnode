@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .ui-datatable-header {
+                height: 50px
+            }
+                   
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-paginator .ui-paginator-current, body .ui-paginator .ui-paginator-rpp-options {
+                color: #3f3f3f;
+            }
+            
+        </style>
+        
+        <b:jumbotron style="background: #3f3f3f; padding: 60px;">
+            <b:form id="openscap_report">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                
+                <b:panel title="OpenScap report" collapsible="false" >
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="3" layout="grid" styleClass="ui-panelgrid-blank" style="width:50%" >
+                            <p:selectOneMenu id="name_node" value="#{agentOpenscapController.selectedNodeId}" >
+                                <f:selectItem itemLabel="Node" itemValue="" />
+                                <f:selectItems value="#{agentOpenscapController.listNodeId}" />
+                                <p:ajax  update=":openscap_report" listener="#{agentOpenscapController.updateListAgentNames()}" />
+                            </p:selectOneMenu>
+                        
+                            <p:selectOneMenu id="name_agent" value="#{agentOpenscapController.selectedAgentName}" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="Agent" itemValue="" />
+                                <f:selectItems value="#{agentOpenscapController.listAgentNames}" />
+                            </p:selectOneMenu>
+                        
+                            <p:commandButton value="Submit" update=":openscap_report" actionListener="#{agentOpenscapController.updateList()}" />
+                        </p:panelGrid>
+                    </div>
+                    
+                    <br/>
+                    
+                    <p:dataTable id="tbl_openscap" value="#{agentOpenscapController.listAgentOpenscap}" var="compl" paginator="true" rows="10"  
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                        rowsPerPageTemplate="5,10,15,20,30,40,50,100"  >
+                        
+                        <f:facet name="header">
+                            List of OpenScap events                           
+                            <p:commandButton id="toggler" type="button" style="float:right; width:35px" icon="pi pi-align-justify" />
+                            <p:columnToggler datasource="tbl_openscap" trigger="toggler" />
+                        </f:facet>
+                        
+                        
+                        <p:column headerText="Severity" style="#{compl.colorSeverity}; width:48px" sortBy="#{compl.severity}" >
+                                    <h:outputText value="#{compl.digitSeverity}"/>
+                        </p:column>
+                        
+                        <p:column headerText="CheckSeverity" >
+                            <h:outputText value="#{compl.checkSeverity}" />
+                        </p:column>
+                            
+                        <p:column headerText="Event">
+                            <h:outputText value="#{compl.event}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckId">
+                            <h:outputText value="#{compl.checkId}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckTitle">
+                            <h:outputText value="#{compl.checkTitle}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckResult">
+                            <h:outputText value="#{compl.checkResult}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckDesc">
+                            <h:outputText value="#{compl.checkDescription}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckRationale">
+                            <h:outputText value="#{compl.checkRationale}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckRef">
+                            <h:outputText value="#{compl.checkReferences}" />
+                        </p:column>
+                            
+                        <p:column headerText="CheckIdentifiers">
+                            <h:outputText value="#{compl.checkIdentifiers}" />
+                        </p:column>
+                        
+                        <p:column headerText="Description">
+                            <h:outputText value="#{compl.description}" />
+                        </p:column>
+                        
+                         <p:column headerText="Benchmark">
+                             <h:outputText value="#{compl.benchmark}" />
+                        </p:column>
+                        
+                         <p:column headerText="ProfileId">
+                             <h:outputText value="#{compl.profileId}" />
+                        </p:column>
+                        
+                         <p:column headerText="ProfileTitle">
+                             <h:outputText value="#{compl.profileTitle}" />
+                        </p:column>
+                        
+                         <p:column headerText="Added">
+                             <h:outputText value="#{compl.reportAdded}" />
+                        </p:column>
+                        
+                        <p:column headerText="Updated">
+                            <h:outputText value="#{compl.reportUpdated}" />
+                        </p:column>
+                        
+                        <p:column style="width:42px">
+                            <p:commandButton 
+                                title="Delete this item"
+                                styleClass="GrayButton Black" icon="fa fa-trash" 
+                                update=":openscap_report"
+                                actionListener="#{agentOpenscapController.deleteRecord(compl)}"
+                                ajax="false" />
+                        </p:column>
+                        
+                    </p:dataTable>
+                    
+                </b:panel>
+                
+            </b:form>
+        </b:jumbotron>
+    </ui:define>
+
+</ui:composition>

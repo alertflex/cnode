@@ -9,6 +9,7 @@ package org.alertflex.controller;
 import java.util.Date;
 import java.util.UUID;
 import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.DockerScan;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
@@ -72,26 +73,6 @@ public class DockerBench {
                     ds.setResultDesc(results.getJSONObject(j).getString("desc"));
                     ds.setResult(results.getJSONObject(j).getString("result"));
                     
-                    Integer severity = 0;
-                    switch (ds.getResult()) {
-                        case "PASS":
-                            severity = 0;
-                            break;
-                        case "INFO":
-                            severity = 1;
-                            break;
-                        case "NOTE":
-                            severity = 2;
-                            break;
-                        case "WARN":
-                            severity = 3;
-                            break;
-                        default:
-                            break;
-                    }
-                    
-                    ds.setSeverity(severity);
-                                        
                     ds.setDetails("indef");
                     if (results.getJSONObject(j).has("details")) ds.setDetails(results.getJSONObject(j).getString("details"));
                     
@@ -103,11 +84,30 @@ public class DockerBench {
                     
                     if (dsExisting == null) {
                         
-                        // create alert
-                        eventBean.getDockerScanFacade().create(ds);
-                        
-                        createDockerScanAlert(ds);
+                        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(project.getRefId(), "DockerBench");
+                        int sev = 0;
+                        String severity = ds.getResult();
+                
+                        if (!severity.isEmpty() && ap != null) {
+                            
+                            sev = ap.getSeverityDefault();
+                            
+                            if(ap.getText1().equals(severity)) {
+                                sev = ap.getValue1();
+                            } else if(ap.getText2().equals(severity)) {
+                                sev = ap.getValue2();
+                            } else if(ap.getText3().equals(severity)) {
+                                sev = ap.getValue3();
+                            } else if(ap.getText4().equals(severity)) {
+                                sev = ap.getValue4();
+                            } 
                     
+                            ds.setSeverity(sev);
+                            eventBean.getDockerScanFacade().create(ds);
+                    
+                            if (sev >= ap.getSeverityThreshold()) createDockerScanAlert(ds);
+                        }
+                        
                     } else {
                         
                         dsExisting.setReportUpdated(date);
@@ -134,6 +134,7 @@ public void createDockerScanAlert(DockerScan ds) {
         a.setAlertUuid(UUID.randomUUID().toString());
         
         a.setAlertSeverity(ds.getSeverity());
+        a.setEventSeverity(ds.getResult());
         a.setEventId("1");
         a.setCategories("docker_bench");
         a.setDescription(ds.getResultDesc());

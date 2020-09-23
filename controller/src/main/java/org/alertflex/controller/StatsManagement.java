@@ -16,6 +16,7 @@ import org.alertflex.entity.AgentProcesses;
 import org.alertflex.entity.AgentPackages;
 import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
+import org.alertflex.entity.AlertPriority;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -774,13 +775,17 @@ public class StatsManagement {
         a.setNodeId(ag.getNodeId());
         a.setAlertUuid(UUID.randomUUID().toString());
         
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ag.getRefId(), "Alertflex");
+        int sev = ap.getSeverityDefault();
+        a.setAlertSeverity(sev);
+        a.setEventSeverity(Integer.toString(sev));
+        
         a.setAlertSource("Alertflex");
         a.setAlertType("HOST");
         a.setSensorId(ag.getManager());
-        a.setAlertSeverity(2);
+        
         a.setDescription("new agent in the system with id: " + ag.getAgentId() + " and name: " + ag.getName());
         a.setEventId("1");
-        a.setEventSeverity(0);
         a.setLocation("Response from controller");
         a.setAction("indef");
         a.setStatus("processed");

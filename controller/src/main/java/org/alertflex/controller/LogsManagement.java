@@ -784,7 +784,7 @@ public class LogsManagement {
         
         if(event != null) {
             srv = event.getThreatLevelId();
-            a.setEventSeverity(srv);
+            a.setEventSeverity(Integer.toString(srv));
             switch(srv) {
                 case 1:
                     srv = 3;

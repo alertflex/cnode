@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:b="http://bootsfaces.net/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content" >
+        
+        <style type="text/css">
+            
+            .panel-default  {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+            
+            .panel-default > .panel-heading {
+                color: #fff;
+                background-color: #3f3f3f;
+                border-color: #3f3f3f;
+            }
+           
+            body .ui-panel .ui-panel-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-panelgrid .ui-panelgrid-cell {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-dialog .ui-dialog-content {
+                background-color: #3f3f3f;
+            }
+            
+            body .ui-tabs .ui-tabs-panels {
+                background-color: #3f3f3f;
+            }
+               
+        </style>
+        
+        
+        <b:container style="background: #3f3f3f; margin-top: 60px">
+            <b:form id="edit_script">
+            <b:growl id="messages" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <b:panel title="Edit script job" collapsible="false" >
+                    
+                    <p:commandButton value="Save" actionListener="#{scriptJobController.editJob()}" 
+                        update=":edit_script" style="margin-bottom: 15px"/>
+                    
+                    <div class="Card ui-fluid">
+                        <p:panelGrid  columns="1" layout="grid" styleClass="ui-panelgrid-blank" >
+                            
+                            <p:selectOneMenu value="#{scriptJobController.selectedScriptJob}" filter="true" >
+                                <f:selectItem itemLabel="Select job" itemValue="" />
+                                <f:selectItems value="#{scriptJobController.listScriptJob}" />
+                                <p:ajax  update=":edit_script" listener="#{scriptJobController.updateParameters()}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:outputLabel value="Description:" />
+                            <p:inputText value="#{scriptJobController.desc}" />
+                            
+                            <p:outputLabel for="timerange" value="Time period to run :" />
+                            <p:spinner id="timerange" value="#{scriptJobController.timerange}" min="0" max="3000" />
+                            
+                            <p:panelGrid id="host_name" columns="2" layout="grid" styleClass="ui-panelgrid-blank">
+                                <div class="CardTopic" style="cursor: pointer;"> 
+                                    <i class="fa fa-question-circle Fleft MarRight10 Leaden"></i>
+                                    <span class="CardSubTopic"> Host name:</span> 
+                                </div>
+                                <p:overlayPanel id="tip1" for="host_name" hideEffect="fade" showCloseIcon="true">
+                                    <p:outputLabel value="Name of host where script will be run." /> <br/>
+                                </p:overlayPanel>
+                            </p:panelGrid>
+                            
+                            <p:selectOneMenu value="#{scriptJobController.selectedHostname}" filter="true" >
+                                <f:selectItem itemLabel="#{scriptJobController.selectedHostname}" itemValue="" />
+                                <f:selectItems value="#{scriptJobController.listHostName}" />
+                            </p:selectOneMenu>
+                            
+                            <p:outputLabel value="Script name:" />
+                            <p:inputText value="#{scriptJobController.scriptName}" />
+                            
+                            <p:outputLabel value="Script:" />
+                            <p:inputTextarea  value="#{scriptJobController.scriptLocal}" autoResize="false" class="Fs18 SoftGrayBack" />
+                            
+                            <p:outputLabel for="timer" value="Wait result:" />
+                            <p:spinner id="timer" value="#{scriptJobController.waitResult}" min="0" max="3000" />
+                    
+                        </p:panelGrid>
+                    </div>
+                    
+                    <div class="EmptyBox10"></div>
+                    
+                </b:panel>
+                
+            </b:form>
+        </b:container> 
+    </ui:define>
+
+</ui:composition>
