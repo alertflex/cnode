@@ -8,4 +8,4 @@ providers:
    folderUid: ''
    type: file
    options:
-     path: /var/lib/grafana/dashboards/alertflex_dashboard.json
+     path: /var/lib/grafana/dashboards/alert_dashboard.json

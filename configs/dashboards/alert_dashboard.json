@@ -1,34 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_AFEVENTSMYSQL",
-      "label": "AfeventsMySQL",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "mysql",
-      "pluginName": "MySQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.2.0"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "mysql",
-      "name": "MySQL",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -45,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -58,7 +28,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AFEVENTSMYSQL}",
+      "datasource": "AfeventsMySQL",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -249,7 +219,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:501",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -258,7 +227,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:502",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -277,7 +245,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AFEVENTSMYSQL}",
+      "datasource": "AfeventsMySQL",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -467,7 +435,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:643",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -476,7 +443,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:644",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -503,7 +469,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Alertflex dashboard",
-  "uid": "wNj-enKMz",
+  "title": "Alert dashboard",
+  "uid": "wNj-enKMf",
   "version": 1
 }
