@@ -11,7 +11,6 @@
     <!-- sub modules -->
 	<modules>
         <module>controller</module>
-        <module>mc</module>
     </modules>
 	
 </project>

@@ -271,10 +271,8 @@ sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/doma
 
 echo "* Installion Alertflex applications *"  
 cd $INSTALL_PATH
-git clone https://github.com/alertflex/mc.git
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy mc/target/alertflex-mc.war
 
 echo "*** clean env ***"
 rm password.txt
