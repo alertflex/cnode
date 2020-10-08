@@ -1,5 +1,6 @@
 package org.alertflex.controller;
 
+import hidden.org.elasticsearch.client.RestHighLevelClient;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import java.text.ParseException;
 import java.util.zip.GZIPInputStream;
+import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -20,8 +22,9 @@ import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import org.alertflex.logserver.GrayLog;
+import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.entity.Alert;
-import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentFacade;
 import org.alertflex.facade.HomeNetworkFacade;
@@ -43,6 +46,8 @@ import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
+import org.alertflex.logserver.ElasticSearch;
+import org.alertflex.logserver.FromGraylogPool;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +64,14 @@ import org.slf4j.LoggerFactory;
 public class InfoMessageBean implements MessageListener {
     
     private static final Logger logger = LoggerFactory.getLogger(InfoMessageBean.class);
+    
+    @Inject
+    @FromElasticPool
+    ElasticSearch elasticFromPool;
+    
+    @Inject
+    @FromGraylogPool
+    GrayLog graylogFromPool;
     
     @EJB
     private AgentFacade agentFacade;
@@ -126,6 +139,14 @@ public class InfoMessageBean implements MessageListener {
     public AgentFacade getAgentFacade() {
         return this.agentFacade;
     } 
+    
+    public ElasticSearch getElasticFromPool() {
+        return elasticFromPool;
+    } 
+    
+    public GrayLog getGraylogFromPool() {
+        return graylogFromPool;
+    }
     
     public HomeNetworkFacade getHomeNetworkFacade() {
         return this.homeNetworkFacade;
@@ -249,6 +270,8 @@ public class InfoMessageBean implements MessageListener {
                             break;
                             
                         case 2:
+                            //IndexRequest request = new IndexRequest("alertflex");
+                            //IndexResponse indexResponse = elasticFromPool.index(request, RequestOptions.DEFAULT);
                             LogsManagement lm = new LogsManagement(this);
                             lm.EvaluateLogs(data);
                             break;
@@ -445,9 +468,9 @@ public class InfoMessageBean implements MessageListener {
         }
                 
         // send alert to log server
-        LogServer ls = new LogServer(project);
-        ls.SendAlertToLog(a);
-        ls.close();
+        if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+                    
+        if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
         
     }
     

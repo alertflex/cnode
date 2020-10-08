@@ -218,10 +218,12 @@ CREATE TABLE `project` (
   `mail_user` varchar(512) NOT NULL DEFAULT '',
   `mail_pass` varchar(512) NOT NULL DEFAULT '',
   `mail_from` varchar(512) NOT NULL DEFAULT '',
+  `comprehend_arn` varchar(512) NOT NULL DEFAULT '',
+  `aws_region` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -852,24 +854,24 @@ CREATE TABLE `cat_profile` (
   PRIMARY KEY (`cp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (1,'_project_id','all_alertflex','Alertflex','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (2,'_project_id','all_cuckoo','Cuckoo','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (3,'_project_id','all_falco','Falco','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (4,'_project_id','all_ha','HybridAnalysis','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (5,'_project_id','all_nmap','Nmap','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (6,'_project_id','all_nessus','Nessus','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (7,'_project_id','all_misc','Misc','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (8,'_project_id','all_misp','MISP','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (9,'_project_id','all_modsec','Modsecurity','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (10,'_project_id','all_rita','RITA','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (11,'_project_id','all_sq','SonarQube','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (12,'_project_id','all_suri','Suricata','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (13,'_project_id','all_syslog','Syslog','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (14,'_project_id','all_vmray','Vmray','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (15,'_project_id','all_wazuh','Wazuh','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (16,'_project_id','all_zap','ZAP','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (17,'_project_id','all_dockerbench','DockerBench','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (18,'_project_id','all_trivy','Trivy','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (1,'_project_id','all_alertflex','Alertflex','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (2,'_project_id','all_cuckoo','Cuckoo','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (3,'_project_id','all_falco','Falco','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (4,'_project_id','all_ha','HybridAnalysis','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (5,'_project_id','all_nmap','Nmap','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (6,'_project_id','all_nessus','Nessus','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (7,'_project_id','all_misc','Misc','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (8,'_project_id','all_misp','MISP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (9,'_project_id','all_modsec','Modsecurity','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (10,'_project_id','all_rita','RITA','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (11,'_project_id','all_sq','SonarQube','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (12,'_project_id','all_suri','Suricata','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (13,'_project_id','all_syslog','Syslog','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (14,'_project_id','all_vmray','Vmray','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (15,'_project_id','all_wazuh','Wazuh','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (16,'_project_id','all_zap','ZAP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (17,'_project_id','all_dockerbench','DockerBench','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (18,'_project_id','all_trivy','Trivy','*');
 
 CREATE TABLE `mitre` (
   `tactic_id` varchar(255) NOT NULL,

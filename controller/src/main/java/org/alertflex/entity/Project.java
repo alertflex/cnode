@@ -89,7 +89,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findByMailPort", query = "SELECT p FROM Project p WHERE p.mailPort = :mailPort")
     , @NamedQuery(name = "Project.findByMailUser", query = "SELECT p FROM Project p WHERE p.mailUser = :mailUser")
     , @NamedQuery(name = "Project.findByMailPass", query = "SELECT p FROM Project p WHERE p.mailPass = :mailPass")
-    , @NamedQuery(name = "Project.findByMailFrom", query = "SELECT p FROM Project p WHERE p.mailFrom = :mailFrom")})
+    , @NamedQuery(name = "Project.findByMailFrom", query = "SELECT p FROM Project p WHERE p.mailFrom = :mailFrom")
+    , @NamedQuery(name = "Project.findByComprehendArn", query = "SELECT p FROM Project p WHERE p.comprehendArn = :comprehendArn")
+    , @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -398,6 +400,16 @@ public class Project implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "mail_from")
     private String mailFrom;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "comprehend_arn")
+    private String comprehendArn;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "aws_region")
+    private String awsRegion;
 
     public Project() {
     }
@@ -406,7 +418,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String snykKey, String snykOrgid, String nessusUrl, String nessusAccesskey, String nessusSecretkey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, String logHost, int logPort, int sendNetflow, String graylogHost, int graylogPort, String graylogUser, String graylogPass, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String sonarUrl, String sonarUser, String sonarPass, String snykKey, String snykOrgid, String nessusUrl, String nessusAccesskey, String nessusSecretkey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom, String comprehendArn, String awsRegion) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -471,6 +483,8 @@ public class Project implements Serializable {
         this.mailUser = mailUser;
         this.mailPass = mailPass;
         this.mailFrom = mailFrom;
+        this.comprehendArn = comprehendArn;
+        this.awsRegion = awsRegion;
     }
 
     public String getRefId() {
@@ -983,6 +997,22 @@ public class Project implements Serializable {
 
     public void setMailFrom(String mailFrom) {
         this.mailFrom = mailFrom;
+    }
+
+    public String getComprehendArn() {
+        return comprehendArn;
+    }
+
+    public void setComprehendArn(String comprehendArn) {
+        this.comprehendArn = comprehendArn;
+    }
+
+    public String getAwsRegion() {
+        return awsRegion;
+    }
+
+    public void setAwsRegion(String awsRegion) {
+        this.awsRegion = awsRegion;
     }
 
     @Override

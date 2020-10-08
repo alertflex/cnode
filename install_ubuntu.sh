@@ -28,8 +28,6 @@ sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 #set project id
 export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
 
-sudo apt-get update
-
 # install java 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9
 sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
@@ -124,13 +122,11 @@ then
 	sudo cp ./configs/datasource.yaml /etc/grafana/provisioning/datasources
 	sudo mkdir /var/lib/grafana/dashboards
 	sudo cp ./configs/dashboards/alertflex.yaml /etc/grafana/provisioning/dashboards
-	sudo cp ./configs/dashboards/alert_dashboard.json /var/lib/grafana/dashboards
+	sudo cp ./configs/dashboards/alerts_dashboard.json /var/lib/grafana/dashboards
 	sudo chown -R grafana:grafana /var/lib/grafana/dashboards
 	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
 	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
 	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
-	sudo chown -R grafana:grafana /etc/grafana/grafana.key
-	sudo chown -R grafana:grafana /etc/grafana/grafana.pem
 fi
 
 
@@ -273,6 +269,7 @@ echo "* Installion Alertflex applications *"
 cd $INSTALL_PATH
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy pkg/alertflex-mc.war
 
 echo "*** clean env ***"
 rm password.txt

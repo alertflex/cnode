@@ -46,27 +46,6 @@ sudo firewall-cmd --runtime-to-permanent
 #set project id
 export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
 
-if [[ $INSTALL_ALTPROBE == yes ]]
-then
-    echo "*** Installation Altprobe ***"
-    cd $INSTALL_PATH
-    git clone git://github.com/olegzhr/altprobe.git
-    cp ./configs/env.sh ./altprobe/
-    cd ./altprobe
-    chmod u+x install_rpm.sh
-    export INSTALL_PATH="$INSTALL_PATH/altprobe"
-    export NODE_ID=collr01
-    export PROBE_ID=master
-    export AMQ_URL='tcp:\/\/127.0.0.1:61616'
-    export AMQ_CERT=indef
-    export CERT_VERIFY=false
-    export AMQ_KEY=indef
-    export KEY_PWD=indef
-    ./install_rpm.sh
-	export INSTALL_PATH=$CURRENT_PATH
-	cd $INSTALL_PATH 
-fi
-
 echo "*** install java  ***"
 sudo rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems
 sudo curl -o /etc/yum.repos.d/zulu.repo http://repos.azulsystems.com/rhel/zulu.repo
@@ -335,6 +314,7 @@ echo "* Installion Alertflex applications *"
 cd $INSTALL_PATH
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy pkg/alertflex-mc.war
 
 echo "*** clean env ***"
 rm password.txt

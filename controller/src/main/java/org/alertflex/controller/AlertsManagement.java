@@ -49,6 +49,10 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.LoggerFactory;
 import static javax.ejb.ConcurrencyManagementType.CONTAINER;
 import javax.inject.Inject;
+import org.alertflex.logserver.ElasticSearch;
+import org.alertflex.logserver.FromElasticPool;
+import org.alertflex.logserver.FromGraylogPool;
+import org.alertflex.logserver.GrayLog;
 
 
 /**
@@ -61,6 +65,14 @@ public class AlertsManagement  {
     
     @Resource
     private TimerService timerService;
+    
+    @Inject
+    @FromElasticPool
+    ElasticSearch elasticFromPool;
+    
+    @Inject
+    @FromGraylogPool
+    GrayLog graylogFromPool;
     
     @EJB
     private ProjectFacade projectFacade;
@@ -362,9 +374,9 @@ public class AlertsManagement  {
                                 alertFacade.create(a);
                                 
                                 // send alert to log server
-                                LogServer ls = new LogServer(project);
-                                ls.SendAlertToLog(a);
-                                ls.close();
+                                if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+                    
+                                if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
                     
                                 if (project.getSemActive() >= 2) searchResponse(a);
                             }

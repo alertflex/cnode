@@ -1,18 +1,15 @@
 package org.alertflex.controller;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import javax.xml.bind.DatatypeConverter;
+import org.alertflex.logserver.GrayLog;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Attributes;
 import org.alertflex.entity.Events;
+import org.alertflex.logserver.ElasticSearch;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,8 +49,7 @@ public class LogsManagement {
     static final String misp_hostname = "hostname";
     static final String misp_link = "link";
     
-    DatagramSocket socket = null ;
-    
+        
     boolean doCheckIOC = false;
     boolean doSendLogs = false;
     
@@ -64,20 +60,13 @@ public class LogsManagement {
     public void EvaluateLogs(String logs) {
         
         String log_record = "log record empty";
+        GrayLog graylogFromPool;
+        ElasticSearch elasticFromPool;
                 
         try {
             
-            String logHost = eventBean.getProject().getLogHost();
-            int logPort = eventBean.getProject().getLogPort();
-            int sendNetflow = eventBean.getProject().getSendNetflow();
-            InetAddress iaHost = null; 
-            
-            if (!logHost.isEmpty() && logPort != 0 && sendNetflow > 0) {
-                
-                iaHost = InetAddress.getByName(logHost);
-                socket = new DatagramSocket() ;
-                doSendLogs =  true;
-            }
+            elasticFromPool = eventBean.getElasticFromPool();
+            graylogFromPool = eventBean.getGraylogFromPool();
             
             doCheckIOC = (eventBean.getProject().getIocCheck() != 0);
             
@@ -96,19 +85,18 @@ public class LogsManagement {
                 else isAlert = CheckAlert(log_record); 
                 
                 // Send to Log Management
-                if (doSendLogs && !isAlert)  {
-                    byte [] data = log_record.getBytes() ;
-                    DatagramPacket packet = new DatagramPacket( data, data.length, iaHost, logPort ) ;
-                    socket.send( packet) ;
+                if (!isAlert)  {
+                    
+                    if (elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record);
+                    
+                    if (graylogFromPool != null) graylogFromPool.SendStringToLog(log_record);
                 }    
             }
              
-        } catch ( IOException | JSONException e) {
+        } catch ( Exception e) {
             logger.error("alertflex_ctrl_exception", e);
             logger.error(logs);
-        } finally {
-            if( socket != null ) socket.close() ;
-        }
+        } 
     }
     
     public boolean CheckAlert (String r) throws UnknownHostException {

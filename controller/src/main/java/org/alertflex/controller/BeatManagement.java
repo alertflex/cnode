@@ -28,6 +28,7 @@ import javax.ejb.Timer;
 import javax.ejb.TimerService;
 import javax.annotation.PreDestroy;
 import static javax.ejb.ConcurrencyManagementType.CONTAINER;
+import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -50,6 +51,10 @@ import org.alertflex.facade.AgentFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.AttributesFacade;
 import org.alertflex.facade.EventsFacade;
+import org.alertflex.logserver.ElasticSearch;
+import org.alertflex.logserver.FromElasticPool;
+import org.alertflex.logserver.FromGraylogPool;
+import org.alertflex.logserver.GrayLog;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
@@ -65,6 +70,14 @@ public class BeatManagement  {
     
     @Resource
     private TimerService timerService;
+    
+    @Inject
+    @FromElasticPool
+    ElasticSearch elasticFromPool;
+    
+    @Inject
+    @FromGraylogPool
+    GrayLog graylogFromPool;
     
     @EJB
     private ProjectFacade projectFacade;
@@ -422,9 +435,9 @@ public class BeatManagement  {
             if (prj.getSendNetflow() > 0) {
                     
                 // send netflow to log server
-                LogServer ls = new LogServer(prj);
-                ls.SendNetflowToLog(nf);
-                ls.close();
+                if (elasticFromPool != null) elasticFromPool.SendNetflowToLog(nf);
+                    
+                if (graylogFromPool != null) graylogFromPool.SendNetflowToLog(nf);
             }
             
         }
