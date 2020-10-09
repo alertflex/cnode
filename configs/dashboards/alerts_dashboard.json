@@ -1,34 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_AFEVENTSMYSQL",
-      "label": "AfeventsMySQL",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "mysql",
-      "pluginName": "MySQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.0.5"
-    },
-    {
-      "type": "datasource",
-      "id": "mysql",
-      "name": "MySQL",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -45,16 +15,23 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
+  "id": 3,
   "links": [],
   "panels": [
     {
+      "aliasColors": {
+        "critical": "dark-red",
+        "info": "dark-green",
+        "major": "dark-yellow",
+        "minor": "dark-blue"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "AfeventsMySQL",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": null
-          },
+          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -72,136 +49,49 @@
         },
         "overrides": []
       },
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 4,
-        "w": 5,
+        "h": 9,
+        "w": 24,
         "x": 0,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 2,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
       },
-      "pluginVersion": "7.0.5",
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(alert_id)\nFROM alert\nWHERE\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              }
-            ]
-          ],
-          "table": "alert",
-          "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "FILE alerts",
-      "type": "stat"
-    },
-    {
-      "datasource": "AfeventsMySQL",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 5,
-        "y": 0
-      },
-      "id": 7,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.5",
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_type='HOST'\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"info\"\r\nFROM alert\r\nWHERE\r\n  alert_severity=0\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -210,24 +100,12 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -235,74 +113,14 @@
               "type": "macro"
             }
           ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "HOST alerts",
-      "type": "stat"
-    },
-    {
-      "datasource": "AfeventsMySQL",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 10,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.5",
-      "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_type='NET'\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
-          "refId": "A",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"minor\"\r\nFROM alert\r\nWHERE\r\n  alert_severity=1\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
+          "refId": "B",
           "select": [
             [
               {
@@ -310,24 +128,12 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -335,74 +141,14 @@
               "type": "macro"
             }
           ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "NETWORK alerts",
-      "type": "stat"
-    },
-    {
-      "datasource": "AfeventsMySQL",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 15,
-        "y": 0
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.5",
-      "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_type='MISC'\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
-          "refId": "A",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"major\"\r\nFROM alert\r\nWHERE\r\n  alert_severity=2\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
+          "refId": "C",
           "select": [
             [
               {
@@ -410,24 +156,40 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"critical\"\r\nFROM alert\r\nWHERE\r\n  alert_severity=3\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
+          "refId": "D",
+          "select": [
+            [
+              {
+                "params": [
+                  "alert_id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "alert",
+          "timeColumn": "time_collr",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -437,18 +199,56 @@
           ]
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "MISC alerts",
-      "type": "stat"
+      "title": "Alerts by Severity",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "AfeventsMySQL",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": null
-          },
+          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -466,42 +266,48 @@
         },
         "overrides": []
       },
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 4,
-        "w": 5,
+        "h": 9,
+        "w": 24,
         "x": 0,
-        "y": 4
+        "y": 9
       },
+      "hiddenSeries": false,
       "id": 3,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
       },
-      "pluginVersion": "7.0.5",
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
       "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_severity=3\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"host\"\r\nFROM alert\r\nWHERE\r\n  alert_type='HOST'\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -510,24 +316,12 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -535,74 +329,14 @@
               "type": "macro"
             }
           ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Critical severity",
-      "type": "stat"
-    },
-    {
-      "datasource": "AfeventsMySQL",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 5,
-        "y": 4
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.5",
-      "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_severity=2\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
-          "refId": "A",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"file\"\r\nFROM alert\r\nWHERE\r\n  alert_type='FILE'\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
+          "refId": "B",
           "select": [
             [
               {
@@ -610,24 +344,12 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -635,74 +357,14 @@
               "type": "macro"
             }
           ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Major severity",
-      "type": "stat"
-    },
-    {
-      "datasource": "AfeventsMySQL",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 10,
-        "y": 4
-      },
-      "id": 9,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.5",
-      "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_severity=1\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
-          "refId": "A",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"net\"\r\nFROM alert\r\nWHERE\r\n  alert_type='NET'\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
+          "refId": "C",
           "select": [
             [
               {
@@ -710,24 +372,12 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -735,74 +385,14 @@
               "type": "macro"
             }
           ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Minor severity",
-      "type": "stat"
-    },
-    {
-      "datasource": "AfeventsMySQL",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 15,
-        "y": 4
-      },
-      "id": 8,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.5",
-      "targets": [
         {
           "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
+          "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(time_collr,$__interval),\n  count(*) AS \"alert_id\"\nFROM alert\nWHERE\n  alert_severity=0\n  and\n  $__timeFilter(time_collr)\nGROUP BY 1\nORDER BY $__timeGroup(time_collr,$__interval)",
-          "refId": "A",
+          "rawSql": "SELECT\r\n  $__timeGroupAlias(time_collr,1m,0),\r\n  count(*) AS \"misc\"\r\nFROM alert\r\nWHERE\r\n  alert_type='MISC'\r\n  and\r\n  $__timeFilter(time_collr)\r\nGROUP BY 1\r\nORDER BY 1",
+          "refId": "D",
           "select": [
             [
               {
@@ -810,24 +400,12 @@
                   "alert_id"
                 ],
                 "type": "column"
-              },
-              {
-                "params": [
-                  "sum"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "alert_id"
-                ],
-                "type": "alias"
               }
             ]
           ],
           "table": "alert",
           "timeColumn": "time_collr",
-          "timeColumnType": "datetime",
+          "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
@@ -837,38 +415,61 @@
           ]
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Normal severity",
-      "type": "stat"
+      "title": "Alerts by Type",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
-  "refresh": "1m",
-  "schemaVersion": 25,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
-  "timepicker": {
-    "refresh_intervals": [
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ]
-  },
+  "timepicker": {},
   "timezone": "",
-  "title": "Alerts dashboard",
-  "uid": "sSEvO9GGk",
-  "version": 3
+  "title": "Alert dashboard",
+  "uid": "wNj-enKMf",
+  "version": 1
 }

@@ -122,12 +122,13 @@ then
 	sudo cp ./configs/datasource.yaml /etc/grafana/provisioning/datasources
 	sudo mkdir /var/lib/grafana/dashboards
 	sudo cp ./configs/dashboards/alertflex.yaml /etc/grafana/provisioning/dashboards
-	sudo cp ./configs/dashboards/alerts_dashboard.json /var/lib/grafana/dashboards
+	sudo cp ./configs/dashboards/alert_dashboard.json /var/lib/grafana/dashboards
 	sudo chown -R grafana:grafana /var/lib/grafana/dashboards
 	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
 	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
 	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
-	sudo chown grafana:grafana /etc/grafana/grafana.*
+	sudo chown -R grafana:grafana /etc/grafana/grafana.key
+	sudo chown -R grafana:grafana /etc/grafana/grafana.pem
 fi
 
 
