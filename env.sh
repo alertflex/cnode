@@ -37,7 +37,6 @@ export INSTALL_MISP=yes
 export MISP_URL='xxxxx:8443'
 export MISP_GPG='xxxxxxxxxxxxxxxxxxxxxxxxx'
 
-export INSTALL_GRAFANA=yes
 export INSTALL_NMAP=no
 export INSTALL_ZAP=no
 
