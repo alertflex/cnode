@@ -127,6 +127,7 @@ then
 	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
 	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
 	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
+	sudo chgrp grafana /etc/grafana/gr*
 fi
 
 
