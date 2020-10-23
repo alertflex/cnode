@@ -35,8 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Response.findByNode", query = "SELECT r FROM Response r WHERE r.node = :node")
     , @NamedQuery(name = "Response.findByUserid", query = "SELECT r FROM Response r WHERE r.userid = :userid")
     , @NamedQuery(name = "Response.findByResType", query = "SELECT r FROM Response r WHERE r.resType = :resType")
-    , @NamedQuery(name = "Response.findByEventId", query = "SELECT r FROM Response r WHERE r.eventId = :eventId")
-    , @NamedQuery(name = "Response.findByCatProfile", query = "SELECT r FROM Response r WHERE r.catProfile = :catProfile")
+    , @NamedQuery(name = "Response.findByResCause", query = "SELECT r FROM Response r WHERE r.resCause = :resCause")
     , @NamedQuery(name = "Response.findByAlertSource", query = "SELECT r FROM Response r WHERE r.alertSource = :alertSource")
     , @NamedQuery(name = "Response.findByAlertSeverity", query = "SELECT r FROM Response r WHERE r.alertSeverity = :alertSeverity")
     , @NamedQuery(name = "Response.findByAlertUser", query = "SELECT r FROM Response r WHERE r.alertUser = :alertUser")
@@ -87,18 +86,14 @@ public class Response implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "userid")
     private String userid;
-    @Basic(optional = false)
-    @NotNull
+    @Size(max = 128)
     @Column(name = "res_type")
-    private int resType;
+    private String resType;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "event_id")
-    private String eventId;
-    @Size(max = 512)
-    @Column(name = "cat_profile")
-    private String catProfile;
+    @Column(name = "res_cause")
+    private String resCause;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -187,14 +182,13 @@ public class Response implements Serializable {
         this.recId = recId;
     }
 
-    public Response(Integer recId, String resId, String refId, int status, String userid, int resType, String eventId, String alertSource, int alertSeverity, String alertSensor, String alertFile, String alertProcess, String alertRegex, int aggrReproduced, int aggrInperiod, int beginHour, int endHour, String catNew, String action, int sendSlack) {
+    public Response(Integer recId, String resId, String refId, int status, String userid, String resCause, String alertSource, int alertSeverity, String alertSensor, String alertFile, String alertProcess, String alertRegex, int aggrReproduced, int aggrInperiod, int beginHour, int endHour, String catNew, String action, int sendSlack) {
         this.recId = recId;
         this.resId = resId;
         this.refId = refId;
         this.status = status;
         this.userid = userid;
-        this.resType = resType;
-        this.eventId = eventId;
+        this.resCause = resCause;
         this.alertSource = alertSource;
         this.alertSeverity = alertSeverity;
         this.alertSensor = alertSensor;
@@ -258,28 +252,20 @@ public class Response implements Serializable {
         this.userid = userid;
     }
 
-    public int getResType() {
+    public String getResType() {
         return resType;
     }
 
-    public void setResType(int resType) {
+    public void setResType(String resType) {
         this.resType = resType;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getResCause() {
+        return resCause;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
-
-    public String getCatProfile() {
-        return catProfile;
-    }
-
-    public void setCatProfile(String catProfile) {
-        this.catProfile = catProfile;
+    public void setResCause(String resCause) {
+        this.resCause = resCause;
     }
 
     public String getAlertSource() {

@@ -99,14 +99,45 @@ public class ResponseFacade extends AbstractFacade<Response> {
         return l;
     }
     
-    public List findResponseForEvent(String ref) {
+    public Response findResponseForAction(String ref, String source, String action) {
+        
+        Response r  = null;
+        
+        try {
+            em.flush();
+            
+            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.alertSource = :source AND r.status = :status AND r.resType = :type AND r.resId = :action")
+                    .setParameter("ref", ref)
+                    .setParameter("status", 1)
+                    .setParameter("source", source)
+                    .setParameter("type", "action")
+                    .setParameter("action", action);
+            // Enable forced database query
+            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            r =  (Response) listQry.getSingleResult();
+
+            
+        } catch (Exception e) {
+
+            r = null;
+        }
+        
+        return r;
+    }
+    
+    public List findResponseForEvent(String ref, String source, String event) {
         
         List l = new ArrayList();
         
         try {
             em.flush();
             
-            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.status = :status AND r.resType = :type").setParameter("ref", ref).setParameter("status", 1).setParameter("type", 0);
+            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.alertSource = :source AND r.status = :status AND r.resType = :type AND r.resCause = :event")
+                    .setParameter("ref", ref)
+                    .setParameter("status", 1)
+                    .setParameter("source", source)
+                    .setParameter("type", "event")
+                    .setParameter("event", event);
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             l =  listQry.getResultList();
@@ -120,14 +151,19 @@ public class ResponseFacade extends AbstractFacade<Response> {
         return l;
     }
     
-    public List findResponseForCat(String ref) {
+    public List findResponseForCat(String ref, String source, String cat) {
         
         List l = new ArrayList();
         
         try {
             em.flush();
             
-            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.status = :status AND r.resType = :type").setParameter("ref", ref).setParameter("status", 1).setParameter("type", 1);
+            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.alertSource = :source AND r.status = :status AND r.resType = :type AND r.resCause = :cat")
+                    .setParameter("ref", ref)
+                    .setParameter("status", 1)
+                    .setParameter("source", source)
+                    .setParameter("type", "cat")
+                    .setParameter("cat", cat);
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             l =  listQry.getResultList();

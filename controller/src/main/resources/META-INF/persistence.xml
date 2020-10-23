@@ -13,7 +13,6 @@
     <class>org.alertflex.entity.NodePK</class>
     <class>org.alertflex.entity.Sensor</class>
     <class>org.alertflex.entity.SensorPK</class>
-    <class>org.alertflex.entity.CatProfile</class>
     <class>org.alertflex.entity.AlertCategory</class>
     <class>org.alertflex.entity.AlertPriority</class>
     <class>org.alertflex.entity.EventCategory</class>

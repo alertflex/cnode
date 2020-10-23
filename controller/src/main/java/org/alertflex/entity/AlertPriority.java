@@ -38,6 +38,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AlertPriority.findByMinorThreshold", query = "SELECT a FROM AlertPriority a WHERE a.minorThreshold = :minorThreshold")
     , @NamedQuery(name = "AlertPriority.findByMajorThreshold", query = "SELECT a FROM AlertPriority a WHERE a.majorThreshold = :majorThreshold")
     , @NamedQuery(name = "AlertPriority.findByCriticalThreshold", query = "SELECT a FROM AlertPriority a WHERE a.criticalThreshold = :criticalThreshold")
+    , @NamedQuery(name = "AlertPriority.findByMlInternal", query = "SELECT a FROM AlertPriority a WHERE a.mlInternal = :mlInternal")
+    , @NamedQuery(name = "AlertPriority.findByMlExternal", query = "SELECT a FROM AlertPriority a WHERE a.mlExternal = :mlExternal")
+    , @NamedQuery(name = "AlertPriority.findByMlThreshold", query = "SELECT a FROM AlertPriority a WHERE a.mlThreshold = :mlThreshold")
+    , @NamedQuery(name = "AlertPriority.findByMlResponse", query = "SELECT a FROM AlertPriority a WHERE a.mlResponse = :mlResponse")
     , @NamedQuery(name = "AlertPriority.findByText1", query = "SELECT a FROM AlertPriority a WHERE a.text1 = :text1")
     , @NamedQuery(name = "AlertPriority.findByText2", query = "SELECT a FROM AlertPriority a WHERE a.text2 = :text2")
     , @NamedQuery(name = "AlertPriority.findByText3", query = "SELECT a FROM AlertPriority a WHERE a.text3 = :text3")
@@ -97,6 +101,23 @@ public class AlertPriority implements Serializable {
     private int criticalThreshold;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "ml_internal")
+    private int mlInternal;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ml_external")
+    private int mlExternal;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ml_threshold")
+    private int mlThreshold;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "ml_response")
+    private String mlResponse;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "text1")
     private String text1;
@@ -148,7 +169,7 @@ public class AlertPriority implements Serializable {
         this.recId = recId;
     }
 
-    public AlertPriority(Integer recId, String refId, String source, String description, int log, int severityDefault, int severityThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, String text1, String text2, String text3, String text4, String text5, int value1, int value2, int value3, int value4, int value5) {
+    public AlertPriority(Integer recId, String refId, String source, String description, int log, int severityDefault, int severityThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, int mlInternal, int mlExternal, int mlThreshold, String mlResponse, String text1, String text2, String text3, String text4, String text5, int value1, int value2, int value3, int value4, int value5) {
         this.recId = recId;
         this.refId = refId;
         this.source = source;
@@ -159,6 +180,10 @@ public class AlertPriority implements Serializable {
         this.minorThreshold = minorThreshold;
         this.majorThreshold = majorThreshold;
         this.criticalThreshold = criticalThreshold;
+        this.mlInternal = mlInternal;
+        this.mlExternal = mlExternal;
+        this.mlThreshold = mlThreshold;
+        this.mlResponse = mlResponse;
         this.text1 = text1;
         this.text2 = text2;
         this.text3 = text3;
@@ -249,6 +274,38 @@ public class AlertPriority implements Serializable {
 
     public void setCriticalThreshold(int criticalThreshold) {
         this.criticalThreshold = criticalThreshold;
+    }
+
+    public int getMlInternal() {
+        return mlInternal;
+    }
+
+    public void setMlInternal(int mlInternal) {
+        this.mlInternal = mlInternal;
+    }
+
+    public int getMlExternal() {
+        return mlExternal;
+    }
+
+    public void setMlExternal(int mlExternal) {
+        this.mlExternal = mlExternal;
+    }
+
+    public int getMlThreshold() {
+        return mlThreshold;
+    }
+
+    public void setMlThreshold(int mlThreshold) {
+        this.mlThreshold = mlThreshold;
+    }
+
+    public String getMlResponse() {
+        return mlResponse;
+    }
+
+    public void setMlResponse(String mlResponse) {
+        this.mlResponse = mlResponse;
     }
 
     public String getText1() {

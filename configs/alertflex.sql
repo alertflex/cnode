@@ -223,7 +223,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, "", 12201, 0, "", 0, "", "", "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -479,9 +479,8 @@ CREATE TABLE `response` (
   `status` int(2) unsigned NOT NULL DEFAULT '1',
   `node` varchar(255) DEFAULT NULL,
   `userid` varchar(150) NOT NULL,
-  `res_type` int(2) unsigned NOT NULL DEFAULT '0',
-  `event_id` varchar(512) NOT NULL DEFAULT '',
-  `cat_profile` varchar(512) DEFAULT NULL,
+  `res_type` varchar(128) DEFAULT NULL,
+  `res_cause` varchar(512) NOT NULL DEFAULT '',
   `alert_source` varchar(128) NOT NULL DEFAULT '',
   `alert_severity` int(10) unsigned NOT NULL DEFAULT '5',
   `alert_user` varchar(512) DEFAULT NULL,
@@ -801,6 +800,29 @@ CREATE TABLE `trivy_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `snyk_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `project_id` varchar(128) NOT NULL DEFAULT '',
+  `vulnerability_id` varchar(512) NOT NULL DEFAULT '',
+  `pkg_name` varchar(512) NOT NULL DEFAULT '',
+  `issue_type` varchar(128) NOT NULL DEFAULT '',
+  `pkg_versions` varchar(128) NOT NULL DEFAULT '',
+  `priority_score` int(10) unsigned NOT NULL DEFAULT '0',
+  `issue_title` varchar(512) NOT NULL DEFAULT '',
+  `issue_severity` varchar(128) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `issue_url` varchar(1024) NOT NULL DEFAULT '',
+  `issue_cve` varchar(512) NOT NULL DEFAULT '',
+  `publication_time` varchar(128) NOT NULL DEFAULT '',
+  `disclosure_time` varchar(128) NOT NULL DEFAULT '',
+  `issue_cvssv3` varchar(512) NOT NULL DEFAULT '',
+  `issue_language` varchar(128) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `alert_priority` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
@@ -812,6 +834,10 @@ CREATE TABLE `alert_priority` (
   `minor_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `major_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `critical_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `ml_internal` int(2) unsigned NOT NULL DEFAULT '0',
+  `ml_external` int(2) unsigned NOT NULL DEFAULT '0',
+  `ml_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `ml_response` varchar(128) NOT NULL DEFAULT 'indef',
   `text1` varchar(128) NOT NULL DEFAULT 'indef',
   `text2` varchar(128) NOT NULL DEFAULT 'indef',
   `text3` varchar(128) NOT NULL DEFAULT 'indef',
@@ -824,7 +850,6 @@ CREATE TABLE `alert_priority` (
   `value5` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (1,'_project_id','Alertflex','Alertflex', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
@@ -841,6 +866,10 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`,
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (13,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (14,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`,`value1`, `value2`, `value3` , `value4`) VALUES (15,'_project_id','Snyk','Snyk', 'low', 'medium', 'high','critical',1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (16,'_project_id','Falco','Falco', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (17,'_project_id','Modsecurity','Modsecurity', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (18,'_project_id','Suricata','Suricata', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (19,'_project_id','Wazuh','Wazuh', 0, 0);
 
 
 
@@ -872,6 +901,7 @@ INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) V
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (16,'_project_id','all_zap','ZAP','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (17,'_project_id','all_dockerbench','DockerBench','*');
 INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (18,'_project_id','all_trivy','Trivy','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (19,'_project_id','all_snyk','Snyk','*');
 
 CREATE TABLE `mitre` (
   `tactic_id` varchar(255) NOT NULL,
@@ -955,7 +985,8 @@ INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('Antivirus
 ('ipdst process', 'indef', 'MISP'), 
 ('dns', 'indef', 'MISP'), 
 ('md5', 'indef', 'MISP'), 
-('sha1', 'indef', 'MISP'); 
+('sha1', 'indef', 'MISP'),
+('event', 'indef', 'MISP');
 
 INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('accesslog', 'indef', 'Wazuh'),
 ('access_control', 'indef', 'Wazuh'),

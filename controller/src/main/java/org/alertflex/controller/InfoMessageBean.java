@@ -462,7 +462,7 @@ public class InfoMessageBean implements MessageListener {
             alertFacade.create(a);
                     
             // send alert for response processing to Worker
-            if (project.getSemActive() >= 2) {
+            if (project.getSemActive() > 0) {
                 sendAlertToMQ(a);
             }
         }

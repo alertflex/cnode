@@ -15,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.maxmind.geoip.Location;
+import com.maxmind.geoip.LookupService;
+import java.net.InetAddress;
 
 
 /**
@@ -70,6 +73,19 @@ public class LogsManagement {
             
             doCheckIOC = (eventBean.getProject().getIocCheck() != 0);
             
+            String geoIpCityPath = eventBean.getProject().getProjectPath() + "/geo/GeoLiteCity.dat";
+            LookupService ls =  null;
+            
+            if (geoIpCityPath != "") {
+
+                try {
+                    
+                    ls = new LookupService(geoIpCityPath, LookupService.GEOIP_MEMORY_CACHE );
+                
+                } catch (Exception e) {}
+            }
+                        
+            
             JSONObject obj = new JSONObject(logs);
             JSONArray arr = obj.getJSONArray("logs");
             
@@ -87,8 +103,7 @@ public class LogsManagement {
                 // Send to Log Management
                 if (!isAlert)  {
                     
-                    if (elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record);
-                    
+                    if (elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record, ls);
                     if (graylogFromPool != null) graylogFromPool.SendStringToLog(log_record);
                 }    
             }
