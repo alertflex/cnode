@@ -40,7 +40,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AlertPriority.findByCriticalThreshold", query = "SELECT a FROM AlertPriority a WHERE a.criticalThreshold = :criticalThreshold")
     , @NamedQuery(name = "AlertPriority.findByMlInternal", query = "SELECT a FROM AlertPriority a WHERE a.mlInternal = :mlInternal")
     , @NamedQuery(name = "AlertPriority.findByMlExternal", query = "SELECT a FROM AlertPriority a WHERE a.mlExternal = :mlExternal")
+    , @NamedQuery(name = "AlertPriority.findByMlSeverity", query = "SELECT a FROM AlertPriority a WHERE a.mlSeverity = :mlSeverity")
     , @NamedQuery(name = "AlertPriority.findByMlThreshold", query = "SELECT a FROM AlertPriority a WHERE a.mlThreshold = :mlThreshold")
+    , @NamedQuery(name = "AlertPriority.findByMlCounter", query = "SELECT a FROM AlertPriority a WHERE a.mlCounter = :mlCounter")
     , @NamedQuery(name = "AlertPriority.findByMlResponse", query = "SELECT a FROM AlertPriority a WHERE a.mlResponse = :mlResponse")
     , @NamedQuery(name = "AlertPriority.findByText1", query = "SELECT a FROM AlertPriority a WHERE a.text1 = :text1")
     , @NamedQuery(name = "AlertPriority.findByText2", query = "SELECT a FROM AlertPriority a WHERE a.text2 = :text2")
@@ -109,8 +111,16 @@ public class AlertPriority implements Serializable {
     private int mlExternal;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "ml_severity")
+    private int mlSeverity;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "ml_threshold")
     private int mlThreshold;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ml_counter")
+    private int mlCounter;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -169,7 +179,7 @@ public class AlertPriority implements Serializable {
         this.recId = recId;
     }
 
-    public AlertPriority(Integer recId, String refId, String source, String description, int log, int severityDefault, int severityThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, int mlInternal, int mlExternal, int mlThreshold, String mlResponse, String text1, String text2, String text3, String text4, String text5, int value1, int value2, int value3, int value4, int value5) {
+    public AlertPriority(Integer recId, String refId, String source, String description, int log, int severityDefault, int severityThreshold, int minorThreshold, int majorThreshold, int criticalThreshold, int mlInternal, int mlExternal, int mlSeverity, int mlThreshold, int mlCounter, String mlResponse, String text1, String text2, String text3, String text4, String text5, int value1, int value2, int value3, int value4, int value5) {
         this.recId = recId;
         this.refId = refId;
         this.source = source;
@@ -182,7 +192,9 @@ public class AlertPriority implements Serializable {
         this.criticalThreshold = criticalThreshold;
         this.mlInternal = mlInternal;
         this.mlExternal = mlExternal;
+        this.mlSeverity = mlSeverity;
         this.mlThreshold = mlThreshold;
+        this.mlCounter = mlCounter;
         this.mlResponse = mlResponse;
         this.text1 = text1;
         this.text2 = text2;
@@ -292,12 +304,28 @@ public class AlertPriority implements Serializable {
         this.mlExternal = mlExternal;
     }
 
+    public int getMlSeverity() {
+        return mlSeverity;
+    }
+
+    public void setMlSeverity(int mlSeverity) {
+        this.mlSeverity = mlSeverity;
+    }
+
     public int getMlThreshold() {
         return mlThreshold;
     }
 
     public void setMlThreshold(int mlThreshold) {
         this.mlThreshold = mlThreshold;
+    }
+
+    public int getMlCounter() {
+        return mlCounter;
+    }
+
+    public void setMlCounter(int mlCounter) {
+        this.mlCounter = mlCounter;
     }
 
     public String getMlResponse() {
