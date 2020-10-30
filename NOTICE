@@ -5,7 +5,7 @@ Copyright notices
 
 * installation script includes code for install MISP, please see https://www.misp-project.org/license/
 
-* installation script includes code for install MISP docker image, please see https://hub.docker.com/r/harvarditsecurity/misp/dockerfile
+* installation script includes modified code for install MISP docker image, original code/image available from https://hub.docker.com/r/harvarditsecurity/misp/dockerfile
 
 * installation script includes code for install MySQL community edition, please see https://www.mysql.com/products/community/
 
@@ -14,6 +14,8 @@ Copyright notices
 * installation script includes code for install Payara, please see https://github.com/payara/Payara/blob/master/LICENSE.txt
 
 * installation script includes code for install Wazuh, please see https://github.com/wazuh/wazuh/blob/master/LICENSE
+
+* this product includes GeoLite2 data created by MaxMind, available from https://www.maxmind.com
 
 * console includes Ganymed SSH-2. Copyright notice for Ganymed SSH-2 shown below:
 

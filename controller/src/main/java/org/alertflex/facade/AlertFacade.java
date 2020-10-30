@@ -121,10 +121,12 @@ public class AlertFacade extends AbstractFacade<Alert> {
         
         try {
             em.flush();
-            Query qry = em.createQuery("DELETE FROM Alert a WHERE a.refId = :ref AND a.timeOfEvent < :timerange AND a.status != :status")
+            Query qry = em.createQuery("DELETE FROM Alert a WHERE a.refId = :ref AND a.timeOfEvent < :timerange AND a.status NOT IN (:st1, :st2, :st3)")
                 .setParameter("ref", ref)
                 .setParameter("timerange", timerange)
-                .setParameter("status", "incident");
+                .setParameter("st1", "incident")
+                .setParameter("st2", "ml_incident")    
+                .setParameter("st3", "ml_confirmed");
             
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
