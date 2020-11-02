@@ -2,7 +2,7 @@
 
 # load technical project data for Alertflex controller
 source ./env.sh
-export GLASSFISH_PATH=/opt/payara41
+export GLASSFISH_PATH=/opt/payara5
 export PROJECT_NAME=csm_solution
 
 CURRENT_PATH=`pwd`
