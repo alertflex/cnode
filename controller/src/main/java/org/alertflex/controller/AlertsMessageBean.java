@@ -187,7 +187,7 @@ public class AlertsMessageBean implements MessageListener {
                         
                             alertFacade.create(a);
                             
-                            searchResponse(a);
+                            if (project.getSemActive() == 2) searchResponse(a);
                             
                             // send alert to log server
                             if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
