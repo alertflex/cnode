@@ -30,14 +30,14 @@ public class AgentProcessesFacade extends AbstractFacade<AgentProcesses> {
     public AgentProcessesFacade() {
         super(AgentProcesses.class);
     }
-    
+
     public AgentProcesses findProcess(String ref, String node, String agent, String name, String pid) {
-        
+
         AgentProcesses ap;
-        
+
         try {
             em.flush();
-            
+
             Query qry = em.createQuery(
                     "SELECT a FROM AgentProcesses a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.name = :name AND a.pid = :pid")
                     .setParameter("ref", ref)
@@ -45,16 +45,16 @@ public class AgentProcessesFacade extends AbstractFacade<AgentProcesses> {
                     .setParameter("agent", agent)
                     .setParameter("name", name)
                     .setParameter("pid", pid);
-            qry.setMaxResults(1);        
+            qry.setMaxResults(1);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ap =  (AgentProcesses) qry.getSingleResult();
-        
+            ap = (AgentProcesses) qry.getSingleResult();
+
         } catch (Exception e) {
             ap = null;
         }
-        
+
         return ap;
     }
-    
+
 }

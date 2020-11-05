@@ -228,5 +228,5 @@ public class Users implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Users[ userid=" + userid + " ]";
     }
-    
+
 }

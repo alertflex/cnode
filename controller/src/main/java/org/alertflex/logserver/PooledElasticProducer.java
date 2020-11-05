@@ -9,7 +9,6 @@ package org.alertflex.logserver;
  *
  * @author root
  */
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -46,34 +45,37 @@ import org.alertflex.facade.ProjectFacade;
 @ApplicationScoped
 @Startup
 public class PooledElasticProducer {
-    
+
     @EJB
     private ProjectFacade projectFacade;
     List<Project> projectList;
     private Project prj = null;
-    
+
     private ElasticSearch es = null;
-    
+
     @PostConstruct
     public void initPool() {
-        
+
         try {
-            
+
             projectList = projectFacade.findAll();
-            
-            if(projectList == null || projectList.isEmpty()) return;
-            
+
+            if (projectList == null || projectList.isEmpty()) {
+                return;
+            }
+
             prj = projectList.get(0);
-            
-            if(prj == null) return;
-            
+
+            if (prj == null) {
+                return;
+            }
 
             String host = prj.getElkHost();
 
             String user = prj.getElkUser();
 
             String password = prj.getElkPass();
-            
+
             int port = prj.getElkPort();
 
             if (!host.isEmpty() && !user.isEmpty() && !password.isEmpty()) {
@@ -94,7 +96,7 @@ public class PooledElasticProducer {
                     } catch (CertificateException e) {
                         return;
                     } catch (NoSuchAlgorithmException e) {
-                       return;
+                        return;
                     }
 
                     KeyStore keystore = KeyStore.getInstance("jks");
@@ -108,7 +110,7 @@ public class PooledElasticProducer {
 
                     SSLContextBuilder sslBuilder = SSLContexts.custom()
                             .loadTrustMaterial(truststore, null)
-                            .loadKeyMaterial(keystore,keyStorePass.toCharArray());
+                            .loadKeyMaterial(keystore, keyStorePass.toCharArray());
 
                     final SSLContext sslContext = sslBuilder.build();
 
@@ -116,17 +118,17 @@ public class PooledElasticProducer {
                     credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
 
                     RestHighLevelClient client = new RestHighLevelClient(
-                        RestClient.builder(new HttpHost(host, 9200, "https"))
-                        .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-                            @Override
-                            public HttpAsyncClientBuilder customizeHttpClient(
-                                    HttpAsyncClientBuilder httpClientBuilder) {
-                                        return httpClientBuilder.setSSLContext(sslContext).setDefaultCredentialsProvider(credentialsProvider);
+                            RestClient.builder(new HttpHost(host, 9200, "https"))
+                                    .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+                                        @Override
+                                        public HttpAsyncClientBuilder customizeHttpClient(
+                                                HttpAsyncClientBuilder httpClientBuilder) {
+                                            return httpClientBuilder.setSSLContext(sslContext).setDefaultCredentialsProvider(credentialsProvider);
+                                        }
                                     }
-                                }
-                            )
+                                    )
                     );
-                    
+
                     es = new ElasticSearch(client);
 
                 } else {
@@ -137,61 +139,60 @@ public class PooledElasticProducer {
                     credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
 
                     RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "https"))
-                        .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-                            @Override
-                            public HttpAsyncClientBuilder customizeHttpClient(
-                                HttpAsyncClientBuilder httpClientBuilder) {
+                            .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+                                @Override
+                                public HttpAsyncClientBuilder customizeHttpClient(
+                                        HttpAsyncClientBuilder httpClientBuilder) {
                                     return httpClientBuilder.setSSLContext(sslContext)
-                                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                                .setDefaultCredentialsProvider(credentialsProvider);
-                            }
-                    }));
-                    
+                                            .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                                            .setDefaultCredentialsProvider(credentialsProvider);
+                                }
+                            }));
+
                     es = new ElasticSearch(client);
                 }
 
             } else {
-                
+
                 if (!host.isEmpty()) {
                     RestHighLevelClient client = new RestHighLevelClient(
-                        RestClient.builder(
-                            new HttpHost(host, 9200, "http"),
-                            new HttpHost(host, 9201, "http")
-                        )
+                            RestClient.builder(
+                                    new HttpHost(host, 9200, "http"),
+                                    new HttpHost(host, 9201, "http")
+                            )
                     );
-                    
+
                     es = new ElasticSearch(client);
                 }
             }
-        
+
         } catch (Exception e) {
             return;
         }
-        
+
     }
-    
-    
+
     @Produces
     @FromElasticPool
     public ElasticSearch get() {
-        
+
         if (es != null) {
-            
+
             return es;
         }
-        
+
         return null;
     }
 
     @PreDestroy
     public void close() {
-        
+
         if (es != null) {
-            
+
             try {
-                
+
                 es.close();
-            
+
             } catch (IOException e) {
                 es = null;
                 return;
@@ -199,4 +200,3 @@ public class PooledElasticProducer {
         }
     }
 }
-

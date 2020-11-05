@@ -684,5 +684,5 @@ public class Alert implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Alert[ alertId=" + alertId + " ]";
     }
-    
+
 }

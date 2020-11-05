@@ -18,6 +18,7 @@ import org.alertflex.entity.Project;
  */
 @Stateless
 public class ProjectFacade extends AbstractFacade<Project> {
+
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
 
@@ -29,47 +30,45 @@ public class ProjectFacade extends AbstractFacade<Project> {
     public ProjectFacade() {
         super(Project.class);
     }
-    
+
     public Project findProjectByName(String n) {
-        
+
         Project p = null;
-        
+
         try {
             em.flush();
-            
+
             Query projectQry = em.createQuery(
                     "SELECT p FROM Project p WHERE p.name = :name").setParameter("name", n);
-        
-            projectQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            p =  (Project) projectQry.getSingleResult();
 
-            
+            projectQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            p = (Project) projectQry.getSingleResult();
+
         } catch (Exception e) {
 
         }
-        
+
         return p;
     }
-    
+
     public Project findProjectByRef(String r) {
-        
+
         Project p = null;
-        
+
         try {
             em.flush();
-            
+
             Query projectQry = em.createQuery(
                     "SELECT p FROM Project p WHERE p.refId = :ref").setParameter("ref", r);
-        
-            projectQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            p =  (Project) projectQry.getSingleResult();
 
-            
+            projectQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            p = (Project) projectQry.getSingleResult();
+
         } catch (Exception e) {
 
         }
-        
+
         return p;
     }
-    
+
 }

@@ -452,5 +452,5 @@ public class Response implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Response[ recId=" + recId + " ]";
     }
-    
+
 }

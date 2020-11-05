@@ -440,5 +440,5 @@ public class AlertPriority implements Serializable {
     public String toString() {
         return "org.alertflex.entity.AlertPriority[ recId=" + recId + " ]";
     }
-    
+
 }

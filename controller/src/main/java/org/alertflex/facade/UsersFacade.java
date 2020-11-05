@@ -31,70 +31,67 @@ public class UsersFacade extends AbstractFacade<Users> {
     public UsersFacade() {
         super(Users.class);
     }
-    
+
     public List<Users> findUsersByRefId(String r) {
-        
+
         List<Users> usersList = null;
-        
+
         try {
             em.flush();
-                
+
             Query usersListQry = em.createQuery("SELECT u FROM Users u WHERE u.refId = :ref").setParameter("ref", r);
-            
-            
-                // Enable forced database query
-                usersListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-                usersList =  usersListQry.getResultList();
-            } catch (Exception e) {
+
+            // Enable forced database query
+            usersListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            usersList = usersListQry.getResultList();
+        } catch (Exception e) {
 
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid quety to DB", ""));
         }
-        
+
         return usersList;
     }
-    
+
     public Users findUserById(String tenant, String id) {
-        
+
         Users user = null;
-        
+
         try {
             em.flush();
-                
+
             Query usersListQry = em.createQuery("SELECT u FROM Users u WHERE u.refId = :tenant AND u.userid = :user").setParameter("tenant", tenant).setParameter("user", id);
-            
-            
-                // Enable forced database query
-                usersListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-                user =  (Users) usersListQry.getSingleResult();
-            } catch (Exception e) {
+
+            // Enable forced database query
+            usersListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            user = (Users) usersListQry.getSingleResult();
+        } catch (Exception e) {
 
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid quety to DB", ""));
         }
-        
+
         return user;
-       
+
     }
-    
+
     public Users findUserByName(String name) {
-        
+
         Users user = null;
-        
+
         try {
             em.flush();
-                
+
             Query usersListQry = em.createQuery("SELECT u FROM Users u WHERE u.userid = :user").setParameter("user", name);
-            
-            
-                // Enable forced database query
-                usersListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-                user =  (Users) usersListQry.getSingleResult();
-            } catch (Exception e) {
+
+            // Enable forced database query
+            usersListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            user = (Users) usersListQry.getSingleResult();
+        } catch (Exception e) {
 
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid quety to DB", ""));
         }
-        
+
         return user;
-       
+
     }
-    
+
 }

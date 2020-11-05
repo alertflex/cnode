@@ -30,14 +30,14 @@ public class AgentPackagesFacade extends AbstractFacade<AgentPackages> {
     public AgentPackagesFacade() {
         super(AgentPackages.class);
     }
-    
+
     public AgentPackages findPackage(String ref, String node, String agent, String name, String version) {
-        
+
         AgentPackages ap;
-        
+
         try {
             em.flush();
-            
+
             Query qry = em.createQuery(
                     "SELECT a FROM AgentPackages a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.name = :name AND a.version = :version")
                     .setParameter("ref", ref)
@@ -45,15 +45,15 @@ public class AgentPackagesFacade extends AbstractFacade<AgentPackages> {
                     .setParameter("agent", agent)
                     .setParameter("name", name)
                     .setParameter("version", version);
-            qry.setMaxResults(1);        
+            qry.setMaxResults(1);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ap =  (AgentPackages) qry.getSingleResult();
-        
+            ap = (AgentPackages) qry.getSingleResult();
+
         } catch (Exception e) {
             ap = null;
         }
-        
+
         return ap;
     }
 }

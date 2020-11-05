@@ -242,5 +242,5 @@ public class DockerScan implements Serializable {
     public String toString() {
         return "org.alertflex.entity.DockerScan[ recId=" + recId + " ]";
     }
-    
+
 }

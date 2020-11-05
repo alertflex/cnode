@@ -30,14 +30,14 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
     public AgentVulFacade() {
         super(AgentVul.class);
     }
-    
+
     public AgentVul findVulnerability(String ref, String node, String agent, String cve, String pkgs) {
-        
+
         AgentVul v;
-        
+
         try {
             em.flush();
-            
+
             Query vQry = em.createQuery(
                     "SELECT a FROM AgentVul a WHERE .refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.cve = :cve AND a.packageName = :pkgs")
                     .setParameter("ref", ref)
@@ -45,17 +45,17 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
                     .setParameter("agent", agent)
                     .setParameter("cve", cve)
                     .setParameter("pkgs", pkgs);
-            vQry.setMaxResults(1);        
-        // Enable forced database query
+            vQry.setMaxResults(1);
+            // Enable forced database query
             vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            v =  (AgentVul) vQry.getSingleResult();
-        
+            v = (AgentVul) vQry.getSingleResult();
+
         } catch (Exception e) {
             v = null;
         }
-        
+
         return v;
-       
+
     }
-    
+
 }

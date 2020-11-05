@@ -59,37 +59,36 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Oleg Zharkov
  */
-@Singleton (name="beatManagement")
+@Singleton(name = "beatManagement")
 @ConcurrencyManagement(CONTAINER)
 @Startup
-public class BeatManagement  {
-    
+public class BeatManagement {
+
     @Resource
     private TimerService timerService;
-    
+
     @Inject
     @FromElasticPool
     ElasticSearch elasticFromPool;
-    
+
     @Inject
     @FromGraylogPool
     GrayLog graylogFromPool;
-    
+
     @EJB
     private ProjectFacade projectFacade;
     List<Project> projectList;
     Project prj = null;
-    
+
     @EJB
     private AlertFacade alertFacade;
-    
+
     @EJB
     private AlertPriorityFacade alertPriorityFacade;
-    
+
     ActiveMQConnectionFactory connectionFactory = null;
     Connection connection = null;
     Session session = null;
@@ -98,61 +97,61 @@ public class BeatManagement  {
     String strConnFactory = "";
     String user = "";
     String pass = "";
-    
+
     @EJB
     private AgentFacade agentFacade;
-        
+
     @EJB
     private EventsFacade eventsFacade;
-    
+
     @EJB
     private AttributesFacade attributesFacade;
-    
-    static final String misp_ipsrc = "ip-src"; 
+
+    static final String misp_ipsrc = "ip-src";
     Map<String, Attributes> ipsrcMap = new HashMap();
     Map<String, Attributes> processIpsrcMap = new HashMap();
-    
-    static final String misp_ipdst = "ip-dst"; 
+
+    static final String misp_ipdst = "ip-dst";
     Map<String, Attributes> ipdstMap = new HashMap();
     Map<String, Attributes> processIpdstMap = new HashMap();
-    
+
     static final String misp_dns = "domain";
     Map<String, Attributes> dnsMap = new HashMap();
-    
+
     static final String misp_md5 = "md5";
     static final String misp_filename_md5 = "filename|md5";
     static final String misp_sha1 = "sha1";
     static final String misp_filename_sha1 = "filename|sha1";
-    
+
     static final long INTERVAL_WAIT_PACKETS = 100;
     static final int INTERVAL_CHECK_PACKETS = 1000;
     static final int SIZE_NETFLOW_ARRAY = 100;
     static final int COUNTER_TICS_THRESHOLD = 100;
     static final int MAPS_STORE_THRESHOLD = 1000;
-    
+
     int counterTics = 0;
     int counterMaps = 0;
-        
+
     List<Netflow> netflowList = null;
-        
+
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BeatManagement.class);
-    
+
     @PostConstruct
     public void init() {
-        
+
         netflowList = new ArrayList<Netflow>();
-        
+
         try {
-            
+
             strConnFactory = System.getProperty("AmqUrl", "");
             user = System.getProperty("AmqUser", "");
             pass = System.getProperty("AmqPwd", "");
-            
+
             // Create a ConnectionFactory
             connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
-            
+
             // Create a Connection
-            connection = connectionFactory.createConnection(user,pass);
+            connection = connectionFactory.createConnection(user, pass);
             connection.start();
 
             // Create a Session
@@ -160,163 +159,170 @@ public class BeatManagement  {
 
             // Create the destination (Topic or Queue)
             Destination destination = session.createQueue("jms/logstash");
-            
+
             // MessageConsumer is used for receiving (consuming) messages
             consumer = session.createConsumer(destination);
-            
+
             timerService.createTimer(1, INTERVAL_CHECK_PACKETS, "beatManagement");
-            
-        } catch ( JMSException e) {
+
+        } catch (JMSException e) {
             logger.error("alertflex_ctrl_exception", e);
-        } 
-        
+        }
+
     }
-    
-    
+
     @PreDestroy
     public void destroy() {
         // Clean up
         try {
             session.close();
             connection.close();
-        } catch ( JMSException e) {
+        } catch (JMSException e) {
             logger.error("alertflex_ctrl_exception", e);
-        } 
+        }
     }
-    
+
     @Lock(LockType.WRITE)
     @Timeout
-    public void runBeatManagement (Timer timer) {
-        
+    public void runBeatManagement(Timer timer) {
+
         Message message = null;
         Alert a = null;
-        
+
         try {
-            
-            if(netflowList.size() > 0 && counterTics > COUNTER_TICS_THRESHOLD) {
+
+            if (netflowList.size() > 0 && counterTics > COUNTER_TICS_THRESHOLD) {
                 checkIOC();
                 counterTics = 0;
-            } else counterTics++;
-            
-            if(counterMaps > MAPS_STORE_THRESHOLD) {
+            } else {
+                counterTics++;
+            }
+
+            if (counterMaps > MAPS_STORE_THRESHOLD) {
                 ipsrcMap = new HashMap();
                 processIpsrcMap = new HashMap();
                 ipdstMap = new HashMap();
                 processIpdstMap = new HashMap();
                 dnsMap = new HashMap();
                 counterMaps = 0;
-                
-            } else counterMaps++;
-            
+
+            } else {
+                counterMaps++;
+            }
+
             do {
                 // read alerts
                 message = consumer.receive(INTERVAL_WAIT_PACKETS);
- 
+
                 if (message != null && message instanceof BytesMessage) {
-                    
+
                     BytesMessage bytesMessage = (BytesMessage) message;
-            
-                    byte[] buffer = new byte[(int)bytesMessage.getBodyLength()];
-            
+
+                    byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
+
                     bytesMessage.readBytes(buffer);
-            
+
                     String text = new String(buffer, UTF_8);
-            
+
                     handleMessage(text);
                 }
-                
-            } while (message != null); 
-            
+
+            } while (message != null);
+
             if (netflowList.size() > SIZE_NETFLOW_ARRAY) {
                 checkIOC();
                 netflowList = new ArrayList<Netflow>();
             }
-        
+
         } catch (Exception e) {
             logger.error("alertflex_ctrl_exception", e);
         }
-    }  
-    
-    
+    }
+
     void handleMessage(String record) {
-        
+
         JSONObject obj = new JSONObject(record);
-        
+
         String filebeat = "";
         String packetbeat = "";
         String eventCategory = "";
         String eventAction = "";
         String typeNet = "";
-        
+
         if (obj.has("input")) {
             JSONObject input = obj.getJSONObject("input");
-            if(input.has("type")) filebeat = input.getString("type");
+            if (input.has("type")) {
+                filebeat = input.getString("type");
+            }
         }
-        
-        if (obj.has("type")) packetbeat = obj.getString("type");
-        
+
+        if (obj.has("type")) {
+            packetbeat = obj.getString("type");
+        }
+
         // if syslog, get event and translate to alert
         if (filebeat.equals("syslog")) {
-            
+
             JSONObject project = obj.getJSONObject("project");
             JSONObject agent = obj.getJSONObject("agent");
             JSONObject log = obj.getJSONObject("log");
             JSONObject syslog = obj.getJSONObject("syslog");
-                        
+
             String refId = project.getString("ref_id");
             String node = project.getString("node");
             String hostname = agent.getString("hostname");
             String timestamp = obj.getString("@timestamp");
             String message = obj.getString("message");
-            
+
             // source of syslog
             JSONObject source = log.getJSONObject("source");
             String address = "indef";
-            if(source.has("address")) address = source.getString("address");
-            
+            if (source.has("address")) {
+                address = source.getString("address");
+            }
+
             //score, severity, process
-            
             Integer score = syslog.getInt("priority");
             String severity = syslog.getString("severity_label");
             String facility = syslog.getString("facility_label");
-            
+
             // save alert
             prj = projectFacade.findProjectByRef(refId);
-        
-            if (prj != null ) {
-                
+
+            if (prj != null) {
+
                 AlertPriority ap = alertPriorityFacade.findPriorityBySource(refId, "Syslog");
-            
+
                 int sev = ap.getSeverityDefault();
-            
+
                 if (!severity.isEmpty() && ap != null) {
-            
-                    if(ap.getText1().equals(severity)) {
+
+                    if (ap.getText1().equals(severity)) {
                         sev = ap.getValue1();
-                    } else if(ap.getText2().equals(severity)) {
+                    } else if (ap.getText2().equals(severity)) {
                         sev = ap.getValue2();
-                    } else if(ap.getText3().equals(severity)) {
+                    } else if (ap.getText3().equals(severity)) {
                         sev = ap.getValue3();
-                    } else if(ap.getText4().equals(severity)) {
+                    } else if (ap.getText4().equals(severity)) {
                         sev = ap.getValue4();
-                    } else if(ap.getText5().equals(severity)) {
+                    } else if (ap.getText5().equals(severity)) {
                         sev = ap.getValue5();
-                    } 
-                
-                    if (sev >= ap.getSeverityThreshold()) { 
-                        
+                    }
+
+                    if (sev >= ap.getSeverityThreshold()) {
+
                         Alert a = new Alert();
-                
+
                         a.setRefId(refId);
                         a.setNodeId(node);
                         a.setAlertUuid(UUID.randomUUID().toString());
                         a.setAlertSource("Syslog");
                         a.setAlertType("MISC");
                         a.setSensorId("filebeat");
-                
+
                         a.setAlertSeverity(sev);
                         a.setEventSeverity(severity);
-                
+
                         a.setDescription(message);
                         a.setEventId("1");
                         a.setLocation(address);
@@ -325,12 +331,12 @@ public class BeatManagement  {
                         a.setFilter("");
                         a.setInfo(severity);
                         a.setTimeEvent(timestamp);
-                        Date date = new Date(); 
+                        Date date = new Date();
                         a.setTimeCollr(date);
                         a.setTimeCntrl(date);
                         a.setAgentName(hostname);
                         a.setUserName("indef");
-            
+
                         a.setCategories(facility);
                         a.setSrcIp("indef");
                         a.setDstIp("indef");
@@ -352,12 +358,12 @@ public class BeatManagement  {
                         a.setContainerId("indef");
                         a.setContainerName("indef");
                         a.setJsonEvent("indef");
-                
+
                         // save alert in MySQL 
                         if (prj.getSemActive() > 0) {
-                    
+
                             alertFacade.create(a);
-                    
+
                             // send alert for response processing to Worker
                             if (prj.getSemActive() >= 2) {
                                 sendAlertToMQ(a);
@@ -365,163 +371,170 @@ public class BeatManagement  {
                         }
                     }
                 }
-            }  
-            
+            }
+
             return;
         }
-        
-        if (!filebeat.equals("netflow") && packetbeat.equals("flow")) return;
-        
-        if (obj.has("event")) {
-        
-            JSONObject event = obj.getJSONObject("event");
-            
-        
-            if (event.has("category")) eventCategory = event.getString("category");
-        
-            if (event.has("action")) eventAction = event.getString("action");
-        
+
+        if (!filebeat.equals("netflow") && packetbeat.equals("flow")) {
+            return;
         }
-        
+
+        if (obj.has("event")) {
+
+            JSONObject event = obj.getJSONObject("event");
+
+            if (event.has("category")) {
+                eventCategory = event.getString("category");
+            }
+
+            if (event.has("action")) {
+                eventAction = event.getString("action");
+            }
+
+        }
+
         if (eventAction.equals("network_flow") && eventCategory.equals("network_traffic")) {
-            
+
             JSONObject project = obj.getJSONObject("project");
             JSONObject agent = obj.getJSONObject("agent");
             JSONObject source = obj.getJSONObject("source");
             JSONObject dest = obj.getJSONObject("destination");
             JSONObject network = obj.getJSONObject("network");
-            
+
             String refId = project.getString("ref_id");
             String node = project.getString("node");
             String hostName = agent.getString("hostname");
             String protocol = network.getString("transport");
             String timestamp = obj.getString("@timestamp");
-            
+
             String dstIp = dest.getString("ip");
             int dstPort = dest.getInt("port");
-            
+
             String srcIp = source.getString("ip");
             int srcPort = source.getInt("port");
-            
+
             String process = "indef";
             int pid = 0;
             String path = "indef";
             if (obj.has("process")) {
-                
+
                 JSONObject proc = obj.getJSONObject("process");
-                
+
                 process = proc.getString("name");
                 pid = proc.getInt("pid");
                 // path = proc.getString("executable");
             }
-            
+
             int packets = network.getInt("packets");
             int bytes = network.getInt("bytes");
-            
+
             // send netflow to log server
             if (prj == null || !prj.getRefId().equals(refId)) {
                 prj = projectFacade.findProjectByRef(refId);
             }
-            
+
             String dstAgent = getAgent(refId, node, dstIp);
             String srcAgent = getAgent(refId, node, srcIp);
-            
-            Netflow nf = new Netflow(refId, node, hostName, timestamp, protocol, process, pid, 
-                path, dstIp, dstAgent, dstPort, srcIp, srcAgent, srcPort, packets, bytes);
-            
+
+            Netflow nf = new Netflow(refId, node, hostName, timestamp, protocol, process, pid,
+                    path, dstIp, dstAgent, dstPort, srcIp, srcAgent, srcPort, packets, bytes);
+
             netflowList.add(nf);
-            
+
             // save alert in MySQL and send to Redis   
             if (prj.getSendNetflow() > 0) {
-                    
+
                 // send netflow to log server
-                if (elasticFromPool != null) elasticFromPool.SendNetflowToLog(nf);
-                    
-                if (graylogFromPool != null) graylogFromPool.SendNetflowToLog(nf);
+                if (elasticFromPool != null) {
+                    elasticFromPool.SendNetflowToLog(nf);
+                }
+
+                if (graylogFromPool != null) {
+                    graylogFromPool.SendNetflowToLog(nf);
+                }
             }
-            
+
         }
     }
-    
-    
+
     void checkIOC() {
-        
+
         Attributes attr;
         String artifacts;
         int alertType;
-        
-        for (Netflow nf: netflowList) {
-            
+
+        for (Netflow nf : netflowList) {
+
             String dstip = nf.getDstIp();
-                    
+
             if (!ipdstMap.containsKey(dstip) && isPublicIp(dstip)) {
-                
-                attr = attributesFacade.findByValueAndType(dstip,misp_ipdst);
+
+                attr = attributesFacade.findByValueAndType(dstip, misp_ipdst);
                 ipdstMap.put(dstip, attr);
-                        
+
                 if (attr != null) {
-                    
+
                     alertType = 25;
-                            
+
                     artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                        + dstip
-                        + "\",\"message\": \"destination ip\" }]}";
-                            
+                            + dstip
+                            + "\",\"message\": \"destination ip\" }]}";
+
                     createIocAlert(alertType, nf, attr, artifacts);
                 }
-            } 
-            
+            }
+
             String srcip = nf.getSrcIp();
-                    
+
             if (!ipsrcMap.containsKey(srcip) && isPublicIp(srcip)) {
-                
-                attr = attributesFacade.findByValueAndType(srcip,misp_ipsrc);
+
+                attr = attributesFacade.findByValueAndType(srcip, misp_ipsrc);
                 ipsrcMap.put(srcip, attr);
-                        
+
                 if (attr != null) {
-                    
+
                     alertType = 26;
-                            
+
                     artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                        + srcip
-                        + "\",\"message\": \"source ip\" }]}";
-                            
+                            + srcip
+                            + "\",\"message\": \"source ip\" }]}";
+
                     createIocAlert(alertType, nf, attr, artifacts);
                 }
             }
         }
     }
-    
-    
-    public void createIocAlert (int alertType, Netflow nf, Attributes attr, String artifacts) {
-        
+
+    public void createIocAlert(int alertType, Netflow nf, Attributes attr, String artifacts) {
+
         // send alert to log server
         if (prj == null || !prj.getRefId().equals(nf.getRefId())) {
             prj = projectFacade.findProjectByRef(nf.getRefId());
         }
-        
-        if (prj != null ) {
-                
+
+        if (prj != null) {
+
             Alert a = new Alert();
-            
+
             a.setRefId(nf.getRefId());
             a.setNodeId(nf.getNode());
             a.setAlertUuid(UUID.randomUUID().toString());
-        
+
             Events event = eventsFacade.findById(attr.getEventId());
-        
+
             int srv = 0;
-            if(event != null) {
-                
+            if (event != null) {
+
                 srv = event.getThreatLevelId();
-                
+
                 a.setEventSeverity(Integer.toString(srv));
-                
-                switch(srv) {
+
+                switch (srv) {
                     case 1:
                         srv = 3;
                         break;
-                    case 2: 
+                    case 2:
                         srv = 2;
                         break;
                     case 3:
@@ -531,34 +544,40 @@ public class BeatManagement  {
                         srv = 0;
                         break;
                 }
-            
+
                 a.setAlertSeverity(srv);
             } else {
                 a.setAlertSeverity(4);
             }
-        
+
             switch (alertType) {
-            
+
                 case 25:
                     a.setEventId("22");
                     a.setCategories("ipdst, " + attr.getCategory());
-                    if (event != null) a.setDescription("Alertflex netflow event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
-                    else a.setDescription("Alertflex netflow event, suspicious dst ip - " + attr.getValue1() + ". ");
+                    if (event != null) {
+                        a.setDescription("Alertflex netflow event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
+                    } else {
+                        a.setDescription("Alertflex netflow event, suspicious dst ip - " + attr.getValue1() + ". ");
+                    }
                     a.setAlertSource("MISP");
                     a.setAlertType("NET");
-                
+
                     break;
                 case 26:
                     a.setEventId("26");
                     a.setCategories("ipsrc, " + attr.getCategory());
-                    if (event != null) a.setDescription("Alertflex netflow event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
-                    else a.setDescription("Alertflex netflow event, suspicious src ip - " + attr.getValue1() + ". ");
+                    if (event != null) {
+                        a.setDescription("Alertflex netflow event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
+                    } else {
+                        a.setDescription("Alertflex netflow event, suspicious src ip - " + attr.getValue1() + ". ");
+                    }
                     a.setAlertSource("MISP");
                     a.setAlertType("NET");
-                
-                    break; 
+
+                    break;
             }
-            
+
             a.setSensorId(nf.getHostname());
             a.setLocation("indef");
             a.setAction("indef");
@@ -566,12 +585,12 @@ public class BeatManagement  {
             a.setFilter("");
             a.setInfo(artifacts);
             a.setTimeEvent(nf.getTimestamp());
-            Date date = new Date(); 
+            Date date = new Date();
             a.setTimeCollr(date);
             a.setTimeCntrl(date);
             a.setAgentName(nf.getHostname());
             a.setUserName("indef");
-            
+
             a.setSrcIp(nf.getSrcIp());
             a.setDstIp(nf.getDstIp());
             a.setDstPort(nf.getDstPort());
@@ -592,12 +611,12 @@ public class BeatManagement  {
             a.setContainerId("indef");
             a.setContainerName("indef");
             a.setJsonEvent("indef");
-                    
+
             // save alert in MySQL and send to Redis   
             if (prj.getSemActive() > 0) {
-                    
+
                 alertFacade.create(a);
-                    
+
                 // send alert for response processing to Worker
                 if (prj.getSemActive() >= 2) {
                     sendAlertToMQ(a);
@@ -605,20 +624,20 @@ public class BeatManagement  {
             }
         }
     }
-    
+
     public void sendAlertToMQ(Alert a) {
-        
+
         try {
-            
+
             strConnFactory = System.getProperty("AmqUrl", "");
             user = System.getProperty("AmqUser", "");
             pass = System.getProperty("AmqPwd", "");
-            
+
             // Create a ConnectionFactory
             ActiveMQConnectionFactory connectionFactoryProducer = new ActiveMQConnectionFactory(strConnFactory);
-            
+
             // Create a Connection
-            Connection connectionProducer = connectionFactoryProducer.createConnection(user,pass);
+            Connection connectionProducer = connectionFactoryProducer.createConnection(user, pass);
             connectionProducer.start();
 
             // Create a Session
@@ -630,50 +649,50 @@ public class BeatManagement  {
             // Create a MessageProducer from the Session to the Topic or Queue
             MessageProducer producer = sessionProducer.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            
+
             TextMessage message = session.createTextMessage();
-            
+
             message.setIntProperty("msg_type", 2);
             message.setStringProperty("ref_id", a.getRefId());
             message.setStringProperty("alert_uuid", a.getAlertUuid());
             message.setText("empty");
             producer.send(message);
-            
+
             // Clean up
             sessionProducer.close();
             connectionProducer.close();
-            
-                
-        } catch ( JMSException e) {
+
+        } catch (JMSException e) {
             e.printStackTrace();
-        } 
+        }
     }
-    
+
     private String getAgent(String ref, String node, String ip) {
-        
+
         if (!isPublicIp(ip)) {
             String a = agentFacade.findAgentByIP(ref, node, ip);
-            if (!a.isEmpty()) return a;
+            if (!a.isEmpty()) {
+                return a;
+            }
         }
-        
+
         return "indef";
     }
-    
+
     private boolean isPublicIp(String ip) {
-        
+
         Inet4Address address;
-        
+
         try {
             address = (Inet4Address) InetAddress.getByName(ip);
         } catch (UnknownHostException exception) {
             return false; // assuming no logging, exception handling required
         }
-        
-        return !(address.isSiteLocalAddress() || 
-             address.isAnyLocalAddress()  || 
-             address.isLinkLocalAddress() || 
-             address.isLoopbackAddress() || 
-             address.isMulticastAddress());
+
+        return !(address.isSiteLocalAddress()
+                || address.isAnyLocalAddress()
+                || address.isLinkLocalAddress()
+                || address.isLoopbackAddress()
+                || address.isMulticastAddress());
     }
 }
-

@@ -31,26 +31,25 @@ public class EventCategoryFacade extends AbstractFacade<EventCategory> {
     public EventCategoryFacade() {
         super(EventCategory.class);
     }
-    
+
     public List<String> findCatsByEvent(String source, String event) {
-        
+
         List<String> cats = null;
-        
+
         try {
             em.flush();
-            
+
             Query catsQry = em.createQuery(
-                "SELECT e.cats FROM EventCategory e WHERE e.source = :source AND e.event = :event GROUP BY e.cats")
+                    "SELECT e.cats FROM EventCategory e WHERE e.source = :source AND e.event = :event GROUP BY e.cats")
                     .setParameter("source", source)
                     .setParameter("event", Integer.parseInt(event));
             cats = (List<String>) catsQry.getResultList();
 
-            
         } catch (Exception e) {
 
             return null;
         }
-        
+
         return cats;
     }
 }

@@ -421,5 +421,5 @@ public class NetStat implements Serializable {
     public String toString() {
         return "org.alertflex.entity.NetStat[ recId=" + recId + " ]";
     }
-    
+
 }

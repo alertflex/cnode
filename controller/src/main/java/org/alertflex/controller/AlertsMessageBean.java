@@ -38,68 +38,69 @@ import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
 
-
 /**
  * @author Oleg Zharkov
  */
 @MessageDriven(activationConfig = {
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "jms/alertflex/alerts"),
-})
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
+    ,
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "jms/alertflex/alerts"),})
 @Stateless
 public class AlertsMessageBean implements MessageListener {
-    
+
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(AlertsMessageBean.class);
-    
+
     @Inject
     @FromElasticPool
     ElasticSearch elasticFromPool;
-    
+
     @Inject
     @FromGraylogPool
     GrayLog graylogFromPool;
-    
+
     @EJB
     private ProjectFacade projectFacade;
-        
+
     @EJB
     private AlertFacade alertFacade;
-    
+
     @EJB
     private EventCategoryFacade eventCategoryFacade;
-    
+
     @EJB
     private ResponseFacade responseFacade;
-    
+
     @Override
     public void onMessage(Message message) {
-        
+
         int msg_type = 0;
         Alert a = null;
-        
+
         try {
-            
+
             if (message instanceof TextMessage) {
-            
+
                 TextMessage textMessage = (TextMessage) message;
-                    
+
                 msg_type = ((TextMessage) message).getIntProperty("msg_type");
-            
-                if (msg_type != 1 && msg_type != 2) return;
-            
+
+                if (msg_type != 1 && msg_type != 2) {
+                    return;
+                }
+
                 String ref_id = ((TextMessage) message).getStringProperty("ref_id");
-                
+
                 Project project = projectFacade.findProjectByRef(ref_id);
-                
-                if (project != null ) {
-                    
+
+                if (project != null) {
+
                     if (msg_type == 1) {
-                    
+
                         a = new Alert();
-            
+
                         a.setRefId(ref_id);
                         a.setNodeId(((TextMessage) message).getStringProperty("node_id"));
-                        a.setAlertUuid(((TextMessage) message).getStringProperty("alert_uuid"));                    
+                        a.setAlertUuid(((TextMessage) message).getStringProperty("alert_uuid"));
                         a.setAlertSource(((TextMessage) message).getStringProperty("alert_source"));
                         a.setAlertType(((TextMessage) message).getStringProperty("alert_type"));
                         a.setSensorId(((TextMessage) message).getStringProperty("sensor_id"));
@@ -153,260 +154,324 @@ public class AlertsMessageBean implements MessageListener {
                         a.setUrlPath(((TextMessage) message).getStringProperty("url_path"));
                         a.setContainerId(((TextMessage) message).getStringProperty("container_id"));
                         a.setContainerName(((TextMessage) message).getStringProperty("container_name"));
-                        
+
                         // add json info to alert
-                        if (project.getIncJson() == 1) a.setJsonEvent(((TextMessage) message).getText());
-                        else a.setJsonEvent("");
-                
+                        if (project.getIncJson() == 1) {
+                            a.setJsonEvent(((TextMessage) message).getText());
+                        } else {
+                            a.setJsonEvent("");
+                        }
+
                         // enrich alert by new cat
                         List<String> newCats = eventCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
                         if (newCats != null && !newCats.isEmpty()) {
-                                
-                            for (String cat: newCats) {
-                                
+
+                            for (String cat : newCats) {
+
                                 String c = a.getCategories() + ", " + cat;
                                 a.setCategories(c);
                             }
                         }
-                        
+
                         switch (a.getStatus()) {
-                            case "processed_new": 
+                            case "processed_new":
                                 a.setStatus("processed");
                                 break;
-                            case "modified_new": 
+                            case "modified_new":
                                 a.setStatus("modified");
                                 break;
-                            case "aggregated_new": 
+                            case "aggregated_new":
                                 a.setStatus("aggregated");
                                 break;
                             default:
                                 break;
                         }
-                        
+
                         if (project.getSemActive() > 0) {
-                        
+
                             alertFacade.create(a);
-                            
-                            if (project.getSemActive() == 2) searchResponse(a);
-                            
+
+                            if (project.getSemActive() == 2) {
+                                searchResponse(a);
+                            }
+
                             // send alert to log server
-                            if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
-                
-                            if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
+                            if (elasticFromPool != null) {
+                                elasticFromPool.SendAlertToLog(a);
+                            }
+
+                            if (graylogFromPool != null) {
+                                graylogFromPool.SendAlertToLog(a);
+                            }
                         }
-                    
+
                     } else {
-                    
+
                         String a_uuid = ((TextMessage) message).getStringProperty("alert_uuid");
                         a = alertFacade.findAlertByUuid(a_uuid);
-                        
-                        if (a != null && project.getSemActive() > 0) searchResponse(a);
+
+                        if (a != null && project.getSemActive() == 2) {
+                            searchResponse(a);
+                        }
                     }
                 }
             }
         } catch (Exception e) {
             logger.error("alertflex_ctrl_exception", e);
         }
-    }  
-    
-    
+    }
+
     void searchResponse(Alert a) {
-        
+
         List<Response> rl = null;
         List<Response> responseList = new ArrayList<>();
-        
+
         // check if field of action consists response profile for alert
         if (!a.getAction().equals("indef") && !a.getAction().isEmpty()) {
-            
+
             Response r = responseFacade.findResponseForAction(a.getRefId(), a.getAlertSource(), a.getAction());
-            
-            if (r != null) responseList.add(r);
+
+            if (r != null) {
+                responseList.add(r);
+            }
         }
-        
+
         // check response for event
         rl = getResponseForEvent(a);
-        if (rl != null && !rl.isEmpty()) responseList.addAll(rl);
-        
-        
+        if (rl != null && !rl.isEmpty()) {
+            responseList.addAll(rl);
+        }
+
         // check response for cat
         if (!a.getCategories().isEmpty()) {
-            
+
             String[] catArray = a.getCategories().split(", ");
-            
+
             if (catArray != null && catArray.length > 0) {
-           
-                for (int i=0; (i < catArray.length);  i++) {
-            
+
+                for (int i = 0; (i < catArray.length); i++) {
+
                     String cat = catArray[i];
-                    
+
                     rl = getResponseForCat(a, cat);
-                    
-                    if (rl != null && !rl.isEmpty()) responseList.addAll(rl);
+
+                    if (rl != null && !rl.isEmpty()) {
+                        responseList.addAll(rl);
+                    }
                 }
             }
-        }  
-        
-        if (responseList == null || responseList.isEmpty()) return;
-                        
-        for (Response res: responseList) {
-            if (res != null) CreateResponse(res, a);
+        }
+
+        if (responseList == null || responseList.isEmpty()) {
+            return;
+        }
+
+        for (Response res : responseList) {
+            if (res != null) {
+                CreateResponse(res, a);
+            }
         }
     }
-    
-    public List<Response> getResponseForEvent(Alert a)   {
-        
+
+    public List<Response> getResponseForEvent(Alert a) {
+
         List<Response> selectedResponse = new ArrayList<>();
-        
+
         List<Response> resList = responseFacade.findResponseForEvent(a.getRefId(), a.getAlertSource(), a.getEventId());
-        
-        if (resList == null) return null;
-        
-        for (Response res: resList) {
-            
-            int  severity = res.getAlertSeverity();
+
+        if (resList == null) {
+            return null;
+        }
+
+        for (Response res : resList) {
+
+            int severity = res.getAlertSeverity();
             if (severity != 0) {
-                if (severity > a.getAlertSeverity()) continue;
+                if (severity > a.getAlertSeverity()) {
+                    continue;
+                }
             }
-            
+
             String parameter = res.getAlertAgent();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getAgentName())) continue;
+                if (!parameter.equals(a.getAgentName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertContainer();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
                 if (!parameter.equals(a.getContainerName())) {
-                    if (!parameter.equals(a.getContainerId())) continue;
+                    if (!parameter.equals(a.getContainerId())) {
+                        continue;
+                    }
                 }
             }
-            
+
             parameter = res.getAlertIp();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) continue;
+                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertUser();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getUserName())) continue;
+                if (!parameter.equals(a.getUserName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertSensor();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSensorId())) continue;
+                if (!parameter.equals(a.getSensorId())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFileName())) continue;
+                if (!parameter.equals(a.getFileName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertProcess();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getProcessName())) continue;
+                if (!parameter.equals(a.getProcessName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertRegex();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!a.getDescription().matches(parameter)) continue;
+                if (!a.getDescription().matches(parameter)) {
+                    continue;
+                }
             }
-            
+
             int begin = res.getBeginHour();
             int end = res.getEndHour();
-            if (begin == 0 && end == 0) selectedResponse.add(res);
-            else {
+            if (begin == 0 && end == 0) {
+                selectedResponse.add(res);
+            } else {
                 Calendar rightNow = Calendar.getInstance();
                 int hour = rightNow.get(Calendar.HOUR_OF_DAY);
-                if (begin <= hour && hour <= end)  selectedResponse.add(res);
+                if (begin <= hour && hour <= end) {
+                    selectedResponse.add(res);
+                }
             }
         }
-        
+
         return selectedResponse;
-    } 
-    
-    public List<Response> getResponseForCat(Alert a, String c)   {
-        
+    }
+
+    public List<Response> getResponseForCat(Alert a, String c) {
+
         List<Response> selectedResponse = new ArrayList<>();
-        
+
         List<Response> resList = responseFacade.findResponseForCat(a.getRefId(), a.getAlertSource(), c);
-        
-        if (resList == null) return null;
-        
-        for (Response res: resList) {
-            
-            int  severity = res.getAlertSeverity();
+
+        if (resList == null) {
+            return null;
+        }
+
+        for (Response res : resList) {
+
+            int severity = res.getAlertSeverity();
             if (severity != 0) {
-                if (severity > a.getAlertSeverity()) continue;
+                if (severity > a.getAlertSeverity()) {
+                    continue;
+                }
             }
-            
+
             String parameter = res.getAlertAgent();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getAgentName())) continue;
+                if (!parameter.equals(a.getAgentName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertContainer();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
                 if (!parameter.equals(a.getContainerName())) {
-                    if (!parameter.equals(a.getContainerId())) continue;
+                    if (!parameter.equals(a.getContainerId())) {
+                        continue;
+                    }
                 }
             }
-            
+
             parameter = res.getAlertIp();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) continue;
+                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertUser();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getUserName())) continue;
+                if (!parameter.equals(a.getUserName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertSensor();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSensorId())) continue;
+                if (!parameter.equals(a.getSensorId())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFileName())) continue;
+                if (!parameter.equals(a.getFileName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertProcess();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getProcessName())) continue;
+                if (!parameter.equals(a.getProcessName())) {
+                    continue;
+                }
             }
-            
+
             parameter = res.getAlertRegex();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!a.getDescription().matches(parameter)) continue;
+                if (!a.getDescription().matches(parameter)) {
+                    continue;
+                }
             }
-            
+
             int begin = res.getBeginHour();
             int end = res.getEndHour();
-            if (begin == 0 && end == 0) selectedResponse.add(res);
-            else {
+            if (begin == 0 && end == 0) {
+                selectedResponse.add(res);
+            } else {
                 Calendar rightNow = Calendar.getInstance();
                 int hour = rightNow.get(Calendar.HOUR_OF_DAY);
-                if (begin <= hour && hour <= end)  selectedResponse.add(res);
+                if (begin <= hour && hour <= end) {
+                    selectedResponse.add(res);
+                }
             }
         }
-        
+
         return selectedResponse;
-    } 
-    
-    
+    }
+
     public void CreateResponse(Response res, Alert a) {
-        
+
         try {
-            
+
             String strConnFactory = System.getProperty("AmqUrl", "");
             String user = System.getProperty("AmqUser", "");
             String pass = System.getProperty("AmqPwd", "");
-            
+
             // Create a ConnectionFactory
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
-            
+
             // Create a Connection
-            Connection connectionResponse = connectionFactory.createConnection(user,pass);
+            Connection connectionResponse = connectionFactory.createConnection(user, pass);
             connectionResponse.start();
 
             // Create a Session
@@ -418,22 +483,21 @@ public class AlertsMessageBean implements MessageListener {
             // Create a MessageProducer from the Session to the Topic or Queue
             MessageProducer producer = sessionResponse.createProducer(destinationResponse);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            
+
             TextMessage message = sessionResponse.createTextMessage();
-            
+
             message.setStringProperty("ref_id", a.getRefId());
             message.setStringProperty("response_id", res.getResId());
             message.setStringProperty("alert_uuid", a.getAlertUuid());
             message.setText("empty");
             producer.send(message);
-                        
+
             // Clean up
             sessionResponse.close();
-            connectionResponse.close();            
-                
-        } catch ( JMSException e) {
+            connectionResponse.close();
+
+        } catch (JMSException e) {
             logger.error("alertflex_ctrl_exception", e);
-        } 
+        }
     }
 }
-

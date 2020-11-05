@@ -349,5 +349,5 @@ public class Events implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Events[ id=" + id + " ]";
     }
-    
+
 }

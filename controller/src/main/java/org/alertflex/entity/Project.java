@@ -1039,5 +1039,5 @@ public class Project implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Project[ refId=" + refId + " ]";
     }
-    
+
 }

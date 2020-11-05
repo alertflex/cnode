@@ -336,5 +336,5 @@ public class Agent implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Agent[ recId=" + recId + " ]";
     }
-    
+
 }

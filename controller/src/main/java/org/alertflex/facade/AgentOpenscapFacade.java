@@ -30,14 +30,14 @@ public class AgentOpenscapFacade extends AbstractFacade<AgentOpenscap> {
     public AgentOpenscapFacade() {
         super(AgentOpenscap.class);
     }
-    
+
     public AgentOpenscap findOpenscap(String ref, String node, String agent, String profile, String check) {
-        
+
         AgentOpenscap ao;
-        
+
         try {
             em.flush();
-            
+
             Query cQry = em.createQuery(
                     "SELECT a FROM AgentOpenscap a  WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.profileId = :profile AND a.checkId = :check")
                     .setParameter("ref", ref)
@@ -45,16 +45,16 @@ public class AgentOpenscapFacade extends AbstractFacade<AgentOpenscap> {
                     .setParameter("agent", agent)
                     .setParameter("profile", profile)
                     .setParameter("check", check);
-            cQry.setMaxResults(1);        
-        // Enable forced database query
+            cQry.setMaxResults(1);
+            // Enable forced database query
             cQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ao =  (AgentOpenscap) cQry.getSingleResult();
-        
+            ao = (AgentOpenscap) cQry.getSingleResult();
+
         } catch (Exception e) {
             ao = null;
         }
-        
+
         return ao;
-       
+
     }
 }

@@ -5,7 +5,6 @@
  */
 package org.alertflex.controller;
 
-
 import java.util.Date;
 import java.util.UUID;
 import org.alertflex.entity.Alert;
@@ -24,115 +23,118 @@ import org.slf4j.LoggerFactory;
  * @author root
  */
 public class DockerBench {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(DockerBench.class);
-    
+
     private InfoMessageBean eventBean;
     Project project;
     Node node;
-    
-    public DockerBench (InfoMessageBean eb) {
+
+    public DockerBench(InfoMessageBean eb) {
         this.eventBean = eb;
         this.project = eventBean.getProject();
-        
+
     }
-    
+
     public void saveReport(String sensor, String report) {
-        
+
         try {
-            
+
             String n = eventBean.getNode();
             String r = eventBean.getRefId();
             Date date = new Date();
-            
-            node = eventBean.getNodeFacade().findByNodeName(r,n);
-        
-            if (node == null || sensor == null || report.isEmpty()) return;
-            
+
+            node = eventBean.getNodeFacade().findByNodeName(r, n);
+
+            if (node == null || sensor == null || report.isEmpty()) {
+                return;
+            }
+
             JSONObject obj = new JSONObject(report);
             JSONArray arr = obj.getJSONArray("tests");
-            
+
             for (int i = 0; i < arr.length(); i++) {
-                
+
                 JSONObject test = arr.getJSONObject(i);
                 String testDesc = test.getString("desc");
                 JSONArray results = test.getJSONArray("results");
-                
+
                 for (int j = 0; j < results.length(); j++) {
-                    
+
                     DockerScan ds = new DockerScan();
-                    
+
                     ds.setRefId(r);
                     ds.setNodeId(n);
                     ds.setSensor(sensor);
                     ds.setTestDesc(testDesc);
                     ds.setReportAdded(date);
                     ds.setReportUpdated(date);
-                    
+
                     ds.setResultId(results.getJSONObject(j).getString("id"));
                     ds.setResultDesc(results.getJSONObject(j).getString("desc"));
                     ds.setResult(results.getJSONObject(j).getString("result"));
-                    
+
                     ds.setDetails("indef");
-                    if (results.getJSONObject(j).has("details")) ds.setDetails(results.getJSONObject(j).getString("details"));
-                    
-                    DockerScan dsExisting = eventBean.getDockerScanFacade().findRecord(ds.getRefId(), 
-                        ds.getNodeId(), 
-                        ds.getSensor(), 
-                        ds.getResultId(),
-                        ds.getResult());
-                    
+                    if (results.getJSONObject(j).has("details")) {
+                        ds.setDetails(results.getJSONObject(j).getString("details"));
+                    }
+
+                    DockerScan dsExisting = eventBean.getDockerScanFacade().findRecord(ds.getRefId(),
+                            ds.getNodeId(),
+                            ds.getSensor(),
+                            ds.getResultId(),
+                            ds.getResult());
+
                     if (dsExisting == null) {
-                        
+
                         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(project.getRefId(), "DockerBench");
                         int sev = 0;
                         String severity = ds.getResult();
-                
+
                         if (!severity.isEmpty() && ap != null) {
-                            
+
                             sev = ap.getSeverityDefault();
-                            
-                            if(ap.getText1().equals(severity)) {
+
+                            if (ap.getText1().equals(severity)) {
                                 sev = ap.getValue1();
-                            } else if(ap.getText2().equals(severity)) {
+                            } else if (ap.getText2().equals(severity)) {
                                 sev = ap.getValue2();
-                            } else if(ap.getText3().equals(severity)) {
+                            } else if (ap.getText3().equals(severity)) {
                                 sev = ap.getValue3();
-                            } else if(ap.getText4().equals(severity)) {
+                            } else if (ap.getText4().equals(severity)) {
                                 sev = ap.getValue4();
-                            } 
-                    
+                            }
+
                             ds.setSeverity(sev);
                             eventBean.getDockerScanFacade().create(ds);
-                    
-                            if (sev >= ap.getSeverityThreshold()) createDockerScanAlert(ds);
+
+                            if (sev >= ap.getSeverityThreshold()) {
+                                createDockerScanAlert(ds);
+                            }
                         }
-                        
+
                     } else {
-                        
+
                         dsExisting.setReportUpdated(date);
                         eventBean.getDockerScanFacade().edit(dsExisting);
                     }
-                    
+
                 }
             }
-    
-                            
+
         } catch (Exception e) {
             logger.error("alertflex_ctrl_exception", e);
         }
     }
-    
-    
-public void createDockerScanAlert(DockerScan ds) {
-    
-       
+
+    public void createDockerScanAlert(DockerScan ds) {
+
         Alert a = new Alert();
-            
+
         a.setNodeId(eventBean.getNode());
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
-        
+
         a.setAlertSeverity(ds.getSeverity());
         a.setEventSeverity(ds.getResult());
         a.setEventId("1");
@@ -140,7 +142,7 @@ public void createDockerScanAlert(DockerScan ds) {
         a.setDescription(ds.getResultDesc());
         a.setAlertSource("DockerBench");
         a.setAlertType("MISC");
-    
+
         a.setSensorId(ds.getSensor());
         a.setLocation("indef");
         a.setAction("indef");
@@ -148,12 +150,12 @@ public void createDockerScanAlert(DockerScan ds) {
         a.setFilter("");
         a.setInfo(ds.getTestDesc());
         a.setTimeEvent("indef");
-        Date date = new Date(); 
+        Date date = new Date();
         a.setTimeCollr(date);
         a.setTimeCntrl(date);
         a.setAgentName("indef");
         a.setUserName("indef");
-            
+
         a.setSrcIp("0.0.0.0");
         a.setDstIp("0.0.0.0");
         a.setDstPort(0);
@@ -174,8 +176,8 @@ public void createDockerScanAlert(DockerScan ds) {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setJsonEvent("indef");
-            
+
         eventBean.createAlert(a);
-        
+
     }
 }

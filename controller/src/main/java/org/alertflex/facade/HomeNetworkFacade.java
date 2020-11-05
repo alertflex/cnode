@@ -19,6 +19,7 @@ import org.alertflex.entity.HomeNetwork;
  */
 @Stateless
 public class HomeNetworkFacade extends AbstractFacade<HomeNetwork> {
+
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
 
@@ -30,29 +31,28 @@ public class HomeNetworkFacade extends AbstractFacade<HomeNetwork> {
     public HomeNetworkFacade() {
         super(HomeNetwork.class);
     }
-    
+
     public List<HomeNetwork> findByRef(String ref) {
-        
+
         List<HomeNetwork> hn = null;
-        
+
         try {
             em.flush();
-            
+
             Query listQry = em.createQuery(
-                "SELECT h FROM HomeNetwork h WHERE h.refId = :ref").setParameter("ref", ref);
-        
+                    "SELECT h FROM HomeNetwork h WHERE h.refId = :ref").setParameter("ref", ref);
+
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            hn =  (List<HomeNetwork>) listQry.getResultList();
-            
+            hn = (List<HomeNetwork>) listQry.getResultList();
+
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
 
-            
         }
-        
+
         return hn;
-       
+
     }
-    
+
 }

@@ -321,5 +321,5 @@ public class AgentSca implements Serializable {
     public String toString() {
         return "org.alertflex.entity.AgentSca[ recId=" + recId + " ]";
     }
-    
+
 }

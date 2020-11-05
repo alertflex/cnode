@@ -9,25 +9,25 @@ package org.alertflex.filters;
  *
  * @author root
  */
-
 public class Aggregate {
+
     int reproduced = 0;
     int inPeriod = 0;
-               
-    public void setReproduced (int r) {
+
+    public void setReproduced(int r) {
         this.reproduced = r;
     }
-    
-    public int getReproduced () {
+
+    public int getReproduced() {
         return reproduced;
     }
-    
-    public void setInPeriod (int p) {
+
+    public void setInPeriod(int p) {
         this.inPeriod = p;
     }
-    
-    public int getInPeriod () {
+
+    public int getInPeriod() {
         return inPeriod;
     }
-    
+
 }

@@ -111,5 +111,5 @@ public class Node implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Node[ nodePK=" + nodePK + " ]";
     }
-    
+
 }

@@ -201,5 +201,5 @@ public class AlertCategory implements Serializable {
     public String toString() {
         return "org.alertflex.entity.AlertCategory[ recId=" + recId + " ]";
     }
-    
+
 }

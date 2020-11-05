@@ -302,5 +302,5 @@ public class TrivyScan implements Serializable {
     public String toString() {
         return "org.alertflex.entity.TrivyScan[ recId=" + recId + " ]";
     }
-    
+
 }
