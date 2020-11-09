@@ -1,10 +1,11 @@
 package org.alertflex.controller;
 
-import hidden.org.elasticsearch.client.RestHighLevelClient;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -22,6 +23,7 @@ import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import org.alertflex.common.PojoAlertLogic;
 import org.alertflex.logserver.GrayLog;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.entity.Alert;
@@ -464,8 +466,8 @@ public class InfoMessageBean implements MessageListener {
 
             alertFacade.create(a);
 
-            // send alert for response processing to Worker
-            if (project.getSemActive() > 0) {
+            // send alert for response processing
+            if (project.getSemActive() == 2) {
                 sendAlertToMQ(a);
             }
         }
@@ -505,13 +507,19 @@ public class InfoMessageBean implements MessageListener {
             // Create a MessageProducer from the Session to the Topic or Queue
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-
-            TextMessage message = session.createTextMessage();
-
-            message.setIntProperty("msg_type", 2);
-            message.setStringProperty("ref_id", a.getRefId());
-            message.setStringProperty("alert_uuid", a.getAlertUuid());
-            message.setText("empty");
+            
+            BytesMessage message = session.createBytesMessage();
+            PojoAlertLogic pal = new PojoAlertLogic(a);
+            
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            
+            oos.writeObject(pal);
+                
+            oos.close();
+            bos.close();
+                
+            message.writeBytes(bos.toByteArray());
             producer.send(message);
 
             // Clean up
@@ -519,6 +527,8 @@ public class InfoMessageBean implements MessageListener {
             connection.close();
 
         } catch (JMSException e) {
+            logger.error("alertflex_ctrl_exception", e);
+        } catch (IOException e) {
             logger.error("alertflex_ctrl_exception", e);
         }
     }

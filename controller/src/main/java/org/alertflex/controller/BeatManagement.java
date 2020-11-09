@@ -5,6 +5,9 @@
  */
 package org.alertflex.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -44,6 +47,7 @@ import org.alertflex.entity.Alert;
 import org.alertflex.facade.AlertFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.common.Netflow;
+import org.alertflex.common.PojoAlertLogic;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Attributes;
 import org.alertflex.entity.Events;
@@ -612,13 +616,13 @@ public class BeatManagement {
             a.setContainerName("indef");
             a.setJsonEvent("indef");
 
-            // save alert in MySQL and send to Redis   
+            // save alert in MySQL 
             if (prj.getSemActive() > 0) {
 
                 alertFacade.create(a);
 
-                // send alert for response processing to Worker
-                if (prj.getSemActive() >= 2) {
+                // send alert for response processing
+                if (prj.getSemActive() == 2) {
                     sendAlertToMQ(a);
                 }
             }
@@ -650,20 +654,28 @@ public class BeatManagement {
             MessageProducer producer = sessionProducer.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
-            TextMessage message = session.createTextMessage();
-
-            message.setIntProperty("msg_type", 2);
-            message.setStringProperty("ref_id", a.getRefId());
-            message.setStringProperty("alert_uuid", a.getAlertUuid());
-            message.setText("empty");
+            BytesMessage message = session.createBytesMessage();
+            PojoAlertLogic pal = new PojoAlertLogic(a);
+            
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            
+            oos.writeObject(pal);
+                
+            oos.close();
+            bos.close();
+                
+            message.writeBytes(bos.toByteArray());
             producer.send(message);
 
             // Clean up
-            sessionProducer.close();
-            connectionProducer.close();
+            session.close();
+            connection.close();
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            logger.error("alertflex_ctrl_exception", e);
+        } catch (IOException e) {
+            logger.error("alertflex_ctrl_exception", e);
         }
     }
 

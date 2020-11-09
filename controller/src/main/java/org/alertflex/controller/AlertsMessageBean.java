@@ -5,6 +5,11 @@
  */
 package org.alertflex.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,11 +37,15 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
+import org.alertflex.common.PojoAlertLogic;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
+import org.alertflex.redis.FromJedisPool;
+import redis.clients.jedis.Jedis;
 
 /**
  * @author Oleg Zharkov
@@ -57,6 +66,10 @@ public class AlertsMessageBean implements MessageListener {
     @Inject
     @FromGraylogPool
     GrayLog graylogFromPool;
+    
+    @Inject
+    @FromJedisPool
+    Jedis jedisFromPool;
 
     @EJB
     private ProjectFacade projectFacade;
@@ -69,11 +82,12 @@ public class AlertsMessageBean implements MessageListener {
 
     @EJB
     private ResponseFacade responseFacade;
-
+    
+    PojoAlertLogic pal = null;
+    
     @Override
     public void onMessage(Message message) {
-
-        int msg_type = 0;
+        
         Alert a = null;
 
         try {
@@ -82,7 +96,7 @@ public class AlertsMessageBean implements MessageListener {
 
                 TextMessage textMessage = (TextMessage) message;
 
-                msg_type = ((TextMessage) message).getIntProperty("msg_type");
+                int msg_type = ((TextMessage) message).getIntProperty("msg_type");
 
                 if (msg_type != 1 && msg_type != 2) {
                     return;
@@ -189,11 +203,15 @@ public class AlertsMessageBean implements MessageListener {
 
                         if (project.getSemActive() > 0) {
 
-                            alertFacade.create(a);
-
                             if (project.getSemActive() == 2) {
-                                searchResponse(a);
+                                
+                                pal = new PojoAlertLogic(a);
+                                searchResponse();
+                                a.setStatus(pal.getStatus());
+                                a.setCategories(pal.getCategories());
                             }
+                            
+                            if (!a.getStatus().equals("remove")) alertFacade.create(a);
 
                             // send alert to log server
                             if (elasticFromPool != null) {
@@ -206,12 +224,38 @@ public class AlertsMessageBean implements MessageListener {
                         }
 
                     } else {
+                        
+                        if (message instanceof BytesMessage) {
 
-                        String a_uuid = ((TextMessage) message).getStringProperty("alert_uuid");
-                        a = alertFacade.findAlertByUuid(a_uuid);
+                            BytesMessage msg = (BytesMessage) message;
+                            
+                            byte[] bytes = new byte[(int) msg.getBodyLength()];
+                            msg.readBytes(bytes);
+                
+                            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                            ObjectInputStream ois = new ObjectInputStream(bis);
+                            pal = (PojoAlertLogic) ois.readObject();
+                
+                            ois.close();
+                            bis.close();
 
-                        if (a != null && project.getSemActive() == 2) {
-                            searchResponse(a);
+                            if (pal != null) {
+                                searchResponse();
+                                a = alertFacade.findAlertByUuid(pal.getAlertUuid());
+                                if (a != null) {
+                                    if (pal.getStatus().equals("remove")) {
+                                        alertFacade.remove(a);
+                                    } else {
+                                        if (!a.getStatus().equals(pal.getStatus()) ||
+                                            !a.getCategories().equals(pal.getCategories())) {
+                                            
+                                            a.setStatus(pal.getStatus());
+                                            a.setCategories(pal.getCategories());
+                                            alertFacade.edit(a);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -221,15 +265,15 @@ public class AlertsMessageBean implements MessageListener {
         }
     }
 
-    void searchResponse(Alert a) {
+    void searchResponse() {
 
         List<Response> rl = null;
         List<Response> responseList = new ArrayList<>();
 
         // check if field of action consists response profile for alert
-        if (!a.getAction().equals("indef") && !a.getAction().isEmpty()) {
+        if (!pal.getAction().equals("indef") && !pal.getAction().isEmpty()) {
 
-            Response r = responseFacade.findResponseForAction(a.getRefId(), a.getAlertSource(), a.getAction());
+            Response r = responseFacade.findResponseForAction(pal.getRefId(), pal.getAlertSource(), pal.getAction());
 
             if (r != null) {
                 responseList.add(r);
@@ -237,15 +281,15 @@ public class AlertsMessageBean implements MessageListener {
         }
 
         // check response for event
-        rl = getResponseForEvent(a);
+        rl = searchResponseForEvent();
         if (rl != null && !rl.isEmpty()) {
             responseList.addAll(rl);
         }
 
         // check response for cat
-        if (!a.getCategories().isEmpty()) {
+        if (!pal.getCategories().isEmpty()) {
 
-            String[] catArray = a.getCategories().split(", ");
+            String[] catArray = pal.getCategories().split(", ");
 
             if (catArray != null && catArray.length > 0) {
 
@@ -253,7 +297,7 @@ public class AlertsMessageBean implements MessageListener {
 
                     String cat = catArray[i];
 
-                    rl = getResponseForCat(a, cat);
+                    rl = searchResponseForCat(cat);
 
                     if (rl != null && !rl.isEmpty()) {
                         responseList.addAll(rl);
@@ -268,16 +312,16 @@ public class AlertsMessageBean implements MessageListener {
 
         for (Response res : responseList) {
             if (res != null) {
-                CreateResponse(res, a);
+                createResponse(res);
             }
         }
     }
-
-    public List<Response> getResponseForEvent(Alert a) {
+    
+    public List<Response> searchResponseForEvent() {
 
         List<Response> selectedResponse = new ArrayList<>();
 
-        List<Response> resList = responseFacade.findResponseForEvent(a.getRefId(), a.getAlertSource(), a.getEventId());
+        List<Response> resList = responseFacade.findResponseForEvent(pal.getRefId(), pal.getAlertSource(), pal.getEventId());
 
         if (resList == null) {
             return null;
@@ -287,22 +331,22 @@ public class AlertsMessageBean implements MessageListener {
 
             int severity = res.getAlertSeverity();
             if (severity != 0) {
-                if (severity > a.getAlertSeverity()) {
+                if (severity > pal.getAlertSeverity()) {
                     continue;
                 }
             }
 
             String parameter = res.getAlertAgent();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getAgentName())) {
+                if (!parameter.equals(pal.getAgentName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertContainer();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getContainerName())) {
-                    if (!parameter.equals(a.getContainerId())) {
+                if (!parameter.equals(pal.getContainerName())) {
+                    if (!parameter.equals(pal.getContainerId())) {
                         continue;
                     }
                 }
@@ -310,42 +354,42 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertIp();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) {
+                if (!parameter.equals(pal.getSrcIp()) && !parameter.equals(pal.getDstIp())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertUser();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getUserName())) {
+                if (!parameter.equals(pal.getUserName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertSensor();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSensorId())) {
+                if (!parameter.equals(pal.getSensorId())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFileName())) {
+                if (!parameter.equals(pal.getFileName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertProcess();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getProcessName())) {
+                if (!parameter.equals(pal.getProcessName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertRegex();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!a.getDescription().matches(parameter)) {
+                if (!pal.getDescription().matches(parameter)) {
                     continue;
                 }
             }
@@ -366,11 +410,11 @@ public class AlertsMessageBean implements MessageListener {
         return selectedResponse;
     }
 
-    public List<Response> getResponseForCat(Alert a, String c) {
+    public List<Response> searchResponseForCat(String c) {
 
         List<Response> selectedResponse = new ArrayList<>();
 
-        List<Response> resList = responseFacade.findResponseForCat(a.getRefId(), a.getAlertSource(), c);
+        List<Response> resList = responseFacade.findResponseForCat(pal.getRefId(), pal.getAlertSource(), c);
 
         if (resList == null) {
             return null;
@@ -380,22 +424,22 @@ public class AlertsMessageBean implements MessageListener {
 
             int severity = res.getAlertSeverity();
             if (severity != 0) {
-                if (severity > a.getAlertSeverity()) {
+                if (severity > pal.getAlertSeverity()) {
                     continue;
                 }
             }
 
             String parameter = res.getAlertAgent();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getAgentName())) {
+                if (!parameter.equals(pal.getAgentName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertContainer();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getContainerName())) {
-                    if (!parameter.equals(a.getContainerId())) {
+                if (!parameter.equals(pal.getContainerName())) {
+                    if (!parameter.equals(pal.getContainerId())) {
                         continue;
                     }
                 }
@@ -403,42 +447,42 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertIp();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) {
+                if (!parameter.equals(pal.getSrcIp()) && !parameter.equals(pal.getDstIp())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertUser();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getUserName())) {
+                if (!parameter.equals(pal.getUserName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertSensor();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSensorId())) {
+                if (!parameter.equals(pal.getSensorId())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFileName())) {
+                if (!parameter.equals(pal.getFileName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertProcess();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getProcessName())) {
+                if (!parameter.equals(pal.getProcessName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertRegex();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!a.getDescription().matches(parameter)) {
+                if (!pal.getDescription().matches(parameter)) {
                     continue;
                 }
             }
@@ -458,46 +502,214 @@ public class AlertsMessageBean implements MessageListener {
 
         return selectedResponse;
     }
+    
+    public void createResponse(Response res) {
+        
+        if (res != null) {
 
-    public void CreateResponse(Response res, Alert a) {
+            // check if response should aggregated
+            if (res.getAggrReproduced() != 0 && res.getAggrInperiod() != 0) {
 
-        try {
+                if (aggregateResponse(res)) {
 
-            String strConnFactory = System.getProperty("AmqUrl", "");
-            String user = System.getProperty("AmqUser", "");
-            String pass = System.getProperty("AmqPwd", "");
+                    pal.setStatus("aggregated");
 
-            // Create a ConnectionFactory
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
+                    changeActionCatStatus(res);
+                    sendMqResponse(res);
 
-            // Create a Connection
-            Connection connectionResponse = connectionFactory.createConnection(user, pass);
-            connectionResponse.start();
+                } else {
 
-            // Create a Session
-            Session sessionResponse = connectionResponse.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    if (res.getAction().equals("remove")) {
+                        pal.setStatus("remove");
+                    }
 
-            // Create the destination (Topic or Queue)
-            Destination destinationResponse = sessionResponse.createQueue("jms/alertflex/responses");
+                }
+            } else {
+                
+                changeActionCatStatus(res);
+                sendMqResponse(res);
 
-            // Create a MessageProducer from the Session to the Topic or Queue
-            MessageProducer producer = sessionResponse.createProducer(destinationResponse);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            }
+        }
+        
+    }
+    
+    public boolean aggregateResponse(Response res) {
 
-            TextMessage message = sessionResponse.createTextMessage();
+        // return true if aggregation is finished and alert should be arised
+        if (jedisFromPool != null) {
 
-            message.setStringProperty("ref_id", a.getRefId());
-            message.setStringProperty("response_id", res.getResId());
-            message.setStringProperty("alert_uuid", a.getAlertUuid());
-            message.setText("empty");
-            producer.send(message);
+            String key = res.getRefId();
+            String fieldReproduced = "reproduced_" + res.getResId();
+            String fieldPeriod = "period_" + res.getResId();
+            long periodResponse = (long) res.getAggrInperiod();
+            long reproducedResponse = (long) res.getAggrReproduced();
 
-            // Clean up
-            sessionResponse.close();
-            connectionResponse.close();
+            long currentTime = (new Date()).getTime();
+            long counterTime = 0;
+            long counter = 0;
 
-        } catch (JMSException e) {
-            logger.error("alertflex_ctrl_exception", e);
+            boolean firstTime = true;
+
+            if (jedisFromPool.hexists(key, fieldReproduced)) {
+                firstTime = false;
+            }
+
+            if (jedisFromPool.hexists(key, fieldPeriod)) {
+                firstTime = false;
+            }
+
+            if (!firstTime) {
+
+                String value = jedisFromPool.hget(key, fieldReproduced);
+                if (!value.equals("nil")) {
+                    counter = Long.parseLong(value);
+                }
+
+                value = jedisFromPool.hget(key, fieldPeriod);
+                if (!value.equals("nil")) {
+                    counterTime = Long.parseLong(value);
+                }
+            }
+
+            if (!firstTime && counter != 0 && counterTime != 0) {
+
+                counter++;
+                counterTime = counterTime + periodResponse * 1000;
+
+                if (counter >= res.getAggrReproduced()) {
+
+                    //clear hash
+                    jedisFromPool.hdel(key, fieldReproduced);
+                    jedisFromPool.hdel(key, fieldPeriod);
+
+                    if (currentTime <= counterTime) {
+                        return true;
+                    }
+
+                    jedisFromPool.hincrBy(key, fieldReproduced, 1);
+                    jedisFromPool.hincrBy(key, fieldPeriod, currentTime);
+
+                } else {
+
+                    if (currentTime > counterTime) {
+                        //clear hash
+                        jedisFromPool.hdel(key, fieldReproduced);
+                        jedisFromPool.hdel(key, fieldPeriod);
+                        // create hash
+                        jedisFromPool.hincrBy(key, fieldReproduced, 1);
+                        jedisFromPool.hincrBy(key, fieldPeriod, currentTime);
+
+                    } else {
+                        // increase counter
+                        jedisFromPool.hincrBy(key, fieldReproduced, 1);
+                    }
+                }
+
+            } else {
+                //clear hash
+                jedisFromPool.hdel(key, fieldReproduced);
+                jedisFromPool.hdel(key, fieldPeriod);
+                // create hash
+                jedisFromPool.hincrBy(key, fieldReproduced, 1);
+                jedisFromPool.hincrBy(key, fieldPeriod, currentTime);
+            }
+        }
+
+        return false;
+    }
+
+    public void sendMqResponse(Response res) {
+        
+        if ((!res.getPlaybook().isEmpty() && !res.getPlaybook().equals("indef")) 
+            || (!res.getNotifyUsers().equals("indef") && !res.getNotifyUsers().isEmpty())) {
+                
+            try {
+
+                String strConnFactory = System.getProperty("AmqUrl", "");
+                String user = System.getProperty("AmqUser", "");
+                String pass = System.getProperty("AmqPwd", "");
+
+                // Create a ConnectionFactory
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
+
+                // Create a Connection
+                Connection connectionResponse = connectionFactory.createConnection(user, pass);
+                connectionResponse.start();
+
+                // Create a Session
+                Session sessionResponse = connectionResponse.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+                // Create the destination (Topic or Queue)
+                Destination destinationResponse = sessionResponse.createQueue("jms/alertflex/responses");
+
+                // Create a MessageProducer from the Session to the Topic or Queue
+                MessageProducer producer = sessionResponse.createProducer(destinationResponse);
+                producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+                BytesMessage message = sessionResponse.createBytesMessage();
+
+                message.setStringProperty("ref_id", pal.getRefId());
+                message.setStringProperty("response_id", res.getResId());
+            
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(pal);
+                
+                oos.close();
+                bos.close();
+                
+                message.writeBytes(bos.toByteArray());
+                producer.send(message);
+
+                // Clean up
+                sessionResponse.close();
+                connectionResponse.close();
+
+            } catch (JMSException e) {
+                logger.error("alertflex_ctrl_exception", e);
+            } catch (IOException e) {
+                logger.error("alertflex_ctrl_exception", e);
+            }
+        }
+    }
+    
+    public void changeActionCatStatus(Response res) {
+
+        if (res != null) {
+            
+            pal.setAction(res.getResId());
+
+            if (!res.getCatNew().isEmpty() && !res.getCatNew().equals("indef")) {
+
+                String newCat = pal.getCategories() + ", " + res.getCatNew();
+                
+                pal.setCategories(newCat);
+            }
+            
+            String status = res.getAction();
+            // change status of alert
+            if (status.equals("indef") || status.isEmpty()) {
+                return;
+            }
+
+            switch (status) {
+
+                case "confirm":
+                    pal.setStatus("confirmed");
+                    break;
+
+                case "incident":
+                    pal.setStatus("incident");
+                    break;
+
+                case "remove":
+                    pal.setStatus("remove");
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 }

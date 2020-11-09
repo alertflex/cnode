@@ -33,7 +33,7 @@ public class AlertFacade extends AbstractFacade<Alert> {
     public AlertFacade() {
         super(Alert.class);
     }
-
+    
     public List<Alert> findAlertsBySQL(String r, String q) {
 
         List<Alert> l = new ArrayList();
