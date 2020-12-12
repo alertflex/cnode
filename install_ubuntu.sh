@@ -275,7 +275,7 @@ cd $INSTALL_PATH
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
 sudo curl -LO "https://github.com/alertflex/cnode/releases/download/0.701/alertflex-mc.war"
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy pkg/alertflex-mc.war
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 
 echo "*** clean env ***"
 rm password.txt
