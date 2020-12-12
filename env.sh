@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#########################################
-# Technical project data for Controller #
-#########################################
+####################################
+# Technical project data for Cnode #
+####################################
 
 export INSTALL_PATH=/home/alertflex/cnode
 export PROJECT_PATH=/home/alertflex/
@@ -14,22 +14,36 @@ export AMQ_USER=xxxxx
 export AMQ_PWD=*****
 
 # web admin user and password for Alertflex Web console, Glassfish and ActiveMQ 
-# NOTE! please, do not change ADMIN_USER (keep admin user name as admin)
+# NOTE! please, do not change ADMIN_USER (keep user name as admin)
 export ADMIN_HOST=xxxxx
-export ADMIN_USER=xxxxx
+export ADMIN_USER=admin
 export ADMIN_PWD=*****
 
 # user and password for MySQL database (Alertflex and Afevents DB)
-# NOTE! password DB_PWD also will be used as root password for MySQL and MISP
+# password DB_PWD also will be used as root password for MySQL and MISP
+# NOTE! some of MySQL password policy require to use password special char in password for example - ! or &. 
+# Installation procedures can be interrupted if the password does not suite the policy
 export DB_HOST=xxxxx
 export DB_PORT=3306
 export DB_USER=xxxxx
 export DB_PWD=*****
 
-# MISP parameters, use for url a hostname the same as for ALERTFLEX_HOST
-export MISP=false
+###########################
+# install add-on packages #
+###########################
+
+# MISP parameters, for MISP_URL use ip or url a hostname the same as for ALERTFLEX_HOST
+export INSTALL_MISP=yes
 export MISP_URL='xxxxx:8443'
 export MISP_GPG='xxxxxxxxxxxxxxxxxxxxxxxxx'
+
+export INSTALL_NMAP=no
+export INSTALL_ZAP=no
+
+
+
+
+
 
 
 

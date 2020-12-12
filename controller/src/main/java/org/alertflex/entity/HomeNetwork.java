@@ -170,5 +170,5 @@ public class HomeNetwork implements Serializable {
     public String toString() {
         return "org.alertflex.entity.HomeNetwork[ recId=" + recId + " ]";
     }
-    
+
 }

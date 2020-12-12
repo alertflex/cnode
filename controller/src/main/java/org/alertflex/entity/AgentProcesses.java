@@ -554,5 +554,5 @@ public class AgentProcesses implements Serializable {
     public String toString() {
         return "org.alertflex.entity.AgentProcesses[ recId=" + recId + " ]";
     }
-    
+
 }

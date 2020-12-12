@@ -31,79 +31,76 @@ public class SensorFacade extends AbstractFacade<Sensor> {
     public SensorFacade() {
         super(Sensor.class);
     }
-    
+
     public Sensor findSensorByName(String ref, String node, String name) {
-        
+
         Sensor s = null;
-        
+
         try {
             em.flush();
-            
+
             Query listQry = em.createQuery(
-                "SELECT s FROM Sensor s WHERE s.sensorPK.masterNode = :node AND s.sensorPK.refId = :ref AND s.sensorPK.name = :name")
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.masterNode = :node AND s.sensorPK.refId = :ref AND s.sensorPK.name = :name")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("name", name);
-        
+
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            s =  (Sensor) listQry.getSingleResult();
-            
+            s = (Sensor) listQry.getSingleResult();
+
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
 
-            
         }
-        
+
         return s;
-       
+
     }
-    
+
     public List<Sensor> findSensorsByRef(String ref) {
-        
+
         List<Sensor> l = null;
-        
+
         try {
             em.flush();
-            
+
             Query listQry = em.createQuery(
-                "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :ref").setParameter("ref", ref);
-        
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :ref").setParameter("ref", ref);
+
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            l =  (List<Sensor>) listQry.getResultList();
-            
+            l = (List<Sensor>) listQry.getResultList();
+
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
 
-            
         }
-        
+
         return l;
-       
+
     }
-    
+
     public List<Sensor> findSensorsByType(String ref, String node, String type) {
-        
+
         List<Sensor> l = null;
-        
+
         try {
             em.flush();
-            
+
             Query listQry = em.createQuery(
-                "SELECT s FROM Sensor s WHERE s.sensorPK.masterNode = :node AND s.sensorPK.refId = :ref AND s.sensorType = :type")
-                    .setParameter("ref", ref).setParameter("node", node).setParameter("type",type);
-        
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.masterNode = :node AND s.sensorPK.refId = :ref AND s.sensorType = :type")
+                    .setParameter("ref", ref).setParameter("node", node).setParameter("type", type);
+
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            l =  (List<Sensor>) listQry.getResultList();
-            
+            l = (List<Sensor>) listQry.getResultList();
+
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            
+            return null;
         }
-        
+
         return l;
-       
+
     }
-    
+
 }

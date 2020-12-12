@@ -20,6 +20,7 @@ import org.alertflex.entity.NetStat;
  */
 @Stateless
 public class NetStatFacade extends AbstractFacade<NetStat> {
+
     @PersistenceContext(unitName = "afevents_PU")
     private EntityManager em;
 
@@ -31,47 +32,47 @@ public class NetStatFacade extends AbstractFacade<NetStat> {
     public NetStatFacade() {
         super(NetStat.class);
     }
-    
+
     public int delOldStat(String ref, Timestamp timerange) {
-        
+
         int deletedCount = 0;
-        
+
         try {
             em.flush();
             Query qry = em.createQuery("DELETE FROM NetStat n  WHERE n.refId = :ref AND n.timeOfSurvey < :timerange")
-                .setParameter("ref", ref)
-                .setParameter("timerange", timerange);
-            
+                    .setParameter("ref", ref)
+                    .setParameter("timerange", timerange);
+
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            deletedCount =  qry.executeUpdate();
+            deletedCount = qry.executeUpdate();
         } catch (Exception e) {
 
         }
-        
+
         return deletedCount;
     }
-    
+
     public NetStat getLastRecord(String r, String n, String i) {
-        
+
         NetStat ns = null;
-        
+
         try {
             em.flush();
-            
+
             Query qry = em.createQuery(
-                "SELECT n FROM NetStat n WHERE n.refId = :ref AND n.nodeId = :node AND n.ids = :ids ORDER BY n.timeOfSurvey DESC")
+                    "SELECT n FROM NetStat n WHERE n.refId = :ref AND n.nodeId = :node AND n.ids = :ids ORDER BY n.timeOfSurvey DESC")
                     .setParameter("ref", r).setParameter("node", n).setParameter("ids", i).setMaxResults(1);
-                            
-        // Enable forced database query
+
+            // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ns =  (NetStat) qry.getSingleResult();
-            
+            ns = (NetStat) qry.getSingleResult();
+
         } catch (Exception e) {
 
             return null;
         }
-        
+
         return ns;
     }
 }

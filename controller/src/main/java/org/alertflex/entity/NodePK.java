@@ -82,5 +82,5 @@ public class NodePK implements Serializable {
     public String toString() {
         return "org.alertflex.entity.NodePK[ refId=" + refId + ", name=" + name + " ]";
     }
-    
+
 }

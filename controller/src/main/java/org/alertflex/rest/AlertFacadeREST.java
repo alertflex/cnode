@@ -31,10 +31,9 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @Path("alert")
 public class AlertFacadeREST extends AbstractFacade<Alert> {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AlertFacadeREST.class);
-    
-    
+
     @PersistenceContext(unitName = "afevents_PU")
     private EntityManager em;
 
@@ -94,5 +93,5 @@ public class AlertFacadeREST extends AbstractFacade<Alert> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

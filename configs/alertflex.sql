@@ -24,7 +24,7 @@ CREATE TABLE `alert` (
   `alert_source` varchar(32) NOT NULL DEFAULT '',
   `alert_type` varchar(32) NOT NULL DEFAULT '',
   `event_id` varchar(512) NOT NULL DEFAULT '',
-  `event_severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `event_severity` varchar(255) NOT NULL DEFAULT '',
   `src_ip` varchar(128) NOT NULL DEFAULT '',
   `dst_ip` varchar(128) NOT NULL DEFAULT '',
   `src_hostname` varchar(128) NOT NULL DEFAULT '',
@@ -161,21 +161,20 @@ CREATE TABLE `project` (
   `stat_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `iprep_timerange` int(10) unsigned NOT NULL DEFAULT '0',
-  `logrep_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `inc_json` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_check` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_event` int(10) unsigned NOT NULL DEFAULT '0',
   `iprep_cat` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_rest` int(2) unsigned NOT NULL DEFAULT '0',
   `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
-  `log_host` varchar(512) NOT NULL DEFAULT '',
+  `log_host` varchar(255) NOT NULL DEFAULT '',
   `log_port` int(10) unsigned NOT NULL DEFAULT '0',
   `send_netflow` int(2) unsigned NOT NULL DEFAULT '0',
-  `graylog_host` varchar(512) NOT NULL DEFAULT '',
+  `graylog_host` varchar(255) NOT NULL DEFAULT '',
   `graylog_port` int(10) unsigned NOT NULL DEFAULT '0',
   `graylog_user` varchar(512) NOT NULL DEFAULT '',
   `graylog_pass` varchar(512) NOT NULL DEFAULT '',
-  `elk_host` varchar(512) NOT NULL DEFAULT '',
+  `elk_host` varchar(255) NOT NULL DEFAULT '',
   `elk_port` int(10) unsigned NOT NULL DEFAULT '0',
   `elk_user` varchar(512) NOT NULL DEFAULT '',
   `elk_pass` varchar(512) NOT NULL DEFAULT '',
@@ -184,40 +183,47 @@ CREATE TABLE `project` (
   `elk_truststore` varchar(512) NOT NULL DEFAULT '',
   `mongo_url` varchar(512) NOT NULL DEFAULT '',
   `hive_url` varchar(512) NOT NULL DEFAULT '',
-  `hive_key` varchar(512) NOT NULL DEFAULT '',
+  `hive_key` varchar(256) NOT NULL DEFAULT '',
   `misp_url` varchar(512) NOT NULL DEFAULT '',
-  `misp_key` varchar(512) NOT NULL DEFAULT '',
-  `jira_url` varchar(255) NOT NULL DEFAULT '',
+  `misp_key` varchar(256) NOT NULL DEFAULT '',
+  `jira_url` varchar(512) NOT NULL DEFAULT '',
   `jira_user` varchar(512) NOT NULL DEFAULT '',
   `jira_pass` varchar(512) NOT NULL DEFAULT '',
   `jira_project` varchar(512) NOT NULL DEFAULT '',
   `jira_type` varchar(512) NOT NULL DEFAULT '',
-  `vt_key` varchar(512) NOT NULL DEFAULT '',
+  `vt_key` varchar(256) NOT NULL DEFAULT '',
   `sms_account` varchar(512) NOT NULL DEFAULT '',
   `sms_token` varchar(512) NOT NULL DEFAULT '',
   `sms_from` varchar(512) NOT NULL DEFAULT '',
   `slack_hook` varchar(512) NOT NULL DEFAULT '',
-  `zap_host` varchar(512) NOT NULL DEFAULT '',
+  `zap_host` varchar(255) NOT NULL DEFAULT '',
   `zap_port` int(10) unsigned NOT NULL DEFAULT '0',
-  `zap_key` varchar(1024) NOT NULL DEFAULT '',
+  `zap_key` varchar(256) NOT NULL DEFAULT '',
   `sonar_url` varchar(512) NOT NULL DEFAULT '',
   `sonar_user` varchar(512) NOT NULL DEFAULT '',
   `sonar_pass` varchar(512) NOT NULL DEFAULT '',
-  `cuckoo_host` varchar(512) NOT NULL DEFAULT '',
+  `snyk_key` varchar(256) NOT NULL DEFAULT '',
+  `snyk_orgid` varchar(256) NOT NULL DEFAULT '',
+  `nessus_url` varchar(512) NOT NULL DEFAULT '',
+  `nessus_accesskey` varchar(512) NOT NULL DEFAULT '',
+  `nessus_secretkey` varchar(512) NOT NULL DEFAULT '',
+  `cuckoo_host` varchar(255) NOT NULL DEFAULT '',
   `cuckoo_port` int(10) unsigned NOT NULL DEFAULT '0',
   `falcon_url` varchar(512) NOT NULL DEFAULT '',
-  `falcon_key` varchar(512) NOT NULL DEFAULT '',
+  `falcon_key` varchar(256) NOT NULL DEFAULT '',
   `vmray_url` varchar(512) NOT NULL DEFAULT '',
-  `vmray_key` varchar(512) NOT NULL DEFAULT '',
+  `vmray_key` varchar(256) NOT NULL DEFAULT '',
   `mail_smtp` varchar(512) NOT NULL DEFAULT '',
   `mail_port` varchar(32) NOT NULL DEFAULT '',
   `mail_user` varchar(512) NOT NULL DEFAULT '',
   `mail_pass` varchar(512) NOT NULL DEFAULT '',
   `mail_from` varchar(512) NOT NULL DEFAULT '',
+  `comprehend_arn` varchar(512) NOT NULL DEFAULT '',
+  `aws_region` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, "", 12201, 0, "", 0, "", "", "", 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 8090, "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, "", 12201, 0, "", 0, "", "", "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -290,6 +296,7 @@ CREATE TABLE `hosts` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `node` varchar(255) NOT NULL DEFAULT '',
   `cred` varchar(255) NOT NULL DEFAULT '',
+  `sensor` varchar(255) NOT NULL,
   `agent` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
   `address` varchar(512) NOT NULL DEFAULT '',
@@ -344,6 +351,28 @@ CREATE TABLE `agent_openscap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `agent_sca` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `agent` varchar(128) NOT NULL DEFAULT '',
+  `name` varchar(512) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `invalid` int(10) unsigned NOT NULL DEFAULT '0',
+  `fail` int(10) unsigned NOT NULL DEFAULT '0',
+  `total_checks` int(10) unsigned NOT NULL DEFAULT '0',
+  `pass` int(10) unsigned NOT NULL DEFAULT '0',
+  `score` int(10) unsigned NOT NULL DEFAULT '0',
+  `description` varchar(2056) NOT NULL DEFAULT '',
+  `ref_url` varchar(512) NOT NULL DEFAULT '',
+  `policy_id` varchar(512) NOT NULL DEFAULT '',
+  `start_scan` datetime DEFAULT NULL,
+  `end_scan` datetime DEFAULT NULL,
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `agent_vul` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `node_id` varchar(128) NOT NULL DEFAULT '',
@@ -361,31 +390,11 @@ CREATE TABLE `agent_vul` (
   `package_condition` varchar(512) NOT NULL DEFAULT '',
   `cve_published` varchar(128) NOT NULL DEFAULT '',
   `cve_updated` varchar(128) NOT NULL DEFAULT '',
-  `report_created` datetime DEFAULT NULL,
+  `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `agent_sca` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `node_id` varchar(128) NOT NULL DEFAULT '',
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `agent` varchar(128) NOT NULL DEFAULT '',
-  `name` varchar(512) NOT NULL DEFAULT '',
-  `invalid` int(10) unsigned NOT NULL DEFAULT '0',
-  `fail` int(10) unsigned NOT NULL DEFAULT '0',
-  `total_checks` int(10) unsigned NOT NULL DEFAULT '0',
-  `pass` int(10) unsigned NOT NULL DEFAULT '0',
-  `score` int(10) unsigned NOT NULL DEFAULT '0',
-  `description` varchar(2056) NOT NULL DEFAULT '',
-  `ref_url` varchar(512) NOT NULL DEFAULT '',
-  `policy_id` varchar(512) NOT NULL DEFAULT '',
-  `start_scan` datetime DEFAULT NULL,
-  `end_scan` datetime DEFAULT NULL,
-  `date_add` datetime DEFAULT NULL,
-  `date_update` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `agent_processes` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -447,11 +456,12 @@ CREATE TABLE `agent_packages` (
 
 CREATE TABLE `incident` (
   `inc_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `alert_uuid` char(37) NOT NULL DEFAULT '',
+  `inc_uuid` char(37) NOT NULL DEFAULT '', -- id of incident
+  `alert_uuid` char(37) NOT NULL DEFAULT '', 
   `ref_id` varchar(256) NOT NULL DEFAULT '',
   `ref_ext` varchar(256) NOT NULL DEFAULT '',
   `ref_type` varchar(32) NOT NULL DEFAULT '', -- internal, thehive, jira
-  `action` varchar(32) NOT NULL DEFAULT '', -- status, notify, escalate
+  `action` varchar(32) NOT NULL DEFAULT '', -- change status, notify, escalate to external system, add new alert, asign new user
   `severity` int(10) unsigned NOT NULL DEFAULT '0',
   `category` varchar(512) NOT NULL DEFAULT '',
   `status` varchar(32) NOT NULL DEFAULT '', -- new, action, inprogress, pending, resolved, closed
@@ -469,9 +479,8 @@ CREATE TABLE `response` (
   `status` int(2) unsigned NOT NULL DEFAULT '1',
   `node` varchar(255) DEFAULT NULL,
   `userid` varchar(150) NOT NULL,
-  `res_type` int(2) unsigned NOT NULL DEFAULT '0',
-  `event_id` varchar(512) NOT NULL DEFAULT '',
-  `cat_profile` varchar(512) DEFAULT NULL,
+  `res_type` varchar(128) DEFAULT NULL,
+  `res_cause` varchar(512) NOT NULL DEFAULT '',
   `alert_source` varchar(128) NOT NULL DEFAULT '',
   `alert_severity` int(10) unsigned NOT NULL DEFAULT '5',
   `alert_user` varchar(512) DEFAULT NULL,
@@ -486,12 +495,26 @@ CREATE TABLE `response` (
   `aggr_inperiod` int(10) unsigned NOT NULL DEFAULT '0',
   `begin_hour` int(10) unsigned NOT NULL DEFAULT '0',
   `end_hour` int(10) unsigned NOT NULL DEFAULT '0',
-  `cat_new` varchar(128) NOT NULL DEFAULT '',
+  `correlation` varchar(255) NOT NULL DEFAULT '',
   `action` varchar(128) NOT NULL DEFAULT '',
   `notify_users` varchar(1024) DEFAULT NULL,
   `notify_msg` varchar(512) DEFAULT NULL,
   `send_slack` int(2) unsigned NOT NULL DEFAULT '0',
   `playbook` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `correlation` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `corrl_id` varchar(255) NOT NULL,
+  `corrl_period` int(10) unsigned NOT NULL DEFAULT '0',
+  `corrl_source` varchar(128) NOT NULL DEFAULT '',
+  `corrl_events` varchar(512) NOT NULL DEFAULT '',
+  `alert_categories` varchar(1024) NOT NULL DEFAULT '',
+  `alert_description` varchar(1024) NOT NULL DEFAULT '',
+  `alert_severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `alert_id` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -507,6 +530,9 @@ CREATE TABLE `playbook` (
   `msg_error` varchar(512) DEFAULT NULL,
   `slack_channel` varchar(512) DEFAULT NULL,
   `enable` int(2) unsigned NOT NULL DEFAULT '0',
+  `num_runs` int(10) unsigned NOT NULL DEFAULT '0',
+  `num_errors` int(10) unsigned NOT NULL DEFAULT '0',
+  `job_error` int(10) unsigned NOT NULL DEFAULT '0',
   `time_of_run` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -527,6 +553,20 @@ CREATE TABLE `report_job` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `logic_job` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `playbook` varchar(255) NOT NULL,
+  `play_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `type_logic`  int(2) unsigned NOT NULL DEFAULT '0', -- 0 - condition based on alert, 1 - new parameters based on alert
+  `script` text,
+  `new_playbook` varchar(512) NOT NULL DEFAULT '',
+  `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `script_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -535,8 +575,25 @@ CREATE TABLE `script_job` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
   `host` varchar(255) NOT NULL DEFAULT '',
-  `args` varchar(512) NOT NULL DEFAULT '',
-  `script` varchar(512) NOT NULL DEFAULT '',
+  `script_params` varchar(1024) NOT NULL DEFAULT '',
+  `script_name` varchar(512) NOT NULL DEFAULT '',
+  `script` text,
+  `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
+  `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ar_job` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `playbook` varchar(255) NOT NULL,
+  `play_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `type_response` int(2) unsigned NOT NULL DEFAULT '0',
+  `command_params` varchar(1024) NOT NULL DEFAULT '',
+  `command_name` varchar(1024) NOT NULL DEFAULT '',
+  `expire_ip` int(10) unsigned NOT NULL DEFAULT '0',
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
@@ -549,7 +606,7 @@ CREATE TABLE `files_job` (
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `src_hostname` varchar(255) NOT NULL DEFAULT '',
+  `src_hostname` varchar(255) NOT NULL DEFAULT '', -- if src_hostname = localhost copy from local dir
   `src_filepath` varchar(512) NOT NULL DEFAULT '',
   `file_regex` varchar(1024) NOT NULL DEFAULT '',
   `file_del` int(2) unsigned NOT NULL DEFAULT '0',
@@ -602,8 +659,8 @@ CREATE TABLE `sandbox_job` (
   `file_path` varchar(512) NOT NULL DEFAULT '',
   `file_ext` varchar(1024) NOT NULL DEFAULT '',
   `files_limit` int(10) unsigned NOT NULL DEFAULT '0',
-  `rem_del` int(2) unsigned NOT NULL DEFAULT '0',
-  `loc_del` int(2) unsigned NOT NULL DEFAULT '0',
+  `del_file` int(2) unsigned NOT NULL DEFAULT '0',
+  `del_infect` int(2) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -614,7 +671,9 @@ CREATE TABLE `sandbox_task` (
   `sandbox_job` varchar(255) NOT NULL,
   `sandbox_type` varchar(255) NOT NULL DEFAULT '',
   `sandbox_id` varchar(255) NOT NULL,
-  `file_name` varchar(256) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `host_name` varchar(512) NOT NULL DEFAULT '',
+  `file_name` varchar(512) NOT NULL DEFAULT '',
   `time_of_creation` datetime DEFAULT NULL,
   `time_of_action` datetime DEFAULT NULL,
   `status` varchar(128) NOT NULL DEFAULT '',
@@ -622,16 +681,21 @@ CREATE TABLE `sandbox_task` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `sonar_vul` (
+CREATE TABLE `sonar_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `sonar_project` varchar(512) NOT NULL DEFAULT '',
+  `project_id` varchar(512) NOT NULL DEFAULT '',
+  `issue_key` varchar(128) NOT NULL DEFAULT '',
+  `issue_severity` varchar(64) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `rule` varchar(256) NOT NULL DEFAULT '',
   `component` varchar(2048) NOT NULL DEFAULT '',
-  `severity` varchar(64) NOT NULL DEFAULT '',
   `message` varchar(1024) NOT NULL DEFAULT '',
   `status` varchar(64) NOT NULL DEFAULT '',
   `tags` varchar(1024) NOT NULL DEFAULT '',
   `line` int(10) unsigned NOT NULL DEFAULT '0',
+  `creation_date` varchar(128) NOT NULL DEFAULT '',
+  `update_date` varchar(128) NOT NULL DEFAULT '',
   `report_created` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -689,86 +753,226 @@ CREATE TABLE `nmap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `alerts_severity` (
+CREATE TABLE `nessus_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_name` varchar(512) NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  `vuln_index` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity_index` int(10) unsigned NOT NULL DEFAULT '0',
+  `plugin_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `plugin_name` varchar(1024) NOT NULL DEFAULT '',
+  `plugin_family` varchar(512) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `docker_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `sensor` varchar(128) NOT NULL DEFAULT '',
+  `test_desc` varchar(512) NOT NULL DEFAULT '',
+  `result_id` varchar(128) NOT NULL DEFAULT '',
+  `result_desc` varchar(1024) NOT NULL DEFAULT '',
+  `result` varchar(128) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `details` varchar(1024) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `trivy_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `sensor` varchar(128) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `target_type` varchar(512) NOT NULL DEFAULT '',
+  `vulnerability_id` varchar(512) NOT NULL DEFAULT '',
+  `pkg_name` varchar(512) NOT NULL DEFAULT '',
+  `installed_version` varchar(512) NOT NULL DEFAULT '',
+  `fixed_version` varchar(512) NOT NULL DEFAULT '',
+  `severity_source` varchar(256) NOT NULL DEFAULT '',
+  `title` varchar(512) NOT NULL DEFAULT '',
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `snyk_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `project_id` varchar(128) NOT NULL DEFAULT '',
+  `vulnerability_id` varchar(512) NOT NULL DEFAULT '',
+  `pkg_name` varchar(512) NOT NULL DEFAULT '',
+  `issue_type` varchar(128) NOT NULL DEFAULT '',
+  `pkg_versions` varchar(128) NOT NULL DEFAULT '',
+  `priority_score` int(10) unsigned NOT NULL DEFAULT '0',
+  `issue_title` varchar(512) NOT NULL DEFAULT '',
+  `issue_severity` varchar(128) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `issue_url` varchar(1024) NOT NULL DEFAULT '',
+  `issue_cve` varchar(512) NOT NULL DEFAULT '',
+  `publication_time` varchar(128) NOT NULL DEFAULT '',
+  `disclosure_time` varchar(128) NOT NULL DEFAULT '',
+  `issue_cvssv3` varchar(512) NOT NULL DEFAULT '',
+  `issue_language` varchar(128) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `alert_priority` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `source` varchar(512) NOT NULL DEFAULT '',
   `description` varchar(1024) NOT NULL DEFAULT '',
-  `minor` int(10) unsigned NOT NULL DEFAULT '0',
-  `major` int(10) unsigned NOT NULL DEFAULT '0',
-  `critical` int(10) unsigned NOT NULL DEFAULT '0',
+  `log` int(2) unsigned NOT NULL DEFAULT '0',
+  `severity_default` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `minor_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `major_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `critical_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `ml_internal` int(2) unsigned NOT NULL DEFAULT '0',
+  `ml_external` int(2) unsigned NOT NULL DEFAULT '0',
+  `ml_severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `ml_threshold` int(10) unsigned NOT NULL DEFAULT '0',
+  `ml_counter` int(10) unsigned NOT NULL DEFAULT '0',
+  `ml_response` varchar(128) NOT NULL DEFAULT 'indef',
+  `text1` varchar(128) NOT NULL DEFAULT 'indef',
+  `text2` varchar(128) NOT NULL DEFAULT 'indef',
+  `text3` varchar(128) NOT NULL DEFAULT 'indef',
+  `text4` varchar(128) NOT NULL DEFAULT 'indef',
+  `text5` varchar(128) NOT NULL DEFAULT 'indef',
+  `value1` int(10) unsigned NOT NULL DEFAULT '0',
+  `value2` int(10) unsigned NOT NULL DEFAULT '0',
+  `value3` int(10) unsigned NOT NULL DEFAULT '0',
+  `value4` int(10) unsigned NOT NULL DEFAULT '0',
+  `value5` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `alerts_severity` (`rec_id`,`ref_id`,`source`, `description`,`minor`, `major`, `critical`) VALUES (1,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
-INSERT INTO `alerts_severity` (`rec_id`,`ref_id`,`source`,`description`,`minor`, `major`, `critical`) VALUES (2,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (1,'_project_id','Alertflex','Alertflex', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (3,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (4,'_project_id','Nmap','Nmap', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (5,'_project_id','Nessus','Nessus', 1, 2, 3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (6,'_project_id','Misc','Misc', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','MISP','MISP', 3, 2, 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (8,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (9,'_project_id','SonarQube','SonarQube', 'INFO', 'MINOR', 'MAJOR', 'CRITICAL', 'BLOCKER', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (10,'_project_id','Syslog','Syslog', 'Warning', 'Error', 'Critical', 'Alert', 'Emergency', 1,2,3,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (11,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (12,'_project_id','ZAP','ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (13,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (14,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`,`value1`, `value2`, `value3` , `value4`) VALUES (15,'_project_id','Snyk','Snyk', 'low', 'medium', 'high','critical',1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (16,'_project_id','Falco','Falco', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (17,'_project_id','Modsecurity','Modsecurity', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (18,'_project_id','Suricata','Suricata', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_internal`,`ml_external`) VALUES (19,'_project_id','Wazuh','Wazuh', 0, 0);
+
+
 
 CREATE TABLE `cat_profile` (
   `cp_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `cp_name` varchar(128) NOT NULL DEFAULT '',
+  `cp_desc` varchar(512) NOT NULL DEFAULT '',
   `cp_source` varchar(128) NOT NULL DEFAULT '',
-  `cat_name` varchar(512) NOT NULL DEFAULT '',
+  `cat_names` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`cp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (1,'_project_id','all_alertflex','Alertflex','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (2,'_project_id','all_cuckoo','Cuckoo','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (3,'_project_id','all_falco','Falco','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (4,'_project_id','all_ha','HybridAnalysis','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (5,'_project_id','all_nmap','Nmap','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (6,'_project_id','all_misc','Misc','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (7,'_project_id','all_misp','MISP','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (8,'_project_id','all_modsec','Modsecurity','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (9,'_project_id','all_rita','RITA','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (10,'_project_id','all_sq','SonarQube','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (11,'_project_id','all_suri','Suricata','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (12,'_project_id','all_syslog','Syslog','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (13,'_project_id','all_vmray','Vmray','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (14,'_project_id','all_wazuh','Wazuh','*');
-INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_name`) VALUES (15,'_project_id','all_zap','ZAP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (1,'_project_id','all_alertflex','Alertflex','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (2,'_project_id','all_cuckoo','Cuckoo','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (3,'_project_id','all_falco','Falco','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (4,'_project_id','all_ha','HybridAnalysis','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (5,'_project_id','all_nmap','Nmap','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (6,'_project_id','all_nessus','Nessus','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (7,'_project_id','all_misc','Misc','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (8,'_project_id','all_misp','MISP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (9,'_project_id','all_modsec','Modsecurity','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (10,'_project_id','all_rita','RITA','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (11,'_project_id','all_sq','SonarQube','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (12,'_project_id','all_suri','Suricata','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (13,'_project_id','all_syslog','Syslog','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (14,'_project_id','all_vmray','Vmray','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (15,'_project_id','all_wazuh','Wazuh','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (16,'_project_id','all_zap','ZAP','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (17,'_project_id','all_dockerbench','DockerBench','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (18,'_project_id','all_trivy','Trivy','*');
+INSERT INTO `cat_profile` (`cp_id`,`ref_id`,`cp_name`,`cp_source`,`cat_names`) VALUES (19,'_project_id','all_snyk','Snyk','*');
 
-CREATE TABLE `alerts_category` (
+CREATE TABLE `mitre` (
+  `tactic_id` varchar(255) NOT NULL,
+  `mitre_type` varchar(255) NOT NULL DEFAULT '',
+  `tactic_name` varchar(1024) NOT NULL DEFAULT '',
+  `technique_id` varchar(255) NOT NULL,
+  `technique_name` varchar(512) NOT NULL DEFAULT '',
+  `desc` varchar(2048) NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `mitre` (`tactic_id`,`mitre_type`,`tactic_name`, `technique_id`,`technique_name`, `description`) VALUES ('T1329','ATT&CK','Acquire and/or use 3rd party infrastructure services','TA0022','Establish & Maintain Infrastructure','A wide variety of cloud, virtual private services, hosting, compute, and storage solutions are available. Additionally botnets are available for rent or purchase. Use of these solutions allow an adversary to stage, launch, and execute an attack from infrastructure that does not physically tie back to them and can be rapidly provisioned, modified, and shut down.');
+INSERT INTO `mitre` (`tactic_id`,`mitre_type`,`tactic_name`, `technique_id`,`technique_name`, `description`) VALUES ('T1330','ATT&CK','Acquire and/or use 3rd party infrastructure services','TA0022','Establish & Maintain Infrastructure','A wide variety of 3rd party software services are available (e.g., Twitter, Dropbox, GoogleDocs). Use of these solutions allow an adversary to stage, launch, and execute an attack from infrastructure that does not physically tie back to them and can be rapidly provisioned, modified, and shut down.');
+INSERT INTO `mitre` (`tactic_id`,`mitre_type`,`tactic_name`, `technique_id`,`technique_name`, `description`) VALUES ('T1332','ATT&CK','Acquire or compromise 3rd party signing certificates','TA0022','Establish & Maintain Infrastructure','Code signing is the process of digitally signing executables and scripts to confirm the software author and guarantee that the code has not been altered or corrupted. Users may trust a signed piece of code more than an unsigned piece of code even if they do not know who issued the certificate or who the author is.');
+
+
+CREATE TABLE `alert_category` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `cat_name` varchar(512) NOT NULL DEFAULT '',
-  `cat_source` varchar(128) NOT NULL DEFAULT '',
   `cat_desc` varchar(1024) NOT NULL DEFAULT '',
-  `taxonomy` varchar(1024) NOT NULL DEFAULT '',
-  `galaxy` varchar(1024) NOT NULL DEFAULT '',
+  `cat_source` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('misc', 'indef', 'Misc');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('misc', 'indef', 'Misc');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('syslog', 'indef', 'Syslog');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('syslog', 'indef', 'Syslog');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('falco', 'indef', 'Falco');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('falco', 'indef', 'Falco');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('rita', 'indef', 'RITA');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('rita', 'indef', 'RITA');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('nmap', 'indef', 'Nmap');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('nmap', 'indef', 'Nmap');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('owasp zap', 'indef', 'ZAP');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('nessus', 'indef', 'Nessus');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('sonarqube', 'indef', 'SonarQube');
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('owasp_zap', 'indef', 'ZAP');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('falcon sandbox', 'indef', 'HybridAnalysis'); 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('sonarqube', 'indef', 'SonarQube');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('vmray sandbox', 'indef', 'Vmray'); 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('falcon_sandbox', 'indef', 'HybridAnalysis'); 
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('cuckoo sandbox', 'indef', 'Cuckoo'), 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('vmray_sandbox', 'indef', 'Vmray'); 
+
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('docker_bench', 'indef', 'DockerBench');
+
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('trivy', 'indef', 'Trivy');
+
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('snyk', 'indef', 'Snyk');
+
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('cuckoo_sandbox', 'indef', 'Cuckoo'), 
 ('foobar', 'indef', 'Cuckoo'), 
 ('file', 'indef', 'Cuckoo'), 
 ('process', 'indef', 'Cuckoo'), 
 ('network', 'indef', 'Cuckoo'); 
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('unknown cat', 'indef', 'Alertflex'), 
+
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('unknown cat', 'indef', 'Alertflex'), 
 ('successful user login', 'indef', 'Alertflex'), 
 ('unsuccessful user login', 'indef', 'Alertflex'), 
 ('user logout', 'indef', 'Alertflex');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('Antivirus detection', 'indef', 'MISP'), 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('Antivirus detection', 'indef', 'MISP'), 
 ('Artifacts dropped', 'indef', 'MISP'), 
 ('Attribution', 'indef', 'MISP'), 
 ('External analysis', 'indef', 'MISP'), 
@@ -788,9 +992,10 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('Antiviru
 ('ipdst process', 'indef', 'MISP'), 
 ('dns', 'indef', 'MISP'), 
 ('md5', 'indef', 'MISP'), 
-('sha1', 'indef', 'MISP'); 
+('sha1', 'indef', 'MISP'),
+('event', 'indef', 'MISP');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('accesslog', 'indef', 'Wazuh'),
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('accesslog', 'indef', 'Wazuh'),
 ('access_control', 'indef', 'Wazuh'),
 ('access_denied', 'indef', 'Wazuh'),
 ('account_changed', 'indef', 'Wazuh'),
@@ -931,7 +1136,7 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('accesslo
 ('yum', 'indef', 'Wazuh'),
 ('zeus', 'indef', 'Wazuh');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES 
 ('pci_dss_1.1.1', 'A formal process for approving and testing all network connections and changes to the firewall and router configurations', 'Wazuh'), 
 ('pci_dss_1.3.4', 'Do not allow unauthorized outbound traffic from the cardholder data environment to the Internet.', 'Wazuh'), 
 ('pci_dss_1.4', 'Install personal firewall software or equivalent functionality on any portable computing devices (including company and/or employee-owned) that connect to the Internet when outside the network (for example, laptops used by employees), and which are also used to access the CDE. Firewall (or equivalent) configurations include:Specific configuration settings are defined. Personal firewall (or equivalent functionality) is actively running. Personal firewall (or equivalent functionality) is not alterable by users of the portable computing devices.', 'Wazuh'),
@@ -974,7 +1179,7 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES
 ('pci_dss_11.4', 'Use intrusion detection and/or intrusion prevention techniques to detect and/or prevent intrusions into the network.Monitor all traffic at the perimeter of the cardholder data environment as well as at critical points in the cardholder data environment, and alert personnel to suspected compromises. Keep all intrusion detection and prevention engines, baselines, and signatures up to date.', 'Wazuh'),
 ('pci_dss_11.5', 'Deploy a change detection mechanism (for example, file integrity monitoring tools) to alert personnel to unauthorized modification of critical system files, configuration files, or content files; and configure the software to perform critical file comparisons at least weekly.', 'Wazuh');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES 
 ('gdpr_II_5.1.f', 'Ensure the ongoing confidentiality, integrity, availability and resilience of processing systems and services, verifying its modifications, accesses, locations and guarantee the safety of them.File sharing protection and file sharing technologies that meet the requirements of data protection.', 'Wazuh'), 
 ('gdpr_III_14.2.c', 'Restrict the processing of personal data temporarily.', 'Wazuh'), 
 ('gdpr_III_17', 'Permanently erase personal information of a subject.', 'Wazuh'),
@@ -987,7 +1192,7 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES
 ('gdpr_IV_35.1', 'Perform a data protection impact evaluation for high risk processes. Implement appropriate technical measures to safeguard the rights and freedoms of data subjects, informed by an assessment of the risks to these rights and freedoms.', 'Wazuh'), 
 ('gdpr_IV_35.7.d', 'Capabilities for identification, blocking and forensic investigation of data breaches by malicious actors, through compromised credentials, unauthorized network access, persistent threats and verification of the correct operation of all components.Network perimeter and endpoint security tools to prevent unauthorized access to the network, prevent the entry of unwanted data types and malicious threats. Anti-malware and anti-ransomware to prevent malware and ransomware threats from entering your devices.A behavioral analysis that uses machine intelligence to identify people who do anomalous things on the network, in order to give early visibility and alert employees who start to become corrupt.', 'Wazuh');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES 
 ('nist_800_53_AC.2', 'ACCOUNT MANAGEMENT - Identifies and selects the following types of information system accounts to support organizational missions/business functions.', 'Wazuh'), 
 ('nist_800_53_AC.6', 'LEAST PRIVILEGE - The organization employs the principle of least privilege, allowing only authorized accesses for users (or processes acting on behalf of users) which are necessary to accomplish assigned tasks in accordance with organizational missions and business functions.', 'Wazuh'), 
 ('nist_800_53_AC.7', 'UNSUCCESSFUL LOGON ATTEMPTS - Enforces a limit of consecutive invalid logon attempts by a user during a time period.', 'Wazuh'), 
@@ -1012,7 +1217,7 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES
 ('nist_800_53_SI.3', 'MALICIOUS CODE PROTECTION - The organization employs malicious code protection mechanisms at information system entry and exit points to detect and eradicate malicious code, updates malicious code protection mechanisms whenever new releases are available in accordance with organizational configuration management policy and procedures, configures malicious code protection mechanisms and addresses the receipt of false positives during malicious code detection and eradication and the resulting potential impact on the availability of the information system.', 'Wazuh'),
 ('nist_800_53_SI.7', 'SOFTWARE, FIRMWARE, AND INFORMATION INTEGRITY - The organization employs integrity verification tools to detect unauthorized changes to organization-defined software, firmware, and information.', 'Wazuh');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES 
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES 
 ('hipaa_164.312.a.1', 'Implement technical policies and procedures for electronic information systems that maintain electronic protected health information to allow access only to those persons or software programs that have access.', 'Wazuh'),
 ('hipaa_164.312.a.2.I', 'Assign a unique name and/or number for identifying and tracking user identity.', 'Wazuh'),
 ('hipaa_164.312.a.2.II', 'Establish (and implement as needed) procedures for obtaining necessary electronic protected health information during an emergency.', 'Wazuh'),
@@ -1026,7 +1231,7 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES
 ('hipaa_164.312.e.2.I', 'Implement security measures to ensure that electronically transmitted electronic protected health information is not improperly modified without detection until disposed of.', 'Wazuh'),
 ('hipaa_164.312.e.2.II', 'Implement a mechanism to encrypt electronic protected health information whenever deemed appropriate.', 'Wazuh');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('attempted-admin', 'attempted-admin', 'ModSecurity'),
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('attempted-admin', 'attempted-admin', 'ModSecurity'),
 ('attempted-recon', 'attempted-recon', 'ModSecurity'),
 ('AUTOMATION/MALICIOUS', 'AUTOMATION/MALICIOUS', 'ModSecurity'),
 ('AUTOMATION/SECURITY_SCANNER', 'AUTOMATION/SECURITY_SCANNER', 'ModSecurity'),
@@ -1434,7 +1639,7 @@ INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('attempte
 ('WEB_ATTACK/SSI_INJECTION', 'WEB_ATTACK/SSI_INJECTION',  'ModSecurity'),
 ('WEB_ATTACK/XSS', 'WEB_ATTACK/XSS',  'ModSecurity');
 
-INSERT INTO `alerts_category` (cat_name, cat_desc, cat_source) VALUES ('Attempted Administrator Privilege Gain', 'indef', 'Suricata'),
+INSERT INTO `alert_category` (cat_name, cat_desc, cat_source) VALUES ('Attempted Administrator Privilege Gain', 'indef', 'Suricata'),
 ('Attempted User Privilege Gain', 'indef', 'Suricata'),
 ('Inappropriate Content was Detected', 'indef', 'Suricata'),
 ('Potential Corporate Privacy Violation', 'indef', 'Suricata'),

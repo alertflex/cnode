@@ -100,5 +100,5 @@ public class SensorPK implements Serializable {
     public String toString() {
         return "org.alertflex.entity.SensorPK[ refId=" + refId + ", masterNode=" + masterNode + ", name=" + name + " ]";
     }
-    
+
 }

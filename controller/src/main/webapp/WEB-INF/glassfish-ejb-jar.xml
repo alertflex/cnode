@@ -11,5 +11,14 @@
                 <resource-adapter-mid>activemq-rar</resource-adapter-mid>
             </mdb-resource-adapter>
         </ejb>
+        <ejb>
+            <ejb-name>AlertsMessageBean</ejb-name>
+            <mdb-connection-factory>
+                <jndi-name>jms/activeMQConnectionFactory</jndi-name>
+            </mdb-connection-factory>
+            <mdb-resource-adapter>
+                <resource-adapter-mid>activemq-rar</resource-adapter-mid>
+            </mdb-resource-adapter>
+        </ejb>
     </enterprise-beans>
 </glassfish-ejb-jar>

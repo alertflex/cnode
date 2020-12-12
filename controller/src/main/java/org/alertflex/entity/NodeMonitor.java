@@ -252,5 +252,5 @@ public class NodeMonitor implements Serializable {
     public String toString() {
         return "org.alertflex.entity.NodeMonitor[ recId=" + recId + " ]";
     }
-    
+
 }

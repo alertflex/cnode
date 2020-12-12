@@ -293,5 +293,5 @@ public class Attributes implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Attributes[ id=" + id + " ]";
     }
-    
+
 }

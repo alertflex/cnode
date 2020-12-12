@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#########################################
-# Technical project data for Controller #
-#########################################
+####################################
+# Technical project data for Cnode #
+####################################
 
 export INSTALL_PATH=/home/alertflex/cnode
 export PROJECT_PATH=/home/alertflex/
@@ -20,13 +20,25 @@ export ADMIN_USER=admin
 export ADMIN_PWD=Password1234
 
 # user and password for MySQL database (Alertflex and Afevents DB)
-# NOTE! password DB_PWD also will be used as root password for MySQL and MISP
+# password DB_PWD also will be used as root password for MySQL and MISP
+# NOTE! some of MySQL password policy require to use password special char in password for example - ! or &. 
+# Installation procedures can be interrupted if the password does not suite the policy
 export DB_HOST=localhost
 export DB_PORT=3306
 export DB_USER=admin
-export DB_PWD=Password1234
+export DB_PWD=Password!1234
 
-# MISP parameters, use for url a hostname the same as for ALERTFLEX_HOST
-export MISP=true
+###########################
+# install add-on packages #
+###########################
+
+# MISP parameters, for MISP_URL use ip or url a hostname the same as for ALERTFLEX_HOST
+export INSTALL_MISP=yes
 export MISP_URL='af-ctrl:8443'
 export MISP_GPG='XuJBao5Q2bps89LWFqWkKg'
+
+export INSTALL_NMAP=yes
+export INSTALL_ZAP=yes
+
+
+

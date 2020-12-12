@@ -13,7 +13,7 @@ import com.opendxl.client.exception.DxlException;
  * @author root
  */
 public class DxlCommon {
-    
+
     private DxlCommon() {
         super();
     }
@@ -21,5 +21,5 @@ public class DxlCommon {
     public static DxlClientConfig getClientConfig(final String conf) throws DxlException {
         return DxlClientConfig.createDxlConfigFromFile(conf);
     }
-    
+
 }

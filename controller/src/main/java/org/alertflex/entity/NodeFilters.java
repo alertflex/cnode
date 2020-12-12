@@ -210,5 +210,5 @@ public class NodeFilters implements Serializable {
     public String toString() {
         return "org.alertflex.entity.NodeFilters[ recId=" + recId + " ]";
     }
-    
+
 }

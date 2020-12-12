@@ -33,11 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Users.findByDashboardRange", query = "SELECT u FROM Users u WHERE u.dashboardRange = :dashboardRange")
     , @NamedQuery(name = "Users.findByEmail", query = "SELECT u FROM Users u WHERE u.email = :email")
     , @NamedQuery(name = "Users.findByMobile", query = "SELECT u FROM Users u WHERE u.mobile = :mobile")
-    , @NamedQuery(name = "Users.findBySendSms", query = "SELECT u FROM Users u WHERE u.sendSms = :sendSms")
-    , @NamedQuery(name = "Users.findByEmailFlag", query = "SELECT u FROM Users u WHERE u.emailFlag = :emailFlag")
-    , @NamedQuery(name = "Users.findByIm", query = "SELECT u FROM Users u WHERE u.im = :im")
-    , @NamedQuery(name = "Users.findByImFlag", query = "SELECT u FROM Users u WHERE u.imFlag = :imFlag")
-    , @NamedQuery(name = "Users.findBySmsFlag", query = "SELECT u FROM Users u WHERE u.smsFlag = :smsFlag")})
+    , @NamedQuery(name = "Users.findBySendSms", query = "SELECT u FROM Users u WHERE u.sendSms = :sendSms")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -80,15 +76,6 @@ public class Users implements Serializable {
     @NotNull
     @Column(name = "send_sms")
     private int sendSms;
-    @Column(name = "email_flag")
-    private Integer emailFlag;
-    @Size(max = 255)
-    @Column(name = "im")
-    private String im;
-    @Column(name = "im_flag")
-    private Integer imFlag;
-    @Column(name = "sms_flag")
-    private Integer smsFlag;
 
     public Users() {
     }
@@ -170,38 +157,6 @@ public class Users implements Serializable {
 
     public void setSendSms(int sendSms) {
         this.sendSms = sendSms;
-    }
-
-    public Integer getEmailFlag() {
-        return emailFlag;
-    }
-
-    public void setEmailFlag(Integer emailFlag) {
-        this.emailFlag = emailFlag;
-    }
-
-    public String getIm() {
-        return im;
-    }
-
-    public void setIm(String im) {
-        this.im = im;
-    }
-
-    public Integer getImFlag() {
-        return imFlag;
-    }
-
-    public void setImFlag(Integer imFlag) {
-        this.imFlag = imFlag;
-    }
-
-    public Integer getSmsFlag() {
-        return smsFlag;
-    }
-
-    public void setSmsFlag(Integer smsFlag) {
-        this.smsFlag = smsFlag;
     }
 
     @Override

@@ -140,5 +140,5 @@ public class EventCategory implements Serializable {
     public String toString() {
         return "org.alertflex.entity.EventCategory[ id=" + id + " ]";
     }
-    
+
 }
