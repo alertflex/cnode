@@ -26,6 +26,7 @@ sudo cp ./reports/alerts_subrep3.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
+sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
 
 #set project id
 export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
