@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.facade;
 
 import java.util.ArrayList;
@@ -14,10 +24,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.alertflex.entity.Response;
 
-/**
- *
- * @author root
- */
 @Stateless
 public class ResponseFacade extends AbstractFacade<Response> {
 
@@ -33,70 +39,6 @@ public class ResponseFacade extends AbstractFacade<Response> {
         super(Response.class);
     }
 
-    public List<Response> findResponseByTenant(String r) {
-
-        List<Response> responseList = null;
-
-        try {
-            em.flush();
-
-            Query responseListQry = em.createQuery(
-                    "SELECT r FROM Response r WHERE r.refId = :refId").setParameter("refId", r);
-
-            // Enable forced database query
-            responseListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            responseList = responseListQry.getResultList();
-        } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid quety to DB", ""));
-        }
-
-        return responseList;
-
-    }
-
-    public Response findResponseByName(String r, String name) {
-
-        Response res = null;
-
-        try {
-            em.flush();
-
-            Query responseQry = em.createQuery(
-                    "SELECT r FROM Response r WHERE r.rpId = :name AND r.refId = :refId").setParameter("refId", r).setParameter("name", name);
-            // Enable forced database query
-            responseQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            res = (Response) responseQry.getSingleResult();
-
-        } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
-        }
-
-        return res;
-
-    }
-
-    public List findResponseByActive(String ref) {
-
-        List l = new ArrayList();
-
-        try {
-            em.flush();
-
-            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.status = :status AND r.refId = :refId").setParameter("status", 1).setParameter("refId", ref);
-            // Enable forced database query
-            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            l = listQry.getResultList();
-
-        } catch (Exception e) {
-
-            l = new ArrayList();
-        }
-
-        return l;
-    }
-
     public Response findResponseForAction(String ref, String source, String action) {
 
         Response r = null;
@@ -104,7 +46,7 @@ public class ResponseFacade extends AbstractFacade<Response> {
         try {
             em.flush();
 
-            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.alertSource = :source AND r.status = :status AND r.resType = :type AND r.resId = :action")
+            Query listQry = em.createQuery("SELECT r FROM Response r WHERE r.refId = :ref AND r.alertSource = :source AND r.status = :status AND r.resType = :type AND r.resCause = :action")
                     .setParameter("ref", ref)
                     .setParameter("status", 1)
                     .setParameter("source", source)
@@ -122,9 +64,9 @@ public class ResponseFacade extends AbstractFacade<Response> {
         return r;
     }
 
-    public List findResponseForEvent(String ref, String source, String event) {
+    public List<Response> findResponseForEvent(String ref, String source, String event) {
 
-        List l = new ArrayList();
+        List<Response> l = new ArrayList();
 
         try {
             em.flush();
@@ -147,9 +89,9 @@ public class ResponseFacade extends AbstractFacade<Response> {
         return l;
     }
 
-    public List findResponseForCat(String ref, String source, String cat) {
+    public List<Response> findResponseForCat(String ref, String source, String cat) {
 
-        List l = new ArrayList();
+        List<Response> l = new ArrayList();
 
         try {
             em.flush();
@@ -171,5 +113,4 @@ public class ResponseFacade extends AbstractFacade<Response> {
 
         return l;
     }
-
 }

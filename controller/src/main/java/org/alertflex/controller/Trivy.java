@@ -1,3 +1,18 @@
+/*
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+
 package org.alertflex.controller;
 
 import java.util.Date;
@@ -13,10 +28,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author root
- */
 public class Trivy {
 
     private static final Logger logger = LoggerFactory.getLogger(Trivy.class);
@@ -31,17 +42,18 @@ public class Trivy {
 
     }
 
-    public void saveReport(String sensor, String results) {
+    public void saveReport(String results) {
 
         try {
 
-            String n = eventBean.getNode();
             String r = eventBean.getRefId();
+            String n = eventBean.getNode();
+            String p = eventBean.getProbe();
             Date date = new Date();
 
             node = eventBean.getNodeFacade().findByNodeName(r, n);
 
-            if (node == null || sensor == null || results.isEmpty()) {
+            if (node == null || p == null || results.isEmpty()) {
                 return;
             }
 
@@ -62,7 +74,7 @@ public class Trivy {
 
                     ts.setRefId(r);
                     ts.setNodeId(n);
-                    ts.setSensor(sensor);
+                    ts.setSensor(p);
                     ts.setTarget(target);
                     ts.setTargetType(targetType);
 
@@ -91,7 +103,7 @@ public class Trivy {
                     ts.setReportUpdated(date);
 
                     TrivyScan tsExisting = eventBean.getTrivyScanFacade()
-                            .findVulnerability(r, n, sensor, target, vulnerabilityID, pkgName);
+                            .findVulnerability(r, n, p, target, vulnerabilityID, pkgName);
 
                     if (tsExisting == null) {
 

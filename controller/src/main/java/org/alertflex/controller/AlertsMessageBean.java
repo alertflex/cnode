@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.controller;
 
 import java.io.ByteArrayInputStream;
@@ -31,7 +41,7 @@ import org.alertflex.facade.AlertFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.ResponseFacade;
 import org.alertflex.entity.Response;
-import org.alertflex.facade.EventCategoryFacade;
+import org.alertflex.facade.AlertCategoryFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.LoggerFactory;
 import javax.ejb.MessageDriven;
@@ -42,14 +52,8 @@ import javax.jms.MessageListener;
 import org.alertflex.common.PojoAlertLogic;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromElasticPool;
-import org.alertflex.logserver.FromGraylogPool;
-import org.alertflex.logserver.GrayLog;
-import org.alertflex.redis.FromJedisPool;
-import redis.clients.jedis.Jedis;
 
-/**
- * @author Oleg Zharkov
- */
+
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
     ,
@@ -63,14 +67,6 @@ public class AlertsMessageBean implements MessageListener {
     @FromElasticPool
     ElasticSearch elasticFromPool;
 
-    @Inject
-    @FromGraylogPool
-    GrayLog graylogFromPool;
-    
-    @Inject
-    @FromJedisPool
-    Jedis jedisFromPool;
-
     @EJB
     private ProjectFacade projectFacade;
 
@@ -78,7 +74,7 @@ public class AlertsMessageBean implements MessageListener {
     private AlertFacade alertFacade;
 
     @EJB
-    private EventCategoryFacade eventCategoryFacade;
+    private AlertCategoryFacade alertCategoryFacade;
 
     @EJB
     private ResponseFacade responseFacade;
@@ -177,10 +173,27 @@ public class AlertsMessageBean implements MessageListener {
                         }
 
                         // enrich alert by new cat
-                        List<String> newCats = eventCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
+                        List<String> newCats = alertCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
                         if (newCats != null && !newCats.isEmpty()) {
 
                             for (String cat : newCats) {
+                                
+                                if (a.getAlertSource().equals("Falco")) {
+                                    
+                                    switch (cat) {
+                                        case "network":
+                                            a.setAlertType("NET");
+                                            break;
+                                        case "file":
+                                            a.setAlertType("FILE");
+                                            break;
+                                        case "filesystem":
+                                            a.setAlertType("FILE");
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
 
                                 String c = a.getCategories() + ", " + cat;
                                 a.setCategories(c);
@@ -214,13 +227,8 @@ public class AlertsMessageBean implements MessageListener {
                             if (!a.getStatus().equals("remove")) alertFacade.create(a);
 
                             // send alert to log server
-                            if (elasticFromPool != null) {
-                                elasticFromPool.SendAlertToLog(a);
-                            }
-
-                            if (graylogFromPool != null) {
-                                graylogFromPool.SendAlertToLog(a);
-                            }
+                            if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+                        
                         }
 
                     } else {
@@ -272,7 +280,7 @@ public class AlertsMessageBean implements MessageListener {
 
         // check if field of action consists response profile for alert
         if (!pal.getAction().equals("indef") && !pal.getAction().isEmpty()) {
-
+        
             Response r = responseFacade.findResponseForAction(pal.getRefId(), pal.getAlertSource(), pal.getAction());
 
             if (r != null) {
@@ -312,7 +320,8 @@ public class AlertsMessageBean implements MessageListener {
 
         for (Response res : responseList) {
             if (res != null) {
-                createResponse(res);
+                changeActionStatus(res);
+                sendMqResponse(res);
             }
         }
     }
@@ -503,122 +512,7 @@ public class AlertsMessageBean implements MessageListener {
         return selectedResponse;
     }
     
-    public void createResponse(Response res) {
         
-        if (res != null) {
-
-            // check if response should aggregated
-            if (res.getAggrReproduced() != 0 && res.getAggrInperiod() != 0) {
-
-                if (aggregateResponse(res)) {
-
-                    pal.setStatus("aggregated");
-
-                    changeActionStatus(res);
-                    sendMqResponse(res);
-
-                } else {
-
-                    if (res.getAction().equals("remove")) {
-                        pal.setStatus("remove");
-                    }
-
-                }
-            } else {
-                
-                changeActionStatus(res);
-                sendMqResponse(res);
-
-            }
-        }
-        
-    }
-    
-    public boolean aggregateResponse(Response res) {
-
-        // return true if aggregation is finished and alert should be arised
-        if (jedisFromPool != null) {
-
-            String key = res.getRefId();
-            String fieldReproduced = "reproduced_" + res.getResId();
-            String fieldPeriod = "period_" + res.getResId();
-            long periodResponse = (long) res.getAggrInperiod();
-            long reproducedResponse = (long) res.getAggrReproduced();
-
-            long currentTime = (new Date()).getTime();
-            long counterTime = 0;
-            long counter = 0;
-
-            boolean firstTime = true;
-
-            if (jedisFromPool.hexists(key, fieldReproduced)) {
-                firstTime = false;
-            }
-
-            if (jedisFromPool.hexists(key, fieldPeriod)) {
-                firstTime = false;
-            }
-
-            if (!firstTime) {
-
-                String value = jedisFromPool.hget(key, fieldReproduced);
-                if (!value.equals("nil")) {
-                    counter = Long.parseLong(value);
-                }
-
-                value = jedisFromPool.hget(key, fieldPeriod);
-                if (!value.equals("nil")) {
-                    counterTime = Long.parseLong(value);
-                }
-            }
-
-            if (!firstTime && counter != 0 && counterTime != 0) {
-
-                counter++;
-                counterTime = counterTime + periodResponse * 1000;
-
-                if (counter >= res.getAggrReproduced()) {
-
-                    //clear hash
-                    jedisFromPool.hdel(key, fieldReproduced);
-                    jedisFromPool.hdel(key, fieldPeriod);
-
-                    if (currentTime <= counterTime) {
-                        return true;
-                    }
-
-                    jedisFromPool.hincrBy(key, fieldReproduced, 1);
-                    jedisFromPool.hincrBy(key, fieldPeriod, currentTime);
-
-                } else {
-
-                    if (currentTime > counterTime) {
-                        //clear hash
-                        jedisFromPool.hdel(key, fieldReproduced);
-                        jedisFromPool.hdel(key, fieldPeriod);
-                        // create hash
-                        jedisFromPool.hincrBy(key, fieldReproduced, 1);
-                        jedisFromPool.hincrBy(key, fieldPeriod, currentTime);
-
-                    } else {
-                        // increase counter
-                        jedisFromPool.hincrBy(key, fieldReproduced, 1);
-                    }
-                }
-
-            } else {
-                //clear hash
-                jedisFromPool.hdel(key, fieldReproduced);
-                jedisFromPool.hdel(key, fieldPeriod);
-                // create hash
-                jedisFromPool.hincrBy(key, fieldReproduced, 1);
-                jedisFromPool.hincrBy(key, fieldPeriod, currentTime);
-            }
-        }
-
-        return false;
-    }
-
     public void sendMqResponse(Response res) {
         
         if ((!res.getPlaybook().isEmpty() && !res.getPlaybook().equals("indef")) 

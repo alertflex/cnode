@@ -37,6 +37,8 @@ export INSTALL_MISP=yes
 export MISP_URL='af-ctrl:8443'
 export MISP_GPG='XuJBao5Q2bps89LWFqWkKg'
 
+export INSTALL_MC=yes
+export INSTALL_GRAFANA=no
 export INSTALL_NMAP=yes
 export INSTALL_ZAP=yes
 

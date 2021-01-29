@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.logserver;
 
 import com.maxmind.geoip.Location;
@@ -18,16 +28,11 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
 import org.alertflex.common.GeoIp;
-import org.alertflex.common.Netflow;
 import org.alertflex.entity.Alert;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author root
- */
 public class ElasticSearch {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearch.class);
@@ -97,10 +102,10 @@ public class ElasticSearch {
                 float lat = 0;
                 float lon = 0;
 
-                dstip = obj.getString("_dstip");
+                dstip = obj.getString("dstip");
                 dstIp = new GeoIp(dstip);
 
-                srcip = obj.getString("_srcip");
+                srcip = obj.getString("srcip");
                 srcIp = new GeoIp(srcip);
 
                 if (ls != null) {
@@ -168,36 +173,36 @@ public class ElasticSearch {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String time = formatter.format(date);
 
-        String report = "{\"version\": \"1.1\",\"host\":\""
-                + obj.getString("host")
+        String report = "{\"version\": \"1.1\",\"node\":\""
+                + obj.getString("node")
                 + "\",\"short_message\":\"dns-nids\",\"full_message\":\"DNS event from Suricata NIDS\",\"level\":"
                 + obj.getInt("level")
                 + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("_project_id")
+                + obj.getString("project_id")
                 + "\",\"sensor\":\""
-                + obj.getString("_sensor")
+                + obj.getString("sensor")
                 + "\",\"event_time\":\""
-                + obj.getString("_event_time")
+                + obj.getString("event_time")
                 + "\",\"controller_time\":\""
                 + time
                 + "\",\"dns_type\":\""
-                + obj.getString("_dns_type")
+                + obj.getString("dns_type")
                 + "\",\"srcip\":"
                 + srcIp.getSrcIp()
                 + ",\"srcagent\":\""
-                + obj.getString("_srcagent")
+                + obj.getString("srcagent")
                 + "\",\"srcport\":"
-                + obj.getInt("_srcport")
+                + obj.getInt("srcport")
                 + ",\"dstip\":"
                 + dstIp.getDstIp()
                 + ",\"dstagent\":\""
-                + obj.getString("_dstagent")
+                + obj.getString("dstagent")
                 + "\",\"dstport\":"
-                + obj.getInt("_dstport")
+                + obj.getInt("dstport")
                 + ",\"rrname\":\""
-                + obj.getString("_rrname")
+                + obj.getString("rrname")
                 + "\",\"rrtype\":\""
-                + obj.getString("_rrtype")
+                + obj.getString("rrtype")
                 + "\"}";
 
         return report;
@@ -209,38 +214,38 @@ public class ElasticSearch {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String time = formatter.format(date);
 
-        String report = "{\"version\": \"1.1\",\"host\":\""
-                + obj.getString("host")
+        String report = "{\"version\": \"1.1\",\"node\":\""
+                + obj.getString("node")
                 + "\",\"short_message\":\"http-nids\",\"full_message\":\"HTTP event from Suricata NIDS\",\"level\":"
                 + obj.getInt("level")
                 + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("_project_id")
+                + obj.getString("project_id")
                 + "\",\"sensor\":\""
-                + obj.getString("_sensor")
+                + obj.getString("sensor")
                 + "\",\"event_time\":\""
-                + obj.getString("_event_time")
+                + obj.getString("event_time")
                 + "\",\"controller_time\":\""
                 + time
                 + "\",\"srcip\":"
                 + srcIp.getSrcIp()
                 + ",\"srcagent\":\""
-                + obj.getString("_srcagent")
+                + obj.getString("srcagent")
                 + "\",\"srcport\":"
-                + obj.getInt("_srcport")
+                + obj.getInt("srcport")
                 + ",\"dstip\":"
                 + dstIp.getDstIp()
                 + ",\"dstagent\":\""
-                + obj.getString("_dstagent")
+                + obj.getString("dstagent")
                 + "\",\"dstport\":"
-                + obj.getInt("_dstport")
+                + obj.getInt("dstport")
                 + ",\"url_hostname\":\""
-                + obj.getString("_url_hostname")
+                + obj.getString("url_hostname")
                 + "\",\"url_path\":\""
-                + obj.getString("_url_path")
+                + obj.getString("url_path")
                 + "\",\"http_user_agent\":\""
-                + obj.getString("_http_user_agent")
+                + obj.getString("http_user_agent")
                 + "\",\"http_content_type\":\""
-                + obj.getString("_http_content_type")
+                + obj.getString("http_content_type")
                 + "\"}";
 
         return report;
@@ -252,38 +257,38 @@ public class ElasticSearch {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String time = formatter.format(date);
 
-        String report = "{\"version\": \"1.1\",\"host\":\""
-                + obj.getString("host")
+        String report = "{\"version\": \"1.1\",\"node\":\""
+                + obj.getString("node")
                 + "\",\"short_message\":\"netflow-nids\",\"full_message\":\"Netflow event from Suricata NIDS\",\"level\":"
                 + obj.getInt("level")
                 + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("_project_id")
+                + obj.getString("project_id")
                 + "\",\"sensor\":\""
-                + obj.getString("_sensor")
+                + obj.getString("sensor")
                 + "\",\"event_time\":\""
-                + obj.getString("_event_time")
+                + obj.getString("event_time")
                 + "\",\"controller_time\":\""
                 + time
                 + "\",\"protocol\":\""
-                + obj.getString("_protocol")
+                + obj.getString("protocol")
                 + "\",\"process\":\""
-                + obj.getString("_process")
+                + obj.getString("process")
                 + "\",\"srcip\":"
                 + srcIp.getSrcIp()
                 + ",\"srcagent\":\""
-                + obj.getString("_srcagent")
+                + obj.getString("srcagent")
                 + "\",\"srcport\":"
-                + obj.getInt("_srcport")
+                + obj.getInt("srcport")
                 + ",\"dstip\":"
                 + dstIp.getDstIp()
                 + ",\"dstagent\":\""
-                + obj.getString("_dstagent")
+                + obj.getString("dstagent")
                 + "\",\"dstport\":"
-                + obj.getInt("_dstport")
+                + obj.getInt("dstport")
                 + ",\"bytes\":"
-                + obj.getInt("_bytes")
+                + obj.getInt("bytes")
                 + ",\"packets\":"
-                + obj.getInt("_packets")
+                + obj.getInt("packets")
                 + "}";
 
         return report;
@@ -295,42 +300,42 @@ public class ElasticSearch {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String time = formatter.format(date);
 
-        String report = "{\"version\": \"1.1\",\"host\":\""
-                + obj.getString("host")
+        String report = "{\"version\": \"1.1\",\"node\":\""
+                + obj.getString("node")
                 + "\",\"short_message\":\"file-nids\",\"full_message\":\"File event from Suricata NIDS\",\"level\":"
                 + obj.getInt("level")
                 + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("_project_id")
+                + obj.getString("project_id")
                 + "\",\"sensor\":\""
-                + obj.getString("_sensor")
+                + obj.getString("sensor")
                 + "\",\"event_time\":\""
-                + obj.getString("_event_time")
+                + obj.getString("event_time")
                 + "\",\"controller_time\":\""
                 + time
                 + "\",\"protocol\":\""
-                + obj.getString("_protocol")
+                + obj.getString("protocol")
                 + "\",\"process\":\""
-                + obj.getString("_process")
+                + obj.getString("process")
                 + "\",\"srcip\":"
                 + srcIp.getSrcIp()
                 + ",\"srcagent\":\""
-                + obj.getString("_srcagent")
+                + obj.getString("srcagent")
                 + "\",\"srcport\":"
-                + obj.getInt("_srcport")
+                + obj.getInt("srcport")
                 + ",\"dstip\":"
                 + dstIp.getDstIp()
                 + ",\"dstagent\":\""
-                + obj.getString("_dstagent")
+                + obj.getString("dstagent")
                 + "\",\"dstport\":"
-                + obj.getInt("_dstport")
+                + obj.getInt("dstport")
                 + ",\"size\":"
-                + obj.getInt("_size")
+                + obj.getInt("size")
                 + ",\"filename\":\""
-                + obj.getString("_filename")
+                + obj.getString("filename")
                 + "\",\"state\":\""
-                + obj.getString("_state")
+                + obj.getString("state")
                 + "\",\"md5\":\""
-                + obj.getString("_md5")
+                + obj.getString("md5")
                 + "\"}";
 
         return report;
@@ -367,7 +372,7 @@ public class ElasticSearch {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                 String time = formatter.format(date);
 
-                String alert = "{\"version\": \"1.1\",\"host\":\""
+                String alert = "{\"version\": \"1.1\",\"node\":\""
                         + a.getNodeId()
                         + "\",\"short_message\":\"alert-flex\""
                         + ",\"full_message\":\"Alert from Alertflex collector/controller\""
@@ -435,62 +440,7 @@ public class ElasticSearch {
             }
         }
     }
-
-    public void SendNetflowToLog(Netflow n) {
-
-        if (client != null) {
-            try {
-
-                Date date = new Date();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                String time = formatter.format(date);
-
-                String netflow = "{\"version\": \"1.1\",\"host\":\""
-                        + n.getNode()
-                        + "\",\"short_message\":\"netflow-beat\""
-                        + ",\"full_message\":\"Netflow event from Beats\",\"level\": 7,\"source_type\":\"NET\",\"source_name\":\"Alertflex\",\"project_id\":\""
-                        + n.getRefId()
-                        + "\",\"sensor\":\""
-                        + n.getHostname()
-                        + "\",\"event_time\":\""
-                        + n.getTimestamp()
-                        + "\",\"collected_time\":\""
-                        + time
-                        + "\",\"protocol\":\""
-                        + n.getProtocol()
-                        + "\",\"process\":\""
-                        + n.getProcessName()
-                        + "\",\"pid\":"
-                        + n.getProcessId()
-                        + ",\"path\":\""
-                        + n.getProcessPath()
-                        + "\",\"src_ip\":\""
-                        + n.getSrcIp()
-                        + "\",\"src_hostname\":\""
-                        + n.getSrcHostname()
-                        + "\",\"srcport\":"
-                        + n.getSrcPort()
-                        + ",\"dstip\":\""
-                        + n.getDstIp()
-                        + "\",\"dstagent\":\""
-                        + n.getSrcHostname()
-                        + "\",\"dstport\":"
-                        + n.getSrcPort()
-                        + ",\"packets\":"
-                        + n.getPackets()
-                        + ",\"bytes\":"
-                        + n.getBytes()
-                        + "}";
-
-                requestNetflow.source(netflow, XContentType.JSON);
-                IndexResponse indexResponse = client.index(requestNetflow, RequestOptions.DEFAULT);
-
-            } catch (Exception e) {
-                logger.error("alertflex_ctrl_exception", e);
-            }
-        }
-    }
-
+    
     public void close() throws IOException {
         client.close();
     }

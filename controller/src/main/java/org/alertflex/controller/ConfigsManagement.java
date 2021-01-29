@@ -1,15 +1,23 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.controller;
 
 import org.alertflex.common.ProjectRepository;
-import org.alertflex.filters.*;
-
+import org.alertflex.common.SensorRepository;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,168 +31,113 @@ import org.alertflex.entity.SensorPK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author root
- */
 public class ConfigsManagement {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigsManagement.class);
 
     private InfoMessageBean eventBean;
+    
     Project project;
-    Node node;
-
-    ProjectRepository lr;
-
+    ProjectRepository pr;
+    
     public ConfigsManagement(InfoMessageBean eb) {
         this.eventBean = eb;
         this.project = eventBean.getProject();
+        this.pr = new ProjectRepository(project);
 
     }
 
-    public void saveConfig(String sensor, int typeSensor, String data) {
+    public void saveConfig(int type, String data) {
+        
+        String sensorType = "";
+        String sensorName;
 
         try {
 
-            String n = eventBean.getNode();
-            String r = project.getRefId();
-
-            node = eventBean.getNodeFacade().findByNodeName(r, n);
-
+            String ref = project.getRefId();
+            String nodeName = eventBean.getNode();
+            String probe = eventBean.getProbe();
+            
+            Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
+            pr.initNode(nodeName);
+            
             if (node == null) {
 
-                NodePK nodePK = new NodePK(r, n);
-
+                NodePK nodePK = new NodePK(ref, nodeName);
                 node = new Node();
-
                 node.setNodePK(nodePK);
-
                 node.setUnit("change unit");
-
                 node.setDescription("change desc");
-
+                node.setOpenC2(1);
+                node.setFiltersControl(0);
                 eventBean.getNodeFacade().create(node);
+            }
+            
+            switch (type) {
+                case 0:
+                    sensorName = probe + ".crs";
+                    sensorType = "Falco";
+                    break;
+                    
+                case 1:
+                    sensorName = probe + ".hids";
+                    sensorType = "Wazuh";
+                    break;
+                        
+                case 2:
+                    sensorName = probe + ".nids";
+                    sensorType = "Suricata";
+                    break;
+                
+                default:
+                    return;
+            }
+            
+            Sensor s = eventBean.getSensorFacade().findSensorByName(ref, nodeName, sensorName);
 
-                SensorPK sensorPK = new SensorPK(r, n, "master-crs");
-                Sensor s = new Sensor(sensorPK);
+            if (s == null) {
 
-                s.setAgent("master");
-                s.setDescription("Master falco");
-                s.setSensorType("falco");
-                s.setIprepUpdate(0);
-                s.setRulesUpdate(0);
-
-                eventBean.getSensorFacade().create(s);
-
-                sensorPK = new SensorPK(r, n, "master-hids");
+                SensorPK sensorPK = new SensorPK(ref, nodeName, sensorName);
                 s = new Sensor(sensorPK);
-
-                s.setAgent("master");
-                s.setDescription("Wazuh manager");
-                s.setSensorType("wazuh");
+                s.setDescription(sensorType + " sensor");
+                s.setType(sensorType);
+                s.setProbe(probe);
+                s.setHost("indef");
                 s.setIprepUpdate(0);
                 s.setRulesUpdate(0);
-
                 eventBean.getSensorFacade().create(s);
-
-                sensorPK = new SensorPK(r, n, "master-nids");
-                s = new Sensor(sensorPK);
-
-                s.setAgent("master");
-                s.setDescription("Master suricata");
-                s.setSensorType("suricata");
-                s.setIprepUpdate(0);
-                s.setRulesUpdate(0);
-
-                eventBean.getSensorFacade().create(s);
-
-                sensorPK = new SensorPK(r, n, "master-waf");
-                s = new Sensor(sensorPK);
-
-                s.setAgent("master");
-                s.setDescription("Master modsec");
-                s.setSensorType("modsec");
-                s.setIprepUpdate(0);
-                s.setRulesUpdate(0);
-
-                eventBean.getSensorFacade().create(s);
-            } else {
-
-                Sensor s = eventBean.getSensorFacade().findSensorByName(r, n, sensor);
-
-                if (s == null) {
-
-                    s = new Sensor();
-
-                    s.setAgent("indef");
-                    s.setDescription("change me");
-                    s.setIprepUpdate(0);
-                    s.setRulesUpdate(0);
-
-                    String sensorName;
-
-                    switch (typeSensor) {
-
-                        case 0:
-                            sensorName = sensor + "-crs";
-                            s.setSensorType("falco");
-                            break;
-                        case 1:
-                            sensorName = sensor + "-hids";
-                            s.setSensorType("wazuh");
-                            break;
-                        case 2:
-                            sensorName = sensor + "-nids";
-                            s.setSensorType("suricata");
-                            break;
-                        case 3:
-                            sensorName = sensor + "-waf";
-                            s.setSensorType("modsec");
-                            break;
-                        default:
-                            return;
-                    }
-
-                    SensorPK sensorPK = new SensorPK(r, n, sensorName);
-                    s.setSensorPK(sensorPK);
-
-                    eventBean.getSensorFacade().create(s);
-                }
             }
 
-            lr = new ProjectRepository(project);
-
-            boolean ready = lr.initSensor(node, sensor);
+            SensorRepository sr = new SensorRepository(pr.getNodeDir(), sensorName, sensorType);
+            boolean ready = sr.getStatus();
 
             if (data.isEmpty() || !ready) {
                 return;
             }
 
-            String configPath = "dummy.conf";
+            String configPath = "";
 
-            switch (typeSensor) {
+            switch (sensorType) {
 
-                case 0:
-                    configPath = lr.getSensorDir(sensor) + "falco.yaml";
+                case "Falco":
+                    configPath = sr.getDir() + "falco.yaml";
                     break;
-                case 1:
-                    configPath = lr.getSensorDir(sensor) + "ossec.conf";
+                case "Wazuh":
+                    configPath = sr.getDir() + "ossec.conf";
                     break;
-                case 2:
-                    configPath = lr.getSensorDir(sensor) + "suricata.yaml";
+                case "Suricata":
+                    configPath = sr.getDir() + "suricata.yaml";
                     break;
-                case 3:
-                    configPath = lr.getSensorDir(sensor) + "main.conf";
-                    break;
+                
                 default:
                     break;
 
             }
-
-            Path p = Paths.get(configPath);
-
-            Files.write(p, data.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            
+            if (!configPath.isEmpty()) {
+                Path p = Paths.get(configPath);
+                Files.write(p, data.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
 
         } catch (IOException e) {
             logger.error("alertflex_ctrl_exception", e);

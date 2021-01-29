@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.facade;
 
 import java.util.ArrayList;
@@ -14,10 +24,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.alertflex.entity.Agent;
 
-/**
- *
- * @author root
- */
 @Stateless
 public class AgentFacade extends AbstractFacade<Agent> {
 
@@ -31,6 +37,29 @@ public class AgentFacade extends AbstractFacade<Agent> {
 
     public AgentFacade() {
         super(Agent.class);
+    }
+    
+    public List<Agent> findAgentsByNode(String ref, String node) {
+
+        List<Agent> al = null;
+
+        try {
+            em.flush();
+
+            Query agentProcessQry = em.createQuery(
+                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node")
+                    .setParameter("ref", ref).setParameter("node", node);
+            agentProcessQry.setMaxResults(1);
+            // Enable forced database query
+            agentProcessQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+
+            al = (List<Agent>) agentProcessQry.getResultList();
+
+        } catch (Exception e) {
+            al = null; 
+        }
+
+        return al;
     }
 
     public Agent findAgentByName(String ref, String node, String name) {
@@ -77,30 +106,6 @@ public class AgentFacade extends AbstractFacade<Agent> {
         return a;
     }
 
-    public List<Agent> findAliases(String ref, String node) {
-
-        List<Agent> l = null;
-
-        try {
-            em.flush();
-
-            Query listQry = em.createQuery(
-                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node AND (a.ipLinked != :indef OR a.hostLinked != :indef OR a.containerLinked != :indef)").setParameter("ref", ref).setParameter("node", node).setParameter("indef", "indef");
-
-            // Enable forced database query
-            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            l = (List<Agent>) listQry.getResultList();
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
-        } catch (Exception e) {
-
-            l = new ArrayList();
-
-        }
-
-        return l;
-    }
-
     public String findAgentByIP(String ref, String node, String ip) {
 
         String a = null;
@@ -109,7 +114,7 @@ public class AgentFacade extends AbstractFacade<Agent> {
             em.flush();
 
             Query agentProcessQry = em.createQuery(
-                    "SELECT a.name FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node AND (a.ipLinked = :ip OR a.ip = :ip)").setParameter("ref", ref).setParameter("node", node).setParameter("ip", ip);
+                    "SELECT a.name FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node AND a.ip = :ip").setParameter("ref", ref).setParameter("node", node).setParameter("ip", ip);
             agentProcessQry.setMaxResults(1);
             // Enable forced database query
             agentProcessQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
@@ -120,7 +125,5 @@ public class AgentFacade extends AbstractFacade<Agent> {
         }
 
         return a;
-
     }
-
 }

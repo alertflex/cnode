@@ -1,3 +1,18 @@
+/*
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+ 
 package org.alertflex.controller;
 
 import java.io.BufferedReader;
@@ -14,6 +29,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import java.text.ParseException;
+import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 import javax.jms.BytesMessage;
@@ -24,12 +40,12 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.alertflex.common.PojoAlertLogic;
-import org.alertflex.logserver.GrayLog;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentFacade;
 import org.alertflex.facade.HomeNetworkFacade;
+import org.alertflex.facade.HostsFacade;
 import org.alertflex.facade.AlertFacade;
 import org.alertflex.facade.AttributesFacade;
 import org.alertflex.facade.EventsFacade;
@@ -44,19 +60,16 @@ import org.alertflex.facade.AgentPackagesFacade;
 import org.alertflex.facade.AgentProcessesFacade;
 import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.AlertPriorityFacade;
+import org.alertflex.facade.ContainerFacade;
 import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.alertflex.logserver.ElasticSearch;
-import org.alertflex.logserver.FromGraylogPool;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Oleg Zharkov
- */
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
     ,
@@ -70,15 +83,17 @@ public class InfoMessageBean implements MessageListener {
     @FromElasticPool
     ElasticSearch elasticFromPool;
 
-    @Inject
-    @FromGraylogPool
-    GrayLog graylogFromPool;
-
     @EJB
     private AgentFacade agentFacade;
+    
+    @EJB
+    private ContainerFacade containerFacade;
 
     @EJB
     private HomeNetworkFacade homeNetworkFacade;
+    
+    @EJB
+    private HostsFacade hostsFacade;
 
     @EJB
     private AlertFacade alertFacade;
@@ -127,6 +142,7 @@ public class InfoMessageBean implements MessageListener {
     @EJB
     private NodeFacade nodeFacade;
     String node;
+    String probe;
 
     @EJB
     private SensorFacade sensorFacade;
@@ -140,17 +156,21 @@ public class InfoMessageBean implements MessageListener {
     public AgentFacade getAgentFacade() {
         return this.agentFacade;
     }
+    
+    public ContainerFacade getContainerFacade() {
+        return this.containerFacade;
+    }
 
     public ElasticSearch getElasticFromPool() {
         return elasticFromPool;
     }
 
-    public GrayLog getGraylogFromPool() {
-        return graylogFromPool;
-    }
-
     public HomeNetworkFacade getHomeNetworkFacade() {
         return this.homeNetworkFacade;
+    }
+    
+    public HostsFacade getHostsFacade() {
+        return this.hostsFacade;
     }
 
     public SensorFacade getSensorFacade() {
@@ -163,6 +183,10 @@ public class InfoMessageBean implements MessageListener {
 
     public String getNode() {
         return this.node;
+    }
+    
+    public String getProbe() {
+        return this.probe;
     }
 
     public AlertFacade getAlertFacade() {
@@ -250,139 +274,62 @@ public class InfoMessageBean implements MessageListener {
                     return;
                 }
 
-                byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
-                bytesMessage.readBytes(buffer);
-
-                String data = "";
-
-                data = decompress(buffer);
-
-                if (data.isEmpty()) {
-                    return;
-                }
-
                 ref_id = bytesMessage.getStringProperty("ref_id");
                 project = projectFacade.findProjectByRef(ref_id);
-                node = bytesMessage.getStringProperty("node_id");
-
+                
                 if (project != null) {
+                    
+                    node = bytesMessage.getStringProperty("node_id");
+                    probe = bytesMessage.getStringProperty("probe_id");
+                    
+                    byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
+                    bytesMessage.readBytes(buffer);
+
+                    String data = "";
+
+                    data = decompress(buffer);
+
+                    if (data.isEmpty()) {
+                        return;
+                    }
+                    
+                    int sensor;
 
                     switch (msg_type) {
                         case 1:
                             StatsManagement sm = new StatsManagement(this);
                             sm.EvaluateStats(data);
-                            break;
+                        break;
 
                         case 2:
                             //IndexRequest request = new IndexRequest("alertflex");
                             //IndexResponse indexResponse = elasticFromPool.index(request, RequestOptions.DEFAULT);
                             LogsManagement lm = new LogsManagement(this);
                             lm.EvaluateLogs(data);
+                        break;
+
+                        case 3: 
+                            ConfigsManagement cm = new ConfigsManagement(this);
+                            sensor = bytesMessage.getIntProperty("sensor");
+                            cm.saveConfig(sensor, data);
                             break;
 
-                        case 3:
-                            FiltersManagement fm = new FiltersManagement(this);
-                            fm.saveFilters(data);
-
+                        case 4: 
+                            RulesManagement rm = new RulesManagement(this);
+                            sensor = bytesMessage.getIntProperty("sensor");
+                            String rule = bytesMessage.getStringProperty("rule");
+                            rm.saveRule(sensor, rule, data);
                             break;
 
-                        case 4: { // falco config
-                            ConfigsManagement cm = new ConfigsManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            cm.saveConfig(sensor, 0, data);
-                        }
-                        break;
-
-                        case 5: { // wazuh config
-                            ConfigsManagement cm = new ConfigsManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            cm.saveConfig(sensor, 1, data);
-                        }
-                        break;
-                        case 6: { // suricata config
-                            ConfigsManagement cm = new ConfigsManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            cm.saveConfig(sensor, 2, data);
-                        }
-                        break;
-                        case 7: { // modsec config
-                            ConfigsManagement cm = new ConfigsManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            cm.saveConfig(sensor, 3, data);
-                        }
-                        break;
-
-                        case 8: {
-                            RulesManagement rm = new RulesManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            String rule = bytesMessage.getStringProperty("rule");
-
-                            rm.saveRule(sensor, rule, data);
-                        }
-                        break;
-
-                        case 9: {
-                            RulesManagement rm = new RulesManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            String rule = bytesMessage.getStringProperty("rule");
-
-                            rm.saveRule(sensor, rule, data);
-                        }
-                        break;
-
-                        case 10: {
-                            RulesManagement rm = new RulesManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            String rule = bytesMessage.getStringProperty("rule");
-
-                            rm.saveRule(sensor, rule, data);
-                        }
-                        break;
-
-                        case 11: {
-                            RulesManagement rm = new RulesManagement(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            String rule = bytesMessage.getStringProperty("rule");
-
-                            rm.saveRule(sensor, rule, data);
-                        }
-                        break;
-
-                        case 12: {
-
+                        case 5: 
                             DockerBench db = new DockerBench(this);
+                            db.saveReport(data);
+                            break;
 
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            db.saveReport(sensor, data);
-                        }
-                        break;
-
-                        case 14: {
-
+                        case 6: 
                             Trivy trivy = new Trivy(this);
-
-                            String sensor = bytesMessage.getStringProperty("sensor");
-
-                            trivy.saveReport(sensor, data);
-                        }
-                        break;
+                            trivy.saveReport(data);
+                            break;
 
                         default:
                             break;
@@ -403,29 +350,18 @@ public class InfoMessageBean implements MessageListener {
 
                 msg_type = textMessage.getIntProperty("msg_type");
 
-                if (msg_type == 0) {
-                    return;
-                }
+                if (msg_type == 1) {
+                    ref_id = textMessage.getStringProperty("ref_id");
+                    node = textMessage.getStringProperty("node_id");
+                    String agent = textMessage.getStringProperty("agent_name");
+                    String json = textMessage.getText();
 
-                switch (msg_type) {
+                    project = projectFacade.findProjectByRef(ref_id);
+                    if (project != null) {
 
-                    case 1:
-                        ref_id = textMessage.getStringProperty("ref_id");
-                        node = textMessage.getStringProperty("node_id");
-                        String agent = textMessage.getStringProperty("agent_name");
-                        String json = textMessage.getText();
-
-                        project = projectFacade.findProjectByRef(ref_id);
-                        if (project != null) {
-
-                            AgentsManagement am = new AgentsManagement(this);
-                            am.saveAgentKey(agent, json);
-                        }
-
-                        break;
-
-                    default:
-                        break;
+                        AgentsManagement am = new AgentsManagement(this);
+                        am.saveAgentKey(agent, json);
+                    }
                 }
             }
         } catch (JMSException e) {
@@ -461,8 +397,8 @@ public class InfoMessageBean implements MessageListener {
 
     void createAlert(Alert a) {
 
-        // save alert in MySQL and send to Redis   
-        if (!a.getAction().equals("log-mgmt") && project.getSemActive() > 0) {
+        // save alert in MySQL 
+        if (project.getSemActive() > 0) {
 
             alertFacade.create(a);
 
@@ -476,11 +412,6 @@ public class InfoMessageBean implements MessageListener {
         if (elasticFromPool != null) {
             elasticFromPool.SendAlertToLog(a);
         }
-
-        if (graylogFromPool != null) {
-            graylogFromPool.SendAlertToLog(a);
-        }
-
     }
 
     public void sendAlertToMQ(Alert a) {

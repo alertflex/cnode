@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -22,10 +32,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "agent")
 @XmlRootElement
@@ -45,10 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Agent.findByOsPlatform", query = "SELECT a FROM Agent a WHERE a.osPlatform = :osPlatform")
     , @NamedQuery(name = "Agent.findByOsVersion", query = "SELECT a FROM Agent a WHERE a.osVersion = :osVersion")
     , @NamedQuery(name = "Agent.findByOsName", query = "SELECT a FROM Agent a WHERE a.osName = :osName")
-    , @NamedQuery(name = "Agent.findByDateUpdate", query = "SELECT a FROM Agent a WHERE a.dateUpdate = :dateUpdate")
-    , @NamedQuery(name = "Agent.findByIpLinked", query = "SELECT a FROM Agent a WHERE a.ipLinked = :ipLinked")
-    , @NamedQuery(name = "Agent.findByHostLinked", query = "SELECT a FROM Agent a WHERE a.hostLinked = :hostLinked")
-    , @NamedQuery(name = "Agent.findByContainerLinked", query = "SELECT a FROM Agent a WHERE a.containerLinked = :containerLinked")})
+    , @NamedQuery(name = "Agent.findByDateUpdate", query = "SELECT a FROM Agent a WHERE a.dateUpdate = :dateUpdate")})
 public class Agent implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -125,21 +128,6 @@ public class Agent implements Serializable {
     @Column(name = "date_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdate;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "ip_linked")
-    private String ipLinked;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "host_linked")
-    private String hostLinked;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "container_linked")
-    private String containerLinked;
 
     public Agent() {
     }
@@ -148,7 +136,7 @@ public class Agent implements Serializable {
         this.recId = recId;
     }
 
-    public Agent(Integer recId, String refId, String nodeId, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String osPlatform, String osVersion, String osName, String ipLinked, String hostLinked, String containerLinked) {
+    public Agent(Integer recId, String refId, String nodeId, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String osPlatform, String osVersion, String osName) {
         this.recId = recId;
         this.refId = refId;
         this.nodeId = nodeId;
@@ -163,9 +151,6 @@ public class Agent implements Serializable {
         this.osPlatform = osPlatform;
         this.osVersion = osVersion;
         this.osName = osName;
-        this.ipLinked = ipLinked;
-        this.hostLinked = hostLinked;
-        this.containerLinked = containerLinked;
     }
 
     public Integer getRecId() {
@@ -288,30 +273,6 @@ public class Agent implements Serializable {
         this.dateUpdate = dateUpdate;
     }
 
-    public String getIpLinked() {
-        return ipLinked;
-    }
-
-    public void setIpLinked(String ipLinked) {
-        this.ipLinked = ipLinked;
-    }
-
-    public String getHostLinked() {
-        return hostLinked;
-    }
-
-    public void setHostLinked(String hostLinked) {
-        this.hostLinked = hostLinked;
-    }
-
-    public String getContainerLinked() {
-        return containerLinked;
-    }
-
-    public void setContainerLinked(String containerLinked) {
-        this.containerLinked = containerLinked;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -336,5 +297,5 @@ public class Agent implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Agent[ recId=" + recId + " ]";
     }
-
+    
 }

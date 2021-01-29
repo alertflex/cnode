@@ -1,11 +1,20 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.facade;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
@@ -14,10 +23,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.alertflex.entity.AlertCategory;
 
-/**
- *
- * @author root
- */
 @Stateless
 public class AlertCategoryFacade extends AbstractFacade<AlertCategory> {
 
@@ -33,73 +38,24 @@ public class AlertCategoryFacade extends AbstractFacade<AlertCategory> {
         super(AlertCategory.class);
     }
 
-    public List<AlertCategory> findCatsBySourceAndRef(String r, String source) {
+    public List<String> findCatsByEvent(String source, String event) {
 
-        List<AlertCategory> lac = null;
-
-        try {
-            em.flush();
-
-            Query alertsCatListQry = em.createQuery("SELECT a FROM AlertCategory a WHERE a.catSource = :source AND a.refId = :ref")
-                    .setParameter("source", source)
-                    .setParameter("ref", r);
-            // Enable forced database query
-            alertsCatListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            lac = alertsCatListQry.getResultList();
-
-        } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
-        }
-
-        return lac;
-    }
-
-    public List<AlertCategory> findCatsBySource(String r, String source) {
-
-        List<AlertCategory> lac = null;
+        List<String> cats = null;
 
         try {
             em.flush();
 
-            Query alertsCatListQry = em.createQuery(
-                    "SELECT a FROM AlertCategory a WHERE a.catSource = :source AND (a.refId = :ref OR a.refId = :empty)")
+            Query catsQry = em.createQuery(
+                    "SELECT a.cats FROM AlertCategory a WHERE a.source = :source AND a.eventId = :event GROUP BY a.cats")
                     .setParameter("source", source)
-                    .setParameter("ref", r)
-                    .setParameter("empty", "");
-            // Enable forced database query
-            alertsCatListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            lac = alertsCatListQry.getResultList();
+                    .setParameter("event", event);
+            cats = (List<String>) catsQry.getResultList();
 
         } catch (Exception e) {
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
-        return lac;
-    }
-
-    public List<String> findCatNames(String r, String source) {
-
-        List<String> lcn = null;
-
-        try {
-            em.flush();
-
-            Query alertsCatListQry = em.createQuery(
-                    "SELECT a.catName FROM AlertCategory a WHERE a.catSource = :source AND (a.refId = :ref OR a.refId = :empty)")
-                    .setParameter("source", source)
-                    .setParameter("ref", r)
-                    .setParameter("empty", "");
-            // Enable forced database query
-            alertsCatListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            lcn = alertsCatListQry.getResultList();
-
-        } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
-        }
-
-        return lcn;
+        return cats;
     }
 }

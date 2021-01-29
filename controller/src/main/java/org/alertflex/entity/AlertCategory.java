@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -19,168 +29,89 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "alert_category")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlertCategory.findAll", query = "SELECT a FROM AlertCategory a")
-    , @NamedQuery(name = "AlertCategory.findByRecId", query = "SELECT a FROM AlertCategory a WHERE a.recId = :recId")
-    , @NamedQuery(name = "AlertCategory.findByRefId", query = "SELECT a FROM AlertCategory a WHERE a.refId = :refId")
-    , @NamedQuery(name = "AlertCategory.findByCatName", query = "SELECT a FROM AlertCategory a WHERE a.catName = :catName")
-    , @NamedQuery(name = "AlertCategory.findByCatSource", query = "SELECT a FROM AlertCategory a WHERE a.catSource = :catSource")
-    , @NamedQuery(name = "AlertCategory.findByCatDesc", query = "SELECT a FROM AlertCategory a WHERE a.catDesc = :catDesc")
-    , @NamedQuery(name = "AlertCategory.findByMitreTactics", query = "SELECT a FROM AlertCategory a WHERE a.mitreTactics = :mitreTactics")
-    , @NamedQuery(name = "AlertCategory.findByMitreTechniques", query = "SELECT a FROM AlertCategory a WHERE a.mitreTechniques = :mitreTechniques")
-    , @NamedQuery(name = "AlertCategory.findByMispTaxonomy", query = "SELECT a FROM AlertCategory a WHERE a.mispTaxonomy = :mispTaxonomy")
-    , @NamedQuery(name = "AlertCategory.findByMispGalaxy", query = "SELECT a FROM AlertCategory a WHERE a.mispGalaxy = :mispGalaxy")})
+    , @NamedQuery(name = "AlertCategory.findById", query = "SELECT a FROM AlertCategory a WHERE a.id = :id")
+    , @NamedQuery(name = "AlertCategory.findByEventId", query = "SELECT a FROM AlertCategory a WHERE a.eventId = :eventId")
+    , @NamedQuery(name = "AlertCategory.findByCats", query = "SELECT a FROM AlertCategory a WHERE a.cats = :cats")
+    , @NamedQuery(name = "AlertCategory.findBySource", query = "SELECT a FROM AlertCategory a WHERE a.source = :source")})
 public class AlertCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "rec_id")
-    private Integer recId;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "ref_id")
-    private String refId;
+    @Column(name = "id")
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "cat_name")
-    private String catName;
+    @Column(name = "event_id")
+    private String eventId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(name = "cats")
+    private String cats;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "cat_source")
-    private String catSource;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "cat_desc")
-    private String catDesc;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "mitre_tactics")
-    private String mitreTactics;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "mitre_techniques")
-    private String mitreTechniques;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "misp_taxonomy")
-    private String mispTaxonomy;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "misp_galaxy")
-    private String mispGalaxy;
+    @Column(name = "source")
+    private String source;
 
     public AlertCategory() {
     }
 
-    public AlertCategory(Integer recId) {
-        this.recId = recId;
+    public AlertCategory(Integer id) {
+        this.id = id;
     }
 
-    public AlertCategory(Integer recId, String refId, String catName, String catSource, String catDesc, String mitreTactics, String mitreTechniques, String mispTaxonomy, String mispGalaxy) {
-        this.recId = recId;
-        this.refId = refId;
-        this.catName = catName;
-        this.catSource = catSource;
-        this.catDesc = catDesc;
-        this.mitreTactics = mitreTactics;
-        this.mitreTechniques = mitreTechniques;
-        this.mispTaxonomy = mispTaxonomy;
-        this.mispGalaxy = mispGalaxy;
+    public AlertCategory(Integer id, String eventId, String cats, String source) {
+        this.id = id;
+        this.eventId = eventId;
+        this.cats = cats;
+        this.source = source;
     }
 
-    public Integer getRecId() {
-        return recId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setRecId(Integer recId) {
-        this.recId = recId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getRefId() {
-        return refId;
+    public String getEventId() {
+        return eventId;
     }
 
-    public void setRefId(String refId) {
-        this.refId = refId;
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
-    public String getCatName() {
-        return catName;
+    public String getCats() {
+        return cats;
     }
 
-    public void setCatName(String catName) {
-        this.catName = catName;
+    public void setCats(String cats) {
+        this.cats = cats;
     }
 
-    public String getCatSource() {
-        return catSource;
+    public String getSource() {
+        return source;
     }
 
-    public void setCatSource(String catSource) {
-        this.catSource = catSource;
-    }
-
-    public String getCatDesc() {
-        return catDesc;
-    }
-
-    public void setCatDesc(String catDesc) {
-        this.catDesc = catDesc;
-    }
-
-    public String getMitreTactics() {
-        return mitreTactics;
-    }
-
-    public void setMitreTactics(String mitreTactics) {
-        this.mitreTactics = mitreTactics;
-    }
-
-    public String getMitreTechniques() {
-        return mitreTechniques;
-    }
-
-    public void setMitreTechniques(String mitreTechniques) {
-        this.mitreTechniques = mitreTechniques;
-    }
-
-    public String getMispTaxonomy() {
-        return mispTaxonomy;
-    }
-
-    public void setMispTaxonomy(String mispTaxonomy) {
-        this.mispTaxonomy = mispTaxonomy;
-    }
-
-    public String getMispGalaxy() {
-        return mispGalaxy;
-    }
-
-    public void setMispGalaxy(String mispGalaxy) {
-        this.mispGalaxy = mispGalaxy;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (recId != null ? recId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -191,7 +122,7 @@ public class AlertCategory implements Serializable {
             return false;
         }
         AlertCategory other = (AlertCategory) object;
-        if ((this.recId == null && other.recId != null) || (this.recId != null && !this.recId.equals(other.recId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -199,7 +130,7 @@ public class AlertCategory implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.AlertCategory[ recId=" + recId + " ]";
+        return "org.alertflex.entity.AlertCategory[ id=" + id + " ]";
     }
-
+    
 }

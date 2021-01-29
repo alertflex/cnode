@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -19,10 +29,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "response")
 @XmlRootElement
@@ -46,8 +52,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Response.findByAlertFile", query = "SELECT r FROM Response r WHERE r.alertFile = :alertFile")
     , @NamedQuery(name = "Response.findByAlertProcess", query = "SELECT r FROM Response r WHERE r.alertProcess = :alertProcess")
     , @NamedQuery(name = "Response.findByAlertRegex", query = "SELECT r FROM Response r WHERE r.alertRegex = :alertRegex")
-    , @NamedQuery(name = "Response.findByAggrReproduced", query = "SELECT r FROM Response r WHERE r.aggrReproduced = :aggrReproduced")
-    , @NamedQuery(name = "Response.findByAggrInperiod", query = "SELECT r FROM Response r WHERE r.aggrInperiod = :aggrInperiod")
     , @NamedQuery(name = "Response.findByBeginHour", query = "SELECT r FROM Response r WHERE r.beginHour = :beginHour")
     , @NamedQuery(name = "Response.findByEndHour", query = "SELECT r FROM Response r WHERE r.endHour = :endHour")
     , @NamedQuery(name = "Response.findByCorrelation", query = "SELECT r FROM Response r WHERE r.correlation = :correlation")
@@ -137,14 +141,6 @@ public class Response implements Serializable {
     private String alertRegex;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "aggr_reproduced")
-    private int aggrReproduced;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "aggr_inperiod")
-    private int aggrInperiod;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "begin_hour")
     private int beginHour;
     @Basic(optional = false)
@@ -182,7 +178,7 @@ public class Response implements Serializable {
         this.recId = recId;
     }
 
-    public Response(Integer recId, String resId, String refId, int status, String userid, String resCause, String alertSource, int alertSeverity, String alertSensor, String alertFile, String alertProcess, String alertRegex, int aggrReproduced, int aggrInperiod, int beginHour, int endHour, String correlation, String action, int sendSlack) {
+    public Response(Integer recId, String resId, String refId, int status, String userid, String resCause, String alertSource, int alertSeverity, String alertSensor, String alertFile, String alertProcess, String alertRegex, int beginHour, int endHour, String correlation, String action, int sendSlack) {
         this.recId = recId;
         this.resId = resId;
         this.refId = refId;
@@ -195,8 +191,6 @@ public class Response implements Serializable {
         this.alertFile = alertFile;
         this.alertProcess = alertProcess;
         this.alertRegex = alertRegex;
-        this.aggrReproduced = aggrReproduced;
-        this.aggrInperiod = aggrInperiod;
         this.beginHour = beginHour;
         this.endHour = endHour;
         this.correlation = correlation;
@@ -346,22 +340,6 @@ public class Response implements Serializable {
 
     public void setAlertRegex(String alertRegex) {
         this.alertRegex = alertRegex;
-    }
-
-    public int getAggrReproduced() {
-        return aggrReproduced;
-    }
-
-    public void setAggrReproduced(int aggrReproduced) {
-        this.aggrReproduced = aggrReproduced;
-    }
-
-    public int getAggrInperiod() {
-        return aggrInperiod;
-    }
-
-    public void setAggrInperiod(int aggrInperiod) {
-        this.aggrInperiod = aggrInperiod;
     }
 
     public int getBeginHour() {

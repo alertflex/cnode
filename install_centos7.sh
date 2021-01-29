@@ -29,6 +29,7 @@ sudo cp ./reports/alerts_subrep1.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep2.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep3.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
+sudo mkdir -p $PROJECT_PATH/filters
 sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
@@ -320,8 +321,12 @@ echo "* Installion Alertflex applications *"
 cd $INSTALL_PATH
 sudo mvn package
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
-sudo curl -LO "https://github.com/alertflex/cnode/releases/download/0.701/alertflex-mc.war"
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
+
+if [[ $INSTALL_MC == yes ]]
+then
+	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/0.701/alertflex-mc.war"
+	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
+fi
 
 echo "*** clean env ***"
 rm password.txt

@@ -1,28 +1,36 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.controller;
 
 import org.alertflex.common.ProjectRepository;
-import org.alertflex.filters.*;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import org.alertflex.common.SensorRepository;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
+import org.alertflex.entity.NodePK;
+import org.alertflex.entity.Sensor;
+import org.alertflex.entity.SensorPK;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author root
- */
 public class RulesManagement {
 
     private static final Logger logger = LoggerFactory.getLogger(RulesManagement.class);
@@ -36,31 +44,78 @@ public class RulesManagement {
     public RulesManagement(InfoMessageBean eb) {
         this.eventBean = eb;
         this.project = eventBean.getProject();
-
+        this.pr = new ProjectRepository(project);
     }
 
-    public void saveRule(String sensor, String rule, String data) {
+    public void saveRule(int type, String rule, String data) {
+        
+        String sensorType = "";
+        String sensorName;
 
         try {
 
-            String n = eventBean.getNode();
-            String r = eventBean.getRefId();
-
-            node = eventBean.getNodeFacade().findByNodeName(r, n);
-
+            String ref = project.getRefId();
+            String nodeName = eventBean.getNode();
+            String probe = eventBean.getProbe();
+            
+            Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
+            pr.initNode(nodeName);
+            
             if (node == null) {
-                return;
+
+                NodePK nodePK = new NodePK(ref, nodeName);
+                node = new Node();
+                node.setNodePK(nodePK);
+                node.setUnit("change unit");
+                node.setDescription("change desc");
+                node.setOpenC2(1);
+                node.setFiltersControl(0);
+                eventBean.getNodeFacade().create(node);
+            }
+            
+            switch (type) {
+                case 0:
+                    sensorName = probe + ".crs";
+                    sensorType = "Falco";
+                    break;
+                    
+                case 1:
+                    sensorName = probe + ".hids";
+                    sensorType = "Wazuh";
+                    break;
+                        
+                case 2:
+                    sensorName = probe + ".nids";
+                    sensorType = "Suricata";
+                    break;
+                
+                default:
+                    return;
             }
 
-            pr = new ProjectRepository(project);
+            Sensor s = eventBean.getSensorFacade().findSensorByName(ref, nodeName, sensorName);
 
-            boolean ready = pr.initSensor(node, sensor);
+            if (s == null) {
+
+                SensorPK sensorPK = new SensorPK(ref, nodeName, sensorName);
+                s = new Sensor(sensorPK);
+                s.setDescription(sensorType + " sensor");
+                s.setType(sensorType);
+                s.setProbe(probe);
+                s.setHost("indef");
+                s.setIprepUpdate(0);
+                s.setRulesUpdate(0);
+                eventBean.getSensorFacade().create(s);
+            }
+
+            SensorRepository sr = new SensorRepository(pr.getNodeDir(), sensorName, sensorType);
+            boolean ready = sr.getStatus();
 
             if (data.isEmpty() || !ready) {
                 return;
             }
 
-            String rulePath = pr.getRemRulesDir(sensor) + rule;
+            String rulePath = sr.getRemRulesDir() + rule;
 
             Path p = Paths.get(rulePath);
 

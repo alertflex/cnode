@@ -1,3 +1,18 @@
+/*
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+ 
 package org.alertflex.tasks;
 
 import org.alertflex.common.IprepProjects;
@@ -34,8 +49,6 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import org.alertflex.entity.Attributes;
 import org.alertflex.entity.Events;
 import org.alertflex.entity.Project;
@@ -48,10 +61,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Oleg Zharkov
- */
-//@ConcurrencyManagement(BEAN)
 @Singleton(name = "iprepUpdate")
 @ConcurrencyManagement(CONTAINER)
 @Startup
@@ -85,12 +94,10 @@ public class IprepUpdate {
 
     BufferedWriter writerWazuhMisp;
     BufferedWriter writerSuriMisp;
-    BufferedWriter writerModsecMisp;
-
+    
     byte[] wazuhIprep;
     byte[] suriIprep;
-    byte[] modsecIprep;
-
+    
     @PostConstruct
     public void init() {
 
@@ -147,21 +154,17 @@ public class IprepUpdate {
                     // load file
                     wazuhIprep = compress(p, "controller/lists/wazuh-misp.ip");
                     suriIprep = compress(p, "controller/lists/suri-misp.ip");
-                    modsecIprep = compress(p, "controller/lists/modsec-misp.ip");
-
+                    
                     for (Sensor s : listSensors) {
 
                         if (s.getIprepUpdate() == 1) {
-                            switch (s.getSensorType()) {
+                            switch (s.getType()) {
 
                                 case "suricata":
                                     uploadIprep(p, s, 0, suriIprep);
                                     break;
                                 case "wazuh":
                                     uploadIprep(p, s, 1, wazuhIprep);
-                                    break;
-                                case "modsec":
-                                    uploadIprep(p, s, 2, modsecIprep);
                                     break;
                                 default:
                                     break;
@@ -173,7 +176,7 @@ public class IprepUpdate {
             }
 
         } catch (Exception e) {
-            logger.error("alertflex_wrk_exception", e);
+            logger.error("alertflex_ctrl_exception", e);
         }
     }
 
@@ -194,11 +197,8 @@ public class IprepUpdate {
             Path pathSuriMisp = Paths.get(iprProjects.getProjectListsDir(p) + "suri-misp.ip");
             writerSuriMisp = Files.newBufferedWriter(pathSuriMisp, StandardCharsets.UTF_8, options);
 
-            Path pathModsecMisp = Paths.get(iprProjects.getProjectListsDir(p) + "modsec-misp.ip");
-            writerModsecMisp = Files.newBufferedWriter(pathModsecMisp, StandardCharsets.UTF_8, options);
-
         } catch (IOException e) {
-            logger.error("alertflex_wrk_exception", e);
+            logger.error("alertflex_ctrl_exception", e);
             return false;
         }
 
@@ -224,8 +224,6 @@ public class IprepUpdate {
             String suri = ip + "," + Integer.toString(cat) + "," + Integer.toString(sev) + "\n";
             writerSuriMisp.write(suri);
 
-            String modsec = "/" + ip + "/\n";
-            writerModsecMisp.write(modsec);
         }
     }
 
@@ -263,27 +261,33 @@ public class IprepUpdate {
 
         String[] parsedSensorName = s.getSensorPK().getName().split("-");
         String sensorName = parsedSensorName[0];
+        
+        if (s == null) return;
+        
+        String node = s.getSensorPK().getNode();
+        String probe = s.getProbe();
 
-        if (sensorName != null && !s.getSensorPK().getMasterNode().isEmpty() && listIprep.length > 0) {
+        if (!probe.isEmpty() && !probe.equals("indef") && !node.isEmpty() && listIprep.length > 0) {
 
             try {
 
                 String strConnFactory = System.getProperty("AmqUrl", "");
                 String user = System.getProperty("AmqUser", "");
                 String pass = System.getProperty("AmqPwd", "");
-
+                
+            
                 // Create a ConnectionFactory
                 ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
 
                 // Create a Connection
-                Connection connection = connectionFactory.createConnection(user, pass);
+                Connection connection = connectionFactory.createConnection(user,pass);
                 connection.start();
 
                 // Create a Session
-                Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-                // Create the destination (Topic or Queue)
-                Destination destination = session.createTopic("jms/altprobe/" + p.getRefId());
+                Session session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+            
+                // create query for request
+                Destination destination = session.createQueue("jms/altprobe/" + node + "/" + probe);
 
                 // Create a MessageProducer from the Session to the Topic or Queue
                 MessageProducer producer = session.createProducer(destination);
@@ -291,11 +295,8 @@ public class IprepUpdate {
 
                 BytesMessage message = session.createBytesMessage();
 
-                message.setStringProperty("node_id", s.getSensorPK().getMasterNode());
-                message.setStringProperty("msg_type", "byte");
+                message.setStringProperty("ref_id", p.getRefId());
                 message.setStringProperty("content_type", "iprep");
-
-                message.setStringProperty("sensor", sensorName);
                 message.setIntProperty("sensor_type", sensorType);
 
                 message.writeBytes(listIprep);
@@ -306,7 +307,7 @@ public class IprepUpdate {
                 connection.close();
 
             } catch (JMSException e) {
-                logger.error("alertflex_wrk_exception", e);
+                logger.error("alertflex_ctrl_exception", e);
             }
         }
     }

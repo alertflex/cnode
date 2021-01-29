@@ -1,22 +1,29 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.common;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- *
- * @author root
- */
 public class SensorRepository {
 
-    String name;
-    int sensorType = 0;
+    String sensorName;
+    String sensorType = "";
+    Boolean status = false;
 
     String dir;
     String remRulesDir;
@@ -30,37 +37,10 @@ public class SensorRepository {
     Path hidsRulesPath;
     Path hidsDecodersPath;
 
-    public boolean init(String nodeDir, String sensorName) {
-
-        String[] parsedSensorName = sensorName.split("-");
-
-        if (parsedSensorName.length != 2) {
-            return false;
-        }
-
-        switch (parsedSensorName[1]) {
-
-            case "crs":
-                sensorType = 0;
-                break;
-
-            case "hids":
-                sensorType = 1;
-                break;
-
-            case "nids":
-                sensorType = 2;
-                break;
-
-            case "waf":
-                sensorType = 3;
-                break;
-
-            default:
-                return false;
-        }
-
-        name = sensorName;
+    public SensorRepository (String nodeDir, String name, String type) {
+        
+        this.sensorName = name;
+        this.sensorType = type;
 
         try {
             dir = nodeDir + sensorName + "/";
@@ -81,7 +61,7 @@ public class SensorRepository {
                 Files.createDirectory(locRulesPath);
             }
 
-            if (sensorType == 1) {
+            if (sensorType.equals("Wazuh")) {
 
                 hidsRulesDir = locRulesDir + "rules/";
                 hidsRulesPath = Paths.get(hidsRulesDir);
@@ -97,14 +77,18 @@ public class SensorRepository {
             }
 
         } catch (Exception e) {
-            return false;
+            return;
         }
-
-        return true;
+        
+        status = true;
+    }
+    
+    public Boolean getStatus() {
+        return status;
     }
 
-    public String getName() {
-        return name;
+    public String getSensorName() {
+        return sensorName;
     }
 
     public String getDir() {
@@ -147,8 +131,7 @@ public class SensorRepository {
         return hidsDecodersPath;
     }
 
-    public int getSensorType() {
+    public String getSensorType() {
         return sensorType;
     }
-
 }

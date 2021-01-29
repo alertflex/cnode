@@ -1,3 +1,18 @@
+/*
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+ 
 package org.alertflex.controller;
 
 import java.net.UnknownHostException;
@@ -5,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.alertflex.logserver.GrayLog;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Attributes;
 import org.alertflex.entity.Events;
@@ -19,9 +33,6 @@ import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
 import java.net.InetAddress;
 
-/**
- * @author Oleg Zharkov
- */
 public class LogsManagement {
 
     private static final Logger logger = LoggerFactory.getLogger(LogsManagement.class);
@@ -60,14 +71,12 @@ public class LogsManagement {
     public void EvaluateLogs(String logs) {
 
         String log_record = "log record empty";
-        GrayLog graylogFromPool;
         ElasticSearch elasticFromPool;
 
         try {
 
             elasticFromPool = eventBean.getElasticFromPool();
-            graylogFromPool = eventBean.getGraylogFromPool();
-
+            
             doCheckIOC = (eventBean.getProject().getIocCheck() != 0);
 
             String geoIpCityPath = eventBean.getProject().getProjectPath() + "/geo/GeoLiteCity.dat";
@@ -80,6 +89,7 @@ public class LogsManagement {
                     ls = new LookupService(geoIpCityPath, LookupService.GEOIP_MEMORY_CACHE);
 
                 } catch (Exception e) {
+                    logger.error("alertflex_ctrl_exception", e);
                 }
             }
 
@@ -100,15 +110,7 @@ public class LogsManagement {
                 }
 
                 // Send to Log Management
-                if (!isAlert) {
-
-                    if (elasticFromPool != null) {
-                        elasticFromPool.SendSuricataToLog(log_record, ls);
-                    }
-                    if (graylogFromPool != null) {
-                        graylogFromPool.SendStringToLog(log_record);
-                    }
-                }
+                if (!isAlert && elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record, ls);
             }
 
         } catch (Exception e) {
@@ -135,9 +137,7 @@ public class LogsManagement {
                     return true;
                 case "alert-nids":
                     return true;
-                case "alert-waf":
-                    return true;
-
+                
                 default:
                     break;
             }
@@ -183,14 +183,13 @@ public class LogsManagement {
 
                 case "alert-fim":
 
-                    nodename = obj.getString("host");
-                    md5 = obj.getString("_md5");
-                    sha1 = obj.getString("_sha1");
-                    sha256 = obj.getString("_sha256");
-                    filename = obj.getString("_filename");
-                    agent = obj.getString("_agent");
-                    hostname = obj.getString("_manager");
-
+                    nodename = obj.getString("node");
+                    md5 = obj.getString("md5");
+                    sha1 = obj.getString("sha1");
+                    sha256 = obj.getString("sha256");
+                    filename = obj.getString("filename");
+                    agent = obj.getString("agent");
+                    
                     attr = eventBean.getAttributesFacade().findByValueAndType(md5, misp_md5);
 
                     if (attr == null) {
@@ -204,7 +203,7 @@ public class LogsManagement {
                                 + md5
                                 + "\",\"message\": \"message digest MD5\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                     }
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(sha1, misp_sha1);
@@ -220,7 +219,7 @@ public class LogsManagement {
                                 + sha1
                                 + "\",\"message\": \"secure hash SHA1\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                     }
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(sha256, misp_sha256);
@@ -236,18 +235,18 @@ public class LogsManagement {
                                 + sha256
                                 + "\",\"message\": \"secure hash SHA256\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                     }
 
                     return true;
 
                 case "alert-hids":
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    agent = obj.getString("_agent");
-                    hostname = obj.getString("_manager");
-
+                    
+                    nodename = obj.getString("node");
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    agent = obj.getString("agent");
+                    
                     if (!ipdstMap.containsKey(dstip)) {
 
                         attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
@@ -260,7 +259,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -276,17 +275,18 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
                     return true;
 
                 case "alert-nids":
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    hostname = obj.getString("_sensor");
+                    
+                    nodename = obj.getString("node");
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    hostname = obj.getString("sensor");
 
                     if (!ipdstMap.containsKey(dstip)) {
 
@@ -300,7 +300,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -316,18 +316,18 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
                     return true;
 
                 case "dns-nids":
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    hostname = obj.getString("_sensor");
-                    dns = obj.getString("_rrname");
+                    
+                    nodename = obj.getString("node");
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    dns = obj.getString("rrname");
 
                     if (!ipdstMap.containsKey(dstip)) {
 
@@ -341,7 +341,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -357,7 +357,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -373,7 +373,7 @@ public class LogsManagement {
                                     + dns
                                     + "\",\"message\": \"domain\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -381,11 +381,10 @@ public class LogsManagement {
 
                 case "netflow-nids":
 
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    hostname = obj.getString("_sensor");
-
+                    nodename = obj.getString("node");
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    
                     if (!ipdstMap.containsKey(dstip)) {
 
                         attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
@@ -398,7 +397,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\":\" destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -414,7 +413,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\":\" source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
@@ -422,10 +421,10 @@ public class LogsManagement {
 
                 case "http-nids":
 
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    hostname = obj.getString("_url_hostname");
+                    nodename = obj.getString("node");
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    hostname = obj.getString("url_hostname");
 
                     if (!ipdstMap.containsKey(dstip)) {
 
@@ -439,19 +438,18 @@ public class LogsManagement {
                                     + hostname
                                     + "\",\"message\":\" url host name\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                         }
                     }
 
                     break;
 
                 case "file-nids":
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    hostname = obj.getString("_sensor");
-                    filename = obj.getString("_filename");
-                    md5 = obj.getString("_md5");
+                    nodename = obj.getString("node");
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    filename = obj.getString("filename");
+                    md5 = obj.getString("md5");
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(md5, misp_md5);
 
@@ -466,316 +464,7 @@ public class LogsManagement {
                                 + md5
                                 + "\",\"message\": \"message digest before\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                    }
-
-                    break;
-
-                case "alert-waf":
-
-                    nodename = obj.getString("host");
-                    dstip = obj.getString("_dstip");
-                    srcip = obj.getString("_srcip");
-                    hostname = obj.getString("_target");
-
-                    if (!ipdstMap.containsKey(dstip)) {
-
-                        attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
-                        ipdstMap.put(dstip, attr);
-
-                        if (attr != null) {
-                            alert_type = 15;
-
-                            artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                                    + dstip
-                                    + "\",\"message\": \"destination ip\" }]}";
-
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                        }
-                    }
-
-                    if (!ipsrcMap.containsKey(srcip)) {
-
-                        attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
-                        ipsrcMap.put(srcip, attr);
-
-                        if (attr != null) {
-                            alert_type = 16;
-
-                            artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                                    + srcip
-                                    + "\",\"message\": \"source ip\" }]}";
-
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                        }
-                    }
-
-                    return true;
-
-                case "netflow-elastic":
-
-                    msg = obj.getJSONObject("message");
-
-                    if (msg.has("event")) {
-
-                        JSONObject event = msg.getJSONObject("event");
-
-                        if (event.has("category")) {
-                            eventCategory = event.getString("category");
-                        }
-
-                        if (event.has("action")) {
-                            eventAction = event.getString("action");
-                        }
-
-                    }
-
-                    if (eventAction.equals("network_flow") && eventCategory.equals("network_traffic")) {
-
-                        JSONObject dest = msg.getJSONObject("destination");
-                        JSONObject source = msg.getJSONObject("source");
-                        JSONObject host = msg.getJSONObject("agent");
-
-                        nodename = "controller";
-                        dstip = dest.getString("ip");
-                        srcip = source.getString("ip");
-                        hostname = host.getString("hostname");
-                        agent = hostname;
-
-                        if (!ipdstMap.containsKey(dstip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
-                            ipdstMap.put(dstip, attr);
-
-                            if (attr != null) {
-                                alert_type = 17;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                                        + dstip
-                                        + "\",\"message\": \"destination ip\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-
-                        if (!ipsrcMap.containsKey(srcip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
-                            ipsrcMap.put(srcip, attr);
-
-                            if (attr != null) {
-                                alert_type = 18;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                                        + srcip
-                                        + "\",\"message\": \"source ip\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-                    }
-
-                    return true;
-
-                case "packet-elastic":
-
-                    msg = obj.getJSONObject("message");
-
-                    if (msg.has("event")) {
-
-                        JSONObject event = msg.getJSONObject("event");
-
-                        if (event.has("category")) {
-                            eventCategory = event.getString("category");
-                        }
-
-                        if (event.has("action")) {
-                            eventAction = event.getString("action");
-                        }
-
-                    }
-
-                    if (eventAction.equals("network_flow") && eventCategory.equals("network_traffic")) {
-
-                        JSONObject dest = msg.getJSONObject("destination");
-                        JSONObject source = msg.getJSONObject("source");
-                        JSONObject host = msg.getJSONObject("agent");
-
-                        nodename = "controller";
-                        dstip = dest.getString("ip");
-                        srcip = source.getString("ip");
-                        hostname = host.getString("hostname");
-                        agent = hostname;
-
-                        if (msg.has("process")) {
-
-                            JSONObject proc = obj.getJSONObject("process");
-                            process = proc.getString("name");
-                        }
-
-                        if (!ipdstMap.containsKey(dstip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
-                            ipdstMap.put(dstip, attr);
-
-                            if (attr != null) {
-                                alert_type = 19;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"dstip\",\"data\":\""
-                                        + dstip
-                                        + "\",\"message\":\" process: "
-                                        + process
-                                        + "\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-
-                        if (!ipsrcMap.containsKey(srcip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
-                            ipsrcMap.put(srcip, attr);
-
-                            if (attr != null) {
-                                alert_type = 20;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"srcip\",\"data\":\""
-                                        + srcip
-                                        + "\",\"message\":\" process: "
-                                        + process
-                                        + "\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-                    }
-
-                    return true;
-
-                case "netflow-graylog":
-
-                    msg = obj.getJSONObject("message");
-
-                    if (msg.has("filebeat_event_category")) {
-                        eventCategory = msg.getString("filebeat_event_category");
-                    }
-
-                    if (msg.has("filebeat_event_action")) {
-                        eventAction = msg.getString("filebeat_event_action");
-                    }
-
-                    if (eventAction.equals("network_flow") && eventCategory.equals("network_traffic")) {
-
-                        nodename = "controller";
-                        if (msg.has("filebeat_netflow_destination_ipv4_address")) {
-                            dstip = msg.getString("filebeat_netflow_destination_ipv4_address");
-                        }
-                        if (msg.has("filebeat_netflow_source_ipv4_address")) {
-                            srcip = msg.getString("filebeat_netflow_source_ipv4_address");
-                        }
-                        hostname = msg.getString("filebeat_host_hostname");
-                        agent = hostname;
-
-                        if (!ipdstMap.containsKey(dstip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
-                            ipdstMap.put(dstip, attr);
-
-                            if (attr != null) {
-                                alert_type = 21;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                                        + dstip
-                                        + "\",\"message\":\" destination ip\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-
-                        if (!ipsrcMap.containsKey(srcip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
-                            ipsrcMap.put(srcip, attr);
-
-                            if (attr != null) {
-                                alert_type = 22;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
-                                        + srcip
-                                        + "\",\"message\":\" source ip\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-                    }
-
-                    break;
-
-                case "packet-graylog":
-
-                    msg = obj.getJSONObject("message");
-
-                    if (msg.has("packetbeat_event_category")) {
-                        eventCategory = msg.getString("packetbeat_event_category");
-                    }
-
-                    if (msg.has("packetbeat_event_action")) {
-                        eventAction = msg.getString("packetbeat_event_action");
-                    }
-
-                    if (eventAction.equals("network_flow") && eventCategory.equals("network_traffic")) {
-
-                        nodename = "controller";
-
-                        if (msg.getString("packetbeat_network_type").equals("ipv4")) {
-
-                            dstip = msg.getString("packetbeat_destination_ip");
-                            srcip = msg.getString("packetbeat_source_ip");
-                        }
-
-                        hostname = msg.getString("packetbeat_host_name");
-                        agent = hostname;
-
-                        if (msg.has("packetbeat_process_name")) {
-
-                            process = msg.getString("packetbeat_process_name");
-                        }
-
-                        if (!ipdstMap.containsKey(dstip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
-                            ipdstMap.put(dstip, attr);
-
-                            if (attr != null) {
-                                alert_type = 23;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"dstip\",\"data\":\""
-                                        + dstip
-                                        + "\",\"message\":\" process: "
-                                        + process
-                                        + "\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
-
-                        if (!ipsrcMap.containsKey(srcip)) {
-
-                            attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
-                            ipsrcMap.put(srcip, attr);
-
-                            if (attr != null) {
-                                alert_type = 24;
-
-                                artifacts = "{\"artifacts\": [{\"dataType\": \"srcip\",\"data\":\""
-                                        + srcip
-                                        + "\",\"message\":\" process: "
-                                        + process
-                                        + "\" }]}";
-
-                                createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, hostname, filename, process);
-                            }
-                        }
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
                     }
 
                     break;
@@ -793,7 +482,7 @@ public class LogsManagement {
     }
 
     public void createIocAlert(String r, Attributes attr, int type, String artifacts, String node,
-            String dstip, String srcip, String agent, String hostname, String filename, String process) {
+            String dstip, String srcip, String agent, String filename, String process) {
 
         int srv = 0;
 
@@ -809,15 +498,19 @@ public class LogsManagement {
             srv = event.getThreatLevelId();
             a.setEventSeverity(Integer.toString(srv));
             switch (srv) {
+                
                 case 1:
                     srv = 3;
                     break;
+                    
                 case 2:
                     srv = 2;
                     break;
+                    
                 case 3:
                     srv = 1;
                     break;
+                    
                 default:
                     srv = 0;
                     break;
@@ -830,6 +523,7 @@ public class LogsManagement {
 
         switch (type) {
             case 1:
+                
                 a.setEventId("1");
                 a.setCategories("md5, " + attr.getCategory());
                 if (event != null) {
@@ -839,8 +533,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("FILE");
+                
                 break;
+                
             case 2:
+                
                 a.setEventId("2");
                 a.setCategories("sha1, " + attr.getCategory());
                 if (event != null) {
@@ -850,8 +547,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("FILE");
+                
                 break;
+                
             case 3:
+                
                 a.setEventId("3");
                 a.setCategories("sha256, " + attr.getCategory());
                 if (event != null) {
@@ -861,8 +561,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("FILE");
+                
                 break;
+                
             case 4:
+                
                 a.setEventId("4");
                 a.setCategories("ipdst, " + attr.getCategory());
                 if (event != null) {
@@ -872,9 +575,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("HOST");
-
+                
                 break;
+                
             case 5:
+                
                 a.setEventId("5");
                 a.setCategories("ipsrc, " + attr.getCategory());
                 if (event != null) {
@@ -884,9 +589,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("HOST");
-
+                
                 break;
+                
             case 6:
+                
                 a.setEventId("6");
                 a.setCategories("ipdst, " + attr.getCategory());
                 if (event != null) {
@@ -896,9 +603,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("NET");
-
+                
                 break;
+                
             case 7:
+                
                 a.setEventId("7");
                 a.setCategories("ipsrc, " + attr.getCategory());
                 if (event != null) {
@@ -908,9 +617,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("NET");
-
+                
                 break;
+                
             case 8:
+                
                 a.setEventId("8");
                 a.setCategories("ipdst, " + attr.getCategory());
                 if (event != null) {
@@ -920,9 +631,11 @@ public class LogsManagement {
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("NET");
-
+                
                 break;
+                
             case 9:
+                
                 a.setEventId("9");
                 a.setCategories("ipsrc, " + attr.getCategory());
                 if (event != null) {
@@ -934,7 +647,9 @@ public class LogsManagement {
                 a.setAlertType("NET");
 
                 break;
+                
             case 10:
+                
                 a.setEventId("10");
                 a.setCategories("dns, " + attr.getCategory());
                 if (event != null) {
@@ -946,7 +661,9 @@ public class LogsManagement {
                 a.setAlertType("NET");
 
                 break;
+                
             case 11:
+                
                 a.setEventId("11");
                 a.setCategories("ipdst, " + attr.getCategory());
                 if (event != null) {
@@ -958,7 +675,9 @@ public class LogsManagement {
                 a.setAlertType("NET");
 
                 break;
+                
             case 12:
+                
                 a.setEventId("12");
                 a.setCategories("ipsrc, " + attr.getCategory());
                 if (event != null) {
@@ -970,7 +689,9 @@ public class LogsManagement {
                 a.setAlertType("NET");
 
                 break;
+                
             case 13:
+                
                 a.setEventId("13");
                 a.setCategories("url_hostname, " + attr.getCategory());
                 if (event != null) {
@@ -982,7 +703,9 @@ public class LogsManagement {
                 a.setAlertType("NET");
 
                 break;
+                
             case 14:
+                
                 a.setEventId("14");
                 a.setCategories("md5, " + attr.getCategory());
                 if (event != null) {
@@ -994,127 +717,7 @@ public class LogsManagement {
                 a.setAlertType("NET");
 
                 break;
-
-            case 15:
-                a.setEventId("15");
-                a.setCategories("ipdst, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("WAF event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("WAF event, suspicious dst ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 16:
-                a.setEventId("16");
-                a.setCategories("ipsrc, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("WAF event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("WAF event, suspicious src ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 17:
-                a.setEventId("17");
-                a.setCategories("ipdst, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Elastic netflow event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Elastic netflow event, suspicious dst ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 18:
-                a.setEventId("18");
-                a.setCategories("ipsrc, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Elastic netflow event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Elastic netflow event, suspicious src ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 19:
-                a.setEventId("19");
-                a.setCategories("ipdst, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Elastic packetbeat event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Elastic packetbeat event, suspicious dst ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 20:
-                a.setEventId("20");
-                a.setCategories("ipsrc, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Elastic packetbeat event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Elastic packetbeat event, suspicious src ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 21:
-                a.setEventId("21");
-                a.setCategories("ipdst, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Graylog netflow event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Graylog netflow event, suspicious dst ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 22:
-                a.setEventId("22");
-                a.setCategories("ipsrc, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Graylog netflow event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Graylog netflow event, suspicious src ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 23:
-                a.setEventId("23");
-                a.setCategories("ipdst, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Graylog packetbeat event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Graylog packetbeat event, suspicious dst ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
-            case 24:
-                a.setEventId("24");
-                a.setCategories("ipsrc, " + attr.getCategory());
-                if (event != null) {
-                    a.setDescription("Graylog packetbeat event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
-                } else {
-                    a.setDescription("Graylog packetbeat event, suspicious src ip - " + attr.getValue1() + ". ");
-                }
-                a.setAlertSource("MISP");
-                a.setAlertType("NET");
-
-                break;
+                
             default:
                 break;
 

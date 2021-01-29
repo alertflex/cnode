@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -22,21 +32,17 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "node_monitor")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "NodeMonitor.findAll", query = "SELECT n FROM NodeMonitor n")
     , @NamedQuery(name = "NodeMonitor.findByRecId", query = "SELECT n FROM NodeMonitor n WHERE n.recId = :recId")
-    , @NamedQuery(name = "NodeMonitor.findByNodeId", query = "SELECT n FROM NodeMonitor n WHERE n.nodeId = :nodeId")
     , @NamedQuery(name = "NodeMonitor.findByRefId", query = "SELECT n FROM NodeMonitor n WHERE n.refId = :refId")
+    , @NamedQuery(name = "NodeMonitor.findByNode", query = "SELECT n FROM NodeMonitor n WHERE n.node = :node")
+    , @NamedQuery(name = "NodeMonitor.findByProbe", query = "SELECT n FROM NodeMonitor n WHERE n.probe = :probe")
     , @NamedQuery(name = "NodeMonitor.findByEventsNids", query = "SELECT n FROM NodeMonitor n WHERE n.eventsNids = :eventsNids")
     , @NamedQuery(name = "NodeMonitor.findByEventsHids", query = "SELECT n FROM NodeMonitor n WHERE n.eventsHids = :eventsHids")
-    , @NamedQuery(name = "NodeMonitor.findByEventsWaf", query = "SELECT n FROM NodeMonitor n WHERE n.eventsWaf = :eventsWaf")
     , @NamedQuery(name = "NodeMonitor.findByEventsMisc", query = "SELECT n FROM NodeMonitor n WHERE n.eventsMisc = :eventsMisc")
     , @NamedQuery(name = "NodeMonitor.findByEventsCrs", query = "SELECT n FROM NodeMonitor n WHERE n.eventsCrs = :eventsCrs")
     , @NamedQuery(name = "NodeMonitor.findByLogCounter", query = "SELECT n FROM NodeMonitor n WHERE n.logCounter = :logCounter")
@@ -54,14 +60,19 @@ public class NodeMonitor implements Serializable {
     private Long recId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 150)
     @Column(name = "ref_id")
     private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "node")
+    private String node;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Column(name = "events_nids")
@@ -70,10 +81,6 @@ public class NodeMonitor implements Serializable {
     @NotNull
     @Column(name = "events_hids")
     private long eventsHids;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "events_waf")
-    private long eventsWaf;
     @Basic(optional = false)
     @NotNull
     @Column(name = "events_misc")
@@ -109,13 +116,13 @@ public class NodeMonitor implements Serializable {
         this.recId = recId;
     }
 
-    public NodeMonitor(Long recId, String nodeId, String refId, long eventsNids, long eventsHids, long eventsWaf, long eventsMisc, long eventsCrs, long logCounter, long logVolume, long statCounter, long statVolume) {
+    public NodeMonitor(Long recId, String refId, String node, String probe, long eventsNids, long eventsHids, long eventsMisc, long eventsCrs, long logCounter, long logVolume, long statCounter, long statVolume) {
         this.recId = recId;
-        this.nodeId = nodeId;
         this.refId = refId;
+        this.node = node;
+        this.probe = probe;
         this.eventsNids = eventsNids;
         this.eventsHids = eventsHids;
-        this.eventsWaf = eventsWaf;
         this.eventsMisc = eventsMisc;
         this.eventsCrs = eventsCrs;
         this.logCounter = logCounter;
@@ -132,20 +139,28 @@ public class NodeMonitor implements Serializable {
         this.recId = recId;
     }
 
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
     public String getRefId() {
         return refId;
     }
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
+
+    public String getProbe() {
+        return probe;
+    }
+
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public long getEventsNids() {
@@ -162,14 +177,6 @@ public class NodeMonitor implements Serializable {
 
     public void setEventsHids(long eventsHids) {
         this.eventsHids = eventsHids;
-    }
-
-    public long getEventsWaf() {
-        return eventsWaf;
-    }
-
-    public void setEventsWaf(long eventsWaf) {
-        this.eventsWaf = eventsWaf;
     }
 
     public long getEventsMisc() {
@@ -252,5 +259,5 @@ public class NodeMonitor implements Serializable {
     public String toString() {
         return "org.alertflex.entity.NodeMonitor[ recId=" + recId + " ]";
     }
-
+    
 }

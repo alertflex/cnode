@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -17,21 +27,18 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "sensor")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Sensor.findAll", query = "SELECT s FROM Sensor s")
     , @NamedQuery(name = "Sensor.findByRefId", query = "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :refId")
-    , @NamedQuery(name = "Sensor.findByMasterNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.masterNode = :masterNode")
+    , @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node")
+    , @NamedQuery(name = "Sensor.findByProbe", query = "SELECT s FROM Sensor s WHERE s.probe = :probe")
     , @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.sensorPK.name = :name")
+    , @NamedQuery(name = "Sensor.findByType", query = "SELECT s FROM Sensor s WHERE s.type = :type")
     , @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description")
-    , @NamedQuery(name = "Sensor.findByAgent", query = "SELECT s FROM Sensor s WHERE s.agent = :agent")
-    , @NamedQuery(name = "Sensor.findBySensorType", query = "SELECT s FROM Sensor s WHERE s.sensorType = :sensorType")
+    , @NamedQuery(name = "Sensor.findByHost", query = "SELECT s FROM Sensor s WHERE s.host = :host")
     , @NamedQuery(name = "Sensor.findByIprepUpdate", query = "SELECT s FROM Sensor s WHERE s.iprepUpdate = :iprepUpdate")
     , @NamedQuery(name = "Sensor.findByRulesUpdate", query = "SELECT s FROM Sensor s WHERE s.rulesUpdate = :rulesUpdate")})
 public class Sensor implements Serializable {
@@ -41,19 +48,24 @@ public class Sensor implements Serializable {
     protected SensorPK sensorPK;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "probe")
+    private String probe;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
+    @Column(name = "type")
+    private String type;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 512)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "agent")
-    private String agent;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "sensor_type")
-    private String sensorType;
+    @Column(name = "host")
+    private String host;
     @Basic(optional = false)
     @NotNull
     @Column(name = "iprep_update")
@@ -70,17 +82,18 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public Sensor(SensorPK sensorPK, String description, String agent, String sensorType, int iprepUpdate, int rulesUpdate) {
+    public Sensor(SensorPK sensorPK, String probe, String type, String description, String host, int iprepUpdate, int rulesUpdate) {
         this.sensorPK = sensorPK;
+        this.probe = probe;
+        this.type = type;
         this.description = description;
-        this.agent = agent;
-        this.sensorType = sensorType;
+        this.host = host;
         this.iprepUpdate = iprepUpdate;
         this.rulesUpdate = rulesUpdate;
     }
 
-    public Sensor(String refId, String masterNode, String name) {
-        this.sensorPK = new SensorPK(refId, masterNode, name);
+    public Sensor(String refId, String node, String name) {
+        this.sensorPK = new SensorPK(refId, node, name);
     }
 
     public SensorPK getSensorPK() {
@@ -91,6 +104,22 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
+    public String getProbe() {
+        return probe;
+    }
+
+    public void setProbe(String probe) {
+        this.probe = probe;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -99,20 +128,12 @@ public class Sensor implements Serializable {
         this.description = description;
     }
 
-    public String getAgent() {
-        return agent;
+    public String getHost() {
+        return host;
     }
 
-    public void setAgent(String agent) {
-        this.agent = agent;
-    }
-
-    public String getSensorType() {
-        return sensorType;
-    }
-
-    public void setSensorType(String sensorType) {
-        this.sensorType = sensorType;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public int getIprepUpdate() {
@@ -155,5 +176,5 @@ public class Sensor implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Sensor[ sensorPK=" + sensorPK + " ]";
     }
-
+    
 }

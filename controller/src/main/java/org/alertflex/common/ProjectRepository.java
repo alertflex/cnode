@@ -1,42 +1,43 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.common;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.Project;
 
-/**
- *
- * @author root
- */
 public class ProjectRepository {
 
     Project project;
-    Node node;
-    List<String> listSensorNames;
     Boolean status = true;
 
     String projectDir;
     Path projectPath;
 
     String ctrlDir;
-    String listsCtrlDir;
-
     Path ctrlPath;
-    Path listsCtrlPath;
+    
+    String ctrlListsDir;
+    Path ctrlListsPath;
 
+    Node node;
     String nodeDir;
     Path nodePath;
-
-    List<SensorRepository> listSensorRepository;
 
     public ProjectRepository(Project p) {
 
@@ -66,11 +67,11 @@ public class ProjectRepository {
                 Files.createDirectory(ctrlPath);
             }
 
-            listsCtrlDir = ctrlDir + "lists/";
-            listsCtrlPath = Paths.get(listsCtrlDir);
+            ctrlListsDir = ctrlDir + "lists/";
+            ctrlListsPath = Paths.get(ctrlListsDir);
 
-            if (Files.notExists(listsCtrlPath)) {
-                Files.createDirectory(listsCtrlPath);
+            if (Files.notExists(ctrlListsPath)) {
+                Files.createDirectory(ctrlListsPath);
             }
 
         } catch (Exception e) {
@@ -90,6 +91,22 @@ public class ProjectRepository {
     public Path getProjectPath() {
         return projectPath;
     }
+    
+    public String getCtrlDir() {
+        return ctrlDir;
+    }
+
+    public Path getCtrlPath() {
+        return ctrlPath;
+    }
+    
+    public String getCtrlListsDir() {
+        return ctrlListsDir;
+    }
+
+    public Path getCtrlListsPath() {
+        return ctrlListsPath;
+    }
 
     public String getNodeDir() {
         return nodeDir;
@@ -99,132 +116,9 @@ public class ProjectRepository {
         return nodePath;
     }
 
-    public String getSensorDir(String sensorName) {
+    public Boolean initNode(String nodeName) {
 
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getDir();
-            }
-        }
-
-        return null;
-    }
-
-    public Path getSensorPath(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getPath();
-            }
-        }
-
-        return null;
-    }
-
-    public String getLocRulesDir(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getLocRulesDir();
-            }
-        }
-
-        return null;
-    }
-
-    public Path getLocRulesPath(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getLocRulesPath();
-            }
-        }
-
-        return null;
-    }
-
-    public String getRemRulesDir(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getRemRulesDir();
-            }
-        }
-
-        return null;
-    }
-
-    public Path getRemRulesPath(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getRemRulesPath();
-            }
-        }
-
-        return null;
-    }
-
-    public String getHidsRulesDir(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getHidsRulesDir();
-            }
-        }
-
-        return null;
-    }
-
-    public Path getHidsRulesPath(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getHidsRulesPath();
-            }
-        }
-
-        return null;
-    }
-
-    public String getHidsDecodersDir(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getHidsDecodersDir();
-            }
-        }
-
-        return null;
-    }
-
-    public Path getHidsDecodersPath(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getHidsDecodersPath();
-            }
-        }
-
-        return null;
-    }
-
-    public int getSensorType(String sensorName) {
-
-        for (SensorRepository sr : listSensorRepository) {
-            if (sr.getName().equals(sensorName)) {
-                return sr.getSensorType();
-            }
-        }
-
-        return 3;
-    }
-
-    public Boolean initSensor(Node n, String s) {
-
-        this.node = n;
-
-        nodeDir = project.getProjectPath() + node.getNodePK().getName() + "/";
+        nodeDir = project.getProjectPath() + nodeName + "/";
 
         nodePath = Paths.get(nodeDir);
         if (Files.notExists(nodePath)) {
@@ -234,61 +128,6 @@ public class ProjectRepository {
                 status = false;
                 return status;
             }
-        }
-
-        if (s != null) {
-
-            SensorRepository sr = new SensorRepository();
-            status = sr.init(nodeDir, s);
-            if (!status) {
-                return status;
-            }
-
-            this.listSensorRepository = new ArrayList();
-            listSensorRepository.add(sr);
-        }
-
-        return status;
-    }
-
-    public Boolean initSensors(Node n, List<String> lsn) {
-
-        this.node = n;
-
-        nodeDir = project.getProjectPath() + node.getNodePK().getName() + "/";
-
-        nodePath = Paths.get(nodeDir);
-        if (Files.notExists(nodePath)) {
-            try {
-                Files.createDirectory(nodePath);
-            } catch (Exception e) {
-                status = false;
-                return status;
-            }
-        }
-
-        if (lsn != null) {
-            this.listSensorNames = lsn;
-
-        } else {
-            listSensorNames = new ArrayList();
-            listSensorNames.add("master-crs");
-            listSensorNames.add("master-hids");
-            listSensorNames.add("master-nids");
-            listSensorNames.add("master-waf");
-        }
-
-        this.listSensorRepository = new ArrayList();
-
-        for (String sensorName : listSensorNames) {
-
-            SensorRepository sr = new SensorRepository();
-            status = sr.init(nodeDir, sensorName);
-            if (!status) {
-                return status;
-            }
-
-            listSensorRepository.add(sr);
         }
 
         return status;

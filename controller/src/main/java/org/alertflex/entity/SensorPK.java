@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -12,10 +22,6 @@ import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-/**
- *
- * @author root
- */
 @Embeddable
 public class SensorPK implements Serializable {
 
@@ -27,8 +33,8 @@ public class SensorPK implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "master_node")
-    private String masterNode;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -38,9 +44,9 @@ public class SensorPK implements Serializable {
     public SensorPK() {
     }
 
-    public SensorPK(String refId, String masterNode, String name) {
+    public SensorPK(String refId, String node, String name) {
         this.refId = refId;
-        this.masterNode = masterNode;
+        this.node = node;
         this.name = name;
     }
 
@@ -52,12 +58,12 @@ public class SensorPK implements Serializable {
         this.refId = refId;
     }
 
-    public String getMasterNode() {
-        return masterNode;
+    public String getNode() {
+        return node;
     }
 
-    public void setMasterNode(String masterNode) {
-        this.masterNode = masterNode;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getName() {
@@ -72,7 +78,7 @@ public class SensorPK implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (refId != null ? refId.hashCode() : 0);
-        hash += (masterNode != null ? masterNode.hashCode() : 0);
+        hash += (node != null ? node.hashCode() : 0);
         hash += (name != null ? name.hashCode() : 0);
         return hash;
     }
@@ -87,7 +93,7 @@ public class SensorPK implements Serializable {
         if ((this.refId == null && other.refId != null) || (this.refId != null && !this.refId.equals(other.refId))) {
             return false;
         }
-        if ((this.masterNode == null && other.masterNode != null) || (this.masterNode != null && !this.masterNode.equals(other.masterNode))) {
+        if ((this.node == null && other.node != null) || (this.node != null && !this.node.equals(other.node))) {
             return false;
         }
         if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
@@ -98,7 +104,7 @@ public class SensorPK implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.SensorPK[ refId=" + refId + ", masterNode=" + masterNode + ", name=" + name + " ]";
+        return "org.alertflex.entity.SensorPK[ refId=" + refId + ", node=" + node + ", name=" + name + " ]";
     }
-
+    
 }

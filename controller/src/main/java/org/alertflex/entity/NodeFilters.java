@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+ 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -22,23 +32,19 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "node_filters")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "NodeFilters.findAll", query = "SELECT n FROM NodeFilters n")
     , @NamedQuery(name = "NodeFilters.findByRecId", query = "SELECT n FROM NodeFilters n WHERE n.recId = :recId")
-    , @NamedQuery(name = "NodeFilters.findByNodeId", query = "SELECT n FROM NodeFilters n WHERE n.nodeId = :nodeId")
     , @NamedQuery(name = "NodeFilters.findByRefId", query = "SELECT n FROM NodeFilters n WHERE n.refId = :refId")
+    , @NamedQuery(name = "NodeFilters.findByNode", query = "SELECT n FROM NodeFilters n WHERE n.node = :node")
+    , @NamedQuery(name = "NodeFilters.findByProbe", query = "SELECT n FROM NodeFilters n WHERE n.probe = :probe")
     , @NamedQuery(name = "NodeFilters.findByAgentList", query = "SELECT n FROM NodeFilters n WHERE n.agentList = :agentList")
     , @NamedQuery(name = "NodeFilters.findByHnetList", query = "SELECT n FROM NodeFilters n WHERE n.hnetList = :hnetList")
     , @NamedQuery(name = "NodeFilters.findByHidsFilters", query = "SELECT n FROM NodeFilters n WHERE n.hidsFilters = :hidsFilters")
     , @NamedQuery(name = "NodeFilters.findByNidsFilters", query = "SELECT n FROM NodeFilters n WHERE n.nidsFilters = :nidsFilters")
-    , @NamedQuery(name = "NodeFilters.findByWafFilters", query = "SELECT n FROM NodeFilters n WHERE n.wafFilters = :wafFilters")
     , @NamedQuery(name = "NodeFilters.findByCrsFilters", query = "SELECT n FROM NodeFilters n WHERE n.crsFilters = :crsFilters")
     , @NamedQuery(name = "NodeFilters.findByTimeOfSurvey", query = "SELECT n FROM NodeFilters n WHERE n.timeOfSurvey = :timeOfSurvey")})
 public class NodeFilters implements Serializable {
@@ -51,14 +57,19 @@ public class NodeFilters implements Serializable {
     private Long recId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 150)
     @Column(name = "ref_id")
     private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "node")
+    private String node;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Column(name = "agent_list")
@@ -77,10 +88,6 @@ public class NodeFilters implements Serializable {
     private long nidsFilters;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "waf_filters")
-    private long wafFilters;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "crs_filters")
     private long crsFilters;
     @Column(name = "time_of_survey")
@@ -94,15 +101,15 @@ public class NodeFilters implements Serializable {
         this.recId = recId;
     }
 
-    public NodeFilters(Long recId, String nodeId, String refId, long agentList, long hnetList, long hidsFilters, long nidsFilters, long wafFilters, long crsFilters) {
+    public NodeFilters(Long recId, String refId, String node, String probe, long agentList, long hnetList, long hidsFilters, long nidsFilters, long crsFilters) {
         this.recId = recId;
-        this.nodeId = nodeId;
         this.refId = refId;
+        this.node = node;
+        this.probe = probe;
         this.agentList = agentList;
         this.hnetList = hnetList;
         this.hidsFilters = hidsFilters;
         this.nidsFilters = nidsFilters;
-        this.wafFilters = wafFilters;
         this.crsFilters = crsFilters;
     }
 
@@ -114,20 +121,28 @@ public class NodeFilters implements Serializable {
         this.recId = recId;
     }
 
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
     public String getRefId() {
         return refId;
     }
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
+
+    public String getProbe() {
+        return probe;
+    }
+
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public long getAgentList() {
@@ -160,14 +175,6 @@ public class NodeFilters implements Serializable {
 
     public void setNidsFilters(long nidsFilters) {
         this.nidsFilters = nidsFilters;
-    }
-
-    public long getWafFilters() {
-        return wafFilters;
-    }
-
-    public void setWafFilters(long wafFilters) {
-        this.wafFilters = wafFilters;
     }
 
     public long getCrsFilters() {
@@ -210,5 +217,5 @@ public class NodeFilters implements Serializable {
     public String toString() {
         return "org.alertflex.entity.NodeFilters[ recId=" + recId + " ]";
     }
-
+    
 }

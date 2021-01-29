@@ -9,18 +9,19 @@
     <class>org.alertflex.entity.AgentPackages</class>
     <class>org.alertflex.entity.AgentVul</class>
     <class>org.alertflex.entity.DockerScan</class>
+    <class>org.alertflex.entity.Container</class>
     <class>org.alertflex.entity.Node</class>
     <class>org.alertflex.entity.NodePK</class>
     <class>org.alertflex.entity.Sensor</class>
     <class>org.alertflex.entity.SensorPK</class>
-    <class>org.alertflex.entity.AlertCategory</class>
     <class>org.alertflex.entity.AlertPriority</class>
-    <class>org.alertflex.entity.EventCategory</class>
-    <class>org.alertflex.entity.Response</class>
+    <class>org.alertflex.entity.AlertCategory</class>
     <class>org.alertflex.entity.HomeNetwork</class>
+    <class>org.alertflex.entity.Hosts</class>
     <class>org.alertflex.entity.Project</class>
     <class>org.alertflex.entity.Users</class>
     <class>org.alertflex.entity.TrivyScan</class>
+    <class>org.alertflex.entity.Response</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <validation-mode>NONE</validation-mode>
     <properties>

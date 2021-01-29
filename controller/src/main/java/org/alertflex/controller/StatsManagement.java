@@ -1,10 +1,42 @@
+/*
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+
 package org.alertflex.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.zip.GZIPOutputStream;
+import javax.jms.BytesMessage;
+import javax.jms.Connection;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.persistence.PersistenceException;
+import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
 import org.alertflex.entity.AgentOpenscap;
 import org.alertflex.entity.Alert;
@@ -17,23 +49,32 @@ import org.alertflex.entity.AgentPackages;
 import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
 import org.alertflex.entity.AlertPriority;
+import org.alertflex.entity.Container;
+import org.alertflex.entity.HomeNetwork;
+import org.alertflex.entity.Node;
+import org.alertflex.entity.Project;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Oleg Zharkov
- */
 public class StatsManagement {
+    
+    private static final long TIMEOUT = 1 * 1000;
 
     private static final Logger logger = LoggerFactory.getLogger(StatsManagement.class);
 
     private InfoMessageBean eventBean;
+    
+    Project project;
+    ProjectRepository pr;
 
     public StatsManagement(InfoMessageBean eb) {
         this.eventBean = eb;
+        this.project = eventBean.getProject();
+        this.pr = new ProjectRepository(project);
     }
 
     public void EvaluateStats(String stats) throws ParseException {
@@ -62,25 +103,36 @@ public class StatsManagement {
         String stat = obj.toString();
 
         try {
+            
+            JSONObject data;
+            JSONArray arr;
+            
+            String ref = eventBean.getRefId();
+            String node = eventBean.getNode();
+            
+            String agent;
+            
+            SimpleDateFormat formatter;
+            Date date = new Date();
 
             String stats_type = obj.getString("type");
+            
 
             switch (stats_type) {
 
-                case "agents_list": {
+                case "agents_list": 
 
                     boolean filtersFlag = false;
 
-                    JSONArray arr = obj.getJSONArray("data");
+                    arr = obj.getJSONArray("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     for (int i = 0; i < arr.length(); i++) {
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
+                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
 
-                        String ref = eventBean.getRefId();
-                        String node = eventBean.getNode();
-                        String agent = arr.getJSONObject(i).getString("name");
+                        agent = arr.getJSONObject(i).getString("name");
                         String id = arr.getJSONObject(i).getString("id");
                         String status = arr.getJSONObject(i).getString("status");
                         String ip = arr.getJSONObject(i).getString("ip");
@@ -94,6 +146,8 @@ public class StatsManagement {
                         Agent agExisting = eventBean.getAgentFacade().findAgentByName(ref, node, agent);
 
                         if (agExisting == null) {
+                            
+                            filtersFlag = true;
 
                             Agent a = new Agent();
 
@@ -102,9 +156,6 @@ public class StatsManagement {
                             a.setDateUpdate(date);
                             a.setStatus(status);
                             a.setAgentId(id);
-                            a.setIpLinked("indef");
-                            a.setHostLinked("indef");
-                            a.setContainerLinked("indef");
                             a.setAgentKey("indef");
                             a.setName(agent);
                             a.setIp(ip);
@@ -119,13 +170,7 @@ public class StatsManagement {
 
                             createNewAgentAlert(a);
 
-                            filtersFlag = true;
-
                         } else {
-
-                            if (!ip.equals(agExisting.getIp())) {
-                                filtersFlag = true;
-                            }
 
                             agExisting.setDateUpdate(date);
                             agExisting.setStatus(status);
@@ -141,30 +186,74 @@ public class StatsManagement {
                             eventBean.getAgentFacade().edit(agExisting);
                         }
                     }
-
+                    
                     if (filtersFlag) {
-                        updateFilters();
+                        updateFilters(ref, node);
                     }
 
                     break;
-                }
+                
+                case "containers_list": 
 
-                case "packages": {
+                    arr = obj.getJSONArray("data");
+                    
+                    String sensor = obj.getString("sensor");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                    String ref = eventBean.getRefId();
-                    String node = eventBean.getNode();
-                    String agent = obj.getString("agent");
+                    for (int i = 0; i < arr.length(); i++) {
 
-                    Date date = new Date();
+                        String containerId = arr.getJSONObject(i).getString("Id");
+                        String imageName = arr.getJSONObject(i).getString("Image");
+                        String imageId = arr.getJSONObject(i).getString("ImageID");
+                        String command = arr.getJSONObject(i).getString("Command");
+                        Long created = arr.getJSONObject(i).getLong("Created");
+                        String state = arr.getJSONObject(i).getString("State");
+                        String status = arr.getJSONObject(i).getString("Status");
+                        
+                        Container contExisting = eventBean.getContainerFacade().findByName(ref, node, sensor, containerId);
 
-                    JSONObject data = obj.getJSONObject("data");
+                        if (contExisting == null) {
 
-                    JSONArray arr = data.getJSONArray("items");
+                            Container c = new Container();
+
+                            c.setRefId(ref);
+                            c.setNodeId(node);
+                            c.setSensorName(sensor);
+                            c.setContainerId(containerId);
+                            c.setImageName(imageName);
+                            c.setImageId(imageId);
+                            c.setCommand(command);
+                            c.setState(state);
+                            c.setStatus(status);
+                            c.setReportAdded(new Date(created));
+                            c.setReportUpdated(new Date());
+
+                            eventBean.getContainerFacade().create(c);
+
+                            createNewContainerAlert(c);
+
+                        } else {
+                            contExisting.setReportUpdated(new Date());
+                            eventBean.getContainerFacade().edit(contExisting);
+                        }
+                    }
+
+                    break;
+                
+                case "packages":
+
+                    agent = obj.getString("agent");
+
+                    data = obj.getJSONObject("data");
+
+                    arr = data.getJSONArray("items");
+                    
+                    formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
                     for (int i = 0; i < arr.length(); i++) {
 
                         JSONObject scan = arr.getJSONObject(i).getJSONObject("scan");
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                         Date time = formatter.parse(scan.getString("time"));
 
                         long size = 0;
@@ -255,24 +344,20 @@ public class StatsManagement {
                     }
 
                     break;
-                }
+                
+                case "processes": 
 
-                case "processes": {
+                    agent = obj.getString("agent");
 
-                    String ref = eventBean.getRefId();
-                    String node = eventBean.getNode();
-                    String agent = obj.getString("agent");
+                    data = obj.getJSONObject("data");
 
-                    Date date = new Date();
-
-                    JSONObject data = obj.getJSONObject("data");
-
-                    JSONArray arr = data.getJSONArray("items");
+                    arr = data.getJSONArray("items");
+                    
+                    formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
                     for (int i = 0; i < arr.length(); i++) {
 
                         JSONObject scan = arr.getJSONObject(i).getJSONObject("scan");
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                         Date time = formatter.parse(scan.getString("time"));
 
                         int utime = 0;
@@ -488,29 +573,23 @@ public class StatsManagement {
                     }
 
                     break;
-                }
 
-                case "sca": {
+                case "sca":
 
-                    String ref = eventBean.getRefId();
-                    String node = eventBean.getNode();
-                    String agent = obj.getString("agent");
+                    agent = obj.getString("agent");
 
-                    Date date = new Date();
-
-                    JSONObject data = obj.getJSONObject("data");
+                    data = obj.getJSONObject("data");
 
                     int totalItems = data.getInt("totalItems");
 
-                    if (totalItems == 0) {
-                        break;
-                    }
-
-                    JSONArray arr = data.getJSONArray("items");
+                    if (totalItems == 0) break;
+                    
+                    arr = data.getJSONArray("items");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     for (int i = 0; i < arr.length(); i++) {
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date startScan = formatter.parse(arr.getJSONObject(i).getString("start_scan"));
                         Date endScan = formatter.parse(arr.getJSONObject(i).getString("end_scan"));
 
@@ -566,11 +645,12 @@ public class StatsManagement {
                     }
 
                     break;
-                }
 
-                case "vulnerability": {
+                case "vulnerability":
 
                     JSONObject jv = obj.getJSONObject("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     AgentVul v = new AgentVul();
 
@@ -591,8 +671,7 @@ public class StatsManagement {
                     v.setCvePublished(jv.getString("cve_published"));
                     v.setCveUpdated(jv.getString("cve_updated"));
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = formatter.parse(jv.getString("time_of_survey"));
+                    date = formatter.parse(jv.getString("time_of_survey"));
 
                     v.setReportAdded(date);
                     v.setReportUpdated(date);
@@ -615,11 +694,12 @@ public class StatsManagement {
                     }
 
                     break;
-                }
 
-                case "open-scap": {
+                case "open-scap":
 
                     JSONObject jc = obj.getJSONObject("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     AgentOpenscap ao = new AgentOpenscap();
 
@@ -642,8 +722,7 @@ public class StatsManagement {
                     ao.setCheckReferences(jc.getString("check_references"));
                     ao.setCheckIdentifiers(jc.getString("check_identifiers"));
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = formatter.parse(jc.getString("time_of_survey"));
+                    date = formatter.parse(jc.getString("time_of_survey"));
 
                     ao.setReportAdded(date);
                     ao.setReportUpdated(date);
@@ -667,16 +746,17 @@ public class StatsManagement {
 
                     break;
 
-                }
-
-                case "node_alerts": {
+                case "node_alerts":
 
                     JSONObject na = obj.getJSONObject("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     NodeAlerts node_alerts = new NodeAlerts();
 
                     node_alerts.setRefId(eventBean.getRefId());
-                    node_alerts.setNodeId(eventBean.getNode());
+                    node_alerts.setNode(eventBean.getNode());
+                    node_alerts.setProbe(eventBean.getProbe());
 
                     node_alerts.setCrsAgg(na.getLong("crs_agg"));
                     node_alerts.setCrsFilter(na.getLong("crs_filter"));
@@ -699,34 +779,26 @@ public class StatsManagement {
                     node_alerts.setNidsS2(na.getLong("nids_s2"));
                     node_alerts.setNidsS3(na.getLong("nids_s3"));
 
-                    node_alerts.setWafAgg(na.getLong("waf_agg"));
-                    node_alerts.setWafFilter(na.getLong("waf_filter"));
-                    node_alerts.setWafS0(na.getLong("waf_s0"));
-                    node_alerts.setWafS1(na.getLong("waf_s1"));
-                    node_alerts.setWafS2(na.getLong("waf_s2"));
-                    node_alerts.setWafS3(na.getLong("waf_s3"));
-
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = formatter.parse(na.getString("time_of_survey"));
+                    date = formatter.parse(na.getString("time_of_survey"));
                     node_alerts.setTimeOfSurvey(date);
 
                     eventBean.getNodeAlertsFacade().create(node_alerts);
 
                     break;
-                }
-
-                case "node_monitor": {
+                
+                case "node_monitor":
 
                     JSONObject nm = obj.getJSONObject("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     NodeMonitor node_monitor = new NodeMonitor();
 
                     node_monitor.setRefId(eventBean.getRefId());
-                    node_monitor.setNodeId(eventBean.getNode());
-
+                    node_monitor.setNode(eventBean.getNode());
+                    node_monitor.setProbe(eventBean.getProbe());
                     node_monitor.setEventsHids(nm.getLong("hids"));
                     node_monitor.setEventsNids(nm.getLong("nids"));
-                    node_monitor.setEventsWaf(nm.getLong("waf"));
                     node_monitor.setEventsMisc(nm.getLong("misc"));
                     node_monitor.setEventsCrs(nm.getLong("crs"));
                     node_monitor.setLogCounter(nm.getLong("log_counter"));
@@ -734,52 +806,52 @@ public class StatsManagement {
                     node_monitor.setStatCounter(nm.getLong("stat_counter"));
                     node_monitor.setStatVolume(nm.getLong("stat_volume"));
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = formatter.parse(nm.getString("time_of_survey"));
+                    date = formatter.parse(nm.getString("time_of_survey"));
                     node_monitor.setTimeOfSurvey(date);
 
                     eventBean.getNodeMonitorFacade().create(node_monitor);
 
                     break;
-                }
-
-                case "node_filters": {
+                
+                case "node_filters":
 
                     JSONObject nf = obj.getJSONObject("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     NodeFilters node_filters = new NodeFilters();
 
                     node_filters.setRefId(eventBean.getRefId());
-                    node_filters.setNodeId(eventBean.getNode());
-
+                    node_filters.setNode(eventBean.getNode());
+                    node_filters.setProbe(eventBean.getProbe());
                     node_filters.setAgentList(nf.getLong("agent_list"));
                     node_filters.setHnetList(nf.getLong("hnet_list"));
                     node_filters.setHidsFilters(nf.getLong("hids_filters"));
                     node_filters.setNidsFilters(nf.getLong("nids_filters"));
                     node_filters.setCrsFilters(nf.getLong("crs_filters"));
-                    node_filters.setWafFilters(nf.getLong("waf_filters"));
-
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = formatter.parse(nf.getString("time_of_survey"));
+                    
+                    date = formatter.parse(nf.getString("time_of_survey"));
                     node_filters.setTimeOfSurvey(date);
 
                     eventBean.getNodeFiltersFacade().create(node_filters);
 
                     break;
-                }
+                
+                case "net_stat": 
 
-                case "net_stat": {
-
-                    JSONArray arr = obj.getJSONArray("data");
+                    arr = obj.getJSONArray("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     for (int i = 0; i < arr.length(); i++) {
 
                         NetStat net_stat = new NetStat();
 
                         net_stat.setRefId(eventBean.getRefId());
-                        net_stat.setNodeId(eventBean.getNode());
-
-                        net_stat.setIds(arr.getJSONObject(i).getString("ids"));
+                        net_stat.setNode(eventBean.getNode());
+                        net_stat.setProbe(eventBean.getProbe());
+                        
+                        net_stat.setSensor(arr.getJSONObject(i).getString("ids"));
 
                         net_stat.setInvalid(arr.getJSONObject(i).getLong("invalid"));
 
@@ -821,15 +893,17 @@ public class StatsManagement {
 
                         net_stat.setIpv6InIpv6(arr.getJSONObject(i).getLong("ipv6_in_ipv6"));
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
+                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
                         net_stat.setTimeOfSurvey(date);
 
                         eventBean.getNetStatFacade().create(net_stat);
                     }
 
                     break;
-                }
+                    
+                default:
+                    break;
+                    
             }
         } catch (JSONException | ParseException | PersistenceException e) {
             logger.error("alertflex_ctrl_exception", e);
@@ -893,13 +967,226 @@ public class StatsManagement {
 
         eventBean.createAlert(a);
     }
+    
+    public void createNewContainerAlert(Container c) {
 
-    void updateFilters() {
+        Alert a = new Alert();
 
-        FiltersManagement fm = new FiltersManagement(eventBean);
+        a.setRefId(c.getRefId());
+        a.setNodeId(c.getNodeId());
+        a.setAlertUuid(UUID.randomUUID().toString());
 
-        if (fm.readFilters()) {
-            fm.uploadFilters();
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(c.getRefId(), "Alertflex");
+        int sev = ap.getSeverityDefault();
+        a.setAlertSeverity(sev);
+        a.setEventSeverity(Integer.toString(sev));
+
+        a.setAlertSource("Alertflex");
+        a.setAlertType("HOST");
+        a.setSensorId(c.getSensorName());
+
+        a.setDescription("new container in the system with id: " + c.getContainerId());
+        a.setEventId("2");
+        a.setLocation("Response from controller");
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("indef");
+        a.setInfo("");
+
+        a.setTimeEvent("");
+        a.setTimeCollr(c.getReportAdded());
+        a.setTimeCntrl(new Date());
+
+        a.setAgentName("indef");
+        a.setUserName("indef");
+        a.setCategories("new container");
+        a.setSrcIp("indef");
+        a.setDstIp("indef");
+        a.setDstPort(0);
+        a.setSrcPort(0);
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+    }
+    
+    public Boolean updateFilters(String ref, String nodeName) {
+        
+        String filterFile = "";
+        
+        Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
+        
+        if (node == null || node.getFiltersControl() == 0) return false;
+
+        pr.initNode(nodeName);
+
+        String filterPath = pr.getNodeDir() + "filters.json";
+
+        try {
+
+            filterFile = new String(Files.readAllBytes(Paths.get(filterPath)));
+
+        } catch (IOException e) {
+            logger.error("alertflex_ctrl_exception", e);
+            return false;
         }
+
+        JSONObject obj = new JSONObject(filterFile);
+
+        JSONArray hnets = new JSONArray();
+
+        List<HomeNetwork> listHnet = eventBean.getHomeNetworkFacade().findByRef(eventBean.getRefId());
+
+        if (listHnet == null) {
+            listHnet = new ArrayList();
+        }
+
+        for (int i = 0; i < listHnet.size(); i++) {
+
+            JSONObject net = new JSONObject();
+
+            net.put("network", listHnet.get(i).getNetwork());
+            net.put("netmask", listHnet.get(i).getNetmask());
+            net.put("node", listHnet.get(i).getNodeId());
+            net.put("alert_suppress", (boolean) (listHnet.get(i).getAlertSuppress() > 0));
+
+            hnets.put(net);
+        }
+
+        obj.putOpt("home_net", hnets);
+
+        JSONArray agents = new JSONArray();
+
+        List<Agent> listAgents = eventBean.getAgentFacade().findAgentsByNode(eventBean.getRefId(), eventBean.getNode());
+
+        if (listAgents == null) {
+            listAgents = new ArrayList();
+        }
+
+        for (int i = 0; i < listAgents.size(); i++) {
+
+            JSONObject al = new JSONObject();
+
+            al.put("id", listAgents.get(i).getAgentId());
+            al.put("ip", listAgents.get(i).getIp());
+            al.put("name", listAgents.get(i).getName());
+            
+            agents.put(al);
+        }
+
+        obj.putOpt("agents", agents);
+
+        filterFile = obj.toString();
+        
+        if (filterFile.isEmpty()) return false;
+        
+        List<String> listProbes = eventBean.getSensorFacade().findProbeNamesByNode(eventBean.getRefId(), eventBean.getNode());
+            
+        if (listProbes != null) {
+            for (String probe : listProbes) {
+                if (!probe.equals(eventBean.probe)) {
+                    if (!uploadFilters(eventBean.getNode(), probe, filterFile)) return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean uploadFilters(String node, String probe, String filters) {
+        
+        try {
+
+            String strConnFactory = System.getProperty("AmqUrl", "");
+            String user = System.getProperty("AmqUser", "");
+            String pass = System.getProperty("AmqPwd", "");
+
+            // Create a ConnectionFactory
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
+
+            // Create a Connection
+            Connection connection = connectionFactory.createConnection(user, pass);
+            connection.start();
+
+            // Create a Session
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+            // Create the destination (Topic or Queue)
+            Destination destination = session.createQueue("jms/altprobe/" + node + "/" + probe);
+
+            // Create a MessageProducer from the Session to the Topic or Queue
+            MessageProducer producer = session.createProducer(destination);
+            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            
+            // create tmp query for response   
+            Destination tempDest = session.createTemporaryQueue();
+            MessageConsumer responseConsumer = session.createConsumer(tempDest);
+
+            BytesMessage message = session.createBytesMessage();
+            
+            message.setStringProperty("ref_id", project.getRefId());
+            message.setStringProperty("content_type", "filters");
+            
+            // send a request..
+            message.setJMSReplyTo(tempDest);
+            String correlationId = UUID.randomUUID().toString();
+            message.setJMSCorrelationID(correlationId);
+            
+            byte[] sompFilters = compress(filters);
+
+            message.writeBytes(sompFilters);
+            producer.send(message);
+            
+            // read response
+            javax.jms.Message response = responseConsumer.receive(TIMEOUT);
+                
+            String res = "";
+
+            if (response != null && response instanceof TextMessage) {
+                res = ((TextMessage) response).getText();
+            } else {
+                session.close();
+                connection.close();
+                return false;
+            }
+
+            // Clean up
+            session.close();
+            connection.close();
+
+        } catch (IOException | JMSException e) {
+            logger.error("alertflex_ctrl_exception", e);
+            return false;
+        }
+        
+        return true;
+    }
+
+    public byte[] compress(String str) throws IOException {
+
+        if ((str == null) || (str.length() == 0)) {
+            return null;
+        }
+
+        ByteArrayOutputStream obj = new ByteArrayOutputStream();
+        GZIPOutputStream gzip = new GZIPOutputStream(obj);
+        gzip.write(str.getBytes("UTF-8"));
+        gzip.flush();
+        gzip.close();
+        return obj.toByteArray();
     }
 }

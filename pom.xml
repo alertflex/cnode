@@ -12,6 +12,6 @@
 	<modules>
 		<module>elasticshade</module>
         <module>controller</module>
-    </modules>
+	</modules>
 	
 </project>
