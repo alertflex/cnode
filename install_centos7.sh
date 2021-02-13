@@ -30,7 +30,6 @@ sudo cp ./reports/alerts_subrep2.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep3.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 sudo mkdir -p $PROJECT_PATH/filters
-sudo cp ./configs/filters_v0.json $PROJECT_PATH/filters/
 sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
@@ -88,6 +87,7 @@ sudo mysql -u root --password="$temp_password" --connect-expired-password < rese
 sudo bash -c "echo 'sql_mode=\"STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"' >> /etc/my.cnf"
 
 sudo sed -i "s|_project_id|$PROJECT_ID|g" ./configs/alertflex.sql
+sudo sed -i "s|_project_id|$PROJECT_ID|g" ./configs/filters_v0.json
 sudo sed -i "s|_project_name|$PROJECT_NAME|g" ./configs/alertflex.sql
 sudo sed -i "s|_project_path|$PROJECT_PATH|g" ./configs/alertflex.sql
 sudo sed -i "s/_project_user/$ADMIN_USER/g" ./configs/alertflex.sql
@@ -95,6 +95,8 @@ sudo sed -i "s/_project_pwd/$ADMIN_PWD/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
+
+sudo cp ./configs/filters_v0.json $PROJECT_PATH/filters/
 
 if [[ $INSTALL_MISP == no ]]
 then
