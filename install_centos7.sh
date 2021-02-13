@@ -30,6 +30,7 @@ sudo cp ./reports/alerts_subrep2.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep3.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/alerts_subrep4.jasper $PROJECT_PATH/reports/
 sudo mkdir -p $PROJECT_PATH/filters
+sudo cp ./configs/filters_v0.json $PROJECT_PATH/filters/
 sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
@@ -70,10 +71,6 @@ sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
-echo "*** installation Redis ***"
-sudo yum -y install redis 
-sudo systemctl enable redis
-
 echo "*** Installation Maven ***"
 sudo yum -y install maven
 
@@ -98,74 +95,6 @@ sudo sed -i "s/_project_pwd/$ADMIN_PWD/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
-
-if [[ $INSTALL_ZAP == yes ]]
-then
-	echo "*** Installation OWASP ZAP ***"
-	wget https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/ZAP_2.9.0_Linux.tar.gz
-	tar zxf ZAP_2.9.0_Linux.tar.gz
-	sudo mv ./ZAP_2.9.0 /opt/zap
-	
-	sudo bash -c 'cat << EOF > /lib/systemd/system/zap.service
-[Unit]
-Description=OWASP ZAP Proxy
-After=syslog.target network-online.target
-
-[Service]
-ExecStart=/opt/zap/zap.sh -daemon -host 127.0.0.1 -port 8090 -config api.disablekey=true
-PrivateTmp=true
-
-[Install]
-WantedBy=default.target
-EOF'
-	sudo systemctl enable zap
-	sudo sed -i "s/_zap_host/localhost/g" ./configs/alertflex.sql
-else
-	sudo sed -i "s/_zap_host/indef/g" ./configs/alertflex.sql
-fi
-
-if [[ $INSTALL_NMAP == yes ]]
-then
-	echo "*** Installation Nmap ***"
-	sudo yum -y install nmap
-fi
-
-if [[ $INSTALL_GRAFANA == yes ]]
-then
-	echo "*** Installation Grafana ***"
-	sudo touch /etc/yum.repos.d/grafana.repo
-	sudo bash -c 'cat << EOF > /etc/yum.repos.d/grafana.repo
-[grafana]
-name=grafana
-baseurl=https://packages.grafana.com/oss/rpm
-repo_gpgcheck=1
-enabled=1
-gpgcheck=1
-gpgkey=https://packages.grafana.com/gpg.key
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-EOF'
-	sudo yum -y update
-	sudo yum -y install grafana
-	sudo systemctl daemon-reload
-	sudo systemctl enable grafana-server
-	sudo sed -i "s/_grafana_pwd/$DB_PWD/g" ./configs/grafana.ini
-	sudo cp ./configs/grafana.ini /etc/grafana
-	sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/grafana-db.sql
-	sudo mysql -u root -p$DB_PWD < ./configs/grafana-db.sql
-	sudo sed -i "s/_db_user/$DB_USER/g" ./configs/datasource.yaml
-	sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/datasource.yaml
-	sudo cp ./configs/datasource.yaml /etc/grafana/provisioning/datasources
-	sudo mkdir /var/lib/grafana/dashboards
-	sudo cp ./configs/dashboards/alertflex.yaml /etc/grafana/provisioning/dashboards
-	sudo cp ./configs/dashboards/alert_dashboard.json /var/lib/grafana/dashboards
-	sudo chown -R grafana:grafana /var/lib/grafana/dashboards
-	sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out /etc/grafana/grafana.p12 -passout pass:
-	sudo openssl pkcs12 -in /etc/grafana/grafana.p12 -nodes -out /etc/grafana/grafana.pem -passin pass:
-	sudo cp /etc/nginx/ssl/nginx.key /etc/grafana/grafana.key
-	sudo chown -R grafana:grafana /etc/grafana/grafana.key
-	sudo chown -R grafana:grafana /etc/grafana/grafana.pem
-fi
 
 if [[ $INSTALL_MISP == no ]]
 then
@@ -199,8 +128,8 @@ fi
 
 echo "*** Installation Activemq ***"
 cd /opt
-FILE=apache-activemq-5.16.0-bin.tar.gz
-sudo wget https://archive.apache.org/dist/activemq/5.16.0/$FILE
+FILE=apache-activemq-5.16.1-bin.tar.gz
+sudo wget https://archive.apache.org/dist/activemq/5.16.1/$FILE
 if [[ -f "$FILE" ]]
 then
     echo "$FILE exist"
@@ -209,7 +138,7 @@ else
 	exit 1
 fi
 sudo tar xvzf $FILE
-sudo ln -s /opt/apache-activemq-5.16.0 /opt/activemq
+sudo ln -s /opt/apache-activemq-5.16.1 /opt/activemq
 
 sudo sed -i "s/_admin_pwd/$ADMIN_PWD/g" $INSTALL_PATH/configs/jetty-realm.properties
 sudo cp $INSTALL_PATH/configs/jetty-realm.properties /opt/activemq/conf
@@ -302,8 +231,8 @@ jaas-context=jdbcRealm:datasource-jndi="jdbc/alertflex_auth_jndi":group-table=gr
 user-table=users:digestrealm-password-enc-algorithm=AES:digest-algorithm=SHA-256:encoding=Hex:charset=UTF-8 JDBCRealm
 
 echo "* Installion ActiveMQ resource *"
-sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.0/activemq-rar-5.16.0.rar
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy --type rar --name activemq-rar ./activemq-rar-5.16.0.rar
+sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.1/activemq-rar-5.16.1.rar
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy --type rar --name activemq-rar ./activemq-rar-5.16.1.rar
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-resource-adapter-config --threadpoolid thread-pool-1 --property ServerUrl=\"tcp://localhost:61616\":UserName=$AMQ_USER:Password=$AMQ_PWD activemq-rar
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-connector-connection-pool --raname activemq-rar --connectiondefinition javax.jms.ConnectionFactory --ping true jms/activeMQConnectionFactory-Connection-Pool
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-connector-resource --poolname jms/activeMQConnectionFactory-Connection-Pool --enabled true jms/activeMQConnectionFactory

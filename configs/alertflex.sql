@@ -182,16 +182,15 @@ CREATE TABLE `project` (
   `jira_project` varchar(512) NOT NULL DEFAULT '',
   `jira_type` varchar(512) NOT NULL DEFAULT '',
   `vt_key` varchar(512) NOT NULL DEFAULT '',
-  `sms_account` varchar(512) NOT NULL DEFAULT '',
-  `sms_token` varchar(512) NOT NULL DEFAULT '',
-  `sms_from` varchar(512) NOT NULL DEFAULT '',
+  `twiliosms_account` varchar(512) NOT NULL DEFAULT '',
+  `twiliosms_token` varchar(512) NOT NULL DEFAULT '',
+  `twiliosms_from` varchar(512) NOT NULL DEFAULT '',
+  `twiliomail_key` varchar(512) NOT NULL DEFAULT '',
+  `twiliomail_from` varchar(512) NOT NULL DEFAULT '',
   `slack_hook` varchar(512) NOT NULL DEFAULT '',
   `zap_host` varchar(512) NOT NULL DEFAULT '',
   `zap_port` int(10) unsigned NOT NULL DEFAULT '0',
   `zap_key` varchar(512) NOT NULL DEFAULT '',
-  `nessus_url` varchar(512) NOT NULL DEFAULT '',
-  `nessus_accesskey` varchar(512) NOT NULL DEFAULT '',
-  `nessus_secretkey` varchar(512) NOT NULL DEFAULT '',
   `cuckoo_host` varchar(512) NOT NULL DEFAULT '',
   `cuckoo_port` int(10) unsigned NOT NULL DEFAULT '0',
   `falcon_url` varchar(512) NOT NULL DEFAULT '',
@@ -208,7 +207,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -730,22 +729,6 @@ CREATE TABLE `nmap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `nessus_scan` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `scan_name` varchar(512) NOT NULL DEFAULT '',
-  `count` int(10) unsigned NOT NULL DEFAULT '0',
-  `vuln_index` int(10) unsigned NOT NULL DEFAULT '0',
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
-  `severity_index` int(10) unsigned NOT NULL DEFAULT '0',
-  `plugin_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `plugin_name` varchar(1024) NOT NULL DEFAULT '',
-  `plugin_family` varchar(512) NOT NULL DEFAULT '',
-  `report_added` datetime DEFAULT NULL,
-  `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `docker_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `node_id` varchar(128) NOT NULL DEFAULT '',
@@ -814,18 +797,17 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severit
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (2,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (3,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (4,'_project_id','Nmap','Nmap', 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (5,'_project_id','Nessus','Nessus', 1, 2, 3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (6,'_project_id','Misc','Misc', 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','MISP','MISP', 3, 2, 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (8,'_project_id','RITA','RITA', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (9,'_project_id','Syslog','Syslog', 'Warning', 'Error', 'Critical', 'Alert', 'Emergency', 1,2,3,3,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (10,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (11,'_project_id','ZAP','ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (12,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (13,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (14,'_project_id','Falco','Falco', 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (15,'_project_id','Suricata','Suricata', 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (16,'_project_id','Wazuh','Wazuh', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (5,'_project_id','Misc','Misc', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (6,'_project_id','MISP','MISP', 3, 2, 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','RITA','RITA', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (8,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (9,'_project_id','ZAP','ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (10,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (11,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (12,'_project_id','AnomalyDetection','AnomalyDetection', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (13,'_project_id','Falco','Falco', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (14,'_project_id','Suricata','Suricata', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (15,'_project_id','Wazuh','Wazuh', 0, 0);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

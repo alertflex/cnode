@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
- 
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -27,6 +17,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "project")
 @XmlRootElement
@@ -64,16 +58,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findByJiraProject", query = "SELECT p FROM Project p WHERE p.jiraProject = :jiraProject")
     , @NamedQuery(name = "Project.findByJiraType", query = "SELECT p FROM Project p WHERE p.jiraType = :jiraType")
     , @NamedQuery(name = "Project.findByVtKey", query = "SELECT p FROM Project p WHERE p.vtKey = :vtKey")
-    , @NamedQuery(name = "Project.findBySmsAccount", query = "SELECT p FROM Project p WHERE p.smsAccount = :smsAccount")
-    , @NamedQuery(name = "Project.findBySmsToken", query = "SELECT p FROM Project p WHERE p.smsToken = :smsToken")
-    , @NamedQuery(name = "Project.findBySmsFrom", query = "SELECT p FROM Project p WHERE p.smsFrom = :smsFrom")
+    , @NamedQuery(name = "Project.findByTwiliosmsAccount", query = "SELECT p FROM Project p WHERE p.twiliosmsAccount = :twiliosmsAccount")
+    , @NamedQuery(name = "Project.findByTwiliosmsToken", query = "SELECT p FROM Project p WHERE p.twiliosmsToken = :twiliosmsToken")
+    , @NamedQuery(name = "Project.findByTwiliosmsFrom", query = "SELECT p FROM Project p WHERE p.twiliosmsFrom = :twiliosmsFrom")
+    , @NamedQuery(name = "Project.findByTwiliomailKey", query = "SELECT p FROM Project p WHERE p.twiliomailKey = :twiliomailKey")
+    , @NamedQuery(name = "Project.findByTwiliomailFrom", query = "SELECT p FROM Project p WHERE p.twiliomailFrom = :twiliomailFrom")
     , @NamedQuery(name = "Project.findBySlackHook", query = "SELECT p FROM Project p WHERE p.slackHook = :slackHook")
     , @NamedQuery(name = "Project.findByZapHost", query = "SELECT p FROM Project p WHERE p.zapHost = :zapHost")
     , @NamedQuery(name = "Project.findByZapPort", query = "SELECT p FROM Project p WHERE p.zapPort = :zapPort")
     , @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey")
-    , @NamedQuery(name = "Project.findByNessusUrl", query = "SELECT p FROM Project p WHERE p.nessusUrl = :nessusUrl")
-    , @NamedQuery(name = "Project.findByNessusAccesskey", query = "SELECT p FROM Project p WHERE p.nessusAccesskey = :nessusAccesskey")
-    , @NamedQuery(name = "Project.findByNessusSecretkey", query = "SELECT p FROM Project p WHERE p.nessusSecretkey = :nessusSecretkey")
     , @NamedQuery(name = "Project.findByCuckooHost", query = "SELECT p FROM Project p WHERE p.cuckooHost = :cuckooHost")
     , @NamedQuery(name = "Project.findByCuckooPort", query = "SELECT p FROM Project p WHERE p.cuckooPort = :cuckooPort")
     , @NamedQuery(name = "Project.findByFalconUrl", query = "SELECT p FROM Project p WHERE p.falconUrl = :falconUrl")
@@ -242,18 +235,28 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "sms_account")
-    private String smsAccount;
+    @Column(name = "twiliosms_account")
+    private String twiliosmsAccount;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "sms_token")
-    private String smsToken;
+    @Column(name = "twiliosms_token")
+    private String twiliosmsToken;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "sms_from")
-    private String smsFrom;
+    @Column(name = "twiliosms_from")
+    private String twiliosmsFrom;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "twiliomail_key")
+    private String twiliomailKey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "twiliomail_from")
+    private String twiliomailFrom;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -273,21 +276,6 @@ public class Project implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "zap_key")
     private String zapKey;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "nessus_url")
-    private String nessusUrl;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "nessus_accesskey")
-    private String nessusAccesskey;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "nessus_secretkey")
-    private String nessusSecretkey;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -360,7 +348,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String smsAccount, String smsToken, String smsFrom, String slackHook, String zapHost, int zapPort, String zapKey, String nessusUrl, String nessusAccesskey, String nessusSecretkey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom, String comprehendArn, String awsRegion) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String zapHost, int zapPort, String zapKey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom, String comprehendArn, String awsRegion) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -393,16 +381,15 @@ public class Project implements Serializable {
         this.jiraProject = jiraProject;
         this.jiraType = jiraType;
         this.vtKey = vtKey;
-        this.smsAccount = smsAccount;
-        this.smsToken = smsToken;
-        this.smsFrom = smsFrom;
+        this.twiliosmsAccount = twiliosmsAccount;
+        this.twiliosmsToken = twiliosmsToken;
+        this.twiliosmsFrom = twiliosmsFrom;
+        this.twiliomailKey = twiliomailKey;
+        this.twiliomailFrom = twiliomailFrom;
         this.slackHook = slackHook;
         this.zapHost = zapHost;
         this.zapPort = zapPort;
         this.zapKey = zapKey;
-        this.nessusUrl = nessusUrl;
-        this.nessusAccesskey = nessusAccesskey;
-        this.nessusSecretkey = nessusSecretkey;
         this.cuckooHost = cuckooHost;
         this.cuckooPort = cuckooPort;
         this.falconUrl = falconUrl;
@@ -674,28 +661,44 @@ public class Project implements Serializable {
         this.vtKey = vtKey;
     }
 
-    public String getSmsAccount() {
-        return smsAccount;
+    public String getTwiliosmsAccount() {
+        return twiliosmsAccount;
     }
 
-    public void setSmsAccount(String smsAccount) {
-        this.smsAccount = smsAccount;
+    public void setTwiliosmsAccount(String twiliosmsAccount) {
+        this.twiliosmsAccount = twiliosmsAccount;
     }
 
-    public String getSmsToken() {
-        return smsToken;
+    public String getTwiliosmsToken() {
+        return twiliosmsToken;
     }
 
-    public void setSmsToken(String smsToken) {
-        this.smsToken = smsToken;
+    public void setTwiliosmsToken(String twiliosmsToken) {
+        this.twiliosmsToken = twiliosmsToken;
     }
 
-    public String getSmsFrom() {
-        return smsFrom;
+    public String getTwiliosmsFrom() {
+        return twiliosmsFrom;
     }
 
-    public void setSmsFrom(String smsFrom) {
-        this.smsFrom = smsFrom;
+    public void setTwiliosmsFrom(String twiliosmsFrom) {
+        this.twiliosmsFrom = twiliosmsFrom;
+    }
+
+    public String getTwiliomailKey() {
+        return twiliomailKey;
+    }
+
+    public void setTwiliomailKey(String twiliomailKey) {
+        this.twiliomailKey = twiliomailKey;
+    }
+
+    public String getTwiliomailFrom() {
+        return twiliomailFrom;
+    }
+
+    public void setTwiliomailFrom(String twiliomailFrom) {
+        this.twiliomailFrom = twiliomailFrom;
     }
 
     public String getSlackHook() {
@@ -728,30 +731,6 @@ public class Project implements Serializable {
 
     public void setZapKey(String zapKey) {
         this.zapKey = zapKey;
-    }
-
-    public String getNessusUrl() {
-        return nessusUrl;
-    }
-
-    public void setNessusUrl(String nessusUrl) {
-        this.nessusUrl = nessusUrl;
-    }
-
-    public String getNessusAccesskey() {
-        return nessusAccesskey;
-    }
-
-    public void setNessusAccesskey(String nessusAccesskey) {
-        this.nessusAccesskey = nessusAccesskey;
-    }
-
-    public String getNessusSecretkey() {
-        return nessusSecretkey;
-    }
-
-    public void setNessusSecretkey(String nessusSecretkey) {
-        this.nessusSecretkey = nessusSecretkey;
     }
 
     public String getCuckooHost() {

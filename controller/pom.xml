@@ -7,7 +7,7 @@
     <version>ctrl</version>
     <packaging>war</packaging>
 
-    <name>alertflex-ctrl_v51</name>
+    <name>alertflex-ctrl_v53</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20150729</version>
+            <version>20201115</version>
         </dependency>
         
         <dependency>

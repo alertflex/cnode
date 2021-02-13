@@ -32,15 +32,13 @@ export DB_PWD=*****
 # install add-on packages #
 ###########################
 
+export INSTALL_MC=yes
+
 # MISP parameters, for MISP_URL use ip or url a hostname the same as for ALERTFLEX_HOST
 export INSTALL_MISP=yes
 export MISP_URL='xxxxx:8443'
 export MISP_GPG='xxxxxxxxxxxxxxxxxxxxxxxxx'
 
-export INSTALL_MC=yes
-export INSTALL_GRAFANA=no
-export INSTALL_NMAP=no
-export INSTALL_ZAP=no
 
 
 

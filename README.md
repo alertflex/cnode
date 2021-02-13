@@ -1,6 +1,6 @@
 The repository includes Alertflex controller source code, a common installation script and configs files for Alertflex central node, the MISP docker install script.
 
-Alertflex works as a security event manager and implements XDR and SOAR technology stack based on integration with third-party cybersecurity products (more than 20 are integrated at the moment).
+Alertflex works as a security event manager and implements the SOAR technology stack based on integration with third-party cybersecurity products (more than 20 are integrated at the moment).
 
 For more information, please see the [Alertflex project documentation](https://alertflex.org/doc/index.html)
 	
