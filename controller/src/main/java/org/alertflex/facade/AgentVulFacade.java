@@ -37,7 +37,7 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
         super(AgentVul.class);
     }
 
-    public AgentVul findVulnerability(String ref, String node, String agent, String cve, String pkgs) {
+    public AgentVul findVulnerability(String ref, String node, String agent, String vuln, String pkg) {
 
         AgentVul v;
 
@@ -45,12 +45,12 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
             em.flush();
 
             Query vQry = em.createQuery(
-                    "SELECT a FROM AgentVul a WHERE .refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.cve = :cve AND a.packageName = :pkgs")
+                    "SELECT a FROM AgentVul a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.vulnerability = :vuln AND a.pkgName = :pkg")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("agent", agent)
-                    .setParameter("cve", cve)
-                    .setParameter("pkgs", pkgs);
+                    .setParameter("vuln", vuln)
+                    .setParameter("pkg", pkg);
             vQry.setMaxResults(1);
             // Enable forced database query
             vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

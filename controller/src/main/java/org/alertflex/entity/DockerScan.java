@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,23 +22,26 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "docker_scan")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "DockerScan.findAll", query = "SELECT d FROM DockerScan d")
-    , @NamedQuery(name = "DockerScan.findByRecId", query = "SELECT d FROM DockerScan d WHERE d.recId = :recId")
-    , @NamedQuery(name = "DockerScan.findByNodeId", query = "SELECT d FROM DockerScan d WHERE d.nodeId = :nodeId")
-    , @NamedQuery(name = "DockerScan.findByRefId", query = "SELECT d FROM DockerScan d WHERE d.refId = :refId")
-    , @NamedQuery(name = "DockerScan.findBySensor", query = "SELECT d FROM DockerScan d WHERE d.sensor = :sensor")
-    , @NamedQuery(name = "DockerScan.findByTestDesc", query = "SELECT d FROM DockerScan d WHERE d.testDesc = :testDesc")
-    , @NamedQuery(name = "DockerScan.findByResultId", query = "SELECT d FROM DockerScan d WHERE d.resultId = :resultId")
-    , @NamedQuery(name = "DockerScan.findByResultDesc", query = "SELECT d FROM DockerScan d WHERE d.resultDesc = :resultDesc")
-    , @NamedQuery(name = "DockerScan.findByResult", query = "SELECT d FROM DockerScan d WHERE d.result = :result")
-    , @NamedQuery(name = "DockerScan.findBySeverity", query = "SELECT d FROM DockerScan d WHERE d.severity = :severity")
-    , @NamedQuery(name = "DockerScan.findByDetails", query = "SELECT d FROM DockerScan d WHERE d.details = :details")
-    , @NamedQuery(name = "DockerScan.findByReportAdded", query = "SELECT d FROM DockerScan d WHERE d.reportAdded = :reportAdded")
-    , @NamedQuery(name = "DockerScan.findByReportUpdated", query = "SELECT d FROM DockerScan d WHERE d.reportUpdated = :reportUpdated")})
+    @NamedQuery(name = "DockerScan.findAll", query = "SELECT d FROM DockerScan d"),
+    @NamedQuery(name = "DockerScan.findByRecId", query = "SELECT d FROM DockerScan d WHERE d.recId = :recId"),
+    @NamedQuery(name = "DockerScan.findByNodeId", query = "SELECT d FROM DockerScan d WHERE d.nodeId = :nodeId"),
+    @NamedQuery(name = "DockerScan.findByRefId", query = "SELECT d FROM DockerScan d WHERE d.refId = :refId"),
+    @NamedQuery(name = "DockerScan.findByProbe", query = "SELECT d FROM DockerScan d WHERE d.probe = :probe"),
+    @NamedQuery(name = "DockerScan.findByTestDesc", query = "SELECT d FROM DockerScan d WHERE d.testDesc = :testDesc"),
+    @NamedQuery(name = "DockerScan.findByResultId", query = "SELECT d FROM DockerScan d WHERE d.resultId = :resultId"),
+    @NamedQuery(name = "DockerScan.findByResultDesc", query = "SELECT d FROM DockerScan d WHERE d.resultDesc = :resultDesc"),
+    @NamedQuery(name = "DockerScan.findByResult", query = "SELECT d FROM DockerScan d WHERE d.result = :result"),
+    @NamedQuery(name = "DockerScan.findByDetails", query = "SELECT d FROM DockerScan d WHERE d.details = :details"),
+    @NamedQuery(name = "DockerScan.findByReportAdded", query = "SELECT d FROM DockerScan d WHERE d.reportAdded = :reportAdded"),
+    @NamedQuery(name = "DockerScan.findByReportUpdated", query = "SELECT d FROM DockerScan d WHERE d.reportUpdated = :reportUpdated")})
 public class DockerScan implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -70,8 +63,8 @@ public class DockerScan implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "sensor")
-    private String sensor;
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -94,10 +87,6 @@ public class DockerScan implements Serializable {
     private String result;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "severity")
-    private int severity;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 1024)
     @Column(name = "details")
     private String details;
@@ -115,16 +104,15 @@ public class DockerScan implements Serializable {
         this.recId = recId;
     }
 
-    public DockerScan(Long recId, String nodeId, String refId, String sensor, String testDesc, String resultId, String resultDesc, String result, int severity, String details) {
+    public DockerScan(Long recId, String nodeId, String refId, String probe, String testDesc, String resultId, String resultDesc, String result, String details) {
         this.recId = recId;
         this.nodeId = nodeId;
         this.refId = refId;
-        this.sensor = sensor;
+        this.probe = probe;
         this.testDesc = testDesc;
         this.resultId = resultId;
         this.resultDesc = resultDesc;
         this.result = result;
-        this.severity = severity;
         this.details = details;
     }
 
@@ -152,12 +140,12 @@ public class DockerScan implements Serializable {
         this.refId = refId;
     }
 
-    public String getSensor() {
-        return sensor;
+    public String getProbe() {
+        return probe;
     }
 
-    public void setSensor(String sensor) {
-        this.sensor = sensor;
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public String getTestDesc() {
@@ -190,14 +178,6 @@ public class DockerScan implements Serializable {
 
     public void setResult(String result) {
         this.result = result;
-    }
-
-    public int getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(int severity) {
-        this.severity = severity;
     }
 
     public String getDetails() {
@@ -248,5 +228,5 @@ public class DockerScan implements Serializable {
     public String toString() {
         return "org.alertflex.entity.DockerScan[ recId=" + recId + " ]";
     }
-
+    
 }

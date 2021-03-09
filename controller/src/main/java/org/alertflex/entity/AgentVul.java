@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,29 +22,28 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "agent_vul")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AgentVul.findAll", query = "SELECT a FROM AgentVul a")
-    , @NamedQuery(name = "AgentVul.findByRecId", query = "SELECT a FROM AgentVul a WHERE a.recId = :recId")
-    , @NamedQuery(name = "AgentVul.findByNodeId", query = "SELECT a FROM AgentVul a WHERE a.nodeId = :nodeId")
-    , @NamedQuery(name = "AgentVul.findByRefId", query = "SELECT a FROM AgentVul a WHERE a.refId = :refId")
-    , @NamedQuery(name = "AgentVul.findByAgent", query = "SELECT a FROM AgentVul a WHERE a.agent = :agent")
-    , @NamedQuery(name = "AgentVul.findByEvent", query = "SELECT a FROM AgentVul a WHERE a.event = :event")
-    , @NamedQuery(name = "AgentVul.findBySeverity", query = "SELECT a FROM AgentVul a WHERE a.severity = :severity")
-    , @NamedQuery(name = "AgentVul.findByDescription", query = "SELECT a FROM AgentVul a WHERE a.description = :description")
-    , @NamedQuery(name = "AgentVul.findByCve", query = "SELECT a FROM AgentVul a WHERE a.cve = :cve")
-    , @NamedQuery(name = "AgentVul.findByCveState", query = "SELECT a FROM AgentVul a WHERE a.cveState = :cveState")
-    , @NamedQuery(name = "AgentVul.findByCveSeverity", query = "SELECT a FROM AgentVul a WHERE a.cveSeverity = :cveSeverity")
-    , @NamedQuery(name = "AgentVul.findByReference", query = "SELECT a FROM AgentVul a WHERE a.reference = :reference")
-    , @NamedQuery(name = "AgentVul.findByPackageName", query = "SELECT a FROM AgentVul a WHERE a.packageName = :packageName")
-    , @NamedQuery(name = "AgentVul.findByPackageVersion", query = "SELECT a FROM AgentVul a WHERE a.packageVersion = :packageVersion")
-    , @NamedQuery(name = "AgentVul.findByPackageCondition", query = "SELECT a FROM AgentVul a WHERE a.packageCondition = :packageCondition")
-    , @NamedQuery(name = "AgentVul.findByCvePublished", query = "SELECT a FROM AgentVul a WHERE a.cvePublished = :cvePublished")
-    , @NamedQuery(name = "AgentVul.findByCveUpdated", query = "SELECT a FROM AgentVul a WHERE a.cveUpdated = :cveUpdated")
-    , @NamedQuery(name = "AgentVul.findByReportAdded", query = "SELECT a FROM AgentVul a WHERE a.reportAdded = :reportAdded")
-    , @NamedQuery(name = "AgentVul.findByReportUpdated", query = "SELECT a FROM AgentVul a WHERE a.reportUpdated = :reportUpdated")})
+    @NamedQuery(name = "AgentVul.findAll", query = "SELECT a FROM AgentVul a"),
+    @NamedQuery(name = "AgentVul.findByRecId", query = "SELECT a FROM AgentVul a WHERE a.recId = :recId"),
+    @NamedQuery(name = "AgentVul.findByRefId", query = "SELECT a FROM AgentVul a WHERE a.refId = :refId"),
+    @NamedQuery(name = "AgentVul.findByNodeId", query = "SELECT a FROM AgentVul a WHERE a.nodeId = :nodeId"),
+    @NamedQuery(name = "AgentVul.findByAgent", query = "SELECT a FROM AgentVul a WHERE a.agent = :agent"),
+    @NamedQuery(name = "AgentVul.findByPkgName", query = "SELECT a FROM AgentVul a WHERE a.pkgName = :pkgName"),
+    @NamedQuery(name = "AgentVul.findByPkgVersion", query = "SELECT a FROM AgentVul a WHERE a.pkgVersion = :pkgVersion"),
+    @NamedQuery(name = "AgentVul.findByVulnerability", query = "SELECT a FROM AgentVul a WHERE a.vulnerability = :vulnerability"),
+    @NamedQuery(name = "AgentVul.findByTitle", query = "SELECT a FROM AgentVul a WHERE a.title = :title"),
+    @NamedQuery(name = "AgentVul.findByDescription", query = "SELECT a FROM AgentVul a WHERE a.description = :description"),
+    @NamedQuery(name = "AgentVul.findByVulnRef", query = "SELECT a FROM AgentVul a WHERE a.vulnRef = :vulnRef"),
+    @NamedQuery(name = "AgentVul.findBySeverity", query = "SELECT a FROM AgentVul a WHERE a.severity = :severity"),
+    @NamedQuery(name = "AgentVul.findByReportAdded", query = "SELECT a FROM AgentVul a WHERE a.reportAdded = :reportAdded"),
+    @NamedQuery(name = "AgentVul.findByReportUpdated", query = "SELECT a FROM AgentVul a WHERE a.reportUpdated = :reportUpdated")})
 public class AgentVul implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,14 +54,14 @@ public class AgentVul implements Serializable {
     private Long recId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 150)
     @Column(name = "ref_id")
     private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "node_id")
+    private String nodeId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -80,62 +69,39 @@ public class AgentVul implements Serializable {
     private String agent;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "event")
-    private int event;
+    @Size(min = 1, max = 512)
+    @Column(name = "pkg_name")
+    private String pkgName;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "severity")
-    private int severity;
+    @Size(min = 1, max = 512)
+    @Column(name = "pkg_version")
+    private String pkgVersion;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "vulnerability")
+    private String vulnerability;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
+    @Column(name = "title")
+    private String title;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2048)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
-    @Column(name = "cve")
-    private String cve;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "cve_state")
-    private String cveState;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "cve_severity")
-    private String cveSeverity;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "reference")
-    private String reference;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "package_name")
-    private String packageName;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "package_version")
-    private String packageVersion;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "package_condition")
-    private String packageCondition;
+    @Column(name = "vuln_ref")
+    private String vulnRef;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "cve_published")
-    private String cvePublished;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "cve_updated")
-    private String cveUpdated;
+    @Column(name = "severity")
+    private String severity;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -150,23 +116,18 @@ public class AgentVul implements Serializable {
         this.recId = recId;
     }
 
-    public AgentVul(Long recId, String nodeId, String refId, String agent, int event, int severity, String description, String cve, String cveState, String cveSeverity, String reference, String packageName, String packageVersion, String packageCondition, String cvePublished, String cveUpdated) {
+    public AgentVul(Long recId, String refId, String nodeId, String agent, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
         this.recId = recId;
-        this.nodeId = nodeId;
         this.refId = refId;
+        this.nodeId = nodeId;
         this.agent = agent;
-        this.event = event;
-        this.severity = severity;
+        this.pkgName = pkgName;
+        this.pkgVersion = pkgVersion;
+        this.vulnerability = vulnerability;
+        this.title = title;
         this.description = description;
-        this.cve = cve;
-        this.cveState = cveState;
-        this.cveSeverity = cveSeverity;
-        this.reference = reference;
-        this.packageName = packageName;
-        this.packageVersion = packageVersion;
-        this.packageCondition = packageCondition;
-        this.cvePublished = cvePublished;
-        this.cveUpdated = cveUpdated;
+        this.vulnRef = vulnRef;
+        this.severity = severity;
     }
 
     public Long getRecId() {
@@ -177,20 +138,20 @@ public class AgentVul implements Serializable {
         this.recId = recId;
     }
 
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
     public String getRefId() {
         return refId;
     }
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getAgent() {
@@ -201,20 +162,36 @@ public class AgentVul implements Serializable {
         this.agent = agent;
     }
 
-    public int getEvent() {
-        return event;
+    public String getPkgName() {
+        return pkgName;
     }
 
-    public void setEvent(int event) {
-        this.event = event;
+    public void setPkgName(String pkgName) {
+        this.pkgName = pkgName;
     }
 
-    public int getSeverity() {
-        return severity;
+    public String getPkgVersion() {
+        return pkgVersion;
     }
 
-    public void setSeverity(int severity) {
-        this.severity = severity;
+    public void setPkgVersion(String pkgVersion) {
+        this.pkgVersion = pkgVersion;
+    }
+
+    public String getVulnerability() {
+        return vulnerability;
+    }
+
+    public void setVulnerability(String vulnerability) {
+        this.vulnerability = vulnerability;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -225,76 +202,20 @@ public class AgentVul implements Serializable {
         this.description = description;
     }
 
-    public String getCve() {
-        return cve;
+    public String getVulnRef() {
+        return vulnRef;
     }
 
-    public void setCve(String cve) {
-        this.cve = cve;
+    public void setVulnRef(String vulnRef) {
+        this.vulnRef = vulnRef;
     }
 
-    public String getCveState() {
-        return cveState;
+    public String getSeverity() {
+        return severity;
     }
 
-    public void setCveState(String cveState) {
-        this.cveState = cveState;
-    }
-
-    public String getCveSeverity() {
-        return cveSeverity;
-    }
-
-    public void setCveSeverity(String cveSeverity) {
-        this.cveSeverity = cveSeverity;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public String getPackageVersion() {
-        return packageVersion;
-    }
-
-    public void setPackageVersion(String packageVersion) {
-        this.packageVersion = packageVersion;
-    }
-
-    public String getPackageCondition() {
-        return packageCondition;
-    }
-
-    public void setPackageCondition(String packageCondition) {
-        this.packageCondition = packageCondition;
-    }
-
-    public String getCvePublished() {
-        return cvePublished;
-    }
-
-    public void setCvePublished(String cvePublished) {
-        this.cvePublished = cvePublished;
-    }
-
-    public String getCveUpdated() {
-        return cveUpdated;
-    }
-
-    public void setCveUpdated(String cveUpdated) {
-        this.cveUpdated = cveUpdated;
+    public void setSeverity(String severity) {
+        this.severity = severity;
     }
 
     public Date getReportAdded() {
@@ -337,5 +258,5 @@ public class AgentVul implements Serializable {
     public String toString() {
         return "org.alertflex.entity.AgentVul[ recId=" + recId + " ]";
     }
-
+    
 }

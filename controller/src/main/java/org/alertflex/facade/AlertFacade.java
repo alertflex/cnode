@@ -64,12 +64,10 @@ public class AlertFacade extends AbstractFacade<Alert> {
 
         try {
             em.flush();
-            Query listQry = em.createQuery("SELECT a FROM Alert a WHERE  a.refId = :ref AND a.timeOfEvent < :timerange AND a.status NOT IN (:st1, :st2, :st3)")
+            Query listQry = em.createQuery("SELECT a FROM Alert a WHERE  a.refId = :ref AND a.timeOfEvent < :timerange AND a.status NOT IN (:incident)")
                 .setParameter("ref", ref)
                 .setParameter("timerange", timerange)
-                .setParameter("st1", "incident")
-                .setParameter("st2", "ml_incident")
-                .setParameter("st3", "ml_confirmed");
+                .setParameter("incident", "incident");
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             l = listQry.setMaxResults(1000).getResultList();

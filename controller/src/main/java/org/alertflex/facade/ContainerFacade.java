@@ -38,7 +38,7 @@ public class ContainerFacade extends AbstractFacade<Container> {
         super(Container.class);
     }
 
-    public List<Container> findBySensor(String ref, String node, String sensor) {
+    public List<Container> findBySensor(String ref, String node, String probe) {
 
         List<Container> lc = null;
 
@@ -46,8 +46,8 @@ public class ContainerFacade extends AbstractFacade<Container> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT c FROM Container c WHERE c.nodeId = :node AND c.refId = :ref AND c.sensorName = :sensor")
-                    .setParameter("ref", ref).setParameter("node", node).setParameter("sensor", sensor);
+                "SELECT c FROM Container c WHERE c.nodeId = :node AND c.refId = :ref AND c.probe = :probe")
+                    .setParameter("ref", ref).setParameter("node", node).setParameter("probe", probe);
 
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
@@ -60,7 +60,7 @@ public class ContainerFacade extends AbstractFacade<Container> {
         return lc;
     }
     
-    public Container findByName(String ref, String node, String sensor, String id) {
+    public Container findByName(String ref, String node, String probe, String id) {
 
         Container c = null;
 
@@ -68,8 +68,8 @@ public class ContainerFacade extends AbstractFacade<Container> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT c FROM Container c WHERE c.nodeId = :node AND c.refId = :ref AND c.sensorName = :sensor AND c.containerId = :id")
-                    .setParameter("ref", ref).setParameter("node", node).setParameter("sensor", sensor).setParameter("id", id);
+                "SELECT c FROM Container c WHERE c.nodeId = :node AND c.refId = :ref AND c.probe = :probe AND c.containerId = :id")
+                    .setParameter("ref", ref).setParameter("node", node).setParameter("probe", probe).setParameter("id", id);
 
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

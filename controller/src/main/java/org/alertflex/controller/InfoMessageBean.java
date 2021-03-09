@@ -50,14 +50,12 @@ import org.alertflex.facade.AttributesFacade;
 import org.alertflex.facade.EventsFacade;
 import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
-import org.alertflex.facade.NodeFiltersFacade;
 import org.alertflex.facade.NetStatFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
-import org.alertflex.facade.AgentOpenscapFacade;
+import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.AgentPackagesFacade;
 import org.alertflex.facade.AgentProcessesFacade;
-import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.ContainerFacade;
 import org.alertflex.facade.DockerScanFacade;
@@ -108,9 +106,6 @@ public class InfoMessageBean implements MessageListener {
     private NodeAlertsFacade nodeAlertsFacade;
 
     @EJB
-    private NodeFiltersFacade nodeFiltersFacade;
-
-    @EJB
     private NetStatFacade netStatFacade;
 
     @EJB
@@ -118,15 +113,12 @@ public class InfoMessageBean implements MessageListener {
 
     @EJB
     private AgentScaFacade agentScaFacade;
-
+    
     @EJB
     private AgentPackagesFacade agentPackagesFacade;
 
     @EJB
     private AgentProcessesFacade agentProcessesFacade;
-
-    @EJB
-    private AgentOpenscapFacade agentOpenscapFacade;
 
     @EJB
     private DockerScanFacade dockerScanFacade;
@@ -205,10 +197,6 @@ public class InfoMessageBean implements MessageListener {
         return this.nodeAlertsFacade;
     }
 
-    public NodeFiltersFacade getNodeFiltersFacade() {
-        return this.nodeFiltersFacade;
-    }
-
     public NetStatFacade getNetStatFacade() {
         return this.netStatFacade;
     }
@@ -220,11 +208,7 @@ public class InfoMessageBean implements MessageListener {
     public AgentScaFacade getAgentScaFacade() {
         return this.agentScaFacade;
     }
-
-    public AgentOpenscapFacade getAgentOpenscapFacade() {
-        return this.agentOpenscapFacade;
-    }
-
+    
     public AgentPackagesFacade getAgentPackagesFacade() {
         return this.agentPackagesFacade;
     }

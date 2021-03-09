@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "agent_sca")
 @XmlRootElement
@@ -41,18 +35,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "AgentSca.findByNodeId", query = "SELECT a FROM AgentSca a WHERE a.nodeId = :nodeId")
     , @NamedQuery(name = "AgentSca.findByRefId", query = "SELECT a FROM AgentSca a WHERE a.refId = :refId")
     , @NamedQuery(name = "AgentSca.findByAgent", query = "SELECT a FROM AgentSca a WHERE a.agent = :agent")
-    , @NamedQuery(name = "AgentSca.findByName", query = "SELECT a FROM AgentSca a WHERE a.name = :name")
-    , @NamedQuery(name = "AgentSca.findBySeverity", query = "SELECT a FROM AgentSca a WHERE a.severity = :severity")
-    , @NamedQuery(name = "AgentSca.findByInvalid", query = "SELECT a FROM AgentSca a WHERE a.invalid = :invalid")
-    , @NamedQuery(name = "AgentSca.findByFail", query = "SELECT a FROM AgentSca a WHERE a.fail = :fail")
-    , @NamedQuery(name = "AgentSca.findByTotalChecks", query = "SELECT a FROM AgentSca a WHERE a.totalChecks = :totalChecks")
-    , @NamedQuery(name = "AgentSca.findByPass", query = "SELECT a FROM AgentSca a WHERE a.pass = :pass")
-    , @NamedQuery(name = "AgentSca.findByScore", query = "SELECT a FROM AgentSca a WHERE a.score = :score")
-    , @NamedQuery(name = "AgentSca.findByDescription", query = "SELECT a FROM AgentSca a WHERE a.description = :description")
-    , @NamedQuery(name = "AgentSca.findByRefUrl", query = "SELECT a FROM AgentSca a WHERE a.refUrl = :refUrl")
     , @NamedQuery(name = "AgentSca.findByPolicyId", query = "SELECT a FROM AgentSca a WHERE a.policyId = :policyId")
-    , @NamedQuery(name = "AgentSca.findByStartScan", query = "SELECT a FROM AgentSca a WHERE a.startScan = :startScan")
-    , @NamedQuery(name = "AgentSca.findByEndScan", query = "SELECT a FROM AgentSca a WHERE a.endScan = :endScan")
+    , @NamedQuery(name = "AgentSca.findByScaId", query = "SELECT a FROM AgentSca a WHERE a.scaId = :scaId")
+    , @NamedQuery(name = "AgentSca.findByDescription", query = "SELECT a FROM AgentSca a WHERE a.description = :description")
+    , @NamedQuery(name = "AgentSca.findByTitle", query = "SELECT a FROM AgentSca a WHERE a.title = :title")
+    , @NamedQuery(name = "AgentSca.findByRationale", query = "SELECT a FROM AgentSca a WHERE a.rationale = :rationale")
+    , @NamedQuery(name = "AgentSca.findByRemediation", query = "SELECT a FROM AgentSca a WHERE a.remediation = :remediation")
     , @NamedQuery(name = "AgentSca.findByReportAdded", query = "SELECT a FROM AgentSca a WHERE a.reportAdded = :reportAdded")
     , @NamedQuery(name = "AgentSca.findByReportUpdated", query = "SELECT a FROM AgentSca a WHERE a.reportUpdated = :reportUpdated")})
 public class AgentSca implements Serializable {
@@ -81,53 +69,32 @@ public class AgentSca implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "policy_id")
+    private String policyId;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "severity")
-    private int severity;
+    @Column(name = "sca_id")
+    private int scaId;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "invalid")
-    private int invalid;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "fail")
-    private int fail;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "total_checks")
-    private int totalChecks;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "pass")
-    private int pass;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "score")
-    private int score;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2056)
+    @Size(min = 1, max = 1024)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "ref_url")
-    private String refUrl;
+    @Size(min = 1, max = 1024)
+    @Column(name = "title")
+    private String title;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "policy_id")
-    private String policyId;
-    @Column(name = "start_scan")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startScan;
-    @Column(name = "end_scan")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date endScan;
+    @Size(min = 1, max = 2048)
+    @Column(name = "rationale")
+    private String rationale;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2048)
+    @Column(name = "remediation")
+    private String remediation;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -142,21 +109,17 @@ public class AgentSca implements Serializable {
         this.recId = recId;
     }
 
-    public AgentSca(Long recId, String nodeId, String refId, String agent, String name, int severity, int invalid, int fail, int totalChecks, int pass, int score, String description, String refUrl, String policyId) {
+    public AgentSca(Long recId, String nodeId, String refId, String agent, String policyId, int scaId, String description, String title, String rationale, String remediation) {
         this.recId = recId;
         this.nodeId = nodeId;
         this.refId = refId;
         this.agent = agent;
-        this.name = name;
-        this.severity = severity;
-        this.invalid = invalid;
-        this.fail = fail;
-        this.totalChecks = totalChecks;
-        this.pass = pass;
-        this.score = score;
-        this.description = description;
-        this.refUrl = refUrl;
         this.policyId = policyId;
+        this.scaId = scaId;
+        this.description = description;
+        this.title = title;
+        this.rationale = rationale;
+        this.remediation = remediation;
     }
 
     public Long getRecId() {
@@ -191,60 +154,20 @@ public class AgentSca implements Serializable {
         this.agent = agent;
     }
 
-    public String getName() {
-        return name;
+    public String getPolicyId() {
+        return policyId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
-    public int getSeverity() {
-        return severity;
+    public int getScaId() {
+        return scaId;
     }
 
-    public void setSeverity(int severity) {
-        this.severity = severity;
-    }
-
-    public int getInvalid() {
-        return invalid;
-    }
-
-    public void setInvalid(int invalid) {
-        this.invalid = invalid;
-    }
-
-    public int getFail() {
-        return fail;
-    }
-
-    public void setFail(int fail) {
-        this.fail = fail;
-    }
-
-    public int getTotalChecks() {
-        return totalChecks;
-    }
-
-    public void setTotalChecks(int totalChecks) {
-        this.totalChecks = totalChecks;
-    }
-
-    public int getPass() {
-        return pass;
-    }
-
-    public void setPass(int pass) {
-        this.pass = pass;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
+    public void setScaId(int scaId) {
+        this.scaId = scaId;
     }
 
     public String getDescription() {
@@ -255,36 +178,28 @@ public class AgentSca implements Serializable {
         this.description = description;
     }
 
-    public String getRefUrl() {
-        return refUrl;
+    public String getTitle() {
+        return title;
     }
 
-    public void setRefUrl(String refUrl) {
-        this.refUrl = refUrl;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getPolicyId() {
-        return policyId;
+    public String getRationale() {
+        return rationale;
     }
 
-    public void setPolicyId(String policyId) {
-        this.policyId = policyId;
+    public void setRationale(String rationale) {
+        this.rationale = rationale;
     }
 
-    public Date getStartScan() {
-        return startScan;
+    public String getRemediation() {
+        return remediation;
     }
 
-    public void setStartScan(Date startScan) {
-        this.startScan = startScan;
-    }
-
-    public Date getEndScan() {
-        return endScan;
-    }
-
-    public void setEndScan(Date endScan) {
-        this.endScan = endScan;
+    public void setRemediation(String remediation) {
+        this.remediation = remediation;
     }
 
     public Date getReportAdded() {
@@ -327,5 +242,5 @@ public class AgentSca implements Serializable {
     public String toString() {
         return "org.alertflex.entity.AgentSca[ recId=" + recId + " ]";
     }
-
+    
 }

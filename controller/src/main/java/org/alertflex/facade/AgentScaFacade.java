@@ -37,7 +37,7 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
         super(AgentSca.class);
     }
 
-    public AgentSca findSca(String ref, String node, String agent, String name, String policy) {
+    public AgentSca findSca(String ref, String node, String agent, int id, String policy) {
 
         AgentSca as;
 
@@ -45,11 +45,11 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT a FROM AgentSca a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.name = :name AND a.policyId = :policy")
+                    "SELECT a FROM AgentSca a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.scaId = :id AND a.policyId = :policy")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("agent", agent)
-                    .setParameter("name", name)
+                    .setParameter("id", id)
                     .setParameter("policy", policy);
             qry.setMaxResults(1);
             // Enable forced database query

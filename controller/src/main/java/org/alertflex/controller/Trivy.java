@@ -62,8 +62,8 @@ public class Trivy {
 
                 JSONObject result = arrResults.getJSONObject(i);
 
-                String target = result.getString("Target");
-                String targetType = result.getString("Type");
+                String imageName = result.getString("Target");
+                String imageType = result.getString("Type");
 
                 JSONArray arrVuln = result.getJSONArray("Vulnerabilities");
 
@@ -73,66 +73,55 @@ public class Trivy {
 
                     ts.setRefId(r);
                     ts.setNodeId(n);
-                    ts.setSensor(p);
-                    ts.setTarget(target);
-                    ts.setTargetType(targetType);
+                    ts.setProbe(p);
+                    ts.setImageName(imageName);
+                    ts.setImageType(imageType);
 
-                    String vulnerabilityID = arrVuln.getJSONObject(j).getString("VulnerabilityID");
-                    ts.setVulnerabilityId(vulnerabilityID);
+                    String vuln = arrVuln.getJSONObject(j).getString("VulnerabilityID");
+                    ts.setVulnerability(vuln);
 
                     String pkgName = arrVuln.getJSONObject(j).getString("PkgName");
                     ts.setPkgName(pkgName);
 
-                    String installedVersion = arrVuln.getJSONObject(j).getString("InstalledVersion");
-                    ts.setInstalledVersion(installedVersion);
+                    String pkgVersion = arrVuln.getJSONObject(j).getString("InstalledVersion");
+                    ts.setPkgVersion(pkgVersion);
 
-                    String fixedVersion = arrVuln.getJSONObject(j).getString("FixedVersion");
-                    ts.setFixedVersion(fixedVersion);
-
-                    String severitySource = arrVuln.getJSONObject(j).getString("SeveritySource");
-                    ts.setSeveritySource(severitySource);
-
-                    String title = arrVuln.getJSONObject(j).getString("Title");
+                    String severity = arrVuln.getJSONObject(j).getString("Severity");
+                    ts.setSeverity(severity);
+                    
+                    String title = "indef";
+                    if (arrVuln.getJSONObject(j).has("Title")) {
+                        title = arrVuln.getJSONObject(j).getString("Title");
+                    }
                     ts.setTitle(title);
-
-                    String description = arrVuln.getJSONObject(j).getString("Description");
-                    ts.setDescription(description);
+                    
+                    String desc = "indef";
+                    if (arrVuln.getJSONObject(j).has("Description")) {
+                        desc = arrVuln.getJSONObject(j).getString("Description");
+                    }
+                    ts.setDescription(desc);
+                    
+                    String ref = "indef";
+                    if (arrVuln.getJSONObject(j).has("PrimaryURL")) {
+                        ref = arrVuln.getJSONObject(j).getString("PrimaryURL");
+                    }
+                    ts.setVulnRef(ref);
+                    
+                    JSONObject layer = arrVuln.getJSONObject(j).getJSONObject("Layer");
+                    
+                    String imageId = layer.getString("DiffID");
+                    
+                    ts.setImageId(imageId);
 
                     ts.setReportAdded(date);
                     ts.setReportUpdated(date);
-
-                    TrivyScan tsExisting = eventBean.getTrivyScanFacade()
-                            .findVulnerability(r, n, p, target, vulnerabilityID, pkgName);
+                    
+                    TrivyScan tsExisting = eventBean.getTrivyScanFacade().findVulnerability(r, n, p, imageName, vuln, pkgName);
 
                     if (tsExisting == null) {
 
-                        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(project.getRefId(), "Snyk");
-                        int sev = 0;
-                        String severityTrivy = arrVuln.getJSONObject(j).getString("Severity");
-
-                        if (!severityTrivy.isEmpty() && ap != null) {
-
-                            sev = ap.getSeverityDefault();
-
-                            if (ap.getText1().equals(severityTrivy)) {
-                                sev = ap.getValue1();
-                            } else if (ap.getText2().equals(severityTrivy)) {
-                                sev = ap.getValue2();
-                            } else if (ap.getText3().equals(severityTrivy)) {
-                                sev = ap.getValue3();
-                            } else if (ap.getText4().equals(severityTrivy)) {
-                                sev = ap.getValue4();
-                            } else if (ap.getText5().equals(severityTrivy)) {
-                                sev = ap.getValue5();
-                            }
-
-                            ts.setSeverity(sev);
-                            eventBean.getTrivyScanFacade().create(ts);
-
-                            if (sev >= ap.getSeverityThreshold()) {
-                                createTrivyScanAlert(ts, severityTrivy);
-                            }
-                        }
+                        eventBean.getTrivyScanFacade().create(ts);
+                    
                     } else {
 
                         tsExisting.setReportUpdated(date);
@@ -153,7 +142,7 @@ public class Trivy {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        a.setAlertSeverity(ts.getSeverity());
+        a.setAlertSeverity(0);
         a.setEventId("1");
         a.setEventSeverity(sev);
         a.setCategories("trivy");
@@ -161,7 +150,7 @@ public class Trivy {
         a.setAlertSource("Trivy");
         a.setAlertType("MISC");
 
-        a.setSensorId(ts.getSensor());
+        a.setSensorId(ts.getProbe());
         a.setLocation("indef");
         a.setAction("indef");
         a.setStatus("processed");

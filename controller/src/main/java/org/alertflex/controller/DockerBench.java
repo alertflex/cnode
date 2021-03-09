@@ -71,7 +71,7 @@ public class DockerBench {
 
                     ds.setRefId(r);
                     ds.setNodeId(n);
-                    ds.setSensor(p);
+                    ds.setProbe(p);
                     ds.setTestDesc(testDesc);
                     ds.setReportAdded(date);
                     ds.setReportUpdated(date);
@@ -85,40 +85,15 @@ public class DockerBench {
                         ds.setDetails(results.getJSONObject(j).getString("details"));
                     }
 
-                    DockerScan dsExisting = eventBean.getDockerScanFacade().findRecord(ds.getRefId(),
-                            ds.getNodeId(),
-                            ds.getSensor(),
-                            ds.getResultId(),
-                            ds.getResult());
+                    DockerScan dsExisting = eventBean.getDockerScanFacade().findScan(
+                        ds.getRefId(),
+                        ds.getNodeId(),
+                        ds.getProbe(),
+                        ds.getResultId());
 
                     if (dsExisting == null) {
 
-                        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(project.getRefId(), "DockerBench");
-                        int sev = 0;
-                        String severity = ds.getResult();
-
-                        if (!severity.isEmpty() && ap != null) {
-
-                            sev = ap.getSeverityDefault();
-
-                            if (ap.getText1().equals(severity)) {
-                                sev = ap.getValue1();
-                            } else if (ap.getText2().equals(severity)) {
-                                sev = ap.getValue2();
-                            } else if (ap.getText3().equals(severity)) {
-                                sev = ap.getValue3();
-                            } else if (ap.getText4().equals(severity)) {
-                                sev = ap.getValue4();
-                            }
-
-                            ds.setSeverity(sev);
-                            eventBean.getDockerScanFacade().create(ds);
-
-                            if (sev >= ap.getSeverityThreshold()) {
-                                createDockerScanAlert(ds);
-                            }
-                        }
-
+                        eventBean.getDockerScanFacade().create(ds);
                     } else {
 
                         dsExisting.setReportUpdated(date);
@@ -141,7 +116,7 @@ public class DockerBench {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        a.setAlertSeverity(ds.getSeverity());
+        a.setAlertSeverity(0);
         a.setEventSeverity(ds.getResult());
         a.setEventId("1");
         a.setCategories("docker_bench");
@@ -149,7 +124,7 @@ public class DockerBench {
         a.setAlertSource("DockerBench");
         a.setAlertType("MISC");
 
-        a.setSensorId(ds.getSensor());
+        a.setSensorId(ds.getProbe());
         a.setLocation("indef");
         a.setAction("indef");
         a.setStatus("processed");

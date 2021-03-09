@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -27,6 +17,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "project")
 @XmlRootElement
@@ -38,11 +32,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange")
     , @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange")
     , @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange")
-    , @NamedQuery(name = "Project.findByIprepTimerange", query = "SELECT p FROM Project p WHERE p.iprepTimerange = :iprepTimerange")
     , @NamedQuery(name = "Project.findByIncJson", query = "SELECT p FROM Project p WHERE p.incJson = :incJson")
     , @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck")
     , @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent")
-    , @NamedQuery(name = "Project.findByIprepCat", query = "SELECT p FROM Project p WHERE p.iprepCat = :iprepCat")
     , @NamedQuery(name = "Project.findByStatRest", query = "SELECT p FROM Project p WHERE p.statRest = :statRest")
     , @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive")
     , @NamedQuery(name = "Project.findBySendNetflow", query = "SELECT p FROM Project p WHERE p.sendNetflow = :sendNetflow")
@@ -53,7 +45,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findByElkStorepass", query = "SELECT p FROM Project p WHERE p.elkStorepass = :elkStorepass")
     , @NamedQuery(name = "Project.findByElkKeystore", query = "SELECT p FROM Project p WHERE p.elkKeystore = :elkKeystore")
     , @NamedQuery(name = "Project.findByElkTruststore", query = "SELECT p FROM Project p WHERE p.elkTruststore = :elkTruststore")
-    , @NamedQuery(name = "Project.findByMongoUrl", query = "SELECT p FROM Project p WHERE p.mongoUrl = :mongoUrl")
     , @NamedQuery(name = "Project.findByHiveUrl", query = "SELECT p FROM Project p WHERE p.hiveUrl = :hiveUrl")
     , @NamedQuery(name = "Project.findByHiveKey", query = "SELECT p FROM Project p WHERE p.hiveKey = :hiveKey")
     , @NamedQuery(name = "Project.findByMispUrl", query = "SELECT p FROM Project p WHERE p.mispUrl = :mispUrl")
@@ -79,11 +70,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Project.findByFalconKey", query = "SELECT p FROM Project p WHERE p.falconKey = :falconKey")
     , @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl")
     , @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey")
-    , @NamedQuery(name = "Project.findByMailSmtp", query = "SELECT p FROM Project p WHERE p.mailSmtp = :mailSmtp")
-    , @NamedQuery(name = "Project.findByMailPort", query = "SELECT p FROM Project p WHERE p.mailPort = :mailPort")
-    , @NamedQuery(name = "Project.findByMailUser", query = "SELECT p FROM Project p WHERE p.mailUser = :mailUser")
-    , @NamedQuery(name = "Project.findByMailPass", query = "SELECT p FROM Project p WHERE p.mailPass = :mailPass")
-    , @NamedQuery(name = "Project.findByMailFrom", query = "SELECT p FROM Project p WHERE p.mailFrom = :mailFrom")
     , @NamedQuery(name = "Project.findByComprehendArn", query = "SELECT p FROM Project p WHERE p.comprehendArn = :comprehendArn")
     , @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion")})
 public class Project implements Serializable {
@@ -119,10 +105,6 @@ public class Project implements Serializable {
     private int taskTimerange;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "iprep_timerange")
-    private int iprepTimerange;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "inc_json")
     private int incJson;
     @Basic(optional = false)
@@ -133,10 +115,6 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "ioc_event")
     private int iocEvent;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "iprep_cat")
-    private int iprepCat;
     @Basic(optional = false)
     @NotNull
     @Column(name = "stat_rest")
@@ -183,11 +161,6 @@ public class Project implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "elk_truststore")
     private String elkTruststore;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "mongo_url")
-    private String mongoUrl;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -314,31 +287,6 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "mail_smtp")
-    private String mailSmtp;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
-    @Column(name = "mail_port")
-    private String mailPort;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "mail_user")
-    private String mailUser;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "mail_pass")
-    private String mailPass;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "mail_from")
-    private String mailFrom;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
     @Column(name = "comprehend_arn")
     private String comprehendArn;
     @Basic(optional = false)
@@ -354,18 +302,16 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int iprepTimerange, int incJson, int iocCheck, int iocEvent, int iprepCat, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String mongoUrl, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String zapHost, int zapPort, String zapKey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String mailSmtp, String mailPort, String mailUser, String mailPass, String mailFrom, String comprehendArn, String awsRegion) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String zapHost, int zapPort, String zapKey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String comprehendArn, String awsRegion) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
         this.alertTimerange = alertTimerange;
         this.statTimerange = statTimerange;
         this.taskTimerange = taskTimerange;
-        this.iprepTimerange = iprepTimerange;
         this.incJson = incJson;
         this.iocCheck = iocCheck;
         this.iocEvent = iocEvent;
-        this.iprepCat = iprepCat;
         this.statRest = statRest;
         this.semActive = semActive;
         this.sendNetflow = sendNetflow;
@@ -376,7 +322,6 @@ public class Project implements Serializable {
         this.elkStorepass = elkStorepass;
         this.elkKeystore = elkKeystore;
         this.elkTruststore = elkTruststore;
-        this.mongoUrl = mongoUrl;
         this.hiveUrl = hiveUrl;
         this.hiveKey = hiveKey;
         this.mispUrl = mispUrl;
@@ -402,11 +347,6 @@ public class Project implements Serializable {
         this.falconKey = falconKey;
         this.vmrayUrl = vmrayUrl;
         this.vmrayKey = vmrayKey;
-        this.mailSmtp = mailSmtp;
-        this.mailPort = mailPort;
-        this.mailUser = mailUser;
-        this.mailPass = mailPass;
-        this.mailFrom = mailFrom;
         this.comprehendArn = comprehendArn;
         this.awsRegion = awsRegion;
     }
@@ -459,14 +399,6 @@ public class Project implements Serializable {
         this.taskTimerange = taskTimerange;
     }
 
-    public int getIprepTimerange() {
-        return iprepTimerange;
-    }
-
-    public void setIprepTimerange(int iprepTimerange) {
-        this.iprepTimerange = iprepTimerange;
-    }
-
     public int getIncJson() {
         return incJson;
     }
@@ -489,14 +421,6 @@ public class Project implements Serializable {
 
     public void setIocEvent(int iocEvent) {
         this.iocEvent = iocEvent;
-    }
-
-    public int getIprepCat() {
-        return iprepCat;
-    }
-
-    public void setIprepCat(int iprepCat) {
-        this.iprepCat = iprepCat;
     }
 
     public int getStatRest() {
@@ -577,14 +501,6 @@ public class Project implements Serializable {
 
     public void setElkTruststore(String elkTruststore) {
         this.elkTruststore = elkTruststore;
-    }
-
-    public String getMongoUrl() {
-        return mongoUrl;
-    }
-
-    public void setMongoUrl(String mongoUrl) {
-        this.mongoUrl = mongoUrl;
     }
 
     public String getHiveUrl() {
@@ -785,46 +701,6 @@ public class Project implements Serializable {
 
     public void setVmrayKey(String vmrayKey) {
         this.vmrayKey = vmrayKey;
-    }
-
-    public String getMailSmtp() {
-        return mailSmtp;
-    }
-
-    public void setMailSmtp(String mailSmtp) {
-        this.mailSmtp = mailSmtp;
-    }
-
-    public String getMailPort() {
-        return mailPort;
-    }
-
-    public void setMailPort(String mailPort) {
-        this.mailPort = mailPort;
-    }
-
-    public String getMailUser() {
-        return mailUser;
-    }
-
-    public void setMailUser(String mailUser) {
-        this.mailUser = mailUser;
-    }
-
-    public String getMailPass() {
-        return mailPass;
-    }
-
-    public void setMailPass(String mailPass) {
-        this.mailPass = mailPass;
-    }
-
-    public String getMailFrom() {
-        return mailFrom;
-    }
-
-    public void setMailFrom(String mailFrom) {
-        this.mailFrom = mailFrom;
     }
 
     public String getComprehendArn() {

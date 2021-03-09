@@ -37,20 +37,20 @@ public class TrivyScanFacade extends AbstractFacade<TrivyScan> {
         super(TrivyScan.class);
     }
 
-    public TrivyScan findVulnerability(String ref, String node, String sensor, String target, String cve, String pkgs) {
+    public TrivyScan findVulnerability(String ref, String node, String probe, String image, String vuln, String pkg) {
 
         TrivyScan ts;
 
         try {
             em.flush();
 
-            Query vQry = em.createQuery("SELECT t FROM TrivyScan t WHERE t.refId = :ref AND t.nodeId = :node AND t.sensor = :sensor AND t.target = :target AND t.vulnerabilityId = :cve AND t.pkgName = :pkgs")
+            Query vQry = em.createQuery("SELECT t FROM TrivyScan t WHERE t.refId = :ref AND t.nodeId = :node AND t.probe = :probe AND t.imageName = :image AND t.vulnerability = :vuln AND t.pkgName = :pkg")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
-                    .setParameter("sensor", sensor)
-                    .setParameter("target", target)
-                    .setParameter("cve", cve)
-                    .setParameter("pkgs", pkgs);
+                    .setParameter("probe", probe)
+                    .setParameter("image", image)
+                    .setParameter("vuln", vuln)
+                    .setParameter("pkg", pkg);
             vQry.setMaxResults(1);
             // Enable forced database query
             vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

@@ -4,10 +4,9 @@
     <jta-data-source>jdbc/alertflex_auth_jndi</jta-data-source>
     <class>org.alertflex.entity.Agent</class>
     <class>org.alertflex.entity.AgentSca</class>
-    <class>org.alertflex.entity.AgentOpenscap</class>
+    <class>org.alertflex.entity.AgentVul</class>
     <class>org.alertflex.entity.AgentProcesses</class>
     <class>org.alertflex.entity.AgentPackages</class>
-    <class>org.alertflex.entity.AgentVul</class>
     <class>org.alertflex.entity.DockerScan</class>
     <class>org.alertflex.entity.Container</class>
     <class>org.alertflex.entity.Node</class>
@@ -33,7 +32,6 @@
     <class>org.alertflex.entity.Alert</class>
     <class>org.alertflex.entity.NodeMonitor</class>
     <class>org.alertflex.entity.NodeAlerts</class>
-    <class>org.alertflex.entity.NodeFilters</class>
     <class>org.alertflex.entity.NetStat</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <validation-mode>NONE</validation-mode>

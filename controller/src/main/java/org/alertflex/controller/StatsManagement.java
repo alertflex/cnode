@@ -38,16 +38,16 @@ import javax.jms.TextMessage;
 import javax.persistence.PersistenceException;
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
-import org.alertflex.entity.AgentOpenscap;
+import org.alertflex.entity.AgentPackages;
+import org.alertflex.entity.AgentProcesses;
 import org.alertflex.entity.Alert;
-import org.alertflex.entity.NodeFilters;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
 import org.alertflex.entity.NetStat;
-import org.alertflex.entity.AgentProcesses;
-import org.alertflex.entity.AgentPackages;
 import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
+import org.alertflex.entity.AgentProcesses;
+import org.alertflex.entity.AgentPackages;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
 import org.alertflex.entity.HomeNetwork;
@@ -197,7 +197,7 @@ public class StatsManagement {
 
                     arr = obj.getJSONArray("data");
                     
-                    String sensor = obj.getString("sensor");
+                    String probe = obj.getString("probe");
                     
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -211,7 +211,7 @@ public class StatsManagement {
                         String state = arr.getJSONObject(i).getString("State");
                         String status = arr.getJSONObject(i).getString("Status");
                         
-                        Container contExisting = eventBean.getContainerFacade().findByName(ref, node, sensor, containerId);
+                        Container contExisting = eventBean.getContainerFacade().findByName(ref, node, probe, containerId);
 
                         if (contExisting == null) {
 
@@ -219,7 +219,7 @@ public class StatsManagement {
 
                             c.setRefId(ref);
                             c.setNodeId(node);
-                            c.setSensorName(sensor);
+                            c.setProbe(probe);
                             c.setContainerId(containerId);
                             c.setImageName(imageName);
                             c.setImageId(imageId);
@@ -240,16 +240,16 @@ public class StatsManagement {
                     }
 
                     break;
-                
+                    
                 case "packages":
 
                     agent = obj.getString("agent");
 
                     data = obj.getJSONObject("data");
 
-                    arr = data.getJSONArray("items");
+                    arr = data.getJSONArray("affected_items");
                     
-                    formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
                     for (int i = 0; i < arr.length(); i++) {
 
@@ -351,9 +351,9 @@ public class StatsManagement {
 
                     data = obj.getJSONObject("data");
 
-                    arr = data.getJSONArray("items");
+                    arr = data.getJSONArray("affected_items");
                     
-                    formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
                     for (int i = 0; i < arr.length(); i++) {
 
@@ -573,37 +573,27 @@ public class StatsManagement {
                     }
 
                     break;
-
+                
                 case "sca":
-
+                    
                     agent = obj.getString("agent");
 
                     data = obj.getJSONObject("data");
 
-                    int totalItems = data.getInt("totalItems");
-
-                    if (totalItems == 0) break;
+                    arr = data.getJSONArray("affected_items");
                     
-                    arr = data.getJSONArray("items");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
                     for (int i = 0; i < arr.length(); i++) {
 
-                        Date startScan = formatter.parse(arr.getJSONObject(i).getString("start_scan"));
-                        Date endScan = formatter.parse(arr.getJSONObject(i).getString("end_scan"));
-
-                        int invalid = arr.getJSONObject(i).getInt("invalid");
-                        int fail = arr.getJSONObject(i).getInt("fail");
-                        int totalChecks = arr.getJSONObject(i).getInt("total_checks");
-                        int pass = arr.getJSONObject(i).getInt("pass");
-                        int score = arr.getJSONObject(i).getInt("score");
+                        int id = arr.getJSONObject(i).getInt("id");
                         String description = arr.getJSONObject(i).getString("description");
-                        String references = arr.getJSONObject(i).getString("references");
                         String policyId = arr.getJSONObject(i).getString("policy_id");
-                        String name = arr.getJSONObject(i).getString("name");
-
-                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, node, agent, name, policyId);
+                        String rationale = arr.getJSONObject(i).getString("rationale");
+                        String title = arr.getJSONObject(i).getString("title");
+                        String remediation = arr.getJSONObject(i).getString("remediation");
+                        
+                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, node, agent, id, policyId);
 
                         if (scaExisting == null) {
 
@@ -612,17 +602,12 @@ public class StatsManagement {
                             a.setRefId(ref);
                             a.setNodeId(node);
                             a.setAgent(agent);
-                            a.setInvalid(invalid);
-                            a.setFail(fail);
-                            a.setTotalChecks(totalChecks);
-                            a.setPass(pass);
-                            a.setScore(score);
-                            a.setDescription(description);
-                            a.setName(name);
-                            a.setRefUrl(references);
+                            a.setScaId(id);
                             a.setPolicyId(policyId);
-                            a.setStartScan(startScan);
-                            a.setEndScan(endScan);
+                            a.setDescription(description);
+                            a.setRationale(rationale);
+                            a.setRemediation(remediation);
+                            a.setTitle(title);
                             a.setReportAdded(date);
                             a.setReportUpdated(date);
 
@@ -630,16 +615,7 @@ public class StatsManagement {
 
                             // createScaAlert(a);
                         } else {
-
-                            scaExisting.setInvalid(invalid);
-                            scaExisting.setFail(fail);
-                            scaExisting.setTotalChecks(totalChecks);
-                            scaExisting.setPass(pass);
-                            scaExisting.setScore(score);
-                            scaExisting.setStartScan(startScan);
-                            scaExisting.setEndScan(endScan);
                             scaExisting.setReportUpdated(date);
-
                             eventBean.getAgentScaFacade().edit(scaExisting);
                         }
                     }
@@ -657,20 +633,30 @@ public class StatsManagement {
                     v.setRefId(eventBean.getRefId());
                     v.setNodeId(eventBean.getNode());
                     v.setAgent(jv.getString("agent"));
-                    v.setEvent(jv.getInt("event_id"));
-                    v.setSeverity(jv.getInt("severity"));
-                    v.setDescription(jv.getString("description"));
-
-                    v.setCve(jv.getString("cve"));
-                    v.setCveState(jv.getString("cve_state"));
-                    v.setCveSeverity(jv.getString("cve_severity"));
-                    v.setReference(jv.getString("reference"));
-                    v.setPackageName(jv.getString("package_name"));
-                    v.setPackageVersion(jv.getString("package_version"));
-                    v.setPackageCondition(jv.getString("package_condition"));
-                    v.setCvePublished(jv.getString("cve_published"));
-                    v.setCveUpdated(jv.getString("cve_updated"));
-
+                    v.setVulnerability(jv.getString("cve"));
+                    v.setSeverity(jv.getString("severity"));
+                    
+                    String vulnRef = "indef";
+                    if (jv.has("reference")) {
+                        vulnRef = jv.getString("reference");
+                    }
+                    v.setVulnRef(vulnRef);
+                    
+                    String desc = "indef";
+                    if (jv.has("description")) {
+                        desc = jv.getString("description");
+                    }
+                    v.setDescription(desc);
+                    
+                    String title = "indef";
+                    if (jv.has("title")) {
+                        title = jv.getString("title");
+                    }
+                    v.setTitle(title);
+                    
+                    v.setPkgName(jv.getString("pkg_name"));
+                    v.setPkgVersion(jv.getString("pkg_version"));
+                    
                     date = formatter.parse(jv.getString("time_of_survey"));
 
                     v.setReportAdded(date);
@@ -679,8 +665,8 @@ public class StatsManagement {
                     AgentVul vExisting = eventBean.getAgentVulFacade().findVulnerability(v.getRefId(),
                             v.getNodeId(),
                             v.getAgent(),
-                            v.getCve(),
-                            v.getPackageName());
+                            v.getVulnerability(),
+                            v.getPkgName());
 
                     if (vExisting == null) {
 
@@ -691,57 +677,6 @@ public class StatsManagement {
 
                         vExisting.setReportUpdated(date);
                         eventBean.getAgentVulFacade().edit(vExisting);
-                    }
-
-                    break;
-
-                case "open-scap":
-
-                    JSONObject jc = obj.getJSONObject("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                    AgentOpenscap ao = new AgentOpenscap();
-
-                    ao.setRefId(eventBean.getRefId());
-                    ao.setNodeId(eventBean.getNode());
-                    ao.setAgent(jc.getString("agent"));
-                    ao.setEvent(jc.getInt("event_id"));
-                    ao.setSeverity(jc.getInt("severity"));
-                    ao.setDescription(jc.getString("description"));
-
-                    ao.setBenchmark(jc.getString("benchmark"));
-                    ao.setProfileId(jc.getString("profile_id"));
-                    ao.setProfileTitle(jc.getString("profile_title"));
-                    ao.setCheckId(jc.getString("check_id"));
-                    ao.setCheckTitle(jc.getString("check_title"));
-                    ao.setCheckResult(jc.getString("check_result"));
-                    ao.setCheckSeverity(jc.getString("check_severity"));
-                    ao.setCheckDescription(jc.getString("check_description"));
-                    ao.setCheckRationale(jc.getString("check_rationale"));
-                    ao.setCheckReferences(jc.getString("check_references"));
-                    ao.setCheckIdentifiers(jc.getString("check_identifiers"));
-
-                    date = formatter.parse(jc.getString("time_of_survey"));
-
-                    ao.setReportAdded(date);
-                    ao.setReportUpdated(date);
-
-                    AgentOpenscap aoExisting = eventBean.getAgentOpenscapFacade().findOpenscap(ao.getRefId(),
-                            ao.getNodeId(),
-                            ao.getAgent(),
-                            ao.getProfileId(),
-                            ao.getCheckId());
-
-                    if (aoExisting == null) {
-
-                        eventBean.getAgentOpenscapFacade().create(ao);
-
-                        // createOpenscapAlert(ao);
-                    } else {
-
-                        aoExisting.setReportUpdated(date);
-                        eventBean.getAgentOpenscapFacade().edit(aoExisting);
                     }
 
                     break;
@@ -810,30 +745,6 @@ public class StatsManagement {
                     node_monitor.setTimeOfSurvey(date);
 
                     eventBean.getNodeMonitorFacade().create(node_monitor);
-
-                    break;
-                
-                case "node_filters":
-
-                    JSONObject nf = obj.getJSONObject("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                    NodeFilters node_filters = new NodeFilters();
-
-                    node_filters.setRefId(eventBean.getRefId());
-                    node_filters.setNode(eventBean.getNode());
-                    node_filters.setProbe(eventBean.getProbe());
-                    node_filters.setAgentList(nf.getLong("agent_list"));
-                    node_filters.setHnetList(nf.getLong("hnet_list"));
-                    node_filters.setHidsFilters(nf.getLong("hids_filters"));
-                    node_filters.setNidsFilters(nf.getLong("nids_filters"));
-                    node_filters.setCrsFilters(nf.getLong("crs_filters"));
-                    
-                    date = formatter.parse(nf.getString("time_of_survey"));
-                    node_filters.setTimeOfSurvey(date);
-
-                    eventBean.getNodeFiltersFacade().create(node_filters);
 
                     break;
                 
@@ -983,7 +894,7 @@ public class StatsManagement {
 
         a.setAlertSource("Alertflex");
         a.setAlertType("HOST");
-        a.setSensorId(c.getSensorName());
+        a.setSensorId(c.getProbe());
 
         a.setDescription("new container in the system with id: " + c.getContainerId());
         a.setEventId("2");

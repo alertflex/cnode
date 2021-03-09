@@ -102,20 +102,6 @@ CREATE TABLE `node_monitor` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `node_filters` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node` varchar(255) NOT NULL DEFAULT '',
-  `probe` varchar(255) NOT NULL,
-  `agent_list` bigint unsigned NOT NULL DEFAULT '0',
-  `hnet_list` bigint unsigned NOT NULL DEFAULT '0',
-  `hids_filters` bigint unsigned NOT NULL DEFAULT '0',
-  `nids_filters` bigint unsigned NOT NULL DEFAULT '0',
-  `crs_filters` bigint unsigned NOT NULL DEFAULT '0',
-  `time_of_survey` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `net_stat` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
@@ -156,11 +142,9 @@ CREATE TABLE `project` (
   `alert_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
-  `iprep_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `inc_json` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_check` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_event` int(10) unsigned NOT NULL DEFAULT '0',
-  `iprep_cat` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_rest` int(2) unsigned NOT NULL DEFAULT '0',
   `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
   `send_netflow` int(2) unsigned NOT NULL DEFAULT '0',
@@ -171,7 +155,6 @@ CREATE TABLE `project` (
   `elk_storepass` varchar(512) NOT NULL DEFAULT '',
   `elk_keystore` varchar(512) NOT NULL DEFAULT '',
   `elk_truststore` varchar(512) NOT NULL DEFAULT '',
-  `mongo_url` varchar(512) NOT NULL DEFAULT '',
   `hive_url` varchar(512) NOT NULL DEFAULT '',
   `hive_key` varchar(512) NOT NULL DEFAULT '',
   `misp_url` varchar(512) NOT NULL DEFAULT '',
@@ -197,17 +180,12 @@ CREATE TABLE `project` (
   `falcon_key` varchar(512) NOT NULL DEFAULT '',
   `vmray_url` varchar(512) NOT NULL DEFAULT '',
   `vmray_key` varchar(512) NOT NULL DEFAULT '',
-  `mail_smtp` varchar(512) NOT NULL DEFAULT '',
-  `mail_port` varchar(32) NOT NULL DEFAULT '',
-  `mail_user` varchar(512) NOT NULL DEFAULT '',
-  `mail_pass` varchar(512) NOT NULL DEFAULT '',
-  `mail_from` varchar(512) NOT NULL DEFAULT '',
   `comprehend_arn` varchar(512) NOT NULL DEFAULT '',
   `aws_region` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "_zap_host", 8090, "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 1, 0, 0, 0, 1, 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "127.0.0.1", 8090, "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -273,7 +251,7 @@ CREATE TABLE `node` (
   `name` varchar(255) NOT NULL,
   `description` varchar(512) NOT NULL DEFAULT '',
   `unit` varchar(512) NOT NULL DEFAULT '',
-  `open_c2` int(2) unsigned NOT NULL DEFAULT '0',
+  `commands_control` int(2) unsigned NOT NULL DEFAULT '0', 
   `filters_control` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ref_id`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -286,7 +264,6 @@ CREATE TABLE `sensor` (
   `type` varchar(64) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
   `host` varchar(512) NOT NULL DEFAULT '',
-  `iprep_update` int(2) unsigned NOT NULL DEFAULT '0',
   `rules_update` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ref_id`,`node`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -295,10 +272,10 @@ CREATE TABLE `container` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `node_id` varchar(512) NOT NULL DEFAULT '',
-  `sensor_name` varchar(512) NOT NULL DEFAULT '',
+  `probe` varchar(512) NOT NULL DEFAULT '',
   `container_id` varchar(512) NOT NULL DEFAULT '',
-  `image_id` varchar(512) NOT NULL DEFAULT '',
   `image_name` varchar(512) NOT NULL DEFAULT '',
+  `image_id` varchar(512) NOT NULL DEFAULT '',
   `command` varchar(1024) NOT NULL DEFAULT '',
   `state` varchar(512) NOT NULL DEFAULT '',
   `status` varchar(512) NOT NULL DEFAULT '',
@@ -326,48 +303,17 @@ CREATE TABLE `agent` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `agent_openscap` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `node_id` varchar(128) NOT NULL DEFAULT '',
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `agent` varchar(128) NOT NULL DEFAULT '',
-  `event` int(10) unsigned NOT NULL DEFAULT '0',
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
-  `description` varchar(1024) NOT NULL DEFAULT '',
-  `benchmark` varchar(512) NOT NULL DEFAULT '',
-  `profile_id` varchar(512) NOT NULL DEFAULT '',
-  `profile_title` varchar(512) NOT NULL DEFAULT '',
-  `check_id` varchar(512) NOT NULL DEFAULT '',
-  `check_title` varchar(512) NOT NULL DEFAULT '',
-  `check_result` varchar(64) NOT NULL DEFAULT '',
-  `check_severity` varchar(64) NOT NULL DEFAULT '',
-  `check_description` varchar(1024) NOT NULL DEFAULT '',
-  `check_rationale` varchar(1024) NOT NULL DEFAULT '',
-  `check_references` varchar(1024) NOT NULL DEFAULT '',
-  `check_identifiers` varchar(512) NOT NULL DEFAULT '',
-  `report_added` datetime DEFAULT NULL,
-  `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `agent_sca` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `node_id` varchar(128) NOT NULL DEFAULT '',
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `agent` varchar(128) NOT NULL DEFAULT '',
-  `name` varchar(512) NOT NULL DEFAULT '',
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
-  `invalid` int(10) unsigned NOT NULL DEFAULT '0',
-  `fail` int(10) unsigned NOT NULL DEFAULT '0',
-  `total_checks` int(10) unsigned NOT NULL DEFAULT '0',
-  `pass` int(10) unsigned NOT NULL DEFAULT '0',
-  `score` int(10) unsigned NOT NULL DEFAULT '0',
-  `description` varchar(2056) NOT NULL DEFAULT '',
-  `ref_url` varchar(512) NOT NULL DEFAULT '',
   `policy_id` varchar(512) NOT NULL DEFAULT '',
-  `start_scan` datetime DEFAULT NULL,
-  `end_scan` datetime DEFAULT NULL,
+  `sca_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  `title` varchar(1024) NOT NULL DEFAULT '',
+  `rationale` varchar(2048) NOT NULL DEFAULT '',
+  `remediation` varchar(2048) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -375,26 +321,20 @@ CREATE TABLE `agent_sca` (
 
 CREATE TABLE `agent_vul` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `node_id` varchar(128) NOT NULL DEFAULT '',
   `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node_id` varchar(128) NOT NULL DEFAULT '',
   `agent` varchar(128) NOT NULL DEFAULT '',
-  `event` int(10) unsigned NOT NULL DEFAULT '0',
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
-  `description` varchar(1024) NOT NULL DEFAULT '',
-  `cve` varchar(1024) NOT NULL DEFAULT '',
-  `cve_state` varchar(64) NOT NULL DEFAULT '',
-  `cve_severity` varchar(64) NOT NULL DEFAULT '',
-  `reference` varchar(1024) NOT NULL DEFAULT '',
-  `package_name` varchar(512) NOT NULL DEFAULT '',
-  `package_version` varchar(512) NOT NULL DEFAULT '',
-  `package_condition` varchar(512) NOT NULL DEFAULT '',
-  `cve_published` varchar(128) NOT NULL DEFAULT '',
-  `cve_updated` varchar(128) NOT NULL DEFAULT '',
+  `pkg_name` varchar(512) NOT NULL DEFAULT '',
+  `pkg_version` varchar(512) NOT NULL DEFAULT '',
+  `vulnerability` varchar(512) NOT NULL DEFAULT '',
+  `title` varchar(1024) NOT NULL DEFAULT '',
+  `description` varchar(2048) NOT NULL DEFAULT '',
+  `vuln_ref` varchar(1024) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `agent_processes` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -733,12 +673,11 @@ CREATE TABLE `docker_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `node_id` varchar(128) NOT NULL DEFAULT '',
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `sensor` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
   `test_desc` varchar(512) NOT NULL DEFAULT '',
   `result_id` varchar(128) NOT NULL DEFAULT '',
   `result_desc` varchar(1024) NOT NULL DEFAULT '',
   `result` varchar(128) NOT NULL DEFAULT '',
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
   `details` varchar(1024) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
@@ -747,19 +686,19 @@ CREATE TABLE `docker_scan` (
 
 CREATE TABLE `trivy_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `node_id` varchar(128) NOT NULL DEFAULT '',
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `sensor` varchar(128) NOT NULL DEFAULT '',
-  `target` varchar(512) NOT NULL DEFAULT '',
-  `target_type` varchar(512) NOT NULL DEFAULT '',
-  `vulnerability_id` varchar(512) NOT NULL DEFAULT '',
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `image_name` varchar(512) NOT NULL DEFAULT '',
+  `image_type` varchar(512) NOT NULL DEFAULT '',
+  `image_id` varchar(512) NOT NULL DEFAULT '',
   `pkg_name` varchar(512) NOT NULL DEFAULT '',
-  `installed_version` varchar(512) NOT NULL DEFAULT '',
-  `fixed_version` varchar(512) NOT NULL DEFAULT '',
-  `severity_source` varchar(256) NOT NULL DEFAULT '',
-  `title` varchar(512) NOT NULL DEFAULT '',
-  `description` varchar(1024) NOT NULL DEFAULT '',
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `pkg_version` varchar(512) NOT NULL DEFAULT '',
+  `vulnerability` varchar(512) NOT NULL DEFAULT '',
+  `title` varchar(1024) NOT NULL DEFAULT '',
+  `description` varchar(2048) NOT NULL DEFAULT '',
+  `vuln_ref` varchar(1024) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -776,10 +715,6 @@ CREATE TABLE `alert_priority` (
   `minor_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `major_threshold` int(10) unsigned NOT NULL DEFAULT '0',
   `critical_threshold` int(10) unsigned NOT NULL DEFAULT '0',
-  `ml_enable` int(2) unsigned NOT NULL DEFAULT '0',
-  `ml_severity` int(10) unsigned NOT NULL DEFAULT '0',
-  `ml_counter` int(10) unsigned NOT NULL DEFAULT '0',
-  `ml_response` varchar(128) NOT NULL DEFAULT 'indef',
   `text1` varchar(128) NOT NULL DEFAULT 'indef',
   `text2` varchar(128) NOT NULL DEFAULT 'indef',
   `text3` varchar(128) NOT NULL DEFAULT 'indef',
@@ -799,15 +734,14 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`,
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (4,'_project_id','Nmap','Nmap', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (5,'_project_id','Misc','Misc', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (6,'_project_id','MISP','MISP', 3, 2, 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','RITA','RITA', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (8,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (9,'_project_id','ZAP','ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (10,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (11,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (12,'_project_id','AnomalyDetection','AnomalyDetection', 3, 5, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (13,'_project_id','Falco','Falco', 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (14,'_project_id','Suricata','Suricata', 0, 0);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`ml_enable`,`ml_severity`) VALUES (15,'_project_id','Wazuh','Wazuh', 0, 0);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (7,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (8,'_project_id','ZAP','ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (9,'_project_id','DockerBench','DockerBench', 'PASS', 'INFO', 'NOTE', 'WARN', 0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (10,'_project_id','Trivy','Trivy', 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (11,'_project_id','AnomalyDetection','AnomalyDetection', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (12,'_project_id','Falco','Falco', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (13,'_project_id','Suricata','Suricata', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (14,'_project_id','Wazuh','Wazuh', 1);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

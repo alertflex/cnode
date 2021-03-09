@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "container")
 @XmlRootElement
@@ -40,10 +34,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Container.findByRecId", query = "SELECT c FROM Container c WHERE c.recId = :recId")
     , @NamedQuery(name = "Container.findByRefId", query = "SELECT c FROM Container c WHERE c.refId = :refId")
     , @NamedQuery(name = "Container.findByNodeId", query = "SELECT c FROM Container c WHERE c.nodeId = :nodeId")
-    , @NamedQuery(name = "Container.findBySensorName", query = "SELECT c FROM Container c WHERE c.sensorName = :sensorName")
+    , @NamedQuery(name = "Container.findByProbe", query = "SELECT c FROM Container c WHERE c.probe = :probe")
     , @NamedQuery(name = "Container.findByContainerId", query = "SELECT c FROM Container c WHERE c.containerId = :containerId")
-    , @NamedQuery(name = "Container.findByImageId", query = "SELECT c FROM Container c WHERE c.imageId = :imageId")
     , @NamedQuery(name = "Container.findByImageName", query = "SELECT c FROM Container c WHERE c.imageName = :imageName")
+    , @NamedQuery(name = "Container.findByImageId", query = "SELECT c FROM Container c WHERE c.imageId = :imageId")
     , @NamedQuery(name = "Container.findByCommand", query = "SELECT c FROM Container c WHERE c.command = :command")
     , @NamedQuery(name = "Container.findByState", query = "SELECT c FROM Container c WHERE c.state = :state")
     , @NamedQuery(name = "Container.findByStatus", query = "SELECT c FROM Container c WHERE c.status = :status")
@@ -70,8 +64,8 @@ public class Container implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "sensor_name")
-    private String sensorName;
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -80,13 +74,13 @@ public class Container implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "image_id")
-    private String imageId;
+    @Column(name = "image_name")
+    private String imageName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "image_name")
-    private String imageName;
+    @Column(name = "image_id")
+    private String imageId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
@@ -116,14 +110,14 @@ public class Container implements Serializable {
         this.recId = recId;
     }
 
-    public Container(Integer recId, String refId, String nodeId, String sensorName, String containerId, String imageId, String imageName, String command, String state, String status) {
+    public Container(Integer recId, String refId, String nodeId, String probe, String containerId, String imageName, String imageId, String command, String state, String status) {
         this.recId = recId;
         this.refId = refId;
         this.nodeId = nodeId;
-        this.sensorName = sensorName;
+        this.probe = probe;
         this.containerId = containerId;
-        this.imageId = imageId;
         this.imageName = imageName;
+        this.imageId = imageId;
         this.command = command;
         this.state = state;
         this.status = status;
@@ -153,12 +147,12 @@ public class Container implements Serializable {
         this.nodeId = nodeId;
     }
 
-    public String getSensorName() {
-        return sensorName;
+    public String getProbe() {
+        return probe;
     }
 
-    public void setSensorName(String sensorName) {
-        this.sensorName = sensorName;
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public String getContainerId() {
@@ -169,20 +163,20 @@ public class Container implements Serializable {
         this.containerId = containerId;
     }
 
-    public String getImageId() {
-        return imageId;
-    }
-
-    public void setImageId(String imageId) {
-        this.imageId = imageId;
-    }
-
     public String getImageName() {
         return imageName;
     }
 
     public void setImageName(String imageName) {
         this.imageName = imageName;
+    }
+
+    public String getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(String imageId) {
+        this.imageId = imageId;
     }
 
     public String getCommand() {

@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -27,6 +17,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "sensor")
 @XmlRootElement
@@ -39,7 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Sensor.findByType", query = "SELECT s FROM Sensor s WHERE s.type = :type")
     , @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description")
     , @NamedQuery(name = "Sensor.findByHost", query = "SELECT s FROM Sensor s WHERE s.host = :host")
-    , @NamedQuery(name = "Sensor.findByIprepUpdate", query = "SELECT s FROM Sensor s WHERE s.iprepUpdate = :iprepUpdate")
     , @NamedQuery(name = "Sensor.findByRulesUpdate", query = "SELECT s FROM Sensor s WHERE s.rulesUpdate = :rulesUpdate")})
 public class Sensor implements Serializable {
 
@@ -68,10 +61,6 @@ public class Sensor implements Serializable {
     private String host;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "iprep_update")
-    private int iprepUpdate;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "rules_update")
     private int rulesUpdate;
 
@@ -82,13 +71,12 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public Sensor(SensorPK sensorPK, String probe, String type, String description, String host, int iprepUpdate, int rulesUpdate) {
+    public Sensor(SensorPK sensorPK, String probe, String type, String description, String host, int rulesUpdate) {
         this.sensorPK = sensorPK;
         this.probe = probe;
         this.type = type;
         this.description = description;
         this.host = host;
-        this.iprepUpdate = iprepUpdate;
         this.rulesUpdate = rulesUpdate;
     }
 
@@ -134,14 +122,6 @@ public class Sensor implements Serializable {
 
     public void setHost(String host) {
         this.host = host;
-    }
-
-    public int getIprepUpdate() {
-        return iprepUpdate;
-    }
-
-    public void setIprepUpdate(int iprepUpdate) {
-        this.iprepUpdate = iprepUpdate;
     }
 
     public int getRulesUpdate() {

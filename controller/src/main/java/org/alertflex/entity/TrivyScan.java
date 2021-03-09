@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,27 +22,31 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "trivy_scan")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "TrivyScan.findAll", query = "SELECT t FROM TrivyScan t")
-    , @NamedQuery(name = "TrivyScan.findByRecId", query = "SELECT t FROM TrivyScan t WHERE t.recId = :recId")
-    , @NamedQuery(name = "TrivyScan.findByNodeId", query = "SELECT t FROM TrivyScan t WHERE t.nodeId = :nodeId")
-    , @NamedQuery(name = "TrivyScan.findByRefId", query = "SELECT t FROM TrivyScan t WHERE t.refId = :refId")
-    , @NamedQuery(name = "TrivyScan.findBySensor", query = "SELECT t FROM TrivyScan t WHERE t.sensor = :sensor")
-    , @NamedQuery(name = "TrivyScan.findByTarget", query = "SELECT t FROM TrivyScan t WHERE t.target = :target")
-    , @NamedQuery(name = "TrivyScan.findByTargetType", query = "SELECT t FROM TrivyScan t WHERE t.targetType = :targetType")
-    , @NamedQuery(name = "TrivyScan.findByVulnerabilityId", query = "SELECT t FROM TrivyScan t WHERE t.vulnerabilityId = :vulnerabilityId")
-    , @NamedQuery(name = "TrivyScan.findByPkgName", query = "SELECT t FROM TrivyScan t WHERE t.pkgName = :pkgName")
-    , @NamedQuery(name = "TrivyScan.findByInstalledVersion", query = "SELECT t FROM TrivyScan t WHERE t.installedVersion = :installedVersion")
-    , @NamedQuery(name = "TrivyScan.findByFixedVersion", query = "SELECT t FROM TrivyScan t WHERE t.fixedVersion = :fixedVersion")
-    , @NamedQuery(name = "TrivyScan.findBySeveritySource", query = "SELECT t FROM TrivyScan t WHERE t.severitySource = :severitySource")
-    , @NamedQuery(name = "TrivyScan.findByTitle", query = "SELECT t FROM TrivyScan t WHERE t.title = :title")
-    , @NamedQuery(name = "TrivyScan.findByDescription", query = "SELECT t FROM TrivyScan t WHERE t.description = :description")
-    , @NamedQuery(name = "TrivyScan.findBySeverity", query = "SELECT t FROM TrivyScan t WHERE t.severity = :severity")
-    , @NamedQuery(name = "TrivyScan.findByReportAdded", query = "SELECT t FROM TrivyScan t WHERE t.reportAdded = :reportAdded")
-    , @NamedQuery(name = "TrivyScan.findByReportUpdated", query = "SELECT t FROM TrivyScan t WHERE t.reportUpdated = :reportUpdated")})
+    @NamedQuery(name = "TrivyScan.findAll", query = "SELECT t FROM TrivyScan t"),
+    @NamedQuery(name = "TrivyScan.findByRecId", query = "SELECT t FROM TrivyScan t WHERE t.recId = :recId"),
+    @NamedQuery(name = "TrivyScan.findByRefId", query = "SELECT t FROM TrivyScan t WHERE t.refId = :refId"),
+    @NamedQuery(name = "TrivyScan.findByNodeId", query = "SELECT t FROM TrivyScan t WHERE t.nodeId = :nodeId"),
+    @NamedQuery(name = "TrivyScan.findByProbe", query = "SELECT t FROM TrivyScan t WHERE t.probe = :probe"),
+    @NamedQuery(name = "TrivyScan.findByImageName", query = "SELECT t FROM TrivyScan t WHERE t.imageName = :imageName"),
+    @NamedQuery(name = "TrivyScan.findByImageType", query = "SELECT t FROM TrivyScan t WHERE t.imageType = :imageType"),
+    @NamedQuery(name = "TrivyScan.findByImageId", query = "SELECT t FROM TrivyScan t WHERE t.imageId = :imageId"),
+    @NamedQuery(name = "TrivyScan.findByPkgName", query = "SELECT t FROM TrivyScan t WHERE t.pkgName = :pkgName"),
+    @NamedQuery(name = "TrivyScan.findByPkgVersion", query = "SELECT t FROM TrivyScan t WHERE t.pkgVersion = :pkgVersion"),
+    @NamedQuery(name = "TrivyScan.findByVulnerability", query = "SELECT t FROM TrivyScan t WHERE t.vulnerability = :vulnerability"),
+    @NamedQuery(name = "TrivyScan.findByTitle", query = "SELECT t FROM TrivyScan t WHERE t.title = :title"),
+    @NamedQuery(name = "TrivyScan.findByDescription", query = "SELECT t FROM TrivyScan t WHERE t.description = :description"),
+    @NamedQuery(name = "TrivyScan.findByVulnRef", query = "SELECT t FROM TrivyScan t WHERE t.vulnRef = :vulnRef"),
+    @NamedQuery(name = "TrivyScan.findBySeverity", query = "SELECT t FROM TrivyScan t WHERE t.severity = :severity"),
+    @NamedQuery(name = "TrivyScan.findByReportAdded", query = "SELECT t FROM TrivyScan t WHERE t.reportAdded = :reportAdded"),
+    @NamedQuery(name = "TrivyScan.findByReportUpdated", query = "SELECT t FROM TrivyScan t WHERE t.reportUpdated = :reportUpdated")})
 public class TrivyScan implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,34 +57,34 @@ public class TrivyScan implements Serializable {
     private Long recId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 150)
     @Column(name = "ref_id")
     private String refId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "sensor")
-    private String sensor;
+    @Column(name = "node_id")
+    private String nodeId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "target")
-    private String target;
+    @Column(name = "image_name")
+    private String imageName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "target_type")
-    private String targetType;
+    @Column(name = "image_type")
+    private String imageType;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "vulnerability_id")
-    private String vulnerabilityId;
+    @Column(name = "image_id")
+    private String imageId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -99,32 +93,33 @@ public class TrivyScan implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "installed_version")
-    private String installedVersion;
+    @Column(name = "pkg_version")
+    private String pkgVersion;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "fixed_version")
-    private String fixedVersion;
+    @Column(name = "vulnerability")
+    private String vulnerability;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 256)
-    @Column(name = "severity_source")
-    private String severitySource;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
     @Column(name = "title")
     private String title;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 1024)
+    @Size(min = 1, max = 2048)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(name = "vuln_ref")
+    private String vulnRef;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
     @Column(name = "severity")
-    private int severity;
+    private String severity;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -139,20 +134,20 @@ public class TrivyScan implements Serializable {
         this.recId = recId;
     }
 
-    public TrivyScan(Long recId, String nodeId, String refId, String sensor, String target, String targetType, String vulnerabilityId, String pkgName, String installedVersion, String fixedVersion, String severitySource, String title, String description, int severity) {
+    public TrivyScan(Long recId, String refId, String nodeId, String probe, String imageName, String imageType, String imageId, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
         this.recId = recId;
-        this.nodeId = nodeId;
         this.refId = refId;
-        this.sensor = sensor;
-        this.target = target;
-        this.targetType = targetType;
-        this.vulnerabilityId = vulnerabilityId;
+        this.nodeId = nodeId;
+        this.probe = probe;
+        this.imageName = imageName;
+        this.imageType = imageType;
+        this.imageId = imageId;
         this.pkgName = pkgName;
-        this.installedVersion = installedVersion;
-        this.fixedVersion = fixedVersion;
-        this.severitySource = severitySource;
+        this.pkgVersion = pkgVersion;
+        this.vulnerability = vulnerability;
         this.title = title;
         this.description = description;
+        this.vulnRef = vulnRef;
         this.severity = severity;
     }
 
@@ -164,14 +159,6 @@ public class TrivyScan implements Serializable {
         this.recId = recId;
     }
 
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
     public String getRefId() {
         return refId;
     }
@@ -180,36 +167,44 @@ public class TrivyScan implements Serializable {
         this.refId = refId;
     }
 
-    public String getSensor() {
-        return sensor;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setSensor(String sensor) {
-        this.sensor = sensor;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public String getTarget() {
-        return target;
+    public String getProbe() {
+        return probe;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
-    public String getTargetType() {
-        return targetType;
+    public String getImageName() {
+        return imageName;
     }
 
-    public void setTargetType(String targetType) {
-        this.targetType = targetType;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
-    public String getVulnerabilityId() {
-        return vulnerabilityId;
+    public String getImageType() {
+        return imageType;
     }
 
-    public void setVulnerabilityId(String vulnerabilityId) {
-        this.vulnerabilityId = vulnerabilityId;
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }
+
+    public String getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(String imageId) {
+        this.imageId = imageId;
     }
 
     public String getPkgName() {
@@ -220,28 +215,20 @@ public class TrivyScan implements Serializable {
         this.pkgName = pkgName;
     }
 
-    public String getInstalledVersion() {
-        return installedVersion;
+    public String getPkgVersion() {
+        return pkgVersion;
     }
 
-    public void setInstalledVersion(String installedVersion) {
-        this.installedVersion = installedVersion;
+    public void setPkgVersion(String pkgVersion) {
+        this.pkgVersion = pkgVersion;
     }
 
-    public String getFixedVersion() {
-        return fixedVersion;
+    public String getVulnerability() {
+        return vulnerability;
     }
 
-    public void setFixedVersion(String fixedVersion) {
-        this.fixedVersion = fixedVersion;
-    }
-
-    public String getSeveritySource() {
-        return severitySource;
-    }
-
-    public void setSeveritySource(String severitySource) {
-        this.severitySource = severitySource;
+    public void setVulnerability(String vulnerability) {
+        this.vulnerability = vulnerability;
     }
 
     public String getTitle() {
@@ -260,11 +247,19 @@ public class TrivyScan implements Serializable {
         this.description = description;
     }
 
-    public int getSeverity() {
+    public String getVulnRef() {
+        return vulnRef;
+    }
+
+    public void setVulnRef(String vulnRef) {
+        this.vulnRef = vulnRef;
+    }
+
+    public String getSeverity() {
         return severity;
     }
 
-    public void setSeverity(int severity) {
+    public void setSeverity(String severity) {
         this.severity = severity;
     }
 
@@ -308,5 +303,5 @@ public class TrivyScan implements Serializable {
     public String toString() {
         return "org.alertflex.entity.TrivyScan[ recId=" + recId + " ]";
     }
-
+    
 }

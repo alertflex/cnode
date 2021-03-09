@@ -159,6 +159,7 @@ public class LogsManagement {
         String sha256 = "";
         String dns = "";
         String agent = "";
+        String sensor = "";
         String hostname = "";
         String nodename = "";
         String filename = "indef";
@@ -172,6 +173,8 @@ public class LogsManagement {
             JSONObject msg;
 
             String message = obj.getString("short_message");
+            nodename = obj.getString("node");
+            sensor = obj.getString("sensor");
 
             Attributes attr;
 
@@ -181,7 +184,6 @@ public class LogsManagement {
 
                 case "alert-fim":
 
-                    nodename = obj.getString("node");
                     md5 = obj.getString("md5");
                     sha1 = obj.getString("sha1");
                     sha256 = obj.getString("sha256");
@@ -201,7 +203,7 @@ public class LogsManagement {
                                 + md5
                                 + "\",\"message\": \"message digest MD5\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                     }
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(sha1, misp_sha1);
@@ -217,7 +219,7 @@ public class LogsManagement {
                                 + sha1
                                 + "\",\"message\": \"secure hash SHA1\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                     }
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(sha256, misp_sha256);
@@ -233,14 +235,13 @@ public class LogsManagement {
                                 + sha256
                                 + "\",\"message\": \"secure hash SHA256\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                     }
 
                     return true;
 
                 case "alert-hids":
                     
-                    nodename = obj.getString("node");
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
                     agent = obj.getString("agent");
@@ -257,7 +258,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -273,7 +274,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -281,7 +282,6 @@ public class LogsManagement {
 
                 case "alert-nids":
                     
-                    nodename = obj.getString("node");
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
                     hostname = obj.getString("sensor");
@@ -298,7 +298,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -314,7 +314,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -322,7 +322,6 @@ public class LogsManagement {
 
                 case "dns-nids":
                     
-                    nodename = obj.getString("node");
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
                     dns = obj.getString("rrname");
@@ -339,7 +338,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -355,7 +354,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -371,7 +370,7 @@ public class LogsManagement {
                                     + dns
                                     + "\",\"message\": \"domain\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -379,7 +378,6 @@ public class LogsManagement {
 
                 case "netflow-nids":
 
-                    nodename = obj.getString("node");
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
                     
@@ -395,7 +393,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\":\" destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -411,7 +409,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\":\" source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
@@ -419,7 +417,6 @@ public class LogsManagement {
 
                 case "http-nids":
 
-                    nodename = obj.getString("node");
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
                     hostname = obj.getString("url_hostname");
@@ -436,14 +433,14 @@ public class LogsManagement {
                                     + hostname
                                     + "\",\"message\":\" url host name\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                         }
                     }
 
                     break;
 
                 case "file-nids":
-                    nodename = obj.getString("node");
+                    
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
                     filename = obj.getString("filename");
@@ -462,7 +459,7 @@ public class LogsManagement {
                                 + md5
                                 + "\",\"message\": \"message digest before\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
                     }
 
                     break;
@@ -480,7 +477,7 @@ public class LogsManagement {
     }
 
     public void createIocAlert(String r, Attributes attr, int type, String artifacts, String node,
-            String dstip, String srcip, String agent, String filename, String process) {
+            String dstip, String srcip, String agent, String filename, String process, String sensor) {
 
         int srv = 0;
 
@@ -721,7 +718,7 @@ public class LogsManagement {
 
         }
 
-        a.setSensorId("indef");
+        a.setSensorId(sensor);
         a.setLocation("indef");
         a.setAction("indef");
         a.setStatus("processed");

@@ -37,20 +37,19 @@ public class DockerScanFacade extends AbstractFacade<DockerScan> {
         super(DockerScan.class);
     }
 
-    public DockerScan findRecord(String ref, String node, String sensor, String resultId, String result) {
+    public DockerScan findScan(String ref, String node, String probe, String id) {
 
-        DockerScan ds;
+        DockerScan ds = null;
 
         try {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT d FROM DockerScan d WHERE d.refId = :ref AND d.nodeId = :node AND d.sensor = :sensor AND d.resultId = :id AND d.result = :result")
+                    "SELECT d FROM DockerScan d WHERE d.refId = :ref AND d.nodeId = :node AND d.probe = :probe AND d.resultId = :id")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
-                    .setParameter("sensor", sensor)
-                    .setParameter("id", resultId)
-                    .setParameter("result", result);
+                    .setParameter("probe", probe)
+                    .setParameter("id", id);
             qry.setMaxResults(1);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

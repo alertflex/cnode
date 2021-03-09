@@ -67,7 +67,7 @@ public class RulesManagement {
                 node.setNodePK(nodePK);
                 node.setUnit("change unit");
                 node.setDescription("change desc");
-                node.setOpenC2(1);
+                node.setCommandsControl(0);
                 node.setFiltersControl(0);
                 eventBean.getNodeFacade().create(node);
             }
@@ -102,7 +102,6 @@ public class RulesManagement {
                 s.setType(sensorType);
                 s.setProbe(probe);
                 s.setHost("indef");
-                s.setIprepUpdate(0);
                 s.setRulesUpdate(0);
                 eventBean.getSensorFacade().create(s);
             }

@@ -26,14 +26,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.Sensor;
-import org.alertflex.entity.NodeFilters;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
 import org.alertflex.entity.NetStat;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
-import org.alertflex.facade.NodeFiltersFacade;
 import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
 import org.alertflex.facade.NetStatFacade;
@@ -59,9 +57,6 @@ public class MetricsFacadeREST {
 
     @EJB
     private NodeMonitorFacade nodeMonitorFacade;
-
-    @EJB
-    private NodeFiltersFacade nodeFiltersFacade;
 
     @EJB
     private NodeAlertsFacade nodeAlertsFacade;
@@ -109,11 +104,6 @@ public class MetricsFacadeREST {
                 Date startDate = new Date(millis);
                 Timestamp end = new Timestamp(endDate.getTime());
                 Timestamp start = new Timestamp(startDate.getTime());
-
-                NodeFilters nf = nodeFiltersFacade.getLastRecord(prj, nodeId, start, end);
-                if (nf != null) {
-                    metricsNodeFilters(nodeId, nf);
-                }
 
                 NodeAlerts nal = nodeAlertsFacade.getLastRecord(prj, nodeId, start, end);
                 if (nal != null) {
@@ -295,40 +285,6 @@ public class MetricsFacadeREST {
         sb.append(template.toString());
         sb.append("nids_s3\"} ");
         sb.append(Long.toString(na.getNidsS3()));
-        sb.append("\n");
-
-        sb.append("\n");
-    }
-
-    private void metricsNodeFilters(String nodeId, NodeFilters nf) {
-
-        StringBuilder template = new StringBuilder("alertflex_node_filters{node=\"");
-        template.append(nodeId);
-        template.append("\",type=\"");
-
-        sb.append(template.toString());
-        sb.append("agent_list\"} ");
-        sb.append(Long.toString(nf.getAgentList()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("hnet_list\"} ");
-        sb.append(Long.toString(nf.getHnetList()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("crs_filters\"} ");
-        sb.append(Long.toString(nf.getCrsFilters()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("nids_filters\"} ");
-        sb.append(Long.toString(nf.getHidsFilters()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("nids_filters\"} ");
-        sb.append(Long.toString(nf.getNidsFilters()));
         sb.append("\n");
 
         sb.append("\n");
