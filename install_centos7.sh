@@ -255,7 +255,7 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 if [[ $INSTALL_MC == yes ]]
 then
-	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/0.702/alertflex-mc.war"
+	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v0.8-beta/alertflex-mc.war"
 	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 fi
 
