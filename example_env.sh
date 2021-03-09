@@ -9,6 +9,8 @@ export PROJECT_PATH=/home/alertflex/
 
 # Settings for connection to ActiveMQ broker, 
 # The Common Name (AKA CN) represents the server name protected by the SSL certificate
+# NOTE! CN is the Fully Qualified Domain Name (FQDN), do not use IP address for CN
+# NOTE! password policy require to use a not short length of the password
 export AMQ_CN=af-ctrl
 export AMQ_USER=admin
 export AMQ_PWD=Password1234
