@@ -5,7 +5,7 @@ Alertflex works as a security event manager and implements CTI, EDR, NTA and SOA
 ![](https://github.com/alertflex/cnode/blob/master/img/dashboard.png)
 
 The Alertflex implements five levels of security event management technology: Collection, Streaming, Analysis, Storage, Access. 
-Additionally, Alertflex works as a security orchestrator for several third-party applications and automates security operations via Playbook.
+Additionally, Alertflex works as a security orchestrator for several third-party applications and automates security operations via Playbooks.
 For working inside a distributed environment of Hybrid IT, the solution consists of separate software components Collector, Controller, Management Console. 
 Alertflex Controller and Management Console build up the Central node. The Central node could be placed inside of monitored IT infrastructure or outside. 
 To exchange messages between the Remote node and the Central node, the ActiveMQ message broker is used. 
