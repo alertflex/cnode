@@ -1,6 +1,6 @@
 The repository includes Alertflex controller source code, a common installation script and configs files for Alertflex central node, the MISP docker install script.
 
-Alertflex works as a Security Event Manager and implements CTI DevSecOps SOAR technology stack based on integration with third-party cybersecurity products (more than 20 are integrated at the moment).
+Alertflex works as a Security Event Manager and implements DevSecOps SOAR technology stack based on integration with third-party cybersecurity products (more than 20 are integrated at the moment).
 
 ![](https://github.com/alertflex/cnode/blob/master/img/dashboard.png)
 
