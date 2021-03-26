@@ -1,6 +1,6 @@
-The repository includes Alertflex controller source code, a common installation script and configs files for Alertflex central node, the MISP docker install script.
+The repository includes Alertflex controller source code, installation script and config files for central node, MISP docker install script.
 
-Alertflex works as a Security Event Manager and implements DevSecOps SOAR technology stack based on integration with third-party cybersecurity products (more than 20 are integrated at the moment).
+Alertflex project is a cybersecurity solution for automation, continuous monitoring, orchestration, threat detection. Alertflex works as a Security Alerts Manager with SOAR capabilities and designed for use in Hybrid IT infrastructure (on-premises and cloud-based).
 
 ![](https://github.com/alertflex/cnode/blob/master/img/dashboard.png)
 
