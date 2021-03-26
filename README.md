@@ -1,8 +1,8 @@
 The repository includes Alertflex controller source code, installation script and config files for central node, MISP docker install script.
 
-Alertflex is a cybersecurity solution for automation, continuous monitoring, orchestration, threat detection and response. Alertflex works as a Security Events Manager with SOAR capabilities and designed for use in Hybrid IT infrastructure (on-premises and cloud-based).
+Alertflex project is a cybersecurity solution for automation, continuous monitoring, orchestration, threat detection and response. Alertflex works as a Security Event Manager with SOAR capabilities and designed for use in Hybrid IT infrastructure (on-premises and cloud-based).
 
-Project mostly integrates free open-source security software and requires fewer system resources compared with similar products. Supports different sources of security events and reports: Windows, Linux, Docker, Kubernetes, Amazon AWS.
+The project provides a single pane of view for more than 20 security products (mostly free open-source software), requires fewer system resources compared with similar products, supports different types of platforms: Windows, Linux, Docker, Kubernetes, Amazon AWS.
 
 ![](https://github.com/alertflex/cnode/blob/master/img/dashboard.png)
 
