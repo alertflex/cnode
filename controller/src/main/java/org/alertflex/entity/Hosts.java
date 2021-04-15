@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -29,20 +19,26 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "hosts")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Hosts.findAll", query = "SELECT h FROM Hosts h")
-    , @NamedQuery(name = "Hosts.findByRecId", query = "SELECT h FROM Hosts h WHERE h.recId = :recId")
-    , @NamedQuery(name = "Hosts.findByName", query = "SELECT h FROM Hosts h WHERE h.name = :name")
-    , @NamedQuery(name = "Hosts.findByRefId", query = "SELECT h FROM Hosts h WHERE h.refId = :refId")
-    , @NamedQuery(name = "Hosts.findByNode", query = "SELECT h FROM Hosts h WHERE h.node = :node")
-    , @NamedQuery(name = "Hosts.findByCred", query = "SELECT h FROM Hosts h WHERE h.cred = :cred")
-    , @NamedQuery(name = "Hosts.findByAgent", query = "SELECT h FROM Hosts h WHERE h.agent = :agent")
-    , @NamedQuery(name = "Hosts.findByDescription", query = "SELECT h FROM Hosts h WHERE h.description = :description")
-    , @NamedQuery(name = "Hosts.findByAddress", query = "SELECT h FROM Hosts h WHERE h.address = :address")
-    , @NamedQuery(name = "Hosts.findByPort", query = "SELECT h FROM Hosts h WHERE h.port = :port")})
+    @NamedQuery(name = "Hosts.findAll", query = "SELECT h FROM Hosts h"),
+    @NamedQuery(name = "Hosts.findByRecId", query = "SELECT h FROM Hosts h WHERE h.recId = :recId"),
+    @NamedQuery(name = "Hosts.findByRefId", query = "SELECT h FROM Hosts h WHERE h.refId = :refId"),
+    @NamedQuery(name = "Hosts.findByName", query = "SELECT h FROM Hosts h WHERE h.name = :name"),
+    @NamedQuery(name = "Hosts.findByNode", query = "SELECT h FROM Hosts h WHERE h.node = :node"),
+    @NamedQuery(name = "Hosts.findByAgent", query = "SELECT h FROM Hosts h WHERE h.agent = :agent"),
+    @NamedQuery(name = "Hosts.findByProbe", query = "SELECT h FROM Hosts h WHERE h.probe = :probe"),
+    @NamedQuery(name = "Hosts.findByEc2", query = "SELECT h FROM Hosts h WHERE h.ec2 = :ec2"),
+    @NamedQuery(name = "Hosts.findByDescription", query = "SELECT h FROM Hosts h WHERE h.description = :description"),
+    @NamedQuery(name = "Hosts.findByCred", query = "SELECT h FROM Hosts h WHERE h.cred = :cred"),
+    @NamedQuery(name = "Hosts.findByAddress", query = "SELECT h FROM Hosts h WHERE h.address = :address"),
+    @NamedQuery(name = "Hosts.findByPort", query = "SELECT h FROM Hosts h WHERE h.port = :port")})
 public class Hosts implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,14 +49,14 @@ public class Hosts implements Serializable {
     private Integer recId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "name")
-    private String name;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "ref_id")
     private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -69,18 +65,28 @@ public class Hosts implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "cred")
-    private String cred;
+    @Column(name = "agent")
+    private String agent;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "agent")
-    private String agent;
+    @Column(name = "probe")
+    private String probe;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "ec2")
+    private String ec2;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
     @Column(name = "description")
     private String description;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "cred")
+    private String cred;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -98,14 +104,16 @@ public class Hosts implements Serializable {
         this.recId = recId;
     }
 
-    public Hosts(Integer recId, String name, String refId, String node, String cred, String agent, String description, String address, int port) {
+    public Hosts(Integer recId, String refId, String name, String node, String agent, String probe, String ec2, String description, String cred, String address, int port) {
         this.recId = recId;
-        this.name = name;
         this.refId = refId;
+        this.name = name;
         this.node = node;
-        this.cred = cred;
         this.agent = agent;
+        this.probe = probe;
+        this.ec2 = ec2;
         this.description = description;
+        this.cred = cred;
         this.address = address;
         this.port = port;
     }
@@ -118,20 +126,20 @@ public class Hosts implements Serializable {
         this.recId = recId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getRefId() {
         return refId;
     }
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getNode() {
@@ -142,14 +150,6 @@ public class Hosts implements Serializable {
         this.node = node;
     }
 
-    public String getCred() {
-        return cred;
-    }
-
-    public void setCred(String cred) {
-        this.cred = cred;
-    }
-
     public String getAgent() {
         return agent;
     }
@@ -158,12 +158,36 @@ public class Hosts implements Serializable {
         this.agent = agent;
     }
 
+    public String getProbe() {
+        return probe;
+    }
+
+    public void setProbe(String probe) {
+        this.probe = probe;
+    }
+
+    public String getEc2() {
+        return ec2;
+    }
+
+    public void setEc2(String ec2) {
+        this.ec2 = ec2;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCred() {
+        return cred;
+    }
+
+    public void setCred(String cred) {
+        this.cred = cred;
     }
 
     public String getAddress() {

@@ -54,14 +54,16 @@ import org.alertflex.facade.NetStatFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AgentScaFacade;
-import org.alertflex.facade.AgentPackagesFacade;
-import org.alertflex.facade.AgentProcessesFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.ContainerFacade;
 import org.alertflex.facade.DockerScanFacade;
+import org.alertflex.facade.HunterScanFacade;
+import org.alertflex.facade.KubeScanFacade;
+import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
+import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
@@ -115,16 +117,22 @@ public class InfoMessageBean implements MessageListener {
     private AgentScaFacade agentScaFacade;
     
     @EJB
-    private AgentPackagesFacade agentPackagesFacade;
-
-    @EJB
-    private AgentProcessesFacade agentProcessesFacade;
-
-    @EJB
     private DockerScanFacade dockerScanFacade;
 
     @EJB
     private TrivyScanFacade trivyScanFacade;
+    
+    @EJB
+    private KubeScanFacade kubeScanFacade;
+    
+    @EJB
+    private ZapScanFacade zapScanFacade;
+    
+    @EJB
+    private NmapScanFacade nmapScanFacade;
+    
+    @EJB
+    private HunterScanFacade hunterScanFacade;
 
     @EJB
     private ProjectFacade projectFacade;
@@ -209,20 +217,28 @@ public class InfoMessageBean implements MessageListener {
         return this.agentScaFacade;
     }
     
-    public AgentPackagesFacade getAgentPackagesFacade() {
-        return this.agentPackagesFacade;
-    }
-
-    public AgentProcessesFacade getAgentProcessesFacade() {
-        return this.agentProcessesFacade;
-    }
-
     public DockerScanFacade getDockerScanFacade() {
         return this.dockerScanFacade;
+    }
+    
+    public KubeScanFacade getKubeScanFacade() {
+        return this.kubeScanFacade;
     }
 
     public TrivyScanFacade getTrivyScanFacade() {
         return this.trivyScanFacade;
+    }
+    
+    public ZapScanFacade getZapScanFacade() {
+        return this.zapScanFacade;
+    }
+
+    public NmapScanFacade getNmapScanFacade() {
+        return this.nmapScanFacade;
+    }
+    
+    public HunterScanFacade getHunterScanFacade() {
+        return this.hunterScanFacade;
     }
 
     public Project getProject() {
@@ -278,6 +294,7 @@ public class InfoMessageBean implements MessageListener {
                     }
                     
                     int sensor;
+                    String target;
 
                     switch (msg_type) {
                         case 1:
@@ -311,10 +328,34 @@ public class InfoMessageBean implements MessageListener {
                             break;
 
                         case 6: 
-                            Trivy trivy = new Trivy(this);
-                            trivy.saveReport(data);
+                            KubeBench kubeBench = new KubeBench(this);
+                            kubeBench.saveReport(data);
                             break;
-
+                            
+                        case 7: 
+                            KubeHunter kubeHunter = new KubeHunter(this);
+                            target = bytesMessage.getStringProperty("target");
+                            kubeHunter.saveReport(data, target);
+                            break;
+                            
+                        case 8: 
+                            Nmap nmap = new Nmap(this);
+                            target = bytesMessage.getStringProperty("target");
+                            nmap.saveReport(data, target);
+                            break;
+                            
+                        case 9: 
+                            Trivy trivy = new Trivy(this);
+                            target = bytesMessage.getStringProperty("target");
+                            trivy.saveReport(data, target);
+                            break;
+                            
+                        case 10: 
+                            Zap zap = new Zap(this);
+                            target = bytesMessage.getStringProperty("target");
+                            zap.saveReport(data, target);
+                            break;
+                            
                         default:
                             break;
                     }

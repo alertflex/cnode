@@ -38,20 +38,17 @@ import javax.jms.TextMessage;
 import javax.persistence.PersistenceException;
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
-import org.alertflex.entity.AgentPackages;
-import org.alertflex.entity.AgentProcesses;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
 import org.alertflex.entity.NetStat;
 import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
-import org.alertflex.entity.AgentProcesses;
-import org.alertflex.entity.AgentPackages;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
 import org.alertflex.entity.HomeNetwork;
 import org.alertflex.entity.Node;
+import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Project;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.json.JSONArray;
@@ -108,7 +105,7 @@ public class StatsManagement {
             JSONArray arr;
             
             String ref = eventBean.getRefId();
-            String node = eventBean.getNode();
+            String nodeName = eventBean.getNode();
             
             String agent;
             
@@ -143,7 +140,7 @@ public class StatsManagement {
                         String osVersion = arr.getJSONObject(i).getString("os_version");
                         String osName = arr.getJSONObject(i).getString("os_name");
 
-                        Agent agExisting = eventBean.getAgentFacade().findAgentByName(ref, node, agent);
+                        Agent agExisting = eventBean.getAgentFacade().findAgentByName(ref, nodeName, agent);
 
                         if (agExisting == null) {
                             
@@ -152,7 +149,7 @@ public class StatsManagement {
                             Agent a = new Agent();
 
                             a.setRefId(ref);
-                            a.setNodeId(node);
+                            a.setNodeId(nodeName);
                             a.setDateUpdate(date);
                             a.setStatus(status);
                             a.setAgentId(id);
@@ -188,7 +185,7 @@ public class StatsManagement {
                     }
                     
                     if (filtersFlag) {
-                        updateFilters(ref, node);
+                        updateFilters(ref, nodeName);
                     }
 
                     break;
@@ -202,24 +199,43 @@ public class StatsManagement {
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     for (int i = 0; i < arr.length(); i++) {
-
+                        
+                        JSONArray names = arr.getJSONObject(i).getJSONArray("Names");
+                        String containerNameTmp = "";
+                        for (int j = 0; j < names.length(); j++) {
+                            containerNameTmp = containerNameTmp + names.get(i).toString();
+                        }
+                        String containerName = "";
+                        if (containerNameTmp.length() >= 1024) {
+                            containerName = containerNameTmp.substring(0, 1022);    
+                        } else containerName = containerNameTmp;
+                        
                         String containerId = arr.getJSONObject(i).getString("Id");
                         String imageName = arr.getJSONObject(i).getString("Image");
                         String imageId = arr.getJSONObject(i).getString("ImageID");
-                        String command = arr.getJSONObject(i).getString("Command");
+                        
+                        String command = "indef";
+                        String commandTmp = arr.getJSONObject(i).getString("Command");
+                        if (commandTmp.length() >= 1024) {
+                            command = commandTmp.substring(0, 1022);
+                        } else {
+                            if (!commandTmp.isEmpty()) command = commandTmp;
+                        }
+                        
                         Long created = arr.getJSONObject(i).getLong("Created");
                         String state = arr.getJSONObject(i).getString("State");
                         String status = arr.getJSONObject(i).getString("Status");
                         
-                        Container contExisting = eventBean.getContainerFacade().findByName(ref, node, probe, containerId);
+                        Container contExisting = eventBean.getContainerFacade().findByName(ref, nodeName, probe, imageId);
 
                         if (contExisting == null) {
 
                             Container c = new Container();
 
                             c.setRefId(ref);
-                            c.setNodeId(node);
+                            c.setNodeId(nodeName);
                             c.setProbe(probe);
+                            c.setContainerName(containerName);
                             c.setContainerId(containerId);
                             c.setImageName(imageName);
                             c.setImageId(imageId);
@@ -301,46 +317,7 @@ public class StatsManagement {
                             description = arr.getJSONObject(i).getString("description");
                         }
 
-                        AgentPackages pExisting = eventBean.getAgentPackagesFacade().findPackage(ref, node, agent, name, version);
-
-                        if (pExisting == null) {
-
-                            AgentPackages p = new AgentPackages();
-
-                            p.setRefId(ref);
-                            p.setNodeId(node);
-                            p.setAgent(agent);
-                            p.setPackageSize(size);
-                            p.setArchitecture(architecture);
-                            p.setPriority(priority);
-                            p.setVersion(version);
-                            p.setVendor(vendor);
-                            p.setPackageFormat(format);
-                            p.setPackageSection(section);
-                            p.setName(name);
-                            p.setDescription(description);
-                            p.setTimeScan(time);
-                            p.setDateAdd(date);
-                            p.setDateUpdate(date);
-
-                            eventBean.getAgentPackagesFacade().create(p);
-
-                            // createNewPackageAlert(p); Wazuh care
-                        } else {
-
-                            pExisting.setPackageSize(size);
-                            pExisting.setArchitecture(architecture);
-                            pExisting.setPriority(priority);
-                            pExisting.setVersion(version);
-                            pExisting.setVendor(vendor);
-                            pExisting.setPackageFormat(format);
-                            pExisting.setPackageSection(section);
-                            pExisting.setName(name);
-                            pExisting.setTimeScan(time);
-                            pExisting.setDateUpdate(date);
-
-                            eventBean.getAgentPackagesFacade().edit(pExisting);
-                        }
+                        // IOC check ?
                     }
 
                     break;
@@ -495,80 +472,7 @@ public class StatsManagement {
                             cmd = arr.getJSONObject(i).getString("cmd");
                         }
 
-                        AgentProcesses pExisting = eventBean.getAgentProcessesFacade().findProcess(ref, node, agent, name, pid);
-
-                        if (pExisting == null) {
-
-                            AgentProcesses p = new AgentProcesses();
-
-                            p.setRefId(ref);
-                            p.setNodeId(node);
-                            p.setAgent(agent);
-                            p.setUtime(utime);
-                            p.setProcessState(state);
-                            p.setPriority(priority);
-                            p.setName(name);
-                            p.setProcessShare(share);
-                            p.setSuser(suser);
-                            p.setEgroup(egroup);
-                            p.setNlwp(nlwp);
-                            p.setNice(nice);
-                            p.setSgroup(sgroup);
-                            p.setPpid(ppid);
-                            p.setProcessor(processor);
-                            p.setPid(pid);
-                            p.setEuser(euser);
-                            p.setRuser(ruser);
-                            p.setProcessSession(session);
-                            p.setPgrp(pgrp);
-                            p.setStime(stime);
-                            p.setVmSize(vm_size);
-                            p.setTgid(tgid);
-                            p.setTty(tty);
-                            p.setRgroup(rgroup);
-                            p.setResident(resident);
-                            p.setFgroup(fgroup);
-                            p.setStartTime(startTime);
-                            p.setCmd(cmd);
-
-                            p.setTimeScan(time);
-                            p.setDateAdd(date);
-                            p.setDateUpdate(date);
-
-                            eventBean.getAgentProcessesFacade().create(p);
-
-                            // createNewProcessAlert(p); Wazuh care
-                        } else {
-
-                            pExisting.setProcessState(state);
-                            pExisting.setPriority(priority);
-                            pExisting.setProcessShare(share);
-                            pExisting.setSuser(suser);
-                            pExisting.setEgroup(egroup);
-                            pExisting.setNlwp(nlwp);
-                            pExisting.setNice(nice);
-                            pExisting.setSgroup(sgroup);
-                            pExisting.setPpid(ppid);
-                            pExisting.setProcessor(processor);
-                            pExisting.setEuser(euser);
-                            pExisting.setRuser(ruser);
-                            pExisting.setProcessSession(session);
-                            pExisting.setPgrp(pgrp);
-                            pExisting.setStime(stime);
-                            pExisting.setVmSize(vm_size);
-                            pExisting.setTgid(tgid);
-                            pExisting.setTty(tty);
-                            pExisting.setRgroup(rgroup);
-                            pExisting.setResident(resident);
-                            pExisting.setFgroup(fgroup);
-                            pExisting.setStartTime(startTime);
-                            pExisting.setCmd(cmd);
-
-                            pExisting.setTimeScan(time);
-                            pExisting.setDateUpdate(date);
-
-                            eventBean.getAgentProcessesFacade().edit(pExisting);
-                        }
+                        // IOC check?
 
                     }
 
@@ -593,14 +497,14 @@ public class StatsManagement {
                         String title = arr.getJSONObject(i).getString("title");
                         String remediation = arr.getJSONObject(i).getString("remediation");
                         
-                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, node, agent, id, policyId);
+                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, nodeName, agent, id, policyId);
 
                         if (scaExisting == null) {
 
                             AgentSca a = new AgentSca();
 
                             a.setRefId(ref);
-                            a.setNodeId(node);
+                            a.setNodeId(nodeName);
                             a.setAgent(agent);
                             a.setScaId(id);
                             a.setPolicyId(policyId);
@@ -722,15 +626,31 @@ public class StatsManagement {
                     break;
                 
                 case "node_monitor":
+                    
+                    Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
+                    
+                    if (node == null) {
+                        
+                        pr.initNode(nodeName);
 
+                        NodePK nodePK = new NodePK(ref, nodeName);
+                        node = new Node();
+                        node.setNodePK(nodePK);
+                        node.setUnit("change unit");
+                        node.setDescription("change desc");
+                        node.setCommandsControl(0);
+                        node.setFiltersControl(0);
+                        eventBean.getNodeFacade().create(node);
+                    }
+                    
                     JSONObject nm = obj.getJSONObject("data");
                     
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     NodeMonitor node_monitor = new NodeMonitor();
 
-                    node_monitor.setRefId(eventBean.getRefId());
-                    node_monitor.setNode(eventBean.getNode());
+                    node_monitor.setRefId(ref);
+                    node_monitor.setNode(nodeName);
                     node_monitor.setProbe(eventBean.getProbe());
                     node_monitor.setEventsHids(nm.getLong("hids"));
                     node_monitor.setEventsNids(nm.getLong("nids"));

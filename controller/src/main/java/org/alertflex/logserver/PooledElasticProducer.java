@@ -77,6 +77,8 @@ public class PooledElasticProducer {
             }
 
             String host = prj.getElkHost();
+            
+            if ( host.isEmpty() || host.equals("indef")) return;
 
             String user = prj.getElkUser();
 
@@ -84,7 +86,7 @@ public class PooledElasticProducer {
 
             int port = prj.getElkPort();
 
-            if (!host.isEmpty() && !user.isEmpty() && !password.isEmpty()) {
+            if (!user.isEmpty() && !password.isEmpty()) {
 
                 String keyStorePass = prj.getElkStorepass();
                 String keystorePath = prj.getElkKeystore();

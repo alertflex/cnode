@@ -20,10 +20,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.AgentProcesses;
+import org.alertflex.entity.KubeScan;
 
 @Stateless
-public class AgentProcessesFacade extends AbstractFacade<AgentProcesses> {
+public class KubeScanFacade extends AbstractFacade<KubeScan> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -33,34 +33,34 @@ public class AgentProcessesFacade extends AbstractFacade<AgentProcesses> {
         return em;
     }
 
-    public AgentProcessesFacade() {
-        super(AgentProcesses.class);
+    public KubeScanFacade() {
+        super(KubeScan.class);
     }
 
-    public AgentProcesses findProcess(String ref, String node, String agent, String name, String pid) {
+    public KubeScan findScan(String ref, String node, String probe, String id, String section, String number) {
 
-        AgentProcesses ap;
+        KubeScan ks = null;
 
         try {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT a FROM AgentProcesses a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.name = :name AND a.pid = :pid")
+                    "SELECT k FROM KubeScan k WHERE k.refId = :ref AND k.nodeId = :node AND k.probe = :probe AND k.testId = :id AND k.sectionNumber = :section AND k.resultNumber = :number")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
-                    .setParameter("agent", agent)
-                    .setParameter("name", name)
-                    .setParameter("pid", pid);
+                    .setParameter("probe", probe)
+                    .setParameter("id", id)
+                    .setParameter("section", section)
+                    .setParameter("number", number);
             qry.setMaxResults(1);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ap = (AgentProcesses) qry.getSingleResult();
+            ks = (KubeScan) qry.getSingleResult();
 
         } catch (Exception e) {
-            ap = null;
+            ks = null;
         }
 
-        return ap;
+        return ks;
     }
-
 }

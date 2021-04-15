@@ -17,6 +17,7 @@ package org.alertflex.facade;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
@@ -149,4 +150,26 @@ public class AlertFacade extends AbstractFacade<Alert> {
         return deletedCount;
     }
 
+    public List<Alert> findIntervalsBetween(String r, Date start, Date end, int limit) {
+
+        List<Alert> al = null;
+
+        try {
+            em.flush();
+
+            Query alertsListQry = em.createQuery(
+                    "SELECT a FROM Alert a WHERE a.refId = :ref AND a.timeCollr BETWEEN :start AND :end")
+                    .setParameter("ref", r).setParameter("start", start).setParameter("end", end);
+
+            // Enable forced database query
+            alertsListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            al = alertsListQry.setMaxResults(limit).getResultList();
+
+        } catch (Exception e) {
+
+        }
+
+        return al;
+
+    }
 }

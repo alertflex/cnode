@@ -127,7 +127,8 @@ public class AlertsMessageBean implements MessageListener {
                         a.setEventSeverity(Integer.toString(sev));
                         String loc = ((TextMessage) message).getStringProperty("location");
                         if (loc.length() >= 1024) {
-                            loc.substring(0, 1022);
+                            String substrLoc = loc.substring(0, 1022);
+                            a.setLocation(substrLoc);
                         } else {
                             a.setLocation(loc);
                         }

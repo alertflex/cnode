@@ -7,7 +7,7 @@
     <version>ctrl</version>
     <packaging>war</packaging>
 
-    <name>alertflex-ctrl_v55</name>
+    <name>alertflex-ctrl_v58</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -20,6 +20,12 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.10.0</version>
         </dependency>
         
         <dependency>

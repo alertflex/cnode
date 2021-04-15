@@ -72,17 +72,17 @@ public class TrivyScan implements Serializable {
     private String probe;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
     @Column(name = "image_name")
     private String imageName;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
     @Column(name = "image_type")
     private String imageType;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
     @Column(name = "image_id")
     private String imageId;
     @Basic(optional = false)

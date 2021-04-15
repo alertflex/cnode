@@ -41,7 +41,7 @@ public class Trivy {
 
     }
 
-    public void saveReport(String results) {
+    public void saveReport(String results, String target) {
 
         try {
 

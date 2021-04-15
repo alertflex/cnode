@@ -30,19 +30,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "container")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Container.findAll", query = "SELECT c FROM Container c")
-    , @NamedQuery(name = "Container.findByRecId", query = "SELECT c FROM Container c WHERE c.recId = :recId")
-    , @NamedQuery(name = "Container.findByRefId", query = "SELECT c FROM Container c WHERE c.refId = :refId")
-    , @NamedQuery(name = "Container.findByNodeId", query = "SELECT c FROM Container c WHERE c.nodeId = :nodeId")
-    , @NamedQuery(name = "Container.findByProbe", query = "SELECT c FROM Container c WHERE c.probe = :probe")
-    , @NamedQuery(name = "Container.findByContainerId", query = "SELECT c FROM Container c WHERE c.containerId = :containerId")
-    , @NamedQuery(name = "Container.findByImageName", query = "SELECT c FROM Container c WHERE c.imageName = :imageName")
-    , @NamedQuery(name = "Container.findByImageId", query = "SELECT c FROM Container c WHERE c.imageId = :imageId")
-    , @NamedQuery(name = "Container.findByCommand", query = "SELECT c FROM Container c WHERE c.command = :command")
-    , @NamedQuery(name = "Container.findByState", query = "SELECT c FROM Container c WHERE c.state = :state")
-    , @NamedQuery(name = "Container.findByStatus", query = "SELECT c FROM Container c WHERE c.status = :status")
-    , @NamedQuery(name = "Container.findByReportAdded", query = "SELECT c FROM Container c WHERE c.reportAdded = :reportAdded")
-    , @NamedQuery(name = "Container.findByReportUpdated", query = "SELECT c FROM Container c WHERE c.reportUpdated = :reportUpdated")})
+    @NamedQuery(name = "Container.findAll", query = "SELECT c FROM Container c"),
+    @NamedQuery(name = "Container.findByRecId", query = "SELECT c FROM Container c WHERE c.recId = :recId"),
+    @NamedQuery(name = "Container.findByRefId", query = "SELECT c FROM Container c WHERE c.refId = :refId"),
+    @NamedQuery(name = "Container.findByNodeId", query = "SELECT c FROM Container c WHERE c.nodeId = :nodeId"),
+    @NamedQuery(name = "Container.findByProbe", query = "SELECT c FROM Container c WHERE c.probe = :probe"),
+    @NamedQuery(name = "Container.findByContainerName", query = "SELECT c FROM Container c WHERE c.containerName = :containerName"),
+    @NamedQuery(name = "Container.findByContainerId", query = "SELECT c FROM Container c WHERE c.containerId = :containerId"),
+    @NamedQuery(name = "Container.findByImageName", query = "SELECT c FROM Container c WHERE c.imageName = :imageName"),
+    @NamedQuery(name = "Container.findByImageId", query = "SELECT c FROM Container c WHERE c.imageId = :imageId"),
+    @NamedQuery(name = "Container.findByCommand", query = "SELECT c FROM Container c WHERE c.command = :command"),
+    @NamedQuery(name = "Container.findByState", query = "SELECT c FROM Container c WHERE c.state = :state"),
+    @NamedQuery(name = "Container.findByStatus", query = "SELECT c FROM Container c WHERE c.status = :status"),
+    @NamedQuery(name = "Container.findByReportAdded", query = "SELECT c FROM Container c WHERE c.reportAdded = :reportAdded"),
+    @NamedQuery(name = "Container.findByReportUpdated", query = "SELECT c FROM Container c WHERE c.reportUpdated = :reportUpdated")})
 public class Container implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,42 +59,47 @@ public class Container implements Serializable {
     private String refId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 128)
     @Column(name = "node_id")
     private String nodeId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 128)
     @Column(name = "probe")
     private String probe;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
+    @Column(name = "container_name")
+    private String containerName;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1024)
     @Column(name = "container_id")
     private String containerId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
     @Column(name = "image_name")
     private String imageName;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 1024)
     @Column(name = "image_id")
     private String imageId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 1024)
+    @Size(min = 1, max = 2048)
     @Column(name = "command")
     private String command;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "state")
     private String state;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 256)
     @Column(name = "status")
     private String status;
     @Column(name = "report_added")
@@ -110,11 +116,12 @@ public class Container implements Serializable {
         this.recId = recId;
     }
 
-    public Container(Integer recId, String refId, String nodeId, String probe, String containerId, String imageName, String imageId, String command, String state, String status) {
+    public Container(Integer recId, String refId, String nodeId, String probe, String containerName, String containerId, String imageName, String imageId, String command, String state, String status) {
         this.recId = recId;
         this.refId = refId;
         this.nodeId = nodeId;
         this.probe = probe;
+        this.containerName = containerName;
         this.containerId = containerId;
         this.imageName = imageName;
         this.imageId = imageId;
@@ -153,6 +160,14 @@ public class Container implements Serializable {
 
     public void setProbe(String probe) {
         this.probe = probe;
+    }
+
+    public String getContainerName() {
+        return containerName;
+    }
+
+    public void setContainerName(String containerName) {
+        this.containerName = containerName;
     }
 
     public String getContainerId() {

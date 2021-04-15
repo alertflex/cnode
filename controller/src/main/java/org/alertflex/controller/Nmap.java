@@ -1,0 +1,129 @@
+/*
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+
+package org.alertflex.controller;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.alertflex.common.NmapScanReport;
+import org.alertflex.common.NmapScanParser;
+import org.alertflex.entity.NmapScan;
+import org.alertflex.entity.Project;
+import org.alertflex.entity.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+public class Nmap {
+
+    private static final Logger logger = LoggerFactory.getLogger(Nmap.class);
+
+    private InfoMessageBean eventBean;
+    Project project;
+    Node node;
+
+    public Nmap(InfoMessageBean eb) {
+        this.eventBean = eb;
+        this.project = eventBean.getProject();
+
+    }
+
+    public void saveReport(String report, String target) {
+
+        try {
+
+            String r = eventBean.getRefId();
+            String n = eventBean.getNode();
+            String p = eventBean.getProbe();
+            Date date = new Date();
+
+            node = eventBean.getNodeFacade().findByNodeName(r, n);
+
+            if (node == null || p == null || report.isEmpty()) {
+                return;
+            }
+
+            InputStream is = new ByteArrayInputStream(report.getBytes(StandardCharsets.UTF_8));
+            
+            List<NmapScanReport> listNmapScanReport = getResult(is);
+            
+            for (NmapScanReport nsr: listNmapScanReport) {
+                
+                NmapScan ns = new NmapScan();
+                
+                String name = nsr.getName();
+                int port = Integer.parseInt(nsr.getPortid());
+                String protocol = nsr.getProtocol();
+                String state = nsr.getState();
+                
+                NmapScan nsExisting = eventBean.getNmapScanFacade().findRecord(r,n,p,target,port,state);
+                
+                if (nsExisting == null) {
+                    
+                    ns.setHost(target);
+                    ns.setNodeId(n);
+                    ns.setRefId(r);
+                    ns.setProbe(p);
+                    ns.setPortId(port);
+                    ns.setProtocol(protocol);
+                    ns.setState(state);
+                    ns.setName(name);
+                    ns.setReportAdded(date);
+                    ns.setReportUpdated(date);
+                    
+                    eventBean.getNmapScanFacade().create(ns);
+                } else {
+                    nsExisting.setReportUpdated(date);
+                    eventBean.getNmapScanFacade().edit(nsExisting);
+                }
+            }
+           
+            
+        } catch (Exception e) {
+            logger.error("alertflex_ctrl_exception", e);
+        }
+    }
+
+    public List<NmapScanReport> getResult(InputStream xmlData) {
+
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+
+        factory.setValidating(true);
+        factory.setNamespaceAware(false);
+
+        try {
+
+            SAXParser parser = factory.newSAXParser();
+            NmapScanParser ns = new NmapScanParser();
+
+            parser.parse(xmlData, ns);
+
+            xmlData.close();
+
+            return ns.getResult();
+
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+
+            return null;
+        }
+    }
+}

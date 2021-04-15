@@ -101,7 +101,6 @@ public class RulesManagement {
                 s.setDescription(sensorType + " sensor");
                 s.setType(sensorType);
                 s.setProbe(probe);
-                s.setHost("indef");
                 s.setRulesUpdate(0);
                 eventBean.getSensorFacade().create(s);
             }

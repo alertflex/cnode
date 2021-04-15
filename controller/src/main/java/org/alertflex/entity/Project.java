@@ -25,53 +25,49 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "project")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Project.findAll", query = "SELECT p FROM Project p")
-    , @NamedQuery(name = "Project.findByRefId", query = "SELECT p FROM Project p WHERE p.refId = :refId")
-    , @NamedQuery(name = "Project.findByName", query = "SELECT p FROM Project p WHERE p.name = :name")
-    , @NamedQuery(name = "Project.findByProjectPath", query = "SELECT p FROM Project p WHERE p.projectPath = :projectPath")
-    , @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange")
-    , @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange")
-    , @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange")
-    , @NamedQuery(name = "Project.findByIncJson", query = "SELECT p FROM Project p WHERE p.incJson = :incJson")
-    , @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck")
-    , @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent")
-    , @NamedQuery(name = "Project.findByStatRest", query = "SELECT p FROM Project p WHERE p.statRest = :statRest")
-    , @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive")
-    , @NamedQuery(name = "Project.findBySendNetflow", query = "SELECT p FROM Project p WHERE p.sendNetflow = :sendNetflow")
-    , @NamedQuery(name = "Project.findByElkHost", query = "SELECT p FROM Project p WHERE p.elkHost = :elkHost")
-    , @NamedQuery(name = "Project.findByElkPort", query = "SELECT p FROM Project p WHERE p.elkPort = :elkPort")
-    , @NamedQuery(name = "Project.findByElkUser", query = "SELECT p FROM Project p WHERE p.elkUser = :elkUser")
-    , @NamedQuery(name = "Project.findByElkPass", query = "SELECT p FROM Project p WHERE p.elkPass = :elkPass")
-    , @NamedQuery(name = "Project.findByElkStorepass", query = "SELECT p FROM Project p WHERE p.elkStorepass = :elkStorepass")
-    , @NamedQuery(name = "Project.findByElkKeystore", query = "SELECT p FROM Project p WHERE p.elkKeystore = :elkKeystore")
-    , @NamedQuery(name = "Project.findByElkTruststore", query = "SELECT p FROM Project p WHERE p.elkTruststore = :elkTruststore")
-    , @NamedQuery(name = "Project.findByHiveUrl", query = "SELECT p FROM Project p WHERE p.hiveUrl = :hiveUrl")
-    , @NamedQuery(name = "Project.findByHiveKey", query = "SELECT p FROM Project p WHERE p.hiveKey = :hiveKey")
-    , @NamedQuery(name = "Project.findByMispUrl", query = "SELECT p FROM Project p WHERE p.mispUrl = :mispUrl")
-    , @NamedQuery(name = "Project.findByMispKey", query = "SELECT p FROM Project p WHERE p.mispKey = :mispKey")
-    , @NamedQuery(name = "Project.findByJiraUrl", query = "SELECT p FROM Project p WHERE p.jiraUrl = :jiraUrl")
-    , @NamedQuery(name = "Project.findByJiraUser", query = "SELECT p FROM Project p WHERE p.jiraUser = :jiraUser")
-    , @NamedQuery(name = "Project.findByJiraPass", query = "SELECT p FROM Project p WHERE p.jiraPass = :jiraPass")
-    , @NamedQuery(name = "Project.findByJiraProject", query = "SELECT p FROM Project p WHERE p.jiraProject = :jiraProject")
-    , @NamedQuery(name = "Project.findByJiraType", query = "SELECT p FROM Project p WHERE p.jiraType = :jiraType")
-    , @NamedQuery(name = "Project.findByVtKey", query = "SELECT p FROM Project p WHERE p.vtKey = :vtKey")
-    , @NamedQuery(name = "Project.findByTwiliosmsAccount", query = "SELECT p FROM Project p WHERE p.twiliosmsAccount = :twiliosmsAccount")
-    , @NamedQuery(name = "Project.findByTwiliosmsToken", query = "SELECT p FROM Project p WHERE p.twiliosmsToken = :twiliosmsToken")
-    , @NamedQuery(name = "Project.findByTwiliosmsFrom", query = "SELECT p FROM Project p WHERE p.twiliosmsFrom = :twiliosmsFrom")
-    , @NamedQuery(name = "Project.findByTwiliomailKey", query = "SELECT p FROM Project p WHERE p.twiliomailKey = :twiliomailKey")
-    , @NamedQuery(name = "Project.findByTwiliomailFrom", query = "SELECT p FROM Project p WHERE p.twiliomailFrom = :twiliomailFrom")
-    , @NamedQuery(name = "Project.findBySlackHook", query = "SELECT p FROM Project p WHERE p.slackHook = :slackHook")
-    , @NamedQuery(name = "Project.findByZapHost", query = "SELECT p FROM Project p WHERE p.zapHost = :zapHost")
-    , @NamedQuery(name = "Project.findByZapPort", query = "SELECT p FROM Project p WHERE p.zapPort = :zapPort")
-    , @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey")
-    , @NamedQuery(name = "Project.findByCuckooHost", query = "SELECT p FROM Project p WHERE p.cuckooHost = :cuckooHost")
-    , @NamedQuery(name = "Project.findByCuckooPort", query = "SELECT p FROM Project p WHERE p.cuckooPort = :cuckooPort")
-    , @NamedQuery(name = "Project.findByFalconUrl", query = "SELECT p FROM Project p WHERE p.falconUrl = :falconUrl")
-    , @NamedQuery(name = "Project.findByFalconKey", query = "SELECT p FROM Project p WHERE p.falconKey = :falconKey")
-    , @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl")
-    , @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey")
-    , @NamedQuery(name = "Project.findByComprehendArn", query = "SELECT p FROM Project p WHERE p.comprehendArn = :comprehendArn")
-    , @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion")})
+    @NamedQuery(name = "Project.findAll", query = "SELECT p FROM Project p"),
+    @NamedQuery(name = "Project.findByRefId", query = "SELECT p FROM Project p WHERE p.refId = :refId"),
+    @NamedQuery(name = "Project.findByName", query = "SELECT p FROM Project p WHERE p.name = :name"),
+    @NamedQuery(name = "Project.findByProjectPath", query = "SELECT p FROM Project p WHERE p.projectPath = :projectPath"),
+    @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange"),
+    @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange"),
+    @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
+    @NamedQuery(name = "Project.findByIncJson", query = "SELECT p FROM Project p WHERE p.incJson = :incJson"),
+    @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck"),
+    @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent"),
+    @NamedQuery(name = "Project.findByStatRest", query = "SELECT p FROM Project p WHERE p.statRest = :statRest"),
+    @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive"),
+    @NamedQuery(name = "Project.findBySendNetflow", query = "SELECT p FROM Project p WHERE p.sendNetflow = :sendNetflow"),
+    @NamedQuery(name = "Project.findByElkHost", query = "SELECT p FROM Project p WHERE p.elkHost = :elkHost"),
+    @NamedQuery(name = "Project.findByElkPort", query = "SELECT p FROM Project p WHERE p.elkPort = :elkPort"),
+    @NamedQuery(name = "Project.findByElkUser", query = "SELECT p FROM Project p WHERE p.elkUser = :elkUser"),
+    @NamedQuery(name = "Project.findByElkPass", query = "SELECT p FROM Project p WHERE p.elkPass = :elkPass"),
+    @NamedQuery(name = "Project.findByElkStorepass", query = "SELECT p FROM Project p WHERE p.elkStorepass = :elkStorepass"),
+    @NamedQuery(name = "Project.findByElkKeystore", query = "SELECT p FROM Project p WHERE p.elkKeystore = :elkKeystore"),
+    @NamedQuery(name = "Project.findByElkTruststore", query = "SELECT p FROM Project p WHERE p.elkTruststore = :elkTruststore"),
+    @NamedQuery(name = "Project.findByHiveUrl", query = "SELECT p FROM Project p WHERE p.hiveUrl = :hiveUrl"),
+    @NamedQuery(name = "Project.findByHiveKey", query = "SELECT p FROM Project p WHERE p.hiveKey = :hiveKey"),
+    @NamedQuery(name = "Project.findByMispUrl", query = "SELECT p FROM Project p WHERE p.mispUrl = :mispUrl"),
+    @NamedQuery(name = "Project.findByMispKey", query = "SELECT p FROM Project p WHERE p.mispKey = :mispKey"),
+    @NamedQuery(name = "Project.findByJiraUrl", query = "SELECT p FROM Project p WHERE p.jiraUrl = :jiraUrl"),
+    @NamedQuery(name = "Project.findByJiraUser", query = "SELECT p FROM Project p WHERE p.jiraUser = :jiraUser"),
+    @NamedQuery(name = "Project.findByJiraPass", query = "SELECT p FROM Project p WHERE p.jiraPass = :jiraPass"),
+    @NamedQuery(name = "Project.findByJiraProject", query = "SELECT p FROM Project p WHERE p.jiraProject = :jiraProject"),
+    @NamedQuery(name = "Project.findByJiraType", query = "SELECT p FROM Project p WHERE p.jiraType = :jiraType"),
+    @NamedQuery(name = "Project.findByVtKey", query = "SELECT p FROM Project p WHERE p.vtKey = :vtKey"),
+    @NamedQuery(name = "Project.findByTwiliosmsAccount", query = "SELECT p FROM Project p WHERE p.twiliosmsAccount = :twiliosmsAccount"),
+    @NamedQuery(name = "Project.findByTwiliosmsToken", query = "SELECT p FROM Project p WHERE p.twiliosmsToken = :twiliosmsToken"),
+    @NamedQuery(name = "Project.findByTwiliosmsFrom", query = "SELECT p FROM Project p WHERE p.twiliosmsFrom = :twiliosmsFrom"),
+    @NamedQuery(name = "Project.findByTwiliomailKey", query = "SELECT p FROM Project p WHERE p.twiliomailKey = :twiliomailKey"),
+    @NamedQuery(name = "Project.findByTwiliomailFrom", query = "SELECT p FROM Project p WHERE p.twiliomailFrom = :twiliomailFrom"),
+    @NamedQuery(name = "Project.findBySlackHook", query = "SELECT p FROM Project p WHERE p.slackHook = :slackHook"),
+    @NamedQuery(name = "Project.findByCuckooHost", query = "SELECT p FROM Project p WHERE p.cuckooHost = :cuckooHost"),
+    @NamedQuery(name = "Project.findByCuckooPort", query = "SELECT p FROM Project p WHERE p.cuckooPort = :cuckooPort"),
+    @NamedQuery(name = "Project.findByFalconUrl", query = "SELECT p FROM Project p WHERE p.falconUrl = :falconUrl"),
+    @NamedQuery(name = "Project.findByFalconKey", query = "SELECT p FROM Project p WHERE p.falconKey = :falconKey"),
+    @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl"),
+    @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey"),
+    @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -244,20 +240,6 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "zap_host")
-    private String zapHost;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "zap_port")
-    private int zapPort;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "zap_key")
-    private String zapKey;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
     @Column(name = "cuckoo_host")
     private String cuckooHost;
     @Basic(optional = false)
@@ -286,11 +268,6 @@ public class Project implements Serializable {
     private String vmrayKey;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "comprehend_arn")
-    private String comprehendArn;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "aws_region")
     private String awsRegion;
@@ -302,7 +279,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String zapHost, int zapPort, String zapKey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String comprehendArn, String awsRegion) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -338,16 +315,12 @@ public class Project implements Serializable {
         this.twiliomailKey = twiliomailKey;
         this.twiliomailFrom = twiliomailFrom;
         this.slackHook = slackHook;
-        this.zapHost = zapHost;
-        this.zapPort = zapPort;
-        this.zapKey = zapKey;
         this.cuckooHost = cuckooHost;
         this.cuckooPort = cuckooPort;
         this.falconUrl = falconUrl;
         this.falconKey = falconKey;
         this.vmrayUrl = vmrayUrl;
         this.vmrayKey = vmrayKey;
-        this.comprehendArn = comprehendArn;
         this.awsRegion = awsRegion;
     }
 
@@ -631,30 +604,6 @@ public class Project implements Serializable {
         this.slackHook = slackHook;
     }
 
-    public String getZapHost() {
-        return zapHost;
-    }
-
-    public void setZapHost(String zapHost) {
-        this.zapHost = zapHost;
-    }
-
-    public int getZapPort() {
-        return zapPort;
-    }
-
-    public void setZapPort(int zapPort) {
-        this.zapPort = zapPort;
-    }
-
-    public String getZapKey() {
-        return zapKey;
-    }
-
-    public void setZapKey(String zapKey) {
-        this.zapKey = zapKey;
-    }
-
     public String getCuckooHost() {
         return cuckooHost;
     }
@@ -701,14 +650,6 @@ public class Project implements Serializable {
 
     public void setVmrayKey(String vmrayKey) {
         this.vmrayKey = vmrayKey;
-    }
-
-    public String getComprehendArn() {
-        return comprehendArn;
-    }
-
-    public void setComprehendArn(String comprehendArn) {
-        this.comprehendArn = comprehendArn;
     }
 
     public String getAwsRegion() {

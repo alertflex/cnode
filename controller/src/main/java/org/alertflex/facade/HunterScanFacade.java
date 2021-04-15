@@ -20,10 +20,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.AgentPackages;
+import org.alertflex.entity.HunterScan;
 
 @Stateless
-public class AgentPackagesFacade extends AbstractFacade<AgentPackages> {
+public class HunterScanFacade extends AbstractFacade<HunterScan> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -33,33 +33,35 @@ public class AgentPackagesFacade extends AbstractFacade<AgentPackages> {
         return em;
     }
 
-    public AgentPackagesFacade() {
-        super(AgentPackages.class);
+    public HunterScanFacade() {
+        super(HunterScan.class);
     }
 
-    public AgentPackages findPackage(String ref, String node, String agent, String name, String version) {
+    public HunterScan findScan(String ref, String node, String probe, String target, String loc, String vid, String cat) {
 
-        AgentPackages ap;
+        HunterScan hs = null;
 
         try {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT a FROM AgentPackages a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.name = :name AND a.version = :version")
+                    "SELECT h FROM HunterScan h WHERE h.refId = :ref AND h.nodeId = :node AND h.probe = :probe AND h.target = :target AND h.location = :loc AND h.vid = :vid AND h.cat = :cat")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
-                    .setParameter("agent", agent)
-                    .setParameter("name", name)
-                    .setParameter("version", version);
+                    .setParameter("probe", probe)
+                    .setParameter("target", target)
+                    .setParameter("loc", loc)
+                    .setParameter("vid", vid)
+                    .setParameter("cat", cat);
             qry.setMaxResults(1);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ap = (AgentPackages) qry.getSingleResult();
+            hs = (HunterScan) qry.getSingleResult();
 
         } catch (Exception e) {
-            ap = null;
+            hs = null;
         }
 
-        return ap;
+        return hs;
     }
 }

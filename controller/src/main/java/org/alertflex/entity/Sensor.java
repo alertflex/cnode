@@ -25,15 +25,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "sensor")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Sensor.findAll", query = "SELECT s FROM Sensor s")
-    , @NamedQuery(name = "Sensor.findByRefId", query = "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :refId")
-    , @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node")
-    , @NamedQuery(name = "Sensor.findByProbe", query = "SELECT s FROM Sensor s WHERE s.probe = :probe")
-    , @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.sensorPK.name = :name")
-    , @NamedQuery(name = "Sensor.findByType", query = "SELECT s FROM Sensor s WHERE s.type = :type")
-    , @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description")
-    , @NamedQuery(name = "Sensor.findByHost", query = "SELECT s FROM Sensor s WHERE s.host = :host")
-    , @NamedQuery(name = "Sensor.findByRulesUpdate", query = "SELECT s FROM Sensor s WHERE s.rulesUpdate = :rulesUpdate")})
+    @NamedQuery(name = "Sensor.findAll", query = "SELECT s FROM Sensor s"),
+    @NamedQuery(name = "Sensor.findByRefId", query = "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :refId"),
+    @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node"),
+    @NamedQuery(name = "Sensor.findByProbe", query = "SELECT s FROM Sensor s WHERE s.probe = :probe"),
+    @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.sensorPK.name = :name"),
+    @NamedQuery(name = "Sensor.findByType", query = "SELECT s FROM Sensor s WHERE s.type = :type"),
+    @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description"),
+    @NamedQuery(name = "Sensor.findByRulesUpdate", query = "SELECT s FROM Sensor s WHERE s.rulesUpdate = :rulesUpdate")})
 public class Sensor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,11 +55,6 @@ public class Sensor implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "host")
-    private String host;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "rules_update")
     private int rulesUpdate;
 
@@ -71,12 +65,11 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public Sensor(SensorPK sensorPK, String probe, String type, String description, String host, int rulesUpdate) {
+    public Sensor(SensorPK sensorPK, String probe, String type, String description, int rulesUpdate) {
         this.sensorPK = sensorPK;
         this.probe = probe;
         this.type = type;
         this.description = description;
-        this.host = host;
         this.rulesUpdate = rulesUpdate;
     }
 
@@ -114,14 +107,6 @@ public class Sensor implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     public int getRulesUpdate() {
