@@ -15,12 +15,14 @@
 
 package org.alertflex.facade;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.alertflex.entity.AgentVul;
+import org.alertflex.reports.Finding;
 
 @Stateless
 public class AgentVulFacade extends AbstractFacade<AgentVul> {
@@ -62,6 +64,29 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
 
         return v;
 
+    }
+    
+    public List<Object[]> getFindings(String ref) {
+
+        List<Object[]> f = null;
+
+        try {
+            em.flush();
+
+            Query qry = em.createQuery(
+                    "SELECT a.agent, COUNT(a) FROM AgentVul a WHERE a.refId = :ref GROUP BY a.agent", Finding.class)
+                    .setParameter("ref", ref);
+            // Enable forced database query
+            qry.setMaxResults(10);
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f = (List<Object[]>) qry.getResultList();
+
+        } catch (Exception e) {
+            f = null;
+        }
+
+        return f;
     }
 
 }

@@ -21,11 +21,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.AgentSca;
-import org.alertflex.reports.Finding;
+import org.alertflex.entity.SnykScan;
 
 @Stateless
-public class AgentScaFacade extends AbstractFacade<AgentSca> {
+public class SnykScanFacade extends AbstractFacade<SnykScan> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -35,34 +34,35 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
         return em;
     }
 
-    public AgentScaFacade() {
-        super(AgentSca.class);
+    public SnykScanFacade() {
+        super(SnykScan.class);
     }
 
-    public AgentSca findSca(String ref, String node, String agent, int id, String policy) {
+    public SnykScan findVulnerability(String ref, String node, String probe, String prj, String id, String pkg) {
 
-        AgentSca as;
+        SnykScan ss;
 
         try {
             em.flush();
 
-            Query qry = em.createQuery(
-                    "SELECT a FROM AgentSca a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.scaId = :id AND a.policyId = :policy")
+            Query vQry = em.createQuery("SELECT s FROM SnykScan s WHERE s.refId = :ref AND s.nodeId = :node AND s.probe = :probe AND s.projectId = :prj AND s.vulnId = :id AND s.packageName = :pkg")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
-                    .setParameter("agent", agent)
+                    .setParameter("probe", probe)
+                    .setParameter("prj", prj)
                     .setParameter("id", id)
-                    .setParameter("policy", policy);
-            qry.setMaxResults(1);
+                    .setParameter("pkg", pkg);
+            vQry.setMaxResults(1);
             // Enable forced database query
-            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            as = (AgentSca) qry.getSingleResult();
+            vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            ss = (SnykScan) vQry.getSingleResult();
 
         } catch (Exception e) {
-            as = null;
+            ss = null;
         }
 
-        return as;
+        return ss;
+
     }
     
     public List<Object[]> getFindings(String ref) {
@@ -71,15 +71,14 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
 
         try {
             em.flush();
-
+            
             Query qry = em.createQuery(
-                    "SELECT a.agent, COUNT(a) FROM AgentSca a WHERE a.refId = :ref GROUP BY a.agent", Finding.class)
+                    "SELECT s.severity, COUNT(s) FROM SnykScan s WHERE s.refId = :ref GROUP BY s.severity")
                     .setParameter("ref", ref);
             // Enable forced database query
-            qry.setMaxResults(10);
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             
-            f = (List<Object[]>) qry.getResultList();
+            f =  (List<Object[]>) qry.getResultList();
 
         } catch (Exception e) {
             f = null;
@@ -87,4 +86,5 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
 
         return f;
     }
+
 }

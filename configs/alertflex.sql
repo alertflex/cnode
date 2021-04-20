@@ -689,6 +689,28 @@ CREATE TABLE `inspector_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `snyk_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `project_id` varchar(1024) NOT NULL DEFAULT '',
+  `vuln_id` varchar(1024) NOT NULL DEFAULT '',
+  `package_name` varchar(1024) NOT NULL DEFAULT '',
+  `package_manager` varchar(128) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `language` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(1024) NOT NULL DEFAULT '',
+  `description` varchar(2048) NOT NULL DEFAULT '',
+  `vuln_version` varchar(128) NOT NULL DEFAULT '',
+  `vuln_ref` varchar(2048) NOT NULL DEFAULT '',
+  `vuln_cve` varchar(512) NOT NULL DEFAULT '',
+  `vuln_cwe` varchar(512) NOT NULL DEFAULT '',
+  `publication_time` varchar(512) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `alert_priority` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,

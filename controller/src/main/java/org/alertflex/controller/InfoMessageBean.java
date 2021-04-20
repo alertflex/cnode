@@ -63,6 +63,7 @@ import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
+import org.alertflex.facade.SnykScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -133,6 +134,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private HunterScanFacade hunterScanFacade;
+    
+    @EJB
+    private SnykScanFacade snykScanFacade;
 
     @EJB
     private ProjectFacade projectFacade;
@@ -240,6 +244,10 @@ public class InfoMessageBean implements MessageListener {
     public HunterScanFacade getHunterScanFacade() {
         return this.hunterScanFacade;
     }
+    
+    public SnykScanFacade getSnykScanFacade() {
+        return this.snykScanFacade;
+    }
 
     public Project getProject() {
         return this.project;
@@ -345,12 +353,18 @@ public class InfoMessageBean implements MessageListener {
                             break;
                             
                         case 9: 
+                            Snyk snyk = new Snyk(this);
+                            target = bytesMessage.getStringProperty("target");
+                            snyk.saveReport(data, target);
+                            break;
+                            
+                        case 10: 
                             Trivy trivy = new Trivy(this);
                             target = bytesMessage.getStringProperty("target");
                             trivy.saveReport(data, target);
                             break;
                             
-                        case 10: 
+                        case 11: 
                             Zap zap = new Zap(this);
                             target = bytesMessage.getStringProperty("target");
                             zap.saveReport(data, target);

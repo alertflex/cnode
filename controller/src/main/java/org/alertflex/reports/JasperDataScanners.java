@@ -15,11 +15,14 @@ import java.util.List;
 public class JasperDataScanners {
     
     List<Finding> zapFindings;
+    List<Finding> snykFindings;
     List<Finding> inspectorFindings;
     
-    public JasperDataScanners(List<Finding> lzf, List<Finding> lif) {
+    public JasperDataScanners(List<Finding> lif, List<Finding> lsf, List<Finding> lzf) {
         
         zapFindings = lzf;
+        
+        snykFindings = lsf;
         
         inspectorFindings = lif;
     }
@@ -29,6 +32,10 @@ public class JasperDataScanners {
      */
     public Collection<Finding> getZapFindings() {
         return zapFindings;
+    }
+    
+    public Collection<Finding> getSnykFindings() {
+        return snykFindings;
     }
 
     public Collection<Finding> getInspectorFindings() {

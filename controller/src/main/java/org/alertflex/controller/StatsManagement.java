@@ -682,7 +682,7 @@ public class StatsManagement {
                         net_stat.setNode(eventBean.getNode());
                         net_stat.setProbe(eventBean.getProbe());
                         
-                        net_stat.setSensor(arr.getJSONObject(i).getString("ids"));
+                        net_stat.setSensor(eventBean.getProbe() + ".nids");
 
                         net_stat.setInvalid(arr.getJSONObject(i).getLong("invalid"));
 

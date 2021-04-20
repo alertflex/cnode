@@ -2,7 +2,9 @@ The repository includes Alertflex Controller source code, installation script an
 
 Alertflex project is an automation, continuous monitoring, threat detection and response solution. The Alertflex works as a Security Event Manager with SOAR functionality for a distributed grid of security sensors and scanners.
 
-Solution is designed for use in Hybrid IT infrastructure (on-premises and cloud-based), provides a single pane of glass for more than 20 security products (mostly free open-source software), monitors different types of platforms: Windows, Linux, Docker, Kubernetes, Amazon AWS.
+Solution is designed for use in Hybrid IT infrastructure (on-premises and cloud-based), provides an orchestrator and a single pane of glass for more than 30 products (mostly free open-source software), monitors different types of platforms: Windows, Linux, Docker, Kubernetes, Amazon AWS.
+
+One of the advantages of Alertflex is cyber threat intelligence and response close to real-time. Additionally, Alertflex integrates with the OpenDistro Anomaly Detection feature (Random Cut Forest AI algorithm), you can configure automatic response in case of anomaly detection for certain security events rate.
 
 ![](https://github.com/alertflex/cnode/blob/master/img/dashboard.png)
 
