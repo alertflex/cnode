@@ -517,7 +517,8 @@ public class StatsManagement {
 
                             eventBean.getAgentScaFacade().create(a);
 
-                            // createScaAlert(a);
+                           // createNewScaAlert(a);
+                            
                         } else {
                             scaExisting.setReportUpdated(date);
                             eventBean.getAgentScaFacade().edit(scaExisting);
@@ -544,7 +545,12 @@ public class StatsManagement {
                     if (jv.has("reference")) {
                         vulnRef = jv.getString("reference");
                     }
-                    v.setVulnRef(vulnRef);
+                    if (vulnRef.length() >= 1024) {
+                        String substrReferences = vulnRef.substring(0, 1022);
+                        v.setVulnRef(substrReferences);
+                    } else {
+                        v.setVulnRef(vulnRef);
+                    }
                     
                     String desc = "indef";
                     if (jv.has("description")) {
@@ -576,7 +582,8 @@ public class StatsManagement {
 
                         eventBean.getAgentVulFacade().create(v);
 
-                        // createVulnAlert(v);
+                        // createNewVulnAlert(v);
+                        
                     } else {
 
                         vExisting.setReportUpdated(date);
@@ -855,6 +862,120 @@ public class StatsManagement {
         eventBean.createAlert(a);
     }
     
+    public void createNewScaAlert(AgentSca as) {
+
+        Alert a = new Alert();
+
+        a.setRefId(as.getRefId());
+        a.setNodeId(as.getNodeId());
+        a.setAlertUuid(UUID.randomUUID().toString());
+
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(as.getRefId(), "Alertflex");
+        int sev = ap.getSeverityDefault();
+        a.setAlertSeverity(sev);
+        a.setEventSeverity(Integer.toString(sev));
+
+        a.setAlertSource("Wazuh");
+        a.setAlertType("HOST");
+        a.setSensorId("indef");
+
+        a.setDescription(as.getTitle());
+        a.setEventId("3");
+        a.setLocation("Wazuh SCA");
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("indef");
+        a.setInfo("");
+
+        a.setTimeEvent("");
+        Date date = new Date();
+        a.setTimeCollr(as.getReportUpdated());
+        a.setTimeCntrl(date);
+
+        a.setAgentName(as.getAgent());
+        a.setUserName("indef");
+        a.setCategories("sca");
+        a.setSrcIp("indef");
+        a.setDstIp("indef");
+        a.setDstPort(0);
+        a.setSrcPort(0);
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+    }
+    
+    public void createNewVulnAlert(AgentVul av) {
+
+        Alert a = new Alert();
+
+        a.setRefId(av.getRefId());
+        a.setNodeId(av.getNodeId());
+        a.setAlertUuid(UUID.randomUUID().toString());
+
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(av.getRefId(), "Alertflex");
+        int sev = ap.getSeverityDefault();
+        a.setAlertSeverity(sev);
+        a.setEventSeverity(Integer.toString(sev));
+
+        a.setAlertSource("Wazuh");
+        a.setAlertType("HOST");
+        a.setSensorId("indef");
+
+        a.setDescription(av.getTitle());
+        a.setEventId("4");
+        a.setLocation("Wazuh Vuln");
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("indef");
+        a.setInfo("");
+
+        a.setTimeEvent("");
+        Date date = new Date();
+        a.setTimeCollr(av.getReportUpdated());
+        a.setTimeCntrl(date);
+
+        a.setAgentName(av.getAgent());
+        a.setUserName("indef");
+        a.setCategories("sca");
+        a.setSrcIp("indef");
+        a.setDstIp("indef");
+        a.setDstPort(0);
+        a.setSrcPort(0);
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+    }
+    
     public Boolean updateFilters(String ref, String nodeName) {
         
         String filterFile = "";
@@ -930,7 +1051,7 @@ public class StatsManagement {
         if (listProbes != null) {
             for (String probe : listProbes) {
                 if (!probe.equals(eventBean.probe)) {
-                    if (!uploadFilters(eventBean.getNode(), probe, filterFile)) return false;
+                    if (!uploadFilters(eventBean.ref_id, eventBean.getNode(), probe, filterFile)) return false;
                 }
             }
         }
@@ -938,7 +1059,7 @@ public class StatsManagement {
         return true;
     }
 
-    public boolean uploadFilters(String node, String probe, String filters) {
+    public boolean uploadFilters(String ref, String node, String probe, String filters) {
         
         try {
 
@@ -957,7 +1078,7 @@ public class StatsManagement {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
             // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("jms/altprobe/" + node + "/" + probe);
+            Destination destination = session.createQueue("jms/altprobe/" + ref + "/" + node + "/" + probe + "/sensors");
 
             // Create a MessageProducer from the Session to the Topic or Queue
             MessageProducer producer = session.createProducer(destination);

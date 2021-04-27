@@ -15,6 +15,7 @@
 
 package org.alertflex.facade;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
@@ -62,5 +63,27 @@ public class KubeScanFacade extends AbstractFacade<KubeScan> {
         }
 
         return ks;
+    }
+    
+    public List<Object[]> getFindings(String ref) {
+
+        List<Object[]> f = null;
+
+        try {
+            em.flush();
+            
+            Query qry = em.createQuery(
+                    "SELECT k.resultStatus, COUNT(k) FROM KubeScan k WHERE k.refId = :ref GROUP BY k.resultStatus")
+                    .setParameter("ref", ref);
+            // Enable forced database query
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f =  (List<Object[]>) qry.getResultList();
+
+        } catch (Exception e) {
+            f = null;
+        }
+
+        return f;
     }
 }

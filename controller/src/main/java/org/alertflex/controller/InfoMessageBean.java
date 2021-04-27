@@ -17,10 +17,8 @@ package org.alertflex.controller;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -34,11 +32,9 @@ import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
-import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.alertflex.common.PojoAlertLogic;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Project;
@@ -446,11 +442,9 @@ public class InfoMessageBean implements MessageListener {
                 sendAlertToMQ(a);
             }
         }
-
+        
         // send alert to log server
-        if (elasticFromPool != null) {
-            elasticFromPool.SendAlertToLog(a);
-        }
+        if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
     }
 
     public void sendAlertToMQ(Alert a) {
@@ -472,24 +466,18 @@ public class InfoMessageBean implements MessageListener {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
             // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("jms/alertflex/alerts");
+            javax.jms.Destination destination = session.createQueue("jms/alertflex/alerts");
 
             // Create a MessageProducer from the Session to the Topic or Queue
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            
-            BytesMessage message = session.createBytesMessage();
-            PojoAlertLogic pal = new PojoAlertLogic(a);
-            
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            
-            oos.writeObject(pal);
-                
-            oos.close();
-            bos.close();
-                
-            message.writeBytes(bos.toByteArray());
+
+            TextMessage message = session.createTextMessage();
+
+            message.setIntProperty("msg_type", 2);
+            message.setStringProperty("ref_id", a.getRefId());
+            message.setStringProperty("alert_uuid", a.getAlertUuid());
+            message.setText("empty");
             producer.send(message);
 
             // Clean up
@@ -497,10 +485,7 @@ public class InfoMessageBean implements MessageListener {
             connection.close();
 
         } catch (JMSException e) {
-            logger.error("alertflex_ctrl_exception", e);
-        } catch (IOException e) {
-            logger.error("alertflex_ctrl_exception", e);
+            
         }
     }
-
 }

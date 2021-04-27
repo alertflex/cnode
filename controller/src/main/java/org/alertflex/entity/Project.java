@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -67,7 +77,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByFalconKey", query = "SELECT p FROM Project p WHERE p.falconKey = :falconKey"),
     @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl"),
     @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey"),
-    @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion")})
+    @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion"),
+    @NamedQuery(name = "Project.findByZapHost", query = "SELECT p FROM Project p WHERE p.zapHost = :zapHost"),
+    @NamedQuery(name = "Project.findByZapPort", query = "SELECT p FROM Project p WHERE p.zapPort = :zapPort"),
+    @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -271,6 +284,20 @@ public class Project implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "aws_region")
     private String awsRegion;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "zap_host")
+    private String zapHost;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "zap_port")
+    private int zapPort;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "zap_key")
+    private String zapKey;
 
     public Project() {
     }
@@ -279,7 +306,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String zapHost, int zapPort, String zapKey) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -322,6 +349,9 @@ public class Project implements Serializable {
         this.vmrayUrl = vmrayUrl;
         this.vmrayKey = vmrayKey;
         this.awsRegion = awsRegion;
+        this.zapHost = zapHost;
+        this.zapPort = zapPort;
+        this.zapKey = zapKey;
     }
 
     public String getRefId() {
@@ -658,6 +688,30 @@ public class Project implements Serializable {
 
     public void setAwsRegion(String awsRegion) {
         this.awsRegion = awsRegion;
+    }
+
+    public String getZapHost() {
+        return zapHost;
+    }
+
+    public void setZapHost(String zapHost) {
+        this.zapHost = zapHost;
+    }
+
+    public int getZapPort() {
+        return zapPort;
+    }
+
+    public void setZapPort(int zapPort) {
+        this.zapPort = zapPort;
+    }
+
+    public String getZapKey() {
+        return zapKey;
+    }
+
+    public void setZapKey(String zapKey) {
+        this.zapKey = zapKey;
     }
 
     @Override

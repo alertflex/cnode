@@ -15,6 +15,7 @@
 
 package org.alertflex.facade;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
@@ -62,6 +63,28 @@ public class TrivyScanFacade extends AbstractFacade<TrivyScan> {
 
         return ts;
 
+    }
+    
+    public List<Object[]> getFindings(String ref) {
+
+        List<Object[]> f = null;
+
+        try {
+            em.flush();
+            
+            Query qry = em.createQuery(
+                    "SELECT t.severity, COUNT(t) FROM TrivyScan t WHERE t.refId = :ref GROUP BY t.severity")
+                    .setParameter("ref", ref);
+            // Enable forced database query
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f =  (List<Object[]>) qry.getResultList();
+
+        } catch (Exception e) {
+            f = null;
+        }
+
+        return f;
     }
 
 }

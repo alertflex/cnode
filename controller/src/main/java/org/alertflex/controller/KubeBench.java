@@ -18,6 +18,7 @@ package org.alertflex.controller;
 import java.util.Date;
 import java.util.UUID;
 import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.KubeScan;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
@@ -136,7 +137,11 @@ public class KubeBench {
                             
                             ks.setReportAdded(date);
                             ks.setReportUpdated(date);
+                            
                             eventBean.getKubeScanFacade().create(ks);
+                            
+                            createKubeScanAlert(ks);
+                            
                         } else {
                             ksExisting.setReportUpdated(date);
                             eventBean.getKubeScanFacade().edit(ksExisting);
@@ -161,23 +166,33 @@ public class KubeBench {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        a.setAlertSeverity(0);
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ks.getRefId(), "KubeBench");
+        
+        int sev = ap.getSeverityDefault();
+        if (ks.getResultStatus().equals(ap.getText1())) sev = ap.getValue1();
+        if (ks.getResultStatus().equals(ap.getText2())) sev = ap.getValue2();
+        if (ks.getResultStatus().equals(ap.getText3())) sev = ap.getValue3();
+        if (ks.getResultStatus().equals(ap.getText4())) sev = ap.getValue4();
+        if (ks.getResultStatus().equals(ap.getText5())) sev = ap.getValue5();
+        if (sev < ap.getSeverityThreshold()) return;
+        
+        a.setAlertSeverity(sev);
         a.setEventSeverity(ks.getResultStatus());
         a.setEventId("1");
-        a.setCategories("kube_bench");
+        a.setCategories("kube-bench");
         a.setDescription(ks.getResultDesc());
         a.setAlertSource("KubeBench");
         a.setAlertType("MISC");
 
         a.setSensorId(ks.getProbe());
-        a.setLocation("indef");
+        a.setLocation(ks.getTestName());
         a.setAction("indef");
         a.setStatus("processed");
         a.setFilter("");
         a.setInfo(ks.getResultRemediation());
         a.setTimeEvent("indef");
         Date date = new Date();
-        a.setTimeCollr(date);
+        a.setTimeCollr(ks.getReportAdded());
         a.setTimeCntrl(date);
         a.setAgentName("indef");
         a.setUserName("indef");

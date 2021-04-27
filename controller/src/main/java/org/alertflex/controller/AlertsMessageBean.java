@@ -15,10 +15,8 @@
 
 package org.alertflex.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,13 +77,11 @@ public class AlertsMessageBean implements MessageListener {
     @EJB
     private ResponseFacade responseFacade;
     
-    PojoAlertLogic pal = null;
+    Alert a = null;
     
     @Override
     public void onMessage(Message message) {
         
-        Alert a = null;
-
         try {
 
             if (message instanceof TextMessage) {
@@ -201,74 +197,45 @@ public class AlertsMessageBean implements MessageListener {
                             }
                         }
 
-                        switch (a.getStatus()) {
-                            case "processed_new":
-                                a.setStatus("processed");
-                                break;
-                            case "modified_new":
-                                a.setStatus("modified");
-                                break;
-                            case "aggregated_new":
-                                a.setStatus("aggregated");
-                                break;
-                            default:
-                                break;
-                        }
-
                         if (project.getSemActive() > 0) {
 
                             if (project.getSemActive() == 2) {
-                                
-                                pal = new PojoAlertLogic(a);
                                 searchResponse();
-                                a.setStatus(pal.getStatus());
-                                a.setCategories(pal.getCategories());
                             }
                             
                             if (!a.getStatus().equals("remove")) alertFacade.create(a);
-
-                            // send alert to log server
-                            if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
-                        
                         }
+                        
+                        // send alert to log server
+                        if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
 
                     } else {
                         
-                        if (message instanceof BytesMessage) {
-
-                            BytesMessage msg = (BytesMessage) message;
+                        if (msg_type == 2) {
                             
-                            byte[] bytes = new byte[(int) msg.getBodyLength()];
-                            msg.readBytes(bytes);
-                
-                            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-                            ObjectInputStream ois = new ObjectInputStream(bis);
-                            pal = (PojoAlertLogic) ois.readObject();
-                
-                            ois.close();
-                            bis.close();
-
-                            if (pal != null) {
-                                searchResponse();
-                                a = alertFacade.findAlertByUuid(pal.getAlertUuid());
+                            String uuid = ((TextMessage) message).getStringProperty("alert_uuid");
+                            
+                            if (uuid != null && !uuid.isEmpty()) {
+                            
+                                a = alertFacade.findAlertByUuid(uuid);
+                            
                                 if (a != null) {
-                                    if (pal.getStatus().equals("remove")) {
+                                    
+                                    String oldStatus = a.getStatus();
+                            
+                                    searchResponse();
+                                    
+                                    if (a.equals("remove")) {
                                         alertFacade.remove(a);
                                     } else {
-                                        if (!a.getStatus().equals(pal.getStatus()) ||
-                                            !a.getCategories().equals(pal.getCategories())) {
-                                            
-                                            a.setStatus(pal.getStatus());
-                                            a.setCategories(pal.getCategories());
-                                            alertFacade.edit(a);
-                                        }
+                                       if (!a.getStatus().equals("oldStatus")) alertFacade.edit(a);
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
+            } 
         } catch (Exception e) {
             logger.error("alertflex_ctrl_exception", e);
         }
@@ -280,9 +247,9 @@ public class AlertsMessageBean implements MessageListener {
         List<Response> responseList = new ArrayList<>();
 
         // check if field of action consists response profile for alert
-        if (!pal.getAction().equals("indef") && !pal.getAction().isEmpty()) {
+        if (!a.getAction().equals("indef") && !a.getAction().isEmpty()) {
         
-            Response r = responseFacade.findResponseForAction(pal.getRefId(), pal.getAlertSource(), pal.getAction());
+            Response r = responseFacade.findResponseForAction(a.getRefId(), a.getAlertSource(), a.getAction());
 
             if (r != null) {
                 responseList.add(r);
@@ -290,15 +257,15 @@ public class AlertsMessageBean implements MessageListener {
         }
 
         // check response for event
-        rl = searchResponseForEvent();
+        rl = searchResponseForEvent(a);
         if (rl != null && !rl.isEmpty()) {
             responseList.addAll(rl);
         }
 
         // check response for cat
-        if (!pal.getCategories().isEmpty()) {
+        if (!a.getCategories().isEmpty()) {
 
-            String[] catArray = pal.getCategories().split(", ");
+            String[] catArray = a.getCategories().split(", ");
 
             if (catArray != null && catArray.length > 0) {
 
@@ -315,23 +282,24 @@ public class AlertsMessageBean implements MessageListener {
             }
         }
 
-        if (responseList == null || responseList.isEmpty()) {
-            return;
-        }
+        if (responseList == null || responseList.isEmpty()) return;
+       
 
         for (Response res : responseList) {
             if (res != null) {
+                
                 changeActionStatus(res);
+                
                 sendMqResponse(res);
             }
         }
     }
     
-    public List<Response> searchResponseForEvent() {
+    public List<Response> searchResponseForEvent(Alert a) {
 
         List<Response> selectedResponse = new ArrayList<>();
 
-        List<Response> resList = responseFacade.findResponseForEvent(pal.getRefId(), pal.getAlertSource(), pal.getEventId());
+        List<Response> resList = responseFacade.findResponseForEvent(a.getRefId(), a.getAlertSource(), a.getEventId());
 
         if (resList == null) {
             return null;
@@ -341,22 +309,22 @@ public class AlertsMessageBean implements MessageListener {
 
             int severity = res.getAlertSeverity();
             if (severity != 0) {
-                if (severity > pal.getAlertSeverity()) {
+                if (severity > a.getAlertSeverity()) {
                     continue;
                 }
             }
 
             String parameter = res.getAlertAgent();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getAgentName())) {
+                if (!parameter.equals(a.getAgentName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertContainer();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getContainerName())) {
-                    if (!parameter.equals(pal.getContainerId())) {
+                if (!parameter.equals(a.getContainerName())) {
+                    if (!parameter.equals(a.getContainerId())) {
                         continue;
                     }
                 }
@@ -364,42 +332,42 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertIp();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getSrcIp()) && !parameter.equals(pal.getDstIp())) {
+                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertUser();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getUserName())) {
+                if (!parameter.equals(a.getUserName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertSensor();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getSensorId())) {
+                if (!parameter.equals(a.getSensorId())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getFileName())) {
+                if (!parameter.equals(a.getFileName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertProcess();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getProcessName())) {
+                if (!parameter.equals(a.getProcessName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertRegex();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!pal.getDescription().matches(parameter)) {
+                if (!a.getDescription().matches(parameter)) {
                     continue;
                 }
             }
@@ -424,7 +392,7 @@ public class AlertsMessageBean implements MessageListener {
 
         List<Response> selectedResponse = new ArrayList<>();
 
-        List<Response> resList = responseFacade.findResponseForCat(pal.getRefId(), pal.getAlertSource(), c);
+        List<Response> resList = responseFacade.findResponseForCat(a.getRefId(), a.getAlertSource(), c);
 
         if (resList == null) {
             return null;
@@ -434,22 +402,22 @@ public class AlertsMessageBean implements MessageListener {
 
             int severity = res.getAlertSeverity();
             if (severity != 0) {
-                if (severity > pal.getAlertSeverity()) {
+                if (severity > a.getAlertSeverity()) {
                     continue;
                 }
             }
 
             String parameter = res.getAlertAgent();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getAgentName())) {
+                if (!parameter.equals(a.getAgentName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertContainer();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getContainerName())) {
-                    if (!parameter.equals(pal.getContainerId())) {
+                if (!parameter.equals(a.getContainerName())) {
+                    if (!parameter.equals(a.getContainerId())) {
                         continue;
                     }
                 }
@@ -457,42 +425,42 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertIp();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getSrcIp()) && !parameter.equals(pal.getDstIp())) {
+                if (!parameter.equals(a.getSrcIp()) && !parameter.equals(a.getDstIp())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertUser();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getUserName())) {
+                if (!parameter.equals(a.getUserName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertSensor();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getSensorId())) {
+                if (!parameter.equals(a.getSensorId())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getFileName())) {
+                if (!parameter.equals(a.getFileName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertProcess();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(pal.getProcessName())) {
+                if (!parameter.equals(a.getProcessName())) {
                     continue;
                 }
             }
 
             parameter = res.getAlertRegex();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!pal.getDescription().matches(parameter)) {
+                if (!a.getDescription().matches(parameter)) {
                     continue;
                 }
             }
@@ -515,6 +483,8 @@ public class AlertsMessageBean implements MessageListener {
     
         
     public void sendMqResponse(Response res) {
+        
+        PojoAlertLogic pal = new PojoAlertLogic(a);
         
         if ((!res.getPlaybook().isEmpty() && !res.getPlaybook().equals("indef")) 
             || (!res.getNotifyUsers().equals("indef") && !res.getNotifyUsers().isEmpty())
@@ -574,9 +544,10 @@ public class AlertsMessageBean implements MessageListener {
 
         if (res != null) {
             
-            pal.setAction(res.getResId());
+            a.setAction(res.getResId());
 
             String status = res.getAction();
+            
             // change status of alert
             if (status.equals("indef") || status.equals("thehive") || status.isEmpty()) {
                 return;
@@ -585,15 +556,15 @@ public class AlertsMessageBean implements MessageListener {
             switch (status) {
 
                 case "confirm":
-                    pal.setStatus("confirmed");
+                    a.setStatus("confirmed");
                     break;
 
                 case "incident":
-                    pal.setStatus("incident");
+                    a.setStatus("incident");
                     break;
 
                 case "remove":
-                    pal.setStatus("remove");
+                    a.setStatus("remove");
                     break;
 
                 default:

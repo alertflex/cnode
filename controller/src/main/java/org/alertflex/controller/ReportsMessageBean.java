@@ -46,14 +46,19 @@ import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AlertFacade;
+import org.alertflex.facade.DockerScanFacade;
+import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.InspectorScanFacade;
+import org.alertflex.facade.KubeScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.facade.SnykScanFacade;
+import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.reports.AlertsBar;
 import org.alertflex.reports.AlertsPie;
 import org.alertflex.reports.Finding;
 import org.alertflex.reports.JasperDataAlertsSeverity;
 import org.alertflex.reports.JasperDataAlertsSource;
+import org.alertflex.reports.JasperDataContainers;
 import org.alertflex.reports.JasperDataEndpoints;
 import org.alertflex.reports.JasperDataScanners;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -90,6 +95,18 @@ public class ReportsMessageBean implements MessageListener {
     
     @EJB
     private InspectorScanFacade inspectorScanFacade;
+    
+    @EJB
+    private DockerScanFacade dockerScanFacade;
+    
+    @EJB
+    private KubeScanFacade kubeScanFacade;
+    
+    @EJB
+    private HunterScanFacade hunterScanFacade;
+    
+    @EJB
+    private TrivyScanFacade trivyScanFacade;
 
         
     @Override
@@ -117,6 +134,10 @@ public class ReportsMessageBean implements MessageListener {
                         
                         case "Alerts" :
                             if (createAlertsReport(dir, interval)) responseText = "Ok";
+                            break;
+                            
+                        case "Containers" :
+                            if (createContainersReport(dir, interval)) responseText = "Ok";
                             break;
                             
                         case "Endpoints" :
@@ -214,7 +235,81 @@ public class ReportsMessageBean implements MessageListener {
             }
 
         } catch (JRException e) {
-            logger.error("alertflex_mc_exception", e);
+            logger.error("alertflex_ctrl_exception", e);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public Boolean createContainersReport(String reportDir, int interval) {
+
+        try {
+            
+            List<Finding> dockerBenchFindings = new ArrayList();
+            List<Finding> kubeBenchFindings = new ArrayList();
+            List<Finding> kubeHunterFindings = new ArrayList();
+            List<Finding> trivyFindings = new ArrayList();
+            
+            List<Object[]> dockerBenchObjects = dockerScanFacade.getFindings(p.getRefId());
+            List<Object[]> kubeBenchObjects = kubeScanFacade.getFindings(p.getRefId());
+            List<Object[]> kubeHunterObjects = hunterScanFacade.getFindings(p.getRefId());
+            List<Object[]> trivyObjects = trivyScanFacade.getFindings(p.getRefId());
+                        
+            if (dockerBenchObjects != null && dockerBenchObjects.size() > 0) {
+                
+                for (Object[] o: dockerBenchObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    dockerBenchFindings.add(new Finding(f,c.intValue()));
+                }
+            }
+            
+            if (kubeBenchObjects != null && kubeBenchObjects.size() > 0) {
+                
+                for (Object[] o: kubeBenchObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    kubeBenchFindings.add(new Finding(f,c.intValue()));
+                }
+            }
+            
+            if (kubeHunterObjects != null && kubeHunterObjects.size() > 0) {
+                
+                for (Object[] o: kubeHunterObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    kubeHunterFindings.add(new Finding(f,c.intValue()));
+                }
+            }
+            
+            if (trivyObjects != null && trivyObjects.size() > 0) {
+                
+                for (Object[] o: trivyObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    trivyFindings.add(new Finding(f,c.intValue()));
+                }
+            }
+            
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "containers_report.jasper");
+                
+            JasperDataContainers jasperDataContainers = new JasperDataContainers(dockerBenchFindings, kubeBenchFindings, kubeHunterFindings, trivyFindings);
+            
+            Map<String, Object> params = new HashMap<String, Object>();
+
+            params.put("datasourceDockerBench", jasperDataContainers.getDockerBenchFindings());
+            params.put("datasourceKubeBench", jasperDataContainers.getKubeBenchFindings());
+            params.put("datasourceKubeHunter", jasperDataContainers.getKubeHunterFindings());
+            params.put("datasourceTrivy", jasperDataContainers.getTrivyFindings());
+            params.put("reportDir", reportDir);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
+
+            JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "containers_report.pdf");
+
+        } catch (JRException e) {
+            logger.error("alertflex_ctrl_exception", e);
             return false;
         }
 
@@ -264,7 +359,7 @@ public class ReportsMessageBean implements MessageListener {
             JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "endpoints_report.pdf");
 
         } catch (JRException e) {
-            logger.error("alertflex_mc_exception", e);
+            logger.error("alertflex_ctrl_exception", e);
             return false;
         }
 
@@ -327,7 +422,7 @@ public class ReportsMessageBean implements MessageListener {
             JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "scanners_report.pdf");
 
         } catch (JRException e) {
-            logger.error("alertflex_mc_exception", e);
+            logger.error("alertflex_ctrl_exception", e);
             return false;
         }
 

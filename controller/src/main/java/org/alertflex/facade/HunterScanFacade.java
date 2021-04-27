@@ -15,6 +15,7 @@
 
 package org.alertflex.facade;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
@@ -63,5 +64,27 @@ public class HunterScanFacade extends AbstractFacade<HunterScan> {
         }
 
         return hs;
+    }
+    
+    public List<Object[]> getFindings(String ref) {
+
+        List<Object[]> f = null;
+
+        try {
+            em.flush();
+            
+            Query qry = em.createQuery(
+                    "SELECT h.severity, COUNT(h) FROM HunterScan h WHERE h.refId = :ref GROUP BY h.severity")
+                    .setParameter("ref", ref);
+            // Enable forced database query
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f =  (List<Object[]>) qry.getResultList();
+
+        } catch (Exception e) {
+            f = null;
+        }
+
+        return f;
     }
 }

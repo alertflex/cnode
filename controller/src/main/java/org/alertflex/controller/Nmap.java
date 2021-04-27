@@ -21,11 +21,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.alertflex.common.NmapScanReport;
 import org.alertflex.common.NmapScanParser;
+import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.NmapScan;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
@@ -91,6 +94,9 @@ public class Nmap {
                     ns.setReportUpdated(date);
                     
                     eventBean.getNmapScanFacade().create(ns);
+                    
+                    createNmapScanAlert(ns);
+                    
                 } else {
                     nsExisting.setReportUpdated(date);
                     eventBean.getNmapScanFacade().edit(nsExisting);
@@ -101,6 +107,68 @@ public class Nmap {
         } catch (Exception e) {
             logger.error("alertflex_ctrl_exception", e);
         }
+    }
+    
+    public void createNmapScanAlert(NmapScan ns) {
+
+        Alert a = new Alert();
+
+        a.setNodeId(eventBean.getNode());
+        a.setRefId(eventBean.getRefId());
+        a.setAlertUuid(UUID.randomUUID().toString());
+
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ns.getRefId(), "ZAP");
+        
+        int sev = ap.getSeverityDefault();
+        if (sev < ap.getSeverityThreshold()) return;
+        
+        a.setEventSeverity(Integer.toString(sev));
+        a.setAlertSeverity(sev);
+        a.setEventId("1");
+        
+        a.setCategories("nmap");
+        a.setAlertSource("Nmap");
+        a.setAlertType("MISC");
+
+        a.setSensorId(ns.getProbe());
+        a.setLocation(ns.getHost());
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("");
+        
+        a.setDescription("Port: " + ns.getName() + " is " + ns.getState());
+        
+        a.setInfo("indef");
+        a.setTimeEvent("indef");
+        Date date = new Date();
+        a.setTimeCollr(date);
+        a.setTimeCntrl(date);
+        a.setAgentName("indef");
+        a.setUserName("indef");
+
+        a.setSrcIp("0.0.0.0");
+        a.setDstIp("0.0.0.0");
+        a.setDstPort(ns.getPortId());
+        a.setSrcPort(ns.getPortId());
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+
     }
 
     public List<NmapScanReport> getResult(InputStream xmlData) {

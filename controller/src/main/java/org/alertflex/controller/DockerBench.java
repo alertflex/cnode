@@ -94,12 +94,14 @@ public class DockerBench {
                     if (dsExisting == null) {
 
                         eventBean.getDockerScanFacade().create(ds);
+                        
+                        createDockerScanAlert(ds);
+                        
                     } else {
 
                         dsExisting.setReportUpdated(date);
                         eventBean.getDockerScanFacade().edit(dsExisting);
                     }
-
                 }
             }
 
@@ -116,23 +118,33 @@ public class DockerBench {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        a.setAlertSeverity(0);
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ds.getRefId(), "DockerBench");
+        
+        int sev = ap.getSeverityDefault();
+        if (ds.getResult().equals(ap.getText1())) sev = ap.getValue1();
+        if (ds.getResult().equals(ap.getText2())) sev = ap.getValue2();
+        if (ds.getResult().equals(ap.getText3())) sev = ap.getValue3();
+        if (ds.getResult().equals(ap.getText4())) sev = ap.getValue4();
+        if (ds.getResult().equals(ap.getText5())) sev = ap.getValue5();
+        if (sev < ap.getSeverityThreshold()) return;
+        
+        a.setAlertSeverity(sev);
         a.setEventSeverity(ds.getResult());
-        a.setEventId("1");
-        a.setCategories("docker_bench");
+        a.setEventId(ds.getResultId());
+        a.setCategories("docker-bench");
         a.setDescription(ds.getResultDesc());
         a.setAlertSource("DockerBench");
         a.setAlertType("MISC");
 
         a.setSensorId(ds.getProbe());
-        a.setLocation("indef");
+        a.setLocation(ds.getTestDesc());
         a.setAction("indef");
         a.setStatus("processed");
         a.setFilter("");
         a.setInfo(ds.getTestDesc());
         a.setTimeEvent("indef");
         Date date = new Date();
-        a.setTimeCollr(date);
+        a.setTimeCollr(ds.getReportAdded());
         a.setTimeCntrl(date);
         a.setAgentName("indef");
         a.setUserName("indef");

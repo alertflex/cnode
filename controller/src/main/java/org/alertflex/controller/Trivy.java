@@ -99,13 +99,23 @@ public class Trivy {
                     if (arrVuln.getJSONObject(j).has("Description")) {
                         desc = arrVuln.getJSONObject(j).getString("Description");
                     }
-                    ts.setDescription(desc);
+                    if (desc.length() >= 2048) {
+                        String substrDesc = desc.substring(0, 2046);
+                        ts.setDescription(substrDesc);
+                    } else {
+                        ts.setDescription(desc);
+                    }
                     
                     String ref = "indef";
                     if (arrVuln.getJSONObject(j).has("PrimaryURL")) {
                         ref = arrVuln.getJSONObject(j).getString("PrimaryURL");
                     }
-                    ts.setVulnRef(ref);
+                    if (ref.length() >= 1024) {
+                        String substrRef = ref.substring(0, 1022);
+                        ts.setVulnRef(substrRef);
+                    } else {
+                        ts.setVulnRef(ref);
+                    }
                     
                     JSONObject layer = arrVuln.getJSONObject(j).getJSONObject("Layer");
                     
@@ -121,6 +131,8 @@ public class Trivy {
                     if (tsExisting == null) {
 
                         eventBean.getTrivyScanFacade().create(ts);
+                        
+                        createTrivyScanAlert(ts);
                     
                     } else {
 
@@ -134,7 +146,7 @@ public class Trivy {
         }
     }
 
-    public void createTrivyScanAlert(TrivyScan ts, String sev) {
+    public void createTrivyScanAlert(TrivyScan ts) {
 
         Alert a = new Alert();
 
@@ -142,20 +154,47 @@ public class Trivy {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        a.setAlertSeverity(0);
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ts.getRefId(), "Trivy");
+        
+        int sev = ap.getSeverityDefault();
+        if (ts.getSeverity().equals(ap.getText1())) sev = ap.getValue1();
+        if (ts.getSeverity().equals(ap.getText2())) sev = ap.getValue2();
+        if (ts.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
+        if (ts.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
+        if (ts.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
+        if (sev < ap.getSeverityThreshold()) return;
+        
+        a.setEventSeverity(ts.getSeverity());
+        a.setAlertSeverity(sev);
         a.setEventId("1");
-        a.setEventSeverity(sev);
+        
         a.setCategories("trivy");
         a.setDescription(ts.getTitle());
         a.setAlertSource("Trivy");
         a.setAlertType("MISC");
 
         a.setSensorId(ts.getProbe());
-        a.setLocation("indef");
+        a.setLocation(ts.getImageName());
         a.setAction("indef");
         a.setStatus("processed");
         a.setFilter("");
-        a.setInfo(ts.getDescription());
+        
+        String desc = ts.getTitle();
+        if (desc.length() >= 1024) {
+            String substrDesc = desc.substring(0, 1022);
+            a.setDescription(substrDesc);
+        } else {
+            a.setDescription(desc);
+        }
+        
+        String info = ts.getVulnRef();
+        if (info.length() >= 1024) {
+            String substrInfo = info.substring(0, 1022);
+            a.setInfo(substrInfo);
+        } else {
+            a.setInfo(info);
+        }
+                
         a.setTimeEvent("indef");
         Date date = new Date();
         a.setTimeCollr(date);

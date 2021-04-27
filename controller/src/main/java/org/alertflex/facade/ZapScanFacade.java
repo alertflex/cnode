@@ -1,8 +1,16 @@
 /*
- * Alertflex Management Console
+ *   Copyright 2021 Oleg Zharkov
  *
- * Copyright (C) 2021 Oleg Zharkov
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
 
 package org.alertflex.facade;
@@ -10,14 +18,10 @@ package org.alertflex.facade;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.SqlResultSetMapping;
 import org.alertflex.entity.ZapScan;
-import org.alertflex.reports.Finding;
 
 @Stateless
 public class ZapScanFacade extends AbstractFacade<ZapScan> {
@@ -34,34 +38,6 @@ public class ZapScanFacade extends AbstractFacade<ZapScan> {
         super(ZapScan.class);
     }
 
-    public ZapScan findRecord(String ref, String url, int plugin, int cwe, int source, int wasc) {
-
-        ZapScan zs;
-
-        try {
-            em.flush();
-
-            Query vQry = em.createQuery(
-                    "SELECT z FROM ZapScan z WHERE z.refId = :ref AND z.url = :url AND z.pluginid = :p AND z.cweid = :c AND z.sourceid = :s AND z.wascid = :w")
-                    .setParameter("ref", ref)
-                    .setParameter("url", url)
-                    .setParameter("p", plugin)
-                    .setParameter("c", cwe)
-                    .setParameter("s", source)
-                    .setParameter("w", wasc);
-            vQry.setMaxResults(1);
-            // Enable forced database query
-            vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            zs = (ZapScan) vQry.getSingleResult();
-
-        } catch (Exception e) {
-            zs = null;
-        }
-
-        return zs;
-
-    }
-    
     public ZapScan findScan(String ref, String node, String probe, String target, String alert) {
 
         ZapScan zs = null;
@@ -70,7 +46,7 @@ public class ZapScanFacade extends AbstractFacade<ZapScan> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT z FROM ZapScan z WHERE z.refId = :ref AND z.nodeId = :node AND z.probe = :probe AND z.target = :target AND z.alertName = :alert")
+                    "SELECT z FROM ZapScan z WHERE z.refId = :ref AND z.nodeId = :node AND z.probe = :probe AND z.target = :target AND z.alertRef = :alert")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)

@@ -15,6 +15,7 @@
 
 package org.alertflex.facade;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
@@ -60,5 +61,27 @@ public class DockerScanFacade extends AbstractFacade<DockerScan> {
         }
 
         return ds;
+    }
+    
+    public List<Object[]> getFindings(String ref) {
+
+        List<Object[]> f = null;
+
+        try {
+            em.flush();
+            
+            Query qry = em.createQuery(
+                    "SELECT d.result, COUNT(d) FROM DockerScan d WHERE d.refId = :ref GROUP BY d.result")
+                    .setParameter("ref", ref);
+            // Enable forced database query
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f =  (List<Object[]>) qry.getResultList();
+
+        } catch (Exception e) {
+            f = null;
+        }
+
+        return f;
     }
 }

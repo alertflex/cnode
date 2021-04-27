@@ -16,6 +16,9 @@
 package org.alertflex.controller;
 
 import java.util.Date;
+import java.util.UUID;
+import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.ZapScan;
@@ -176,10 +179,14 @@ public class Zap {
                     zs.setReportAdded(date);
                     zs.setReportUpdated(date);
                     
-                    ZapScan zsExisting = eventBean.getZapScanFacade().findScan(r,n,p,target, zs.getAlertName());
+                    ZapScan zsExisting = eventBean.getZapScanFacade().findScan(r,n,p,target, zs.getAlertRef());
                         
                     if (zsExisting == null) {
+                        
                         eventBean.getZapScanFacade().create(zs);
+                        
+                        createZapScanAlert(zs);
+                        
                     } else {
                         zsExisting.setReportUpdated(date);
                         eventBean.getZapScanFacade().edit(zsExisting);
@@ -192,5 +199,77 @@ public class Zap {
         }
     }
 
-    
+    public void createZapScanAlert(ZapScan zs) {
+
+        Alert a = new Alert();
+
+        a.setNodeId(eventBean.getNode());
+        a.setRefId(eventBean.getRefId());
+        a.setAlertUuid(UUID.randomUUID().toString());
+
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(zs.getRefId(), "ZAP");
+        
+        if (zs.getRiskcode() < ap.getSeverityThreshold()) return;
+        
+        a.setEventSeverity(zs.getRiskdesc());
+        a.setAlertSeverity(zs.getRiskcode());
+        a.setEventId("1");
+        
+        a.setCategories("zap");
+        a.setAlertSource("ZAP");
+        a.setAlertType("MISC");
+
+        a.setSensorId(zs.getProbe());
+        a.setLocation(zs.getTarget());
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("");
+        
+        String desc = zs.getDescription();
+        if (desc.length() >= 1024) {
+            String substrDesc = desc.substring(0, 1022);
+            a.setDescription(substrDesc);
+        } else {
+            a.setDescription(desc);
+        }
+        
+        String info = zs.getAlertRef();
+        if (info.length() >= 1024) {
+            String substrInfo = info.substring(0, 1022);
+            a.setInfo(substrInfo);
+        } else {
+            a.setInfo(info);
+        }
+        
+        a.setTimeEvent("indef");
+        Date date = new Date();
+        a.setTimeCollr(date);
+        a.setTimeCntrl(date);
+        a.setAgentName("indef");
+        a.setUserName("indef");
+
+        a.setSrcIp("0.0.0.0");
+        a.setDstIp("0.0.0.0");
+        a.setDstPort(0);
+        a.setSrcPort(0);
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+
+    }
 }

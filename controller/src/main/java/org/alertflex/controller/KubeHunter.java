@@ -18,6 +18,7 @@ package org.alertflex.controller;
 import java.util.Date;
 import java.util.UUID;
 import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.HunterScan;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
@@ -107,6 +108,12 @@ public class KubeHunter {
                 String vuln = arr.getJSONObject(i).getString("vulnerability");
                 
                 String desc = arr.getJSONObject(i).getString("description");
+                if (desc.length() >= 2048) {
+                    String substrDesc = desc.substring(0, 2046);
+                    hs.setDescription(substrDesc);
+                } else {
+                    hs.setDescription(desc);
+                }
                 
                 String evidence = arr.getJSONObject(i).getString("evidence");
                 
@@ -117,12 +124,12 @@ public class KubeHunter {
                 HunterScan hsExisting = eventBean.getHunterScanFacade().findScan(r,n,p,target, loc,vid,cat);
                         
                 if (hsExisting == null) {
+                    
                     hs.setLocation(loc);
                     hs.setVid(vid);
                     hs.setCat(cat);
                     hs.setSeverity(severity);
                     hs.setVulnerability(vuln);
-                    hs.setDescription(desc);
                     hs.setEvidence(evidence);
                     hs.setAvdReference(avdRef);
                     hs.setHunter(hunter);
@@ -130,6 +137,9 @@ public class KubeHunter {
                     hs.setReportAdded(date);
                     hs.setReportUpdated(date);
                     eventBean.getHunterScanFacade().create(hs);
+                    
+                    createHunterScanAlert(hs);
+                    
                 } else {
                     hsExisting.setReportUpdated(date);
                     eventBean.getHunterScanFacade().edit(hsExisting);
@@ -152,9 +162,28 @@ public class KubeHunter {
 
         a.setAlertSeverity(0);
         a.setEventSeverity(hs.getSeverity());
+        
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(hs.getRefId(), "KubeHunter");
+        
+        int sev = ap.getSeverityDefault();
+        if (hs.getSeverity().equals(ap.getText1())) sev = ap.getValue1();
+        if (hs.getSeverity().equals(ap.getText2())) sev = ap.getValue2();
+        if (hs.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
+        if (hs.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
+        if (hs.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
+        if (sev < ap.getSeverityThreshold()) return;
+        
         a.setEventId("1");
-        a.setCategories(hs.getCat());
-        a.setDescription(hs.getDescription());
+        a.setCategories("kube-hunter, " + hs.getCat());
+        
+        String desc = hs.getDescription();
+        if (desc.length() >= 1024) {
+            String substrDesc = desc.substring(0, 1022);
+            a.setDescription(substrDesc);
+        } else {
+            a.setDescription(desc);
+        }
+        
         a.setAlertSource("KubeHunter");
         a.setAlertType("MISC");
 

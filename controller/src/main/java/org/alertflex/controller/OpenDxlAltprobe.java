@@ -36,6 +36,9 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.alertflex.common.DxlCommon;
+import org.alertflex.entity.Node;
+import org.alertflex.entity.Sensor;
+import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.json.JSONObject;
@@ -47,6 +50,10 @@ import org.slf4j.LoggerFactory;
 public class OpenDxlAltprobe implements RequestCallback {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenDxlAltprobe.class);
+    
+    
+    @EJB
+    private NodeFacade nodeFacade;
     
     @EJB
     private SensorFacade sensorFacade;
@@ -131,20 +138,26 @@ public class OpenDxlAltprobe implements RequestCallback {
             JSONObject actuator = obj.getJSONObject("actuator");
             
             if (!actuator.isNull("x-alertflex")) {
+                
                 JSONObject xAlertflex = actuator.getJSONObject("x-alertflex");
                 String tenant = xAlertflex.getString("tenant");
                 String node = xAlertflex.getString("node");
                 String probe = xAlertflex.getString("probe");
                 
-                //Sensor s = sensorFacade.findSensorByProbe(tenant, node, probe);
+                Node n = nodeFacade.findByNodeName(tenant, node);
                 
-                //if (s != null) {
-                    String msgBody = sendCommand(node, probe, req);
-                    final Response res = new Response(request);
-                    res.setPayload(msgBody.getBytes(Message.CHARSET_UTF8));
-                    client.sendResponse(res);
-                    return;
-                //}
+                if (n != null) {
+                
+                    Sensor s = sensorFacade.findSensorByProbe(tenant, node, probe);
+                
+                    if (s != null && n.getCommandsControl() != 0) {
+                        String msgBody = sendCommand(tenant, node, probe, req);
+                        final Response res = new Response(request);
+                        res.setPayload(msgBody.getBytes(Message.CHARSET_UTF8));
+                        client.sendResponse(res);
+                        return;
+                    }
+                }
             }
 
             final Response res = new Response(request);
@@ -157,7 +170,7 @@ public class OpenDxlAltprobe implements RequestCallback {
         }
     }
 
-    public String sendCommand(String node, String probe, String msgBody) {
+    public String sendCommand(String tenant, String node, String probe, String msgBody) {
 
         try {
 
@@ -176,7 +189,7 @@ public class OpenDxlAltprobe implements RequestCallback {
             Session session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
             
             // create query for request
-            Destination commandDest = session.createQueue("jms/altprobe/" + node + "/" + probe);
+            Destination commandDest = session.createQueue("jms/altprobe/" + tenant + "/" + node + "/" + probe + "/sensors");
             MessageProducer commandProducer = session.createProducer(commandDest);
 
             // create tmp query for response   

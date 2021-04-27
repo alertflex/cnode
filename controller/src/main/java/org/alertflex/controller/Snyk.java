@@ -16,10 +16,12 @@
 package org.alertflex.controller;
 
 import java.util.Date;
+import java.util.UUID;
+import org.alertflex.entity.Alert;
+import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.SnykScan;
-import org.alertflex.entity.ZapScan;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -135,6 +137,8 @@ public class Snyk {
 
                     eventBean.getSnykScanFacade().create(ss);
                     
+                    createSnykScanAlert(ss);
+                    
                 } else {
 
                     ssExisting.setReportUpdated(date);
@@ -146,6 +150,88 @@ public class Snyk {
         } catch (Exception e) {
             logger.error("alertflex_ctrl_exception", e);
         }
+    }
+    
+    public void createSnykScanAlert(SnykScan ss) {
+
+        Alert a = new Alert();
+
+        a.setNodeId(eventBean.getNode());
+        a.setRefId(eventBean.getRefId());
+        a.setAlertUuid(UUID.randomUUID().toString());
+        
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ss.getRefId(), "Snyk");
+        
+        int sev = ap.getSeverityDefault();
+        if (ss.getSeverity().equals(ap.getText1())) sev = ap.getValue1();
+        if (ss.getSeverity().equals(ap.getText2())) sev = ap.getValue2();
+        if (ss.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
+        if (ss.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
+        if (ss.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
+        if (sev < ap.getSeverityThreshold()) return;
+
+        a.setAlertSeverity(sev);
+        a.setEventSeverity(ss.getSeverity());
+        
+        a.setEventId("1");
+        a.setCategories("snyk");
+        
+        String desc = ss.getDescription();
+        if (desc.length() >= 1024) {
+            String substrDesc = desc.substring(0, 1022);
+            a.setDescription(substrDesc);
+        } else {
+            a.setDescription(desc);
+        }
+        
+        a.setAlertSource("Snyk");
+        a.setAlertType("MISC");
+
+        a.setSensorId(ss.getProbe());
+        a.setLocation(ss.getPackageName());
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("");
+        
+        String info = ss.getVulnRef();
+        if (info.length() >= 1024) {
+            String substrInfo = info.substring(0, 1022);
+            a.setInfo(substrInfo);
+        } else {
+            a.setInfo(info);
+        }
+        a.setInfo(ss.getRefId());
+        
+        a.setTimeEvent("indef");
+        Date date = new Date();
+        a.setTimeCollr(date);
+        a.setTimeCntrl(date);
+        a.setAgentName("indef");
+        a.setUserName("indef");
+
+        a.setSrcIp("0.0.0.0");
+        a.setDstIp("0.0.0.0");
+        a.setDstPort(0);
+        a.setSrcPort(0);
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+
     }
     
     private String[] toStringArray(JSONArray jsonArray) throws JSONException {
