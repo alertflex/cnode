@@ -164,8 +164,8 @@ public class MetricsFacadeREST {
         sb.append("\n");
 
         sb.append(template.toString());
-        sb.append("misc\"} ");
-        sb.append(Long.toString(nm.getEventsMisc()));
+        sb.append("waf\"} ");
+        sb.append(Long.toString(nm.getEventsWaf()));
         sb.append("\n");
 
         sb.append(template.toString());
@@ -285,6 +285,36 @@ public class MetricsFacadeREST {
         sb.append(template.toString());
         sb.append("nids_s3\"} ");
         sb.append(Long.toString(na.getNidsS3()));
+        sb.append("\n");
+        
+        sb.append(template.toString());
+        sb.append("waf_agg\"} ");
+        sb.append(Long.toString(na.getWafAgg()));
+        sb.append("\n");
+
+        sb.append(template.toString());
+        sb.append("waf_filter\"} ");
+        sb.append(Long.toString(na.getWafFilter()));
+        sb.append("\n");
+
+        sb.append(template.toString());
+        sb.append("waf_s0\"} ");
+        sb.append(Long.toString(na.getWafS0()));
+        sb.append("\n");
+
+        sb.append(template.toString());
+        sb.append("waf_s1\"} ");
+        sb.append(Long.toString(na.getWafS1()));
+        sb.append("\n");
+
+        sb.append(template.toString());
+        sb.append("waf_s2\"} ");
+        sb.append(Long.toString(na.getWafS2()));
+        sb.append("\n");
+
+        sb.append(template.toString());
+        sb.append("waf_s3\"} ");
+        sb.append(Long.toString(na.getWafS3()));
         sb.append("\n");
 
         sb.append("\n");

@@ -160,7 +160,6 @@ public class KubeHunter {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        a.setAlertSeverity(0);
         a.setEventSeverity(hs.getSeverity());
         
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(hs.getRefId(), "KubeHunter");
@@ -172,6 +171,8 @@ public class KubeHunter {
         if (hs.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (hs.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
         if (sev < ap.getSeverityThreshold()) return;
+        
+        a.setAlertSeverity(sev);
         
         a.setEventId("1");
         a.setCategories("kube-hunter, " + hs.getCat());

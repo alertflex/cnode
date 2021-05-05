@@ -203,7 +203,7 @@ public class StatsManagement {
                         JSONArray names = arr.getJSONObject(i).getJSONArray("Names");
                         String containerNameTmp = "";
                         for (int j = 0; j < names.length(); j++) {
-                            containerNameTmp = containerNameTmp + names.get(i).toString();
+                            containerNameTmp = containerNameTmp + names.get(j).toString();
                         }
                         String containerName = "";
                         if (containerNameTmp.length() >= 1024) {
@@ -624,6 +624,13 @@ public class StatsManagement {
                     node_alerts.setNidsS1(na.getLong("nids_s1"));
                     node_alerts.setNidsS2(na.getLong("nids_s2"));
                     node_alerts.setNidsS3(na.getLong("nids_s3"));
+                    
+                    node_alerts.setWafAgg(na.getLong("waf_agg"));
+                    node_alerts.setWafFilter(na.getLong("waf_filter"));
+                    node_alerts.setWafS0(na.getLong("waf_s0"));
+                    node_alerts.setWafS1(na.getLong("waf_s1"));
+                    node_alerts.setWafS2(na.getLong("waf_s2"));
+                    node_alerts.setWafS3(na.getLong("waf_s3"));
 
                     date = formatter.parse(na.getString("time_of_survey"));
                     node_alerts.setTimeOfSurvey(date);
@@ -657,11 +664,11 @@ public class StatsManagement {
                     NodeMonitor node_monitor = new NodeMonitor();
 
                     node_monitor.setRefId(ref);
-                    node_monitor.setNode(nodeName);
+                    node_monitor.setNodeId(nodeName);
                     node_monitor.setProbe(eventBean.getProbe());
                     node_monitor.setEventsHids(nm.getLong("hids"));
                     node_monitor.setEventsNids(nm.getLong("nids"));
-                    node_monitor.setEventsMisc(nm.getLong("misc"));
+                    node_monitor.setEventsWaf(nm.getLong("waf"));
                     node_monitor.setEventsCrs(nm.getLong("crs"));
                     node_monitor.setLogCounter(nm.getLong("log_counter"));
                     node_monitor.setLogVolume(nm.getLong("log_volume"));

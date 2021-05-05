@@ -79,13 +79,18 @@ public class RulesManagement {
                     break;
                     
                 case 1:
-                    sensorName = probe + ".hids";
-                    sensorType = "Wazuh";
+                    sensorName = probe + ".waf";
+                    sensorType = "ModSecurity";
                     break;
                         
                 case 2:
                     sensorName = probe + ".nids";
                     sensorType = "Suricata";
+                    break;
+                    
+                case 3:
+                    sensorName = probe + ".hids";
+                    sensorType = "Wazuh";
                     break;
                 
                 default:

@@ -52,6 +52,7 @@ import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.ContainerFacade;
+import org.alertflex.facade.DependencyScanFacade;
 import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.KubeScanFacade;
@@ -59,7 +60,6 @@ import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
-import org.alertflex.facade.SnykScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -115,6 +115,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private DockerScanFacade dockerScanFacade;
+    
+    @EJB
+    private DependencyScanFacade dependencyScanFacade;
 
     @EJB
     private TrivyScanFacade trivyScanFacade;
@@ -131,10 +134,7 @@ public class InfoMessageBean implements MessageListener {
     @EJB
     private HunterScanFacade hunterScanFacade;
     
-    @EJB
-    private SnykScanFacade snykScanFacade;
-
-    @EJB
+     @EJB
     private ProjectFacade projectFacade;
     Project project;
     String ref_id;
@@ -221,6 +221,10 @@ public class InfoMessageBean implements MessageListener {
         return this.dockerScanFacade;
     }
     
+    public DependencyScanFacade getDependencyScanFacade() {
+        return this.dependencyScanFacade;
+    }
+    
     public KubeScanFacade getKubeScanFacade() {
         return this.kubeScanFacade;
     }
@@ -241,10 +245,6 @@ public class InfoMessageBean implements MessageListener {
         return this.hunterScanFacade;
     }
     
-    public SnykScanFacade getSnykScanFacade() {
-        return this.snykScanFacade;
-    }
-
     public Project getProject() {
         return this.project;
     }
@@ -325,36 +325,36 @@ public class InfoMessageBean implements MessageListener {
                             String rule = bytesMessage.getStringProperty("rule");
                             rm.saveRule(sensor, rule, data);
                             break;
-
+                            
                         case 5: 
+                            DependencyCheck dc = new DependencyCheck(this);
+                            target = bytesMessage.getStringProperty("target");
+                            dc.saveReport(data, target);
+                            break;
+
+                        case 6: 
                             DockerBench db = new DockerBench(this);
                             db.saveReport(data);
                             break;
 
-                        case 6: 
+                        case 7: 
                             KubeBench kubeBench = new KubeBench(this);
                             kubeBench.saveReport(data);
                             break;
                             
-                        case 7: 
+                        case 8: 
                             KubeHunter kubeHunter = new KubeHunter(this);
                             target = bytesMessage.getStringProperty("target");
                             kubeHunter.saveReport(data, target);
                             break;
                             
-                        case 8: 
+                        case 9: 
                             Nmap nmap = new Nmap(this);
                             target = bytesMessage.getStringProperty("target");
                             nmap.saveReport(data, target);
                             break;
                             
-                        case 9: 
-                            Snyk snyk = new Snyk(this);
-                            target = bytesMessage.getStringProperty("target");
-                            snyk.saveReport(data, target);
-                            break;
-                            
-                        case 10: 
+                       case 10: 
                             Trivy trivy = new Trivy(this);
                             target = bytesMessage.getStringProperty("target");
                             trivy.saveReport(data, target);

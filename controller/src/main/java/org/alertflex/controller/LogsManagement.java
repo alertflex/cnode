@@ -135,6 +135,8 @@ public class LogsManagement {
                     return true;
                 case "alert-nids":
                     return true;
+                 case "alert-waf":
+                    return true;
                 
                 default:
                     break;
@@ -284,7 +286,7 @@ public class LogsManagement {
                     
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
-                    hostname = obj.getString("sensor");
+                    agent = obj.getString("sensor");
 
                     if (!ipdstMap.containsKey(dstip)) {
 
@@ -419,7 +421,7 @@ public class LogsManagement {
 
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
-                    hostname = obj.getString("url_hostname");
+                    agent = obj.getString("url_hostname");
 
                     if (!ipdstMap.containsKey(dstip)) {
 
@@ -463,6 +465,46 @@ public class LogsManagement {
                     }
 
                     break;
+                    
+                case "alert-waf":
+
+                    dstip = obj.getString("dstip");
+                    srcip = obj.getString("srcip");
+                    agent = obj.getString("target");
+
+                    if (!ipdstMap.containsKey(dstip)) {
+
+                        attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
+                        ipdstMap.put(dstip, attr);
+
+                        if (attr != null) {
+                            alert_type = 15;
+
+                            artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
+                                    + dstip
+                                    + "\",\"message\": \"destination ip\" }]}";
+
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        }
+                    }
+
+                    if (!ipsrcMap.containsKey(srcip)) {
+
+                        attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
+                        ipsrcMap.put(srcip, attr);
+
+                        if (attr != null) {
+                            alert_type = 16;
+
+                            artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
+                                    + srcip
+                                    + "\",\"message\": \"source ip\" }]}";
+
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        }
+                    }
+
+                    return true;
 
                 default:
                     break;
@@ -707,6 +749,34 @@ public class LogsManagement {
                     a.setDescription("NIDS file event, suspicious md5 - " + attr.getValue1() + ". " + event.getInfo());
                 } else {
                     a.setDescription("NIDS file event, suspicious md5 - " + attr.getValue1() + ". ");
+                }
+                a.setAlertSource("MISP");
+                a.setAlertType("NET");
+
+                break;
+                
+            case 15:
+                
+                a.setEventId("15");
+                a.setCategories("ipdst, " + attr.getCategory());
+                if (event != null) {
+                    a.setDescription("WAF event, suspicious dst ip - " + attr.getValue1() + ". " + event.getInfo());
+                } else {
+                    a.setDescription("WAF event, suspicious dst ip -  " + attr.getValue1() + ". ");
+                }
+                a.setAlertSource("MISP");
+                a.setAlertType("NET");
+
+                break;
+                
+            case 16:
+                
+                a.setEventId("16");
+                a.setCategories("ipsrc, " + attr.getCategory());
+                if (event != null) {
+                    a.setDescription("WAF event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
+                } else {
+                    a.setDescription("WAF event, suspicious src ip - " + attr.getValue1() + ". ");
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("NET");

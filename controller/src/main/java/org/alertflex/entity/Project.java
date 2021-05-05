@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -78,6 +68,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl"),
     @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey"),
     @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion"),
+    @NamedQuery(name = "Project.findBySonarUrl", query = "SELECT p FROM Project p WHERE p.sonarUrl = :sonarUrl"),
+    @NamedQuery(name = "Project.findBySonarUser", query = "SELECT p FROM Project p WHERE p.sonarUser = :sonarUser"),
+    @NamedQuery(name = "Project.findBySonarPass", query = "SELECT p FROM Project p WHERE p.sonarPass = :sonarPass"),
     @NamedQuery(name = "Project.findByZapHost", query = "SELECT p FROM Project p WHERE p.zapHost = :zapHost"),
     @NamedQuery(name = "Project.findByZapPort", query = "SELECT p FROM Project p WHERE p.zapPort = :zapPort"),
     @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey")})
@@ -287,6 +280,21 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
+    @Column(name = "sonar_url")
+    private String sonarUrl;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "sonar_user")
+    private String sonarUser;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "sonar_pass")
+    private String sonarPass;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
     @Column(name = "zap_host")
     private String zapHost;
     @Basic(optional = false)
@@ -306,7 +314,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String zapHost, int zapPort, String zapKey) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -349,6 +357,9 @@ public class Project implements Serializable {
         this.vmrayUrl = vmrayUrl;
         this.vmrayKey = vmrayKey;
         this.awsRegion = awsRegion;
+        this.sonarUrl = sonarUrl;
+        this.sonarUser = sonarUser;
+        this.sonarPass = sonarPass;
         this.zapHost = zapHost;
         this.zapPort = zapPort;
         this.zapKey = zapKey;
@@ -688,6 +699,30 @@ public class Project implements Serializable {
 
     public void setAwsRegion(String awsRegion) {
         this.awsRegion = awsRegion;
+    }
+
+    public String getSonarUrl() {
+        return sonarUrl;
+    }
+
+    public void setSonarUrl(String sonarUrl) {
+        this.sonarUrl = sonarUrl;
+    }
+
+    public String getSonarUser() {
+        return sonarUser;
+    }
+
+    public void setSonarUser(String sonarUser) {
+        this.sonarUser = sonarUser;
+    }
+
+    public String getSonarPass() {
+        return sonarPass;
+    }
+
+    public void setSonarPass(String sonarPass) {
+        this.sonarPass = sonarPass;
     }
 
     public String getZapHost() {

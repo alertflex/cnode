@@ -25,16 +25,19 @@ import java.util.List;
 public class JasperDataScanners {
     
     List<Finding> zapFindings;
-    List<Finding> snykFindings;
+    List<Finding> dependencyFindings;
     List<Finding> inspectorFindings;
+    List<Finding> sonarqubeFindings;
     
-    public JasperDataScanners(List<Finding> lif, List<Finding> lsf, List<Finding> lzf) {
+    public JasperDataScanners(List<Finding> lif, List<Finding> ldf, List<Finding> lsf, List<Finding> lzf) {
         
         zapFindings = lzf;
         
-        snykFindings = lsf;
+        dependencyFindings = ldf;
         
         inspectorFindings = lif;
+        
+        sonarqubeFindings = lsf;
     }
     
     /**
@@ -44,12 +47,16 @@ public class JasperDataScanners {
         return zapFindings;
     }
     
-    public Collection<Finding> getSnykFindings() {
-        return snykFindings;
+    public Collection<Finding> getDependencyFindings() {
+        return dependencyFindings;
     }
 
     public Collection<Finding> getInspectorFindings() {
         return inspectorFindings;
+    }
+    
+    public Collection<Finding> getSonarqubeFindings() {
+        return sonarqubeFindings;
     }
     
 }

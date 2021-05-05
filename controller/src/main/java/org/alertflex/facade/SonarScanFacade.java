@@ -21,10 +21,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.SnykScan;
+import org.alertflex.entity.SonarScan;
 
 @Stateless
-public class SnykScanFacade extends AbstractFacade<SnykScan> {
+public class SonarScanFacade extends AbstractFacade<SonarScan> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -34,37 +34,10 @@ public class SnykScanFacade extends AbstractFacade<SnykScan> {
         return em;
     }
 
-    public SnykScanFacade() {
-        super(SnykScan.class);
+    public SonarScanFacade() {
+        super(SonarScan.class);
     }
 
-    public SnykScan findVulnerability(String ref, String node, String probe, String prj, String id, String pkg) {
-
-        SnykScan ss;
-
-        try {
-            em.flush();
-
-            Query vQry = em.createQuery("SELECT s FROM SnykScan s WHERE s.refId = :ref AND s.nodeId = :node AND s.probe = :probe AND s.projectId = :prj AND s.vulnId = :id AND s.packageName = :pkg")
-                    .setParameter("ref", ref)
-                    .setParameter("node", node)
-                    .setParameter("probe", probe)
-                    .setParameter("prj", prj)
-                    .setParameter("id", id)
-                    .setParameter("pkg", pkg);
-            vQry.setMaxResults(1);
-            // Enable forced database query
-            vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ss = (SnykScan) vQry.getSingleResult();
-
-        } catch (Exception e) {
-            ss = null;
-        }
-
-        return ss;
-
-    }
-    
     public List<Object[]> getFindings(String ref) {
 
         List<Object[]> f = null;
@@ -73,7 +46,7 @@ public class SnykScanFacade extends AbstractFacade<SnykScan> {
             em.flush();
             
             Query qry = em.createQuery(
-                    "SELECT s.severity, COUNT(s) FROM SnykScan s WHERE s.refId = :ref GROUP BY s.severity")
+                    "SELECT s.issueSeverity, COUNT(s) FROM SonarScan s WHERE s.refId = :ref GROUP BY s.issueSeverity")
                     .setParameter("ref", ref);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

@@ -80,13 +80,18 @@ public class ConfigsManagement {
                     break;
                     
                 case 1:
-                    sensorName = probe + ".hids";
-                    sensorType = "Wazuh";
+                    sensorName = probe + ".waf";
+                    sensorType = "ModSecurity";
                     break;
-                        
+                    
                 case 2:
                     sensorName = probe + ".nids";
                     sensorType = "Suricata";
+                    break;
+                    
+                case 3:
+                    sensorName = probe + ".hids";
+                    sensorType = "Wazuh";
                     break;
                 
                 default:
@@ -120,11 +125,14 @@ public class ConfigsManagement {
                 case "Falco":
                     configPath = sr.getDir() + "falco.yaml";
                     break;
-                case "Wazuh":
-                    configPath = sr.getDir() + "ossec.conf";
+                case "ModSecurity":
+                    configPath = sr.getDir() + "modsecurity.conf";
                     break;
                 case "Suricata":
                     configPath = sr.getDir() + "suricata.yaml";
+                    break;
+                case "Wazuh":
+                    configPath = sr.getDir() + "ossec.conf";
                     break;
                 
                 default:

@@ -17,13 +17,14 @@
     <class>org.alertflex.entity.Hosts</class>
     <class>org.alertflex.entity.Project</class>
     <class>org.alertflex.entity.Users</class>
+    <class>org.alertflex.entity.DependencyScan</class>
     <class>org.alertflex.entity.TrivyScan</class>
     <class>org.alertflex.entity.KubeScan</class>
     <class>org.alertflex.entity.HunterScan</class>
     <class>org.alertflex.entity.ZapScan</class>
     <class>org.alertflex.entity.InspectorScan</class>
+    <class>org.alertflex.entity.SonarScan</class>
     <class>org.alertflex.entity.NmapScan</class>
-    <class>org.alertflex.entity.SnykScan</class>
     <class>org.alertflex.entity.Response</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <validation-mode>NONE</validation-mode>
