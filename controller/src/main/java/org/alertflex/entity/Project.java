@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByStatRest", query = "SELECT p FROM Project p WHERE p.statRest = :statRest"),
     @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive"),
     @NamedQuery(name = "Project.findBySendNetflow", query = "SELECT p FROM Project p WHERE p.sendNetflow = :sendNetflow"),
+    @NamedQuery(name = "Project.findByGraylogHost", query = "SELECT p FROM Project p WHERE p.graylogHost = :graylogHost"),
+    @NamedQuery(name = "Project.findByGraylogPort", query = "SELECT p FROM Project p WHERE p.graylogPort = :graylogPort"),
     @NamedQuery(name = "Project.findByElkHost", query = "SELECT p FROM Project p WHERE p.elkHost = :elkHost"),
     @NamedQuery(name = "Project.findByElkPort", query = "SELECT p FROM Project p WHERE p.elkPort = :elkPort"),
     @NamedQuery(name = "Project.findByElkUser", query = "SELECT p FROM Project p WHERE p.elkUser = :elkUser"),
@@ -129,6 +131,15 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "send_netflow")
     private int sendNetflow;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "graylog_host")
+    private String graylogHost;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "graylog_port")
+    private int graylogPort;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -314,7 +325,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -327,6 +338,8 @@ public class Project implements Serializable {
         this.statRest = statRest;
         this.semActive = semActive;
         this.sendNetflow = sendNetflow;
+        this.graylogHost = graylogHost;
+        this.graylogPort = graylogPort;
         this.elkHost = elkHost;
         this.elkPort = elkPort;
         this.elkUser = elkUser;
@@ -459,6 +472,22 @@ public class Project implements Serializable {
 
     public void setSendNetflow(int sendNetflow) {
         this.sendNetflow = sendNetflow;
+    }
+
+    public String getGraylogHost() {
+        return graylogHost;
+    }
+
+    public void setGraylogHost(String graylogHost) {
+        this.graylogHost = graylogHost;
+    }
+
+    public int getGraylogPort() {
+        return graylogPort;
+    }
+
+    public void setGraylogPort(int graylogPort) {
+        this.graylogPort = graylogPort;
     }
 
     public String getElkHost() {

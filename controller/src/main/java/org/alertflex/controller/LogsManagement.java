@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.maxmind.geoip.LookupService;
+import org.alertflex.logserver.GrayLog;
 
 public class LogsManagement {
 
@@ -60,7 +61,7 @@ public class LogsManagement {
     static final String misp_link = "link";
 
     boolean doCheckIOC = false;
-    boolean doSendLogs = false;
+    boolean doSendNetflow = false;
 
     public LogsManagement(InfoMessageBean eb) {
         this.eventBean = eb;
@@ -69,13 +70,18 @@ public class LogsManagement {
     public void EvaluateLogs(String logs) {
 
         String log_record = "log record empty";
+        
         ElasticSearch elasticFromPool;
+        
+        GrayLog graylogFromPool;
 
         try {
 
             elasticFromPool = eventBean.getElasticFromPool();
+            graylogFromPool = eventBean.getGraylogFromPool();
             
             doCheckIOC = (eventBean.getProject().getIocCheck() != 0);
+            doSendNetflow = (eventBean.getProject().getSendNetflow() != 0);
 
             String geoIpCityPath = eventBean.getProject().getProjectPath() + "/geo/GeoLiteCity.dat";
             LookupService ls = null;
@@ -108,7 +114,12 @@ public class LogsManagement {
                 }
 
                 // Send to Log Management
-                if (!isAlert && elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record, ls);
+                if (!isAlert && doSendNetflow) {
+                    
+                    if (elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record, ls);
+                    if (graylogFromPool != null) graylogFromPool.SendSuricataToLog(log_record, ls);
+                }
+                
             }
 
         } catch (Exception e) {

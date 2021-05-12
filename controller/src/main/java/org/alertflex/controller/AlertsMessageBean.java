@@ -50,6 +50,8 @@ import javax.jms.MessageListener;
 import org.alertflex.common.PojoAlertLogic;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromElasticPool;
+import org.alertflex.logserver.FromGraylogPool;
+import org.alertflex.logserver.GrayLog;
 
 
 @MessageDriven(activationConfig = {
@@ -64,6 +66,10 @@ public class AlertsMessageBean implements MessageListener {
     @Inject
     @FromElasticPool
     ElasticSearch elasticFromPool;
+    
+    @Inject
+    @FromGraylogPool
+    GrayLog graylogFromPool;
 
     @EJB
     private ProjectFacade projectFacade;
@@ -208,6 +214,9 @@ public class AlertsMessageBean implements MessageListener {
                         
                         // send alert to log server
                         if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+                        
+                        // send alert to log server
+                        if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
 
                     } else {
                         
@@ -221,15 +230,24 @@ public class AlertsMessageBean implements MessageListener {
                             
                                 if (a != null) {
                                     
-                                    String oldStatus = a.getStatus();
-                            
-                                    searchResponse();
+                                    if (project.getSemActive() == 2) {
                                     
-                                    if (a.equals("remove")) {
-                                        alertFacade.remove(a);
-                                    } else {
-                                       if (!a.getStatus().equals("oldStatus")) alertFacade.edit(a);
+                                        String oldStatus = a.getStatus();
+                            
+                                        searchResponse();
+                                    
+                                        if (a.equals("remove")) {
+                                            alertFacade.remove(a);
+                                        } else {
+                                            if (!a.getStatus().equals("oldStatus")) alertFacade.edit(a);
+                                        }
                                     }
+                                    
+                                    // send alert to log server
+                                    if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+                        
+                                    // send alert to log server
+                                    if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
                                 }
                             }
                         }

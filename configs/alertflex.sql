@@ -154,6 +154,8 @@ CREATE TABLE `project` (
   `stat_rest` int(2) unsigned NOT NULL DEFAULT '0',
   `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
   `send_netflow` int(2) unsigned NOT NULL DEFAULT '0',
+  `graylog_host` varchar(255) NOT NULL DEFAULT '',
+  `graylog_port` int(10) unsigned NOT NULL DEFAULT '0',
   `elk_host` varchar(512) NOT NULL DEFAULT '',
   `elk_port` int(10) unsigned NOT NULL DEFAULT '0',
   `elk_user` varchar(512) NOT NULL DEFAULT '',
@@ -193,7 +195,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 1, 0, 0, 0, 1, 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,

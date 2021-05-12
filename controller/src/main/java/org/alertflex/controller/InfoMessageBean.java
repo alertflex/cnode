@@ -62,6 +62,8 @@ import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.logserver.ElasticSearch;
+import org.alertflex.logserver.FromGraylogPool;
+import org.alertflex.logserver.GrayLog;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,10 @@ public class InfoMessageBean implements MessageListener {
     @Inject
     @FromElasticPool
     ElasticSearch elasticFromPool;
+    
+    @Inject
+    @FromGraylogPool
+    GrayLog graylogFromPool;
 
     @EJB
     private AgentFacade agentFacade;
@@ -163,6 +169,10 @@ public class InfoMessageBean implements MessageListener {
 
     public ElasticSearch getElasticFromPool() {
         return elasticFromPool;
+    }
+    
+    public GrayLog getGraylogFromPool() {
+        return graylogFromPool;
     }
 
     public HomeNetworkFacade getHomeNetworkFacade() {
@@ -436,15 +446,10 @@ public class InfoMessageBean implements MessageListener {
         if (project.getSemActive() > 0) {
 
             alertFacade.create(a);
-
-            // send alert for response processing
-            if (project.getSemActive() == 2) {
-                sendAlertToMQ(a);
-            }
+            sendAlertToMQ(a);
         }
         
-        // send alert to log server
-        if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+        
     }
 
     public void sendAlertToMQ(Alert a) {
