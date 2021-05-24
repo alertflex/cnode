@@ -37,7 +37,6 @@ sudo cp ./reports/scanner_dependency.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_sonarqube.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_inspector.jasper $PROJECT_PATH/reports/
 
-sudo mkdir -p $PROJECT_PATH/filters
 sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
@@ -76,7 +75,6 @@ sudo apt-get -y install mysql-server mysql-client
 sudo bash -c "echo 'sql_mode=\"STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"' >> /etc/mysql/mysql.conf.d/mysqld.cnf"
 
 sudo sed -i "s|_project_id|$PROJECT_ID|g" ./configs/alertflex.sql
-sudo sed -i "s|_project_id|$PROJECT_ID|g" ./configs/filters_v0.json
 sudo sed -i "s|_project_name|$PROJECT_NAME|g" ./configs/alertflex.sql
 sudo sed -i "s|_project_path|$PROJECT_PATH|g" ./configs/alertflex.sql
 sudo sed -i "s/_project_user/$ADMIN_USER/g" ./configs/alertflex.sql

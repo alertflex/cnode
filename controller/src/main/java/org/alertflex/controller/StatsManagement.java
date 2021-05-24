@@ -17,24 +17,11 @@ package org.alertflex.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
-import javax.jms.BytesMessage;
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.persistence.PersistenceException;
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
@@ -46,11 +33,9 @@ import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
-import org.alertflex.entity.HomeNetwork;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Project;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,11 +126,11 @@ public class StatsManagement {
                         String osName = arr.getJSONObject(i).getString("os_name");
 
                         Agent agExisting = eventBean.getAgentFacade().findAgentByName(ref, nodeName, agent);
+                        
+                        Date wasCreatedBefore =new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(dateAdd); 
 
                         if (agExisting == null) {
                             
-                            filtersFlag = true;
-
                             Agent a = new Agent();
 
                             a.setRefId(ref);
@@ -171,8 +156,6 @@ public class StatsManagement {
 
                             agExisting.setDateUpdate(date);
                             agExisting.setStatus(status);
-                            agExisting.setAgentId(id);
-                            agExisting.setIp(ip);
                             agExisting.setDateAdd(dateAdd);
                             agExisting.setVersion(version);
                             agExisting.setManager(managerHost);
@@ -184,10 +167,6 @@ public class StatsManagement {
                         }
                     }
                     
-                    if (filtersFlag) {
-                        updateFilters(ref, nodeName);
-                    }
-
                     break;
                 
                 case "containers_list": 
@@ -256,7 +235,7 @@ public class StatsManagement {
                     }
 
                     break;
-                    
+                /*    
                 case "packages":
 
                     agent = obj.getString("agent");
@@ -317,7 +296,6 @@ public class StatsManagement {
                             description = arr.getJSONObject(i).getString("description");
                         }
 
-                        // IOC check ?
                     }
 
                     break;
@@ -472,12 +450,10 @@ public class StatsManagement {
                             cmd = arr.getJSONObject(i).getString("cmd");
                         }
 
-                        // IOC check?
-
                     }
 
                     break;
-                
+                */
                 case "sca":
                     
                     agent = obj.getString("agent");
@@ -983,158 +959,6 @@ public class StatsManagement {
         eventBean.createAlert(a);
     }
     
-    public Boolean updateFilters(String ref, String nodeName) {
-        
-        String filterFile = "";
-        
-        Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
-        
-        if (node == null || node.getFiltersControl() == 0) return false;
-
-        pr.initNode(nodeName);
-
-        String filterPath = pr.getNodeDir() + "filters.json";
-
-        try {
-
-            filterFile = new String(Files.readAllBytes(Paths.get(filterPath)));
-
-        } catch (IOException e) {
-            logger.error("alertflex_ctrl_exception", e);
-            return false;
-        }
-
-        JSONObject obj = new JSONObject(filterFile);
-
-        JSONArray hnets = new JSONArray();
-
-        List<HomeNetwork> listHnet = eventBean.getHomeNetworkFacade().findByRef(eventBean.getRefId());
-
-        if (listHnet == null) {
-            listHnet = new ArrayList();
-        }
-
-        for (int i = 0; i < listHnet.size(); i++) {
-
-            JSONObject net = new JSONObject();
-
-            net.put("network", listHnet.get(i).getNetwork());
-            net.put("netmask", listHnet.get(i).getNetmask());
-            net.put("node", listHnet.get(i).getNodeId());
-            net.put("alert_suppress", (boolean) (listHnet.get(i).getAlertSuppress() > 0));
-
-            hnets.put(net);
-        }
-
-        obj.putOpt("home_net", hnets);
-
-        JSONArray agents = new JSONArray();
-
-        List<Agent> listAgents = eventBean.getAgentFacade().findAgentsByNode(eventBean.getRefId(), eventBean.getNode());
-
-        if (listAgents == null) {
-            listAgents = new ArrayList();
-        }
-
-        for (int i = 0; i < listAgents.size(); i++) {
-
-            JSONObject al = new JSONObject();
-
-            al.put("id", listAgents.get(i).getAgentId());
-            al.put("ip", listAgents.get(i).getIp());
-            al.put("name", listAgents.get(i).getName());
-            
-            agents.put(al);
-        }
-
-        obj.putOpt("agents", agents);
-
-        filterFile = obj.toString();
-        
-        if (filterFile.isEmpty()) return false;
-        
-        List<String> listProbes = eventBean.getSensorFacade().findProbeNamesByNode(eventBean.getRefId(), eventBean.getNode());
-            
-        if (listProbes != null) {
-            for (String probe : listProbes) {
-                if (!probe.equals(eventBean.probe)) {
-                    if (!uploadFilters(eventBean.ref_id, eventBean.getNode(), probe, filterFile)) return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    public boolean uploadFilters(String ref, String node, String probe, String filters) {
-        
-        try {
-
-            String strConnFactory = System.getProperty("AmqUrl", "");
-            String user = System.getProperty("AmqUser", "");
-            String pass = System.getProperty("AmqPwd", "");
-
-            // Create a ConnectionFactory
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(strConnFactory);
-
-            // Create a Connection
-            Connection connection = connectionFactory.createConnection(user, pass);
-            connection.start();
-
-            // Create a Session
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("jms/altprobe/" + ref + "/" + node + "/" + probe + "/sensors");
-
-            // Create a MessageProducer from the Session to the Topic or Queue
-            MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            
-            // create tmp query for response   
-            Destination tempDest = session.createTemporaryQueue();
-            MessageConsumer responseConsumer = session.createConsumer(tempDest);
-
-            BytesMessage message = session.createBytesMessage();
-            
-            message.setStringProperty("ref_id", project.getRefId());
-            message.setStringProperty("content_type", "filters");
-            
-            // send a request..
-            message.setJMSReplyTo(tempDest);
-            String correlationId = UUID.randomUUID().toString();
-            message.setJMSCorrelationID(correlationId);
-            
-            byte[] sompFilters = compress(filters);
-
-            message.writeBytes(sompFilters);
-            producer.send(message);
-            
-            // read response
-            javax.jms.Message response = responseConsumer.receive(TIMEOUT);
-                
-            String res = "";
-
-            if (response != null && response instanceof TextMessage) {
-                res = ((TextMessage) response).getText();
-            } else {
-                session.close();
-                connection.close();
-                return false;
-            }
-
-            // Clean up
-            session.close();
-            connection.close();
-
-        } catch (IOException | JMSException e) {
-            logger.error("alertflex_ctrl_exception", e);
-            return false;
-        }
-        
-        return true;
-    }
-
     public byte[] compress(String str) throws IOException {
 
         if ((str == null) || (str.length() == 0)) {

@@ -7,7 +7,7 @@
     <version>ctrl</version>
     <packaging>war</packaging>
 
-    <name>alertflex-ctrl_v65</name>
+    <name>alertflex-ctrl_v67</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
