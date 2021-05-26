@@ -7,12 +7,11 @@
     <artifactId>cnode</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
-	
-	<!-- sub modules -->
+
+    <!-- sub modules -->
 	<modules>
 		<module>elasticshade</module>
         <module>controller</module>
-		<module>mc</module>
 	</modules>
 	
 </project>

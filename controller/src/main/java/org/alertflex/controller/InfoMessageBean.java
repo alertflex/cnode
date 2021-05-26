@@ -61,6 +61,7 @@ import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.alertflex.facade.ZapScanFacade;
+import org.alertflex.facade.NiktoScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
@@ -139,6 +140,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private HunterScanFacade hunterScanFacade;
+    
+    @EJB
+    private NiktoScanFacade niktoScanFacade;
     
      @EJB
     private ProjectFacade projectFacade;
@@ -245,6 +249,10 @@ public class InfoMessageBean implements MessageListener {
     
     public ZapScanFacade getZapScanFacade() {
         return this.zapScanFacade;
+    }
+    
+    public NiktoScanFacade getNiktoScanFacade() {
+        return this.niktoScanFacade;
     }
 
     public NmapScanFacade getNmapScanFacade() {
@@ -374,6 +382,12 @@ public class InfoMessageBean implements MessageListener {
                             Zap zap = new Zap(this);
                             target = bytesMessage.getStringProperty("target");
                             zap.saveReport(data, target);
+                            break;
+                            
+                        case 12: 
+                            Nikto nikto = new Nikto(this);
+                            target = bytesMessage.getStringProperty("target");
+                            nikto.saveReport(data, target);
                             break;
                             
                         default:

@@ -169,7 +169,6 @@ public class Trivy {
         a.setEventId("1");
         
         a.setCategories("trivy");
-        a.setDescription(ts.getTitle());
         a.setAlertSource("Trivy");
         a.setAlertType("MISC");
 

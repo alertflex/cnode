@@ -235,7 +235,7 @@ public class StatsManagement {
                     }
 
                     break;
-                /*    
+                
                 case "packages":
 
                     agent = obj.getString("agent");
@@ -299,7 +299,7 @@ public class StatsManagement {
                     }
 
                     break;
-                
+                /*
                 case "processes": 
 
                     agent = obj.getString("agent");

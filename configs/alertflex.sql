@@ -314,6 +314,26 @@ CREATE TABLE `agent` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `agent_packages` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `agent` varchar(128) NOT NULL DEFAULT '',
+  `name` varchar(512) NOT NULL DEFAULT '',
+  `package_size` bigint unsigned NOT NULL DEFAULT '0',
+  `architecture` varchar(512) NOT NULL DEFAULT '',
+  `priority` varchar(128) NOT NULL DEFAULT '',
+  `version` varchar(254) NOT NULL DEFAULT '',
+  `vendor` varchar(512) NOT NULL DEFAULT '',
+  `package_format` varchar(128) NOT NULL DEFAULT '',
+  `package_section` varchar(254) NOT NULL DEFAULT '',
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  `time_scan` datetime DEFAULT NULL,
+  `date_add` datetime DEFAULT NULL,
+  `date_update` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `agent_sca` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `node_id` varchar(128) NOT NULL DEFAULT '',
@@ -594,6 +614,26 @@ CREATE TABLE `zap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `nikto_scan` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `host` varchar(512) NOT NULL DEFAULT '',
+  `ip` varchar(128) NOT NULL DEFAULT '',
+  `port` varchar(128) NOT NULL DEFAULT '',
+  `banner` varchar(512) NOT NULL DEFAULT '',
+  `vuln_id` varchar(128) NOT NULL DEFAULT '',
+  `vuln_OSVDB` varchar(128) NOT NULL DEFAULT '',
+  `vuln_method` varchar(512) NOT NULL DEFAULT '',
+  `vuln_url` varchar(1024) NOT NULL DEFAULT '',
+  `vuln_msg` varchar(2048) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE `nmap_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
@@ -786,6 +826,7 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severit
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (19,'_project_id','SonarQube','SonarQube', 'INFO', 'MINOR', 'MAJOR', 'CRITICAL', 'BLOCKER', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (20,'_project_id','Trivy','Trivy', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (21,'_project_id','ZAP','OWASP ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,1,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (22,'_project_id','Nikto','Nikto', 1);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
