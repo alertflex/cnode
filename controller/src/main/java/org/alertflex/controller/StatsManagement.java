@@ -25,6 +25,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.persistence.PersistenceException;
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
+import org.alertflex.entity.AgentPackages;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
@@ -236,7 +237,7 @@ public class StatsManagement {
 
                     break;
                 
-                case "packages":
+                case "packages_list":
 
                     agent = obj.getString("agent");
 
@@ -247,7 +248,7 @@ public class StatsManagement {
                     formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
                     for (int i = 0; i < arr.length(); i++) {
-
+                        
                         JSONObject scan = arr.getJSONObject(i).getJSONObject("scan");
                         Date time = formatter.parse(scan.getString("time"));
 
@@ -295,165 +296,51 @@ public class StatsManagement {
                         if (arr.getJSONObject(i).has("description")) {
                             description = arr.getJSONObject(i).getString("description");
                         }
+                        
+                        AgentPackages pExisting = eventBean.getAgentPackagesFacade().findPackage(ref, nodeName, agent, name, version);
 
-                    }
+                        if (pExisting == null) {
 
-                    break;
-                /*
-                case "processes": 
+                            AgentPackages p = new AgentPackages();
 
-                    agent = obj.getString("agent");
+                            p.setRefId(ref);
+                            p.setNodeId(nodeName);
+                            p.setAgent(agent);
+                            p.setPackageSize(size);
+                            p.setArchitecture(architecture);
+                            p.setPriority(priority);
+                            p.setVersion(version);
+                            p.setVendor(vendor);
+                            p.setPackageFormat(format);
+                            p.setPackageSection(section);
+                            p.setName(name);
+                            p.setDescription(description);
+                            p.setTimeScan(time);
+                            p.setDateAdd(date);
+                            p.setDateUpdate(date);
 
-                    data = obj.getJSONObject("data");
+                            eventBean.getAgentPackagesFacade().create(p);
 
-                    arr = data.getJSONArray("affected_items");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        } else {
 
-                    for (int i = 0; i < arr.length(); i++) {
+                            pExisting.setPackageSize(size);
+                            pExisting.setArchitecture(architecture);
+                            pExisting.setPriority(priority);
+                            pExisting.setVersion(version);
+                            pExisting.setVendor(vendor);
+                            pExisting.setPackageFormat(format);
+                            pExisting.setPackageSection(section);
+                            pExisting.setName(name);
+                            pExisting.setTimeScan(time);
+                            pExisting.setDateUpdate(date);
 
-                        JSONObject scan = arr.getJSONObject(i).getJSONObject("scan");
-                        Date time = formatter.parse(scan.getString("time"));
-
-                        int utime = 0;
-                        if (arr.getJSONObject(i).has("utime")) {
-                            utime = arr.getJSONObject(i).getInt("utime");
-                        }
-
-                        String state = "";
-                        if (arr.getJSONObject(i).has("state")) {
-                            state = arr.getJSONObject(i).getString("state");
-                        }
-
-                        int priority = 0;
-                        if (arr.getJSONObject(i).has("priority")) {
-                            priority = arr.getJSONObject(i).getInt("priority");
-                        }
-
-                        String name = "";
-                        if (arr.getJSONObject(i).has("name")) {
-                            name = arr.getJSONObject(i).getString("name");
-                        }
-
-                        int share = 0;
-                        if (arr.getJSONObject(i).has("share")) {
-                            share = arr.getJSONObject(i).getInt("share");
-                        }
-
-                        String suser = "";
-                        if (arr.getJSONObject(i).has("suser")) {
-                            suser = arr.getJSONObject(i).getString("suser");
-                        }
-
-                        String egroup = "";
-                        if (arr.getJSONObject(i).has("egroup")) {
-                            egroup = arr.getJSONObject(i).getString("egroup");
-                        }
-
-                        int nlwp = 0;
-                        if (arr.getJSONObject(i).has("nlwp")) {
-                            nlwp = arr.getJSONObject(i).getInt("nlwp");
-                        }
-
-                        int nice = 0;
-                        if (arr.getJSONObject(i).has("nice")) {
-                            nice = arr.getJSONObject(i).getInt("nice");
-                        }
-
-                        String sgroup = "";
-                        if (arr.getJSONObject(i).has("sgroup")) {
-                            sgroup = arr.getJSONObject(i).getString("sgroup");
-                        }
-
-                        int ppid = 0;
-                        if (arr.getJSONObject(i).has("ppid")) {
-                            ppid = arr.getJSONObject(i).getInt("ppid");
-                        }
-
-                        int processor = 0;
-                        if (arr.getJSONObject(i).has("processor")) {
-                            processor = arr.getJSONObject(i).getInt("processor");
-                        }
-
-                        String pid = "";
-                        if (arr.getJSONObject(i).has("pid")) {
-                            pid = arr.getJSONObject(i).getString("pid");
-                        }
-
-                        String euser = "";
-                        if (arr.getJSONObject(i).has("euser")) {
-                            euser = arr.getJSONObject(i).getString("euser");
-                        }
-
-                        String ruser = "";
-                        if (arr.getJSONObject(i).has("ruser")) {
-                            ruser = arr.getJSONObject(i).getString("ruser");
-                        }
-
-                        int session = 0;
-                        if (arr.getJSONObject(i).has("session")) {
-                            session = arr.getJSONObject(i).getInt("session");
-                        }
-
-                        int pgrp = 0;
-                        if (arr.getJSONObject(i).has("pgrp")) {
-                            pgrp = arr.getJSONObject(i).getInt("pgrp");
-                        }
-
-                        int stime = 0;
-                        if (arr.getJSONObject(i).has("stime")) {
-                            stime = arr.getJSONObject(i).getInt("stime");
-                        }
-
-                        long vm_size = 0;
-                        if (arr.getJSONObject(i).has("vm_size")) {
-                            vm_size = arr.getJSONObject(i).getLong("vm_size");
-                        }
-
-                        int tgid = 0;
-                        if (arr.getJSONObject(i).has("tgid")) {
-                            tgid = arr.getJSONObject(i).getInt("tgid");
-                        }
-
-                        int tty = 0;
-                        if (arr.getJSONObject(i).has("tty")) {
-                            tty = arr.getJSONObject(i).getInt("tty");
-                        }
-
-                        String rgroup = "";
-                        if (arr.getJSONObject(i).has("rgroup")) {
-                            rgroup = arr.getJSONObject(i).getString("rgroup");
-                        }
-
-                        long size = 0;
-                        if (arr.getJSONObject(i).has("size")) {
-                            size = arr.getJSONObject(i).getLong("size");
-                        }
-
-                        int resident = 0;
-                        if (arr.getJSONObject(i).has("resident")) {
-                            resident = arr.getJSONObject(i).getInt("resident");
-                        }
-
-                        String fgroup = "";
-                        if (arr.getJSONObject(i).has("fgroup")) {
-                            fgroup = arr.getJSONObject(i).getString("fgroup");
-                        }
-
-                        int startTime = 0;
-                        if (arr.getJSONObject(i).has("start_time")) {
-                            startTime = arr.getJSONObject(i).getInt("start_time");
-                        }
-
-                        String cmd = "";
-                        if (arr.getJSONObject(i).has("cmd")) {
-                            cmd = arr.getJSONObject(i).getString("cmd");
+                            eventBean.getAgentPackagesFacade().edit(pExisting);
                         }
 
                     }
 
                     break;
-                */
+                
                 case "sca":
                     
                     agent = obj.getString("agent");

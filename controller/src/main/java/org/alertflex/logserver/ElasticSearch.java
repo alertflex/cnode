@@ -43,9 +43,9 @@ public class ElasticSearch {
 
     IndexRequest requestEvents = null;
 
-    IndexRequest requestNetflow = null;
-
     IndexRequest requestSuricata = null;
+    
+    IndexRequest requestAwsWaf = null;
 
     public ElasticSearch(RestHighLevelClient c) {
         this.client = c;
@@ -54,9 +54,9 @@ public class ElasticSearch {
 
         requestEvents = new IndexRequest("alertflex-events-" + dateIndex);
 
-        requestNetflow = new IndexRequest("alertflex-netflow-" + dateIndex);
-
         requestSuricata = new IndexRequest("alertflex-suricata-" + dateIndex);
+        
+        requestAwsWaf = new IndexRequest("alertflex-awswaf-" + dateIndex);
     }
 
     String getDateIndex() {
@@ -75,9 +75,9 @@ public class ElasticSearch {
 
             requestEvents = new IndexRequest("alertflex-events-" + dateIndex);
 
-            requestNetflow = new IndexRequest("alertflex-netflow-" + dateIndex);
-
             requestSuricata = new IndexRequest("alertflex-suricata-" + dateIndex);
+            
+            requestAwsWaf = new IndexRequest("alertflex-awswaf-" + dateIndex);
 
         }
     }
@@ -439,6 +439,112 @@ public class ElasticSearch {
                 logger.error("alertflex_ctrl_exception", e);
             }
         }
+    }
+    
+    public void SendAwsWafToLog(String log, LookupService ls) {
+        
+        String elasticJson = "";
+
+        if (client != null) {
+
+            try {
+
+                JSONObject obj = new JSONObject(log);
+
+                GeoIp srcIp;
+                String srcip = "";
+                String cc = "";
+                float lat = 0;
+                float lon = 0;
+
+                srcip = obj.getString("clientIp");
+                srcIp = new GeoIp(srcip);
+
+                if (ls != null) {
+
+                    try {
+
+                        InetAddress ia_src = InetAddress.getByName(srcip);
+
+                        if (!ia_src.isSiteLocalAddress()) {
+                            
+                            Location loc = ls.getLocation(srcip);
+                            lat = loc.latitude;
+                            lon = loc.longitude;
+                            cc = loc.countryCode;
+
+                            srcIp = new GeoIp(srcip, cc, lat, lon);
+                        }
+
+                    } catch (Exception e) {
+                        
+                    }
+                }
+
+                elasticJson = ConvertAwsWafEventToLog(obj, srcIp);
+                
+
+                if (!elasticJson.isEmpty()) {
+                    checkDateIndex();
+                    requestAwsWaf.source(elasticJson, XContentType.JSON);
+                    IndexResponse indexResponse = client.index(requestAwsWaf, RequestOptions.DEFAULT);
+                }
+
+            } catch (Exception e) {
+                logger.error("alertflex_ctrl_exception", e);
+            }
+        }
+
+        
+    }
+    
+    public String ConvertAwsWafEventToLog(JSONObject obj, GeoIp ip) {
+        
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String time = formatter.format(date);
+
+        String report = "{\"version\": \"1.1\",\"node\":\""
+                + obj.getString("node")
+                + "\",\"short_message\":\"event-awswaf\",\"full_message\":\"Event from AWS WAF\",\"level\":"
+                + obj.getInt("level")
+                + ",\"source_type\":\"NET\",\"source_name\":\"AwsWaf\",\"project_id\":\""
+                + obj.getString("project_id")
+                + "\",\"sensor\":\""
+                + obj.getString("sensor")
+                + "\",\"event_time\":\""
+                + obj.getString("collected_time")
+                + "\",\"controller_time\":\""
+                + time
+                + "\",\"description\":\""
+                + obj.getString("description")
+                + "\",\"terminatingRuleId\":\""
+                + obj.getString("terminatingRuleId")
+                + "\",\"terminatingRuleType\":\""
+                + obj.getString("terminatingRuleType")
+                + "\",\"action\":\""
+                + obj.getString("action")
+                
+                + "\",\"clientIp\": { \"ip\":"
+                + obj.getString("clientIp")
+                + "\",\"geoip\": { \"country_iso_code\":\""
+                + ip.getCc()
+                + "\",\"location\": { \"lat\":"
+                + ip.getLat()
+                + ",\"lon\":"
+                + ip.getLon()
+                + "} } }"
+                + ",\"uri\":\""
+                + obj.getString("uri")
+                + "\",\"args\":\""
+                + obj.getString("args")
+                + "\",\"httpMethod\":\""
+                + obj.getString("httpMethod")
+                + "\",\"server\":\""
+                + obj.getString("server")
+                + "\"}";
+
+        return report;
     }
     
     public void close() throws IOException {

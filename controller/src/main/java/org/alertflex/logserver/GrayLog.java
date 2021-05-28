@@ -446,4 +446,100 @@ public class GrayLog {
         
         return report;
     }
+    
+    public void SendAwsWafToLog(String log, LookupService ls) {
+        
+        String graylogJson ="";
+        
+        if (socket != null &&  iaHost != null && logPort != 0) {
+            try {
+                
+                JSONObject obj = new JSONObject(log);
+        
+                GeoIp srcIp;
+                String srcip = "";
+                String cc = "";
+                float lat = 0;
+                float lon = 0;
+                
+                srcip = obj.getString("clientIp");
+                srcIp = new GeoIp(srcip);
+                
+                if (ls != null) {
+                
+                    try {
+                        
+                        InetAddress ia_src = InetAddress.getByName(srcip);
+                    
+                        if (!ia_src.isSiteLocalAddress()){
+                            Location loc = ls.getLocation(srcip);
+                            lat = loc.latitude;
+                            lon = loc.longitude;
+                            cc = loc.countryCode;
+                            
+                            srcIp = new GeoIp(srcip,cc,lat,lon);
+                        } 
+                        
+                    } catch (Exception e) {}
+                }
+            
+                graylogJson = ConvertAwsWafEventToLog(obj, srcIp);
+                
+                byte [] data = graylogJson.getBytes(StandardCharsets.UTF_8);
+                DatagramPacket packet = new DatagramPacket( data, data.length, iaHost, logPort ) ;
+                socket.send( packet ) ;
+            
+            } catch (Exception e) {
+                e.printStackTrace();
+        
+            }
+        }
+    }
+    
+    public String ConvertAwsWafEventToLog(JSONObject obj, GeoIp ip) {
+        
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String time = formatter.format(date);
+
+        String report = "{\"version\": \"1.1\",\"host\":\""
+                + obj.getString("node")
+                + "\",\"short_message\":\"event-awswaf\",\"full_message\":\"Event from AWS WAF\",\"level\":"
+                + obj.getInt("level")
+                + ",\"_source_type\":\"NET\",\"_source_name\":\"AwsWaf\",\"_project_id\":\""
+                + obj.getString("project_id")
+                + "\",\"_sensor\":\""
+                + obj.getString("sensor")
+                + "\",\"_event_time\":\""
+                + obj.getString("collected_time")
+                + "\",\"_controller_time\":\""
+                + time
+                + "\",\"_description\":\""
+                + obj.getString("description")
+                + "\",\"_terminating_rule_id\":\""
+                + obj.getString("terminatingRuleId")
+                + "\",\"_terminating_rule_type\":\""
+                + obj.getString("terminatingRuleType")
+                + "\",\"_action\":\""
+                + obj.getString("action")
+                
+                + "\",\"_clientIp\":\""
+                + ip.getIp()
+                + "\",\"_src_ip_geo_country\":\""
+                + ip.getCc()
+                + "\",\"_src_ip_geo_location\":\""
+                + ip.getLat() + "," + ip.getLon()
+                
+                + "\",\"_uri\":\""
+                + obj.getString("uri")
+                + "\",\"_args\":\""
+                + obj.getString("args")
+                + "\",\"_http_method\":\""
+                + obj.getString("httpMethod")
+                + "\",\"_sever\":\""
+                + obj.getString("server")
+                + "\"}";
+
+        return report;
+    }
 }

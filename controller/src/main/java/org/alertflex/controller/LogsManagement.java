@@ -62,6 +62,7 @@ public class LogsManagement {
 
     boolean doCheckIOC = false;
     boolean doSendNetflow = false;
+    boolean awsWafEvent = false;
 
     public LogsManagement(InfoMessageBean eb) {
         this.eventBean = eb;
@@ -116,8 +117,16 @@ public class LogsManagement {
                 // Send to Log Management
                 if (!isAlert && doSendNetflow) {
                     
-                    if (elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record, ls);
-                    if (graylogFromPool != null) graylogFromPool.SendSuricataToLog(log_record, ls);
+                    if (awsWafEvent) {
+                        
+                        if (elasticFromPool != null) elasticFromPool.SendAwsWafToLog(log_record, ls);
+                        if (graylogFromPool != null) graylogFromPool.SendAwsWafToLog(log_record, ls);
+                        
+                    } else {
+                        
+                        if (elasticFromPool != null) elasticFromPool.SendSuricataToLog(log_record, ls);
+                        if (graylogFromPool != null) graylogFromPool.SendSuricataToLog(log_record, ls);
+                    }
                 }
                 
             }
@@ -146,8 +155,12 @@ public class LogsManagement {
                     return true;
                 case "alert-nids":
                     return true;
-                 case "alert-waf":
+                case "alert-waf":
                     return true;
+                case "alert-awswaf":
+                    return true;
+                case "event-awswaf":
+                    awsWafEvent = true;
                 
                 default:
                     break;
@@ -516,6 +529,54 @@ public class LogsManagement {
                     }
 
                     return true;
+                    
+                case "alert-awswaf":
+
+                    srcip = obj.getString("clientIp");
+                    sensor = obj.getString("sensor");
+
+                    if (!ipsrcMap.containsKey(srcip)) {
+
+                        attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
+                        ipsrcMap.put(srcip, attr);
+
+                        if (attr != null) {
+                            alert_type = 16;
+
+                            artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
+                                    + srcip
+                                    + "\",\"message\": \"source ip\" }]}";
+
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        }
+                    }
+
+                    return true;
+                    
+                case "event-awswaf":
+                    
+                    awsWafEvent = true;
+
+                    srcip = obj.getString("clientIp");
+                    sensor = obj.getString("sensor");
+
+                    if (!ipsrcMap.containsKey(srcip)) {
+
+                        attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
+                        ipsrcMap.put(srcip, attr);
+
+                        if (attr != null) {
+                            alert_type = 18;
+
+                            artifacts = "{\"artifacts\": [{\"dataType\": \"ip\",\"data\":\""
+                                    + srcip
+                                    + "\",\"message\": \"source ip\" }]}";
+
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        }
+                    }
+
+                    break;
 
                 default:
                     break;
@@ -788,6 +849,34 @@ public class LogsManagement {
                     a.setDescription("WAF event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
                 } else {
                     a.setDescription("WAF event, suspicious src ip - " + attr.getValue1() + ". ");
+                }
+                a.setAlertSource("MISP");
+                a.setAlertType("NET");
+
+                break;
+                
+            case 17:
+                
+                a.setEventId("17");
+                a.setCategories("ipsrc, " + attr.getCategory());
+                if (event != null) {
+                    a.setDescription("AWS WAF alert, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
+                } else {
+                    a.setDescription("AWS WAF alert, suspicious src ip - " + attr.getValue1() + ". ");
+                }
+                a.setAlertSource("MISP");
+                a.setAlertType("NET");
+
+                break;
+                
+            case 18:
+                
+                a.setEventId("18");
+                a.setCategories("ipsrc, " + attr.getCategory());
+                if (event != null) {
+                    a.setDescription("AWS WAF event, suspicious src ip - " + attr.getValue1() + ". " + event.getInfo());
+                } else {
+                    a.setDescription("AWS WAF event, suspicious src ip - " + attr.getValue1() + ". ");
                 }
                 a.setAlertSource("MISP");
                 a.setAlertType("NET");
