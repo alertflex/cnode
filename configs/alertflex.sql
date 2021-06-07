@@ -192,10 +192,12 @@ CREATE TABLE `project` (
   `zap_host` varchar(512) NOT NULL DEFAULT '',
   `zap_port` int(10) unsigned NOT NULL DEFAULT '0',
   `zap_key` varchar(512) NOT NULL DEFAULT '',
+  `xforce_key` varchar(512) NOT NULL DEFAULT '',
+  `xforce_pass` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
