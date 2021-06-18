@@ -354,11 +354,28 @@ public class StatsManagement {
                     for (int i = 0; i < arr.length(); i++) {
 
                         int id = arr.getJSONObject(i).getInt("id");
-                        String description = arr.getJSONObject(i).getString("description");
+                        
+                        String descTmp = arr.getJSONObject(i).getString("description");
+                        String description = "";
+                        if (descTmp.length() >= 1024) {
+                            description = descTmp.substring(0, 1022);    
+                        } else description = descTmp;
+                        
                         String policyId = arr.getJSONObject(i).getString("policy_id");
-                        String rationale = arr.getJSONObject(i).getString("rationale");
+                        
+                        String rationaleTmp = arr.getJSONObject(i).getString("rationale");
+                        String rationale = "";
+                        if (rationaleTmp.length() >= 2048) {
+                            rationale = rationaleTmp.substring(0, 2046);    
+                        } else rationale = rationaleTmp;
+                        
                         String title = arr.getJSONObject(i).getString("title");
-                        String remediation = arr.getJSONObject(i).getString("remediation");
+                        
+                        String remediationTmp = arr.getJSONObject(i).getString("remediation");
+                        String remediation = "";
+                        if (remediationTmp.length() >= 2048) {
+                            remediation = remediationTmp.substring(0, 2046);    
+                        } else remediation = remediationTmp;
                         
                         AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, nodeName, agent, id, policyId);
 
@@ -372,6 +389,8 @@ public class StatsManagement {
                             a.setScaId(id);
                             a.setPolicyId(policyId);
                             a.setDescription(description);
+                            
+                            
                             a.setRationale(rationale);
                             a.setRemediation(remediation);
                             a.setTitle(title);

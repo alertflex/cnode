@@ -369,6 +369,17 @@ CREATE TABLE `agent_vul` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `bwlist_packages` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `agent` varchar(128) NOT NULL DEFAULT '',
+  `package_name` varchar(512) NOT NULL DEFAULT '',
+  `list_type` int(2) unsigned NOT NULL DEFAULT '0',
+  `date_add` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `incident` (
   `inc_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `inc_uuid` char(37) NOT NULL DEFAULT '', -- id of incident

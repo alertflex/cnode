@@ -6,6 +6,7 @@
     <class>org.alertflex.entity.AgentSca</class>
     <class>org.alertflex.entity.AgentVul</class>
     <class>org.alertflex.entity.AgentPackages</class>
+    <class>org.alertflex.entity.BwlistPackages</class>
     <class>org.alertflex.entity.DockerScan</class>
     <class>org.alertflex.entity.Container</class>
     <class>org.alertflex.entity.Node</class>

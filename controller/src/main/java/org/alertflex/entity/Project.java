@@ -75,7 +75,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findBySonarPass", query = "SELECT p FROM Project p WHERE p.sonarPass = :sonarPass"),
     @NamedQuery(name = "Project.findByZapHost", query = "SELECT p FROM Project p WHERE p.zapHost = :zapHost"),
     @NamedQuery(name = "Project.findByZapPort", query = "SELECT p FROM Project p WHERE p.zapPort = :zapPort"),
-    @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey")})
+    @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey"),
+    @NamedQuery(name = "Project.findByXforceKey", query = "SELECT p FROM Project p WHERE p.xforceKey = :xforceKey"),
+    @NamedQuery(name = "Project.findByXforcePass", query = "SELECT p FROM Project p WHERE p.xforcePass = :xforcePass")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -317,6 +319,16 @@ public class Project implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "zap_key")
     private String zapKey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "xforce_key")
+    private String xforceKey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "xforce_pass")
+    private String xforcePass;
 
     public Project() {
     }
@@ -325,7 +337,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -376,6 +388,8 @@ public class Project implements Serializable {
         this.zapHost = zapHost;
         this.zapPort = zapPort;
         this.zapKey = zapKey;
+        this.xforceKey = xforceKey;
+        this.xforcePass = xforcePass;
     }
 
     public String getRefId() {
@@ -776,6 +790,22 @@ public class Project implements Serializable {
 
     public void setZapKey(String zapKey) {
         this.zapKey = zapKey;
+    }
+
+    public String getXforceKey() {
+        return xforceKey;
+    }
+
+    public void setXforceKey(String xforceKey) {
+        this.xforceKey = xforceKey;
+    }
+
+    public String getXforcePass() {
+        return xforcePass;
+    }
+
+    public void setXforcePass(String xforcePass) {
+        this.xforcePass = xforcePass;
     }
 
     @Override
