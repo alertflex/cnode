@@ -26,6 +26,7 @@ import javax.persistence.PersistenceException;
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
 import org.alertflex.entity.AgentPackages;
+import org.alertflex.entity.BwlistPackages;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
@@ -297,46 +298,55 @@ public class StatsManagement {
                             description = arr.getJSONObject(i).getString("description");
                         }
                         
-                        AgentPackages pExisting = eventBean.getAgentPackagesFacade().findPackage(ref, nodeName, agent, name, version);
-
-                        if (pExisting == null) {
-
-                            AgentPackages p = new AgentPackages();
-
-                            p.setRefId(ref);
-                            p.setNodeId(nodeName);
-                            p.setAgent(agent);
-                            p.setPackageSize(size);
-                            p.setArchitecture(architecture);
-                            p.setPriority(priority);
-                            p.setVersion(version);
-                            p.setVendor(vendor);
-                            p.setPackageFormat(format);
-                            p.setPackageSection(section);
-                            p.setName(name);
-                            p.setDescription(description);
-                            p.setTimeScan(time);
-                            p.setDateAdd(date);
-                            p.setDateUpdate(date);
-
-                            eventBean.getAgentPackagesFacade().create(p);
-
+                        // check exist in black list
+                        BwlistPackages bp = eventBean.getBwlistPackagesFacade().findByName(ref, nodeName, name);
+                        
+                        if (bp != null) {
+                            
+                            createBwlistAlert(ref, nodeName, agent, name);
+                            
                         } else {
+                        
+                            AgentPackages pExisting = eventBean.getAgentPackagesFacade().findPackage(ref, nodeName, agent, name, version);
 
-                            pExisting.setPackageSize(size);
-                            pExisting.setArchitecture(architecture);
-                            pExisting.setPriority(priority);
-                            pExisting.setVersion(version);
-                            pExisting.setVendor(vendor);
-                            pExisting.setPackageFormat(format);
-                            pExisting.setPackageSection(section);
-                            pExisting.setName(name);
-                            pExisting.setTimeScan(time);
-                            pExisting.setDateUpdate(date);
+                            if (pExisting == null) {
 
-                            eventBean.getAgentPackagesFacade().edit(pExisting);
+                                AgentPackages p = new AgentPackages();
+
+                                p.setRefId(ref);
+                                p.setNodeId(nodeName);
+                                p.setAgent(agent);
+                                p.setPackageSize(size);
+                                p.setArchitecture(architecture);
+                                p.setPriority(priority);
+                                p.setVersion(version);
+                                p.setVendor(vendor);
+                                p.setPackageFormat(format);
+                                p.setPackageSection(section);
+                                p.setName(name);
+                                p.setDescription(description);
+                                p.setTimeScan(time);
+                                p.setDateAdd(date);
+                                p.setDateUpdate(date);
+
+                                eventBean.getAgentPackagesFacade().create(p);
+
+                            } else {
+
+                                pExisting.setPackageSize(size);
+                                pExisting.setArchitecture(architecture);
+                                pExisting.setPriority(priority);
+                                pExisting.setVersion(version);
+                                pExisting.setVendor(vendor);
+                                pExisting.setPackageFormat(format);
+                                pExisting.setPackageSection(section);
+                                pExisting.setName(name);
+                                pExisting.setTimeScan(time);
+                                pExisting.setDateUpdate(date);
+
+                                eventBean.getAgentPackagesFacade().edit(pExisting);
+                            }
                         }
-
                     }
 
                     break;
@@ -854,6 +864,62 @@ public class StatsManagement {
         a.setHashSha256("indef");
         a.setProcessId(0);
         a.setProcessName("indef");
+        a.setProcessCmdline("indef");
+        a.setProcessPath("indef");
+        a.setUrlHostname("indef");
+        a.setUrlPath("indef");
+        a.setContainerId("indef");
+        a.setContainerName("indef");
+        a.setJsonEvent("indef");
+
+        eventBean.createAlert(a);
+    }
+    
+    public void createBwlistAlert(String ref, String node, String agent, String name) {
+
+        Alert a = new Alert();
+
+        a.setRefId(ref);
+        a.setNodeId(node);
+        a.setAlertUuid(UUID.randomUUID().toString());
+
+        int sev = 2;
+        a.setAlertSeverity(sev);
+        a.setEventSeverity(Integer.toString(sev));
+
+        a.setAlertSource("Alertflex");
+        a.setAlertType("HOST");
+        a.setSensorId("indef");
+
+        a.setDescription("Package name exists in Black and White list");
+        a.setEventId("5");
+        a.setLocation("packages bw-list");
+        a.setAction("indef");
+        a.setStatus("processed");
+        a.setFilter("indef");
+        a.setInfo("");
+
+        a.setTimeEvent("");
+        Date date = new Date();
+        a.setTimeCollr(date);
+        a.setTimeCntrl(date);
+
+        a.setAgentName(agent);
+        a.setUserName("indef");
+        a.setCategories("bw-list");
+        a.setSrcIp("indef");
+        a.setDstIp("indef");
+        a.setDstPort(0);
+        a.setSrcPort(0);
+        a.setSrcHostname("indef");
+        a.setDstHostname("indef");
+        a.setFileName("indef");
+        a.setFilePath("indef");
+        a.setHashMd5("indef");
+        a.setHashSha1("indef");
+        a.setHashSha256("indef");
+        a.setProcessId(0);
+        a.setProcessName(name);
         a.setProcessCmdline("indef");
         a.setProcessPath("indef");
         a.setUrlHostname("indef");

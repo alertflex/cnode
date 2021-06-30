@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange"),
     @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange"),
     @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
+    @NamedQuery(name = "Project.findByBlockIprange", query = "SELECT p FROM Project p WHERE p.blockIprange = :blockIprange"),
     @NamedQuery(name = "Project.findByIncJson", query = "SELECT p FROM Project p WHERE p.incJson = :incJson"),
     @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck"),
     @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent"),
@@ -109,6 +110,10 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "task_timerange")
     private int taskTimerange;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "block_iprange")
+    private int blockIprange;
     @Basic(optional = false)
     @NotNull
     @Column(name = "inc_json")
@@ -337,13 +342,14 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass) {
+    public Project(String refId, String name, String projectPath, int alertTimerange, int statTimerange, int taskTimerange, int blockIprange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
         this.alertTimerange = alertTimerange;
         this.statTimerange = statTimerange;
         this.taskTimerange = taskTimerange;
+        this.blockIprange = blockIprange;
         this.incJson = incJson;
         this.iocCheck = iocCheck;
         this.iocEvent = iocEvent;
@@ -438,6 +444,14 @@ public class Project implements Serializable {
 
     public void setTaskTimerange(int taskTimerange) {
         this.taskTimerange = taskTimerange;
+    }
+
+    public int getBlockIprange() {
+        return blockIprange;
+    }
+
+    public void setBlockIprange(int blockIprange) {
+        this.blockIprange = blockIprange;
     }
 
     public int getIncJson() {

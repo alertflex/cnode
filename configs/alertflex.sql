@@ -148,6 +148,7 @@ CREATE TABLE `project` (
   `alert_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
+  `block_iprange` int(10) unsigned NOT NULL DEFAULT '0',
   `inc_json` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_check` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_event` int(10) unsigned NOT NULL DEFAULT '0',
@@ -197,7 +198,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 100, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -366,6 +367,19 @@ CREATE TABLE `agent_vul` (
   `severity` varchar(128) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `bwlist_ip` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node_id` varchar(128) NOT NULL DEFAULT '', -- in case aws or calico node is cnode
+  `actuator` varchar(512) NOT NULL, -- naclId for aws, probe for suricata, host for calico
+  `block_type` int(2) unsigned NOT NULL DEFAULT '0', -- suricata , 1 - aws nacl, 2 - calico
+  `rule_number` int(10) unsigned NOT NULL DEFAULT '0',
+  `ip` varchar(512) NOT NULL DEFAULT '',
+  `expire_ip` int(10) unsigned NOT NULL DEFAULT '0',
+  `date_add` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -554,17 +568,16 @@ CREATE TABLE `scan_job` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `rules_job` (
+CREATE TABLE `cti_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL,
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node` varchar(512) NOT NULL DEFAULT '',
-  `sensor` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `host_name` varchar(255) NOT NULL DEFAULT '',
-  `file_path` varchar(512) NOT NULL DEFAULT '',
+  `cti_type` int(2) unsigned NOT NULL DEFAULT '0', -- virustotal, x-force
+  `cti_params` varchar(1024) NOT NULL DEFAULT '',
+  `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -840,6 +853,10 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`,
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (20,'_project_id','Trivy','Trivy', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (21,'_project_id','ZAP','OWASP ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,1,1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (22,'_project_id','Nikto','Nikto', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (23,'_project_id','XforceIp','XforceIp', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (24,'_project_id','XforceHash','XforceHash', 'low', 'medium', 'high',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (25,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
+
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
