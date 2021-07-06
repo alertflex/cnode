@@ -145,6 +145,7 @@ CREATE TABLE `project` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL DEFAULT '',
   `project_path` varchar(512) NOT NULL DEFAULT '',
+  `alert_limit` int(10) unsigned NOT NULL DEFAULT '0',
   `alert_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
@@ -198,7 +199,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 0, 0, 0, 100, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 10000, 0, 0, 0, 100, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -512,6 +513,7 @@ CREATE TABLE `script_job` (
   `host` varchar(255) NOT NULL DEFAULT '',
   `script_params` varchar(1024) NOT NULL DEFAULT '',
   `script_name` varchar(512) NOT NULL DEFAULT '',
+  `script_type` int(2) unsigned NOT NULL DEFAULT '0', -- ansible, ssh
   `script` text,
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
