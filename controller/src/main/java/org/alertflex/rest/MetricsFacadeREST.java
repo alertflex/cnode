@@ -79,7 +79,7 @@ public class MetricsFacadeREST {
             return "";
         }
 
-        if (projectList.get(0).getStatRest() == 0) {
+        if (projectList.get(0).getPrometheusStat() == 0) {
             return "";
         }
 

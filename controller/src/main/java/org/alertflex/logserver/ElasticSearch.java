@@ -417,7 +417,7 @@ public class ElasticSearch {
                         + "\",\"user\":\""
                         + a.getUserName()
                         + "\",\"file\":\""
-                        + a.getFileName()
+                        + a.getFilePath()
                         + "\",\"location\":\""
                         + a.getLocation()
                         + "\",\"action\":\""

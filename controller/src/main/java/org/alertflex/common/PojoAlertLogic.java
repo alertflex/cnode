@@ -44,7 +44,7 @@ public class PojoAlertLogic implements Serializable {
     private String dstHostname = "indef";
     private int srcPort = 0;
     private int dstPort = 0;
-    private String fileName = "indef";
+    private String regValue = "indef";
     private String filePath = "indef";
     private String hashMd5 = "indef";
     private String hashSha1 = "indef";
@@ -59,6 +59,7 @@ public class PojoAlertLogic implements Serializable {
     private String agentName = "indef";
     private String containerId = "indef";
     private String containerName = "indef";
+    private String cloudInstance = "indef";
     private String location = "indef";
     private String status = "indef";
     private String action = "indef";
@@ -67,8 +68,7 @@ public class PojoAlertLogic implements Serializable {
     private String timeEvent = "indef";
     private Date timeCollr = new Date();
     private Date timeCntrl = new Date();
-    private String jsonEvent = "indef";
-
+    
     public PojoAlertLogic() {
 
     }
@@ -93,7 +93,7 @@ public class PojoAlertLogic implements Serializable {
         dstHostname = a.getDstHostname();
         srcPort = a.getSrcPort();
         dstPort = a.getDstPort();
-        fileName = a.getFileName();
+        regValue = a.getRegValue();
         filePath = a.getFilePath();
         hashMd5 = a.getHashMd5();
         hashSha1 = a.getHashSha1();
@@ -108,6 +108,7 @@ public class PojoAlertLogic implements Serializable {
         agentName = a.getAgentName();
         containerId = a.getContainerId();
         containerName = a.getContainerName();
+        cloudInstance = a.getCloudInstance();
         location = a.getLocation();
         status = a.getStatus();
         action = a.getAction();
@@ -116,8 +117,6 @@ public class PojoAlertLogic implements Serializable {
         timeEvent = a.getTimeEvent();
         timeCollr = a.getTimeCollr();
         timeCntrl = a.getTimeCntrl();
-        jsonEvent = a.getJsonEvent();
-
     }
 
     public Boolean getRunPayload() {
@@ -280,12 +279,12 @@ public class PojoAlertLogic implements Serializable {
         this.dstPort = dstPort;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getRegValue() {
+        return regValue;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setRegValue(String regValue) {
+        this.regValue = regValue;
     }
 
     public String getFilePath() {
@@ -399,6 +398,14 @@ public class PojoAlertLogic implements Serializable {
     public void setContainerName(String containerName) {
         this.containerName = containerName;
     }
+    
+    public String getCloudInstance() {
+        return cloudInstance;
+    }
+
+    public void setCloudInstance(String cloudInstance) {
+        this.cloudInstance = cloudInstance;
+    }
 
     public String getLocation() {
         return location;
@@ -462,14 +469,6 @@ public class PojoAlertLogic implements Serializable {
 
     public void setTimeCntrl(Date timeCntrl) {
         this.timeCntrl = timeCntrl;
-    }
-
-    public String getJsonEvent() {
-        return jsonEvent;
-    }
-
-    public void setJsonEvent(String jsonEvent) {
-        this.jsonEvent = jsonEvent;
     }
 
 }

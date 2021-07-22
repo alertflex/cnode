@@ -155,7 +155,7 @@ public class DockerBench {
         a.setSrcPort(0);
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -168,7 +168,7 @@ public class DockerBench {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+        a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
 

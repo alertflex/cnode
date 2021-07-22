@@ -365,23 +365,50 @@ public class StatsManagement {
 
                         int id = arr.getJSONObject(i).getInt("id");
                         
-                        String descTmp = arr.getJSONObject(i).getString("description");
+                        String title = arr.getJSONObject(i).getString("title");
+                        
+                         String policyId = arr.getJSONObject(i).getString("policy_id");
+                        
+                        String descTmp = "";
+                        if (arr.getJSONObject(i).has("description")) {
+                            
+                            descTmp = arr.getJSONObject(i).getString("description");
+                        
+                        } else {
+                        
+                            if (arr.getJSONObject(i).has("file")) {
+                                
+                                descTmp = arr.getJSONObject(i).getString("file");
+                                
+                            } else {
+                                
+                                if (arr.getJSONObject(i).has("registry")) {
+                                    
+                                    descTmp = arr.getJSONObject(i).getString("registry");
+                                
+                                }
+                            }
+                        }
+                        
                         String description = "";
                         if (descTmp.length() >= 1024) {
                             description = descTmp.substring(0, 1022);    
                         } else description = descTmp;
                         
-                        String policyId = arr.getJSONObject(i).getString("policy_id");
-                        
-                        String rationaleTmp = arr.getJSONObject(i).getString("rationale");
+                        String rationaleTmp = "";
+                        if (arr.getJSONObject(i).has("rationale")) {
+                            rationaleTmp = arr.getJSONObject(i).getString("rationale");
+                        }
                         String rationale = "";
                         if (rationaleTmp.length() >= 2048) {
                             rationale = rationaleTmp.substring(0, 2046);    
                         } else rationale = rationaleTmp;
                         
-                        String title = arr.getJSONObject(i).getString("title");
                         
-                        String remediationTmp = arr.getJSONObject(i).getString("remediation");
+                        String remediationTmp = "";
+                        if (arr.getJSONObject(i).has("remediation")) {
+                            remediationTmp = arr.getJSONObject(i).getString("remediation");
+                        }
                         String remediation = "";
                         if (remediationTmp.length() >= 2048) {
                             remediation = remediationTmp.substring(0, 2046);    
@@ -687,7 +714,7 @@ public class StatsManagement {
         a.setSrcPort(0);
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -700,7 +727,7 @@ public class StatsManagement {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+        a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
     }
@@ -743,7 +770,7 @@ public class StatsManagement {
         a.setSrcPort(0);
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -756,7 +783,7 @@ public class StatsManagement {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+        a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
     }
@@ -800,7 +827,7 @@ public class StatsManagement {
         a.setSrcPort(0);
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -813,7 +840,7 @@ public class StatsManagement {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+        a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
     }
@@ -857,7 +884,7 @@ public class StatsManagement {
         a.setSrcPort(0);
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -870,7 +897,7 @@ public class StatsManagement {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+       a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
     }
@@ -913,7 +940,7 @@ public class StatsManagement {
         a.setSrcPort(0);
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -926,7 +953,7 @@ public class StatsManagement {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+        a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
     }

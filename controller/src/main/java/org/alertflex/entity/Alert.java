@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -23,7 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -33,52 +22,57 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "alert")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Alert.findAll", query = "SELECT a FROM Alert a")
-    , @NamedQuery(name = "Alert.findByAlertId", query = "SELECT a FROM Alert a WHERE a.alertId = :alertId")
-    , @NamedQuery(name = "Alert.findByAlertUuid", query = "SELECT a FROM Alert a WHERE a.alertUuid = :alertUuid")
-    , @NamedQuery(name = "Alert.findByRefId", query = "SELECT a FROM Alert a WHERE a.refId = :refId")
-    , @NamedQuery(name = "Alert.findByNodeId", query = "SELECT a FROM Alert a WHERE a.nodeId = :nodeId")
-    , @NamedQuery(name = "Alert.findBySensorId", query = "SELECT a FROM Alert a WHERE a.sensorId = :sensorId")
-    , @NamedQuery(name = "Alert.findByCategories", query = "SELECT a FROM Alert a WHERE a.categories = :categories")
-    , @NamedQuery(name = "Alert.findByDescription", query = "SELECT a FROM Alert a WHERE a.description = :description")
-    , @NamedQuery(name = "Alert.findByAlertSeverity", query = "SELECT a FROM Alert a WHERE a.alertSeverity = :alertSeverity")
-    , @NamedQuery(name = "Alert.findByAlertSource", query = "SELECT a FROM Alert a WHERE a.alertSource = :alertSource")
-    , @NamedQuery(name = "Alert.findByAlertType", query = "SELECT a FROM Alert a WHERE a.alertType = :alertType")
-    , @NamedQuery(name = "Alert.findByEventId", query = "SELECT a FROM Alert a WHERE a.eventId = :eventId")
-    , @NamedQuery(name = "Alert.findByEventSeverity", query = "SELECT a FROM Alert a WHERE a.eventSeverity = :eventSeverity")
-    , @NamedQuery(name = "Alert.findBySrcIp", query = "SELECT a FROM Alert a WHERE a.srcIp = :srcIp")
-    , @NamedQuery(name = "Alert.findByDstIp", query = "SELECT a FROM Alert a WHERE a.dstIp = :dstIp")
-    , @NamedQuery(name = "Alert.findBySrcHostname", query = "SELECT a FROM Alert a WHERE a.srcHostname = :srcHostname")
-    , @NamedQuery(name = "Alert.findByDstHostname", query = "SELECT a FROM Alert a WHERE a.dstHostname = :dstHostname")
-    , @NamedQuery(name = "Alert.findBySrcPort", query = "SELECT a FROM Alert a WHERE a.srcPort = :srcPort")
-    , @NamedQuery(name = "Alert.findByDstPort", query = "SELECT a FROM Alert a WHERE a.dstPort = :dstPort")
-    , @NamedQuery(name = "Alert.findByFileName", query = "SELECT a FROM Alert a WHERE a.fileName = :fileName")
-    , @NamedQuery(name = "Alert.findByFilePath", query = "SELECT a FROM Alert a WHERE a.filePath = :filePath")
-    , @NamedQuery(name = "Alert.findByHashMd5", query = "SELECT a FROM Alert a WHERE a.hashMd5 = :hashMd5")
-    , @NamedQuery(name = "Alert.findByHashSha1", query = "SELECT a FROM Alert a WHERE a.hashSha1 = :hashSha1")
-    , @NamedQuery(name = "Alert.findByHashSha256", query = "SELECT a FROM Alert a WHERE a.hashSha256 = :hashSha256")
-    , @NamedQuery(name = "Alert.findByProcessId", query = "SELECT a FROM Alert a WHERE a.processId = :processId")
-    , @NamedQuery(name = "Alert.findByProcessName", query = "SELECT a FROM Alert a WHERE a.processName = :processName")
-    , @NamedQuery(name = "Alert.findByProcessCmdline", query = "SELECT a FROM Alert a WHERE a.processCmdline = :processCmdline")
-    , @NamedQuery(name = "Alert.findByProcessPath", query = "SELECT a FROM Alert a WHERE a.processPath = :processPath")
-    , @NamedQuery(name = "Alert.findByUrlHostname", query = "SELECT a FROM Alert a WHERE a.urlHostname = :urlHostname")
-    , @NamedQuery(name = "Alert.findByUrlPath", query = "SELECT a FROM Alert a WHERE a.urlPath = :urlPath")
-    , @NamedQuery(name = "Alert.findByUserName", query = "SELECT a FROM Alert a WHERE a.userName = :userName")
-    , @NamedQuery(name = "Alert.findByAgentName", query = "SELECT a FROM Alert a WHERE a.agentName = :agentName")
-    , @NamedQuery(name = "Alert.findByContainerId", query = "SELECT a FROM Alert a WHERE a.containerId = :containerId")
-    , @NamedQuery(name = "Alert.findByContainerName", query = "SELECT a FROM Alert a WHERE a.containerName = :containerName")
-    , @NamedQuery(name = "Alert.findByLocation", query = "SELECT a FROM Alert a WHERE a.location = :location")
-    , @NamedQuery(name = "Alert.findByStatus", query = "SELECT a FROM Alert a WHERE a.status = :status")
-    , @NamedQuery(name = "Alert.findByAction", query = "SELECT a FROM Alert a WHERE a.action = :action")
-    , @NamedQuery(name = "Alert.findByFilter", query = "SELECT a FROM Alert a WHERE a.filter = :filter")
-    , @NamedQuery(name = "Alert.findByInfo", query = "SELECT a FROM Alert a WHERE a.info = :info")
-    , @NamedQuery(name = "Alert.findByTimeEvent", query = "SELECT a FROM Alert a WHERE a.timeEvent = :timeEvent")
-    , @NamedQuery(name = "Alert.findByTimeCollr", query = "SELECT a FROM Alert a WHERE a.timeCollr = :timeCollr")
-    , @NamedQuery(name = "Alert.findByTimeCntrl", query = "SELECT a FROM Alert a WHERE a.timeCntrl = :timeCntrl")})
+    @NamedQuery(name = "Alert.findAll", query = "SELECT a FROM Alert a"),
+    @NamedQuery(name = "Alert.findByAlertId", query = "SELECT a FROM Alert a WHERE a.alertId = :alertId"),
+    @NamedQuery(name = "Alert.findByAlertUuid", query = "SELECT a FROM Alert a WHERE a.alertUuid = :alertUuid"),
+    @NamedQuery(name = "Alert.findByRefId", query = "SELECT a FROM Alert a WHERE a.refId = :refId"),
+    @NamedQuery(name = "Alert.findByNodeId", query = "SELECT a FROM Alert a WHERE a.nodeId = :nodeId"),
+    @NamedQuery(name = "Alert.findBySensorId", query = "SELECT a FROM Alert a WHERE a.sensorId = :sensorId"),
+    @NamedQuery(name = "Alert.findByCategories", query = "SELECT a FROM Alert a WHERE a.categories = :categories"),
+    @NamedQuery(name = "Alert.findByDescription", query = "SELECT a FROM Alert a WHERE a.description = :description"),
+    @NamedQuery(name = "Alert.findByAlertSeverity", query = "SELECT a FROM Alert a WHERE a.alertSeverity = :alertSeverity"),
+    @NamedQuery(name = "Alert.findByAlertSource", query = "SELECT a FROM Alert a WHERE a.alertSource = :alertSource"),
+    @NamedQuery(name = "Alert.findByAlertType", query = "SELECT a FROM Alert a WHERE a.alertType = :alertType"),
+    @NamedQuery(name = "Alert.findByEventId", query = "SELECT a FROM Alert a WHERE a.eventId = :eventId"),
+    @NamedQuery(name = "Alert.findByEventSeverity", query = "SELECT a FROM Alert a WHERE a.eventSeverity = :eventSeverity"),
+    @NamedQuery(name = "Alert.findByLocation", query = "SELECT a FROM Alert a WHERE a.location = :location"),
+    @NamedQuery(name = "Alert.findByStatus", query = "SELECT a FROM Alert a WHERE a.status = :status"),
+    @NamedQuery(name = "Alert.findByAction", query = "SELECT a FROM Alert a WHERE a.action = :action"),
+    @NamedQuery(name = "Alert.findByFilter", query = "SELECT a FROM Alert a WHERE a.filter = :filter"),
+    @NamedQuery(name = "Alert.findByInfo", query = "SELECT a FROM Alert a WHERE a.info = :info"),
+    @NamedQuery(name = "Alert.findBySrcIp", query = "SELECT a FROM Alert a WHERE a.srcIp = :srcIp"),
+    @NamedQuery(name = "Alert.findByDstIp", query = "SELECT a FROM Alert a WHERE a.dstIp = :dstIp"),
+    @NamedQuery(name = "Alert.findBySrcHostname", query = "SELECT a FROM Alert a WHERE a.srcHostname = :srcHostname"),
+    @NamedQuery(name = "Alert.findByDstHostname", query = "SELECT a FROM Alert a WHERE a.dstHostname = :dstHostname"),
+    @NamedQuery(name = "Alert.findBySrcPort", query = "SELECT a FROM Alert a WHERE a.srcPort = :srcPort"),
+    @NamedQuery(name = "Alert.findByDstPort", query = "SELECT a FROM Alert a WHERE a.dstPort = :dstPort"),
+    @NamedQuery(name = "Alert.findByFilePath", query = "SELECT a FROM Alert a WHERE a.filePath = :filePath"),
+    @NamedQuery(name = "Alert.findByRegValue", query = "SELECT a FROM Alert a WHERE a.regValue = :regValue"),
+    @NamedQuery(name = "Alert.findByHashMd5", query = "SELECT a FROM Alert a WHERE a.hashMd5 = :hashMd5"),
+    @NamedQuery(name = "Alert.findByHashSha1", query = "SELECT a FROM Alert a WHERE a.hashSha1 = :hashSha1"),
+    @NamedQuery(name = "Alert.findByHashSha256", query = "SELECT a FROM Alert a WHERE a.hashSha256 = :hashSha256"),
+    @NamedQuery(name = "Alert.findByProcessId", query = "SELECT a FROM Alert a WHERE a.processId = :processId"),
+    @NamedQuery(name = "Alert.findByProcessName", query = "SELECT a FROM Alert a WHERE a.processName = :processName"),
+    @NamedQuery(name = "Alert.findByProcessCmdline", query = "SELECT a FROM Alert a WHERE a.processCmdline = :processCmdline"),
+    @NamedQuery(name = "Alert.findByProcessPath", query = "SELECT a FROM Alert a WHERE a.processPath = :processPath"),
+    @NamedQuery(name = "Alert.findByUrlHostname", query = "SELECT a FROM Alert a WHERE a.urlHostname = :urlHostname"),
+    @NamedQuery(name = "Alert.findByUrlPath", query = "SELECT a FROM Alert a WHERE a.urlPath = :urlPath"),
+    @NamedQuery(name = "Alert.findByContainerId", query = "SELECT a FROM Alert a WHERE a.containerId = :containerId"),
+    @NamedQuery(name = "Alert.findByContainerName", query = "SELECT a FROM Alert a WHERE a.containerName = :containerName"),
+    @NamedQuery(name = "Alert.findByCloudInstance", query = "SELECT a FROM Alert a WHERE a.cloudInstance = :cloudInstance"),
+    @NamedQuery(name = "Alert.findByUserName", query = "SELECT a FROM Alert a WHERE a.userName = :userName"),
+    @NamedQuery(name = "Alert.findByAgentName", query = "SELECT a FROM Alert a WHERE a.agentName = :agentName"),
+    @NamedQuery(name = "Alert.findByTimeEvent", query = "SELECT a FROM Alert a WHERE a.timeEvent = :timeEvent"),
+    @NamedQuery(name = "Alert.findByTimeCollr", query = "SELECT a FROM Alert a WHERE a.timeCollr = :timeCollr"),
+    @NamedQuery(name = "Alert.findByTimeCntrl", query = "SELECT a FROM Alert a WHERE a.timeCntrl = :timeCntrl")})
 public class Alert implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -143,6 +137,31 @@ public class Alert implements Serializable {
     private String eventSeverity;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(name = "location")
+    private String location;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 256)
+    @Column(name = "action")
+    private String action;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "filter")
+    private String filter;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(name = "info")
+    private String info;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "src_ip")
     private String srcIp;
@@ -171,14 +190,14 @@ public class Alert implements Serializable {
     private int dstPort;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "file_name")
-    private String fileName;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 1024)
     @Column(name = "file_path")
     private String filePath;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "reg_value")
+    private String regValue;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -224,16 +243,6 @@ public class Alert implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "user_name")
-    private String userName;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "agent_name")
-    private String agentName;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
     @Column(name = "container_id")
     private String containerId;
     @Basic(optional = false)
@@ -244,28 +253,18 @@ public class Alert implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
-    @Column(name = "location")
-    private String location;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
-    @Column(name = "status")
-    private String status;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 256)
-    @Column(name = "action")
-    private String action;
+    @Column(name = "cloud_instance")
+    private String cloudInstance;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "filter")
-    private String filter;
+    @Column(name = "user_name")
+    private String userName;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 1024)
-    @Column(name = "info")
-    private String info;
+    @Size(min = 1, max = 512)
+    @Column(name = "agent_name")
+    private String agentName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -277,10 +276,6 @@ public class Alert implements Serializable {
     @Column(name = "time_cntrl")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeCntrl;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "json_event")
-    private String jsonEvent;
 
     public Alert() {
     }
@@ -289,7 +284,7 @@ public class Alert implements Serializable {
         this.alertId = alertId;
     }
 
-    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String fileName, String filePath, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String userName, String agentName, String containerId, String containerName, String location, String status, String action, String filter, String info, String timeEvent) {
+    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String location, String status, String action, String filter, String info, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String filePath, String regValue, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String containerId, String containerName, String cloudInstance, String userName, String agentName, String timeEvent) {
         this.alertId = alertId;
         this.alertUuid = alertUuid;
         this.refId = refId;
@@ -302,14 +297,19 @@ public class Alert implements Serializable {
         this.alertType = alertType;
         this.eventId = eventId;
         this.eventSeverity = eventSeverity;
+        this.location = location;
+        this.status = status;
+        this.action = action;
+        this.filter = filter;
+        this.info = info;
         this.srcIp = srcIp;
         this.dstIp = dstIp;
         this.srcHostname = srcHostname;
         this.dstHostname = dstHostname;
         this.srcPort = srcPort;
         this.dstPort = dstPort;
-        this.fileName = fileName;
         this.filePath = filePath;
+        this.regValue = regValue;
         this.hashMd5 = hashMd5;
         this.hashSha1 = hashSha1;
         this.hashSha256 = hashSha256;
@@ -318,15 +318,11 @@ public class Alert implements Serializable {
         this.processPath = processPath;
         this.urlHostname = urlHostname;
         this.urlPath = urlPath;
-        this.userName = userName;
-        this.agentName = agentName;
         this.containerId = containerId;
         this.containerName = containerName;
-        this.location = location;
-        this.status = status;
-        this.action = action;
-        this.filter = filter;
-        this.info = info;
+        this.cloudInstance = cloudInstance;
+        this.userName = userName;
+        this.agentName = agentName;
         this.timeEvent = timeEvent;
     }
 
@@ -426,6 +422,46 @@ public class Alert implements Serializable {
         this.eventSeverity = eventSeverity;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
     public String getSrcIp() {
         return srcIp;
     }
@@ -474,20 +510,20 @@ public class Alert implements Serializable {
         this.dstPort = dstPort;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
     public String getFilePath() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getRegValue() {
+        return regValue;
+    }
+
+    public void setRegValue(String regValue) {
+        this.regValue = regValue;
     }
 
     public String getHashMd5() {
@@ -562,22 +598,6 @@ public class Alert implements Serializable {
         this.urlPath = urlPath;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getAgentName() {
-        return agentName;
-    }
-
-    public void setAgentName(String agentName) {
-        this.agentName = agentName;
-    }
-
     public String getContainerId() {
         return containerId;
     }
@@ -594,44 +614,28 @@ public class Alert implements Serializable {
         this.containerName = containerName;
     }
 
-    public String getLocation() {
-        return location;
+    public String getCloudInstance() {
+        return cloudInstance;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setCloudInstance(String cloudInstance) {
+        this.cloudInstance = cloudInstance;
     }
 
-    public String getStatus() {
-        return status;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getAction() {
-        return action;
+    public String getAgentName() {
+        return agentName;
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
+    public void setAgentName(String agentName) {
+        this.agentName = agentName;
     }
 
     public String getTimeEvent() {
@@ -658,14 +662,6 @@ public class Alert implements Serializable {
         this.timeCntrl = timeCntrl;
     }
 
-    public String getJsonEvent() {
-        return jsonEvent;
-    }
-
-    public void setJsonEvent(String jsonEvent) {
-        this.jsonEvent = jsonEvent;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -690,5 +686,5 @@ public class Alert implements Serializable {
     public String toString() {
         return "org.alertflex.entity.Alert[ alertId=" + alertId + " ]";
     }
-
+    
 }

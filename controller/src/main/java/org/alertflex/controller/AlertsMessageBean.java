@@ -117,6 +117,10 @@ public class AlertsMessageBean implements MessageListener {
                         a.setAlertType(((TextMessage) message).getStringProperty("alert_type"));
                         a.setSensorId(((TextMessage) message).getStringProperty("sensor_id"));
                         a.setAlertSeverity(((TextMessage) message).getIntProperty("alert_severity"));
+                        a.setEventId(((TextMessage) message).getStringProperty("event_id"));
+                        int sev = ((TextMessage) message).getIntProperty("event_severity");
+                        a.setEventSeverity(Integer.toString(sev));
+                        
                         String desc = new String(((TextMessage) message).getStringProperty("description").getBytes("UTF-8"));
                         if (desc.length() >= 1024) {
                             String substrDesc = desc.substring(0, 1022);
@@ -124,9 +128,7 @@ public class AlertsMessageBean implements MessageListener {
                         } else {
                             a.setDescription(desc);
                         }
-                        a.setEventId(((TextMessage) message).getStringProperty("event_id"));
-                        int sev = ((TextMessage) message).getIntProperty("event_severity");
-                        a.setEventSeverity(Integer.toString(sev));
+                        
                         String loc = ((TextMessage) message).getStringProperty("location");
                         if (loc.length() >= 1024) {
                             String substrLoc = loc.substring(0, 1022);
@@ -134,10 +136,18 @@ public class AlertsMessageBean implements MessageListener {
                         } else {
                             a.setLocation(loc);
                         }
+                        
+                        String info = ((TextMessage) message).getStringProperty("info");
+                        if (info.length() >= 1024) {
+                            String substrInfo = info.substring(0, 1022);
+                            a.setInfo(substrInfo);
+                        } else {
+                            a.setInfo(info);
+                        }
+                        
                         a.setAction(((TextMessage) message).getStringProperty("action"));
                         a.setStatus(((TextMessage) message).getStringProperty("status"));
                         a.setFilter(((TextMessage) message).getStringProperty("filter"));
-                        a.setInfo(((TextMessage) message).getStringProperty("info"));
                         a.setTimeEvent(((TextMessage) message).getStringProperty("event_time"));
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date date = new Date();
@@ -154,7 +164,7 @@ public class AlertsMessageBean implements MessageListener {
                         a.setDstHostname(((TextMessage) message).getStringProperty("dst_hostname"));
                         a.setSrcPort(((TextMessage) message).getIntProperty("src_port"));
                         a.setDstPort(((TextMessage) message).getIntProperty("dst_port"));
-                        a.setFileName(((TextMessage) message).getStringProperty("file_name"));
+                        a.setRegValue(((TextMessage) message).getStringProperty("reg_value"));
                         a.setFilePath(((TextMessage) message).getStringProperty("file_path"));
                         a.setHashMd5(((TextMessage) message).getStringProperty("hash_md5"));
                         a.setHashSha1(((TextMessage) message).getStringProperty("hash_sha1"));
@@ -167,13 +177,7 @@ public class AlertsMessageBean implements MessageListener {
                         a.setUrlPath(((TextMessage) message).getStringProperty("url_path"));
                         a.setContainerId(((TextMessage) message).getStringProperty("container_id"));
                         a.setContainerName(((TextMessage) message).getStringProperty("container_name"));
-
-                        // add json info to alert
-                        if (project.getIncJson() == 1) {
-                            a.setJsonEvent(((TextMessage) message).getText());
-                        } else {
-                            a.setJsonEvent("");
-                        }
+                        a.setCloudInstance(((TextMessage) message).getStringProperty("cloud_instance"));
 
                         // enrich alert by new cat
                         List<String> newCats = alertCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
@@ -371,7 +375,7 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFileName())) {
+                if (!parameter.equals(a.getFilePath())) {
                     continue;
                 }
             }
@@ -464,7 +468,7 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFileName())) {
+                if (!parameter.equals(a.getFilePath())) {
                     continue;
                 }
             }

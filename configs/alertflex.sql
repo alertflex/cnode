@@ -25,14 +25,19 @@ CREATE TABLE `alert` (
   `alert_type` varchar(32) NOT NULL DEFAULT '',
   `event_id` varchar(512) NOT NULL DEFAULT '',
   `event_severity` varchar(255) NOT NULL DEFAULT '',
+  `location` varchar(1024) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `action` varchar(256) NOT NULL DEFAULT '',
+  `filter` varchar(512) NOT NULL DEFAULT '',
+  `info` varchar(1024) NOT NULL DEFAULT '',
   `src_ip` varchar(128) NOT NULL DEFAULT '',
   `dst_ip` varchar(128) NOT NULL DEFAULT '',
   `src_hostname` varchar(128) NOT NULL DEFAULT '',
   `dst_hostname` varchar(128) NOT NULL DEFAULT '',
   `src_port` int(10) unsigned NOT NULL DEFAULT '0',
   `dst_port` int(10) unsigned NOT NULL DEFAULT '0',
-  `file_name` varchar(512) NOT NULL DEFAULT '',
   `file_path` varchar(1024) NOT NULL DEFAULT '',
+  `reg_value` varchar(512) NOT NULL DEFAULT '',
   `hash_md5`  varchar(128) NOT NULL DEFAULT '',
   `hash_sha1`	varchar(128) NOT NULL DEFAULT '',
   `hash_sha256`	varchar(512) NOT NULL DEFAULT '',
@@ -42,21 +47,16 @@ CREATE TABLE `alert` (
   `process_path` varchar(1024) NOT NULL DEFAULT '',
   `url_hostname` varchar(512) NOT NULL DEFAULT '',
   `url_path` varchar(1024) NOT NULL DEFAULT '',
-  `user_name` varchar(512) NOT NULL DEFAULT '',
-  `agent_name` varchar(512) NOT NULL DEFAULT '',
   `container_id` varchar(512) NOT NULL DEFAULT '',
   `container_name` varchar(512) NOT NULL DEFAULT '',
-  `location` varchar(1024) NOT NULL DEFAULT '',
-  `status` varchar(32) NOT NULL DEFAULT '',
-  `action` varchar(256) NOT NULL DEFAULT '',
-  `filter` varchar(512) NOT NULL DEFAULT '',
-  `info` varchar(1024) NOT NULL DEFAULT '',
+  `cloud_instance` varchar(1024) NOT NULL DEFAULT '',
+  `user_name` varchar(512) NOT NULL DEFAULT '',
+  `agent_name` varchar(512) NOT NULL DEFAULT '',
   `time_event` varchar(512) NOT NULL DEFAULT '',
   `time_collr` datetime DEFAULT NULL,
   `time_cntrl` datetime DEFAULT NULL,
-  `json_event` text,
   PRIMARY KEY (`alert_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3496 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `node_alerts` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -145,16 +145,15 @@ CREATE TABLE `project` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL DEFAULT '',
   `project_path` varchar(512) NOT NULL DEFAULT '',
+  `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
   `alert_limit` int(10) unsigned NOT NULL DEFAULT '0',
   `alert_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `stat_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `block_iprange` int(10) unsigned NOT NULL DEFAULT '0',
-  `inc_json` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_check` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_event` int(10) unsigned NOT NULL DEFAULT '0',
-  `stat_rest` int(2) unsigned NOT NULL DEFAULT '0',
-  `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
+  `prometheus_stat` int(2) unsigned NOT NULL DEFAULT '0',
   `send_netflow` int(2) unsigned NOT NULL DEFAULT '0',
   `graylog_host` varchar(255) NOT NULL DEFAULT '',
   `graylog_port` int(10) unsigned NOT NULL DEFAULT '0',
@@ -199,7 +198,7 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 10000, 0, 0, 0, 100, 1, 0, 0, 0, 1, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 0, 0, 0, 100, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,

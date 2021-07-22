@@ -152,7 +152,7 @@ public class Nmap {
         a.setSrcPort(ns.getPortId());
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
-        a.setFileName("indef");
+        a.setRegValue("indef");
         a.setFilePath("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
@@ -165,7 +165,7 @@ public class Nmap {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-        a.setJsonEvent("indef");
+        a.setCloudInstance("indef");
 
         eventBean.createAlert(a);
 

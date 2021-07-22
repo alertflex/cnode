@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -27,6 +17,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "project")
 @XmlRootElement
@@ -35,16 +29,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByRefId", query = "SELECT p FROM Project p WHERE p.refId = :refId"),
     @NamedQuery(name = "Project.findByName", query = "SELECT p FROM Project p WHERE p.name = :name"),
     @NamedQuery(name = "Project.findByProjectPath", query = "SELECT p FROM Project p WHERE p.projectPath = :projectPath"),
+    @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive"),
     @NamedQuery(name = "Project.findByAlertLimit", query = "SELECT p FROM Project p WHERE p.alertLimit = :alertLimit"),
     @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange"),
     @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange"),
     @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
     @NamedQuery(name = "Project.findByBlockIprange", query = "SELECT p FROM Project p WHERE p.blockIprange = :blockIprange"),
-    @NamedQuery(name = "Project.findByIncJson", query = "SELECT p FROM Project p WHERE p.incJson = :incJson"),
     @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck"),
     @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent"),
-    @NamedQuery(name = "Project.findByStatRest", query = "SELECT p FROM Project p WHERE p.statRest = :statRest"),
-    @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive"),
+    @NamedQuery(name = "Project.findByPrometheusStat", query = "SELECT p FROM Project p WHERE p.prometheusStat = :prometheusStat"),
     @NamedQuery(name = "Project.findBySendNetflow", query = "SELECT p FROM Project p WHERE p.sendNetflow = :sendNetflow"),
     @NamedQuery(name = "Project.findByGraylogHost", query = "SELECT p FROM Project p WHERE p.graylogHost = :graylogHost"),
     @NamedQuery(name = "Project.findByGraylogPort", query = "SELECT p FROM Project p WHERE p.graylogPort = :graylogPort"),
@@ -107,6 +100,10 @@ public class Project implements Serializable {
     private String projectPath;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "sem_active")
+    private int semActive;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "alert_limit")
     private int alertLimit;
     @Basic(optional = false)
@@ -127,10 +124,6 @@ public class Project implements Serializable {
     private int blockIprange;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "inc_json")
-    private int incJson;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "ioc_check")
     private int iocCheck;
     @Basic(optional = false)
@@ -139,12 +132,8 @@ public class Project implements Serializable {
     private int iocEvent;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "stat_rest")
-    private int statRest;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "sem_active")
-    private int semActive;
+    @Column(name = "prometheus_stat")
+    private int prometheusStat;
     @Basic(optional = false)
     @NotNull
     @Column(name = "send_netflow")
@@ -353,20 +342,19 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int alertLimit, int alertTimerange, int statTimerange, int taskTimerange, int blockIprange, int incJson, int iocCheck, int iocEvent, int statRest, int semActive, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass) {
+    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int statTimerange, int taskTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String awsRegion, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
+        this.semActive = semActive;
         this.alertLimit = alertLimit;
         this.alertTimerange = alertTimerange;
         this.statTimerange = statTimerange;
         this.taskTimerange = taskTimerange;
         this.blockIprange = blockIprange;
-        this.incJson = incJson;
         this.iocCheck = iocCheck;
         this.iocEvent = iocEvent;
-        this.statRest = statRest;
-        this.semActive = semActive;
+        this.prometheusStat = prometheusStat;
         this.sendNetflow = sendNetflow;
         this.graylogHost = graylogHost;
         this.graylogPort = graylogPort;
@@ -434,6 +422,14 @@ public class Project implements Serializable {
         this.projectPath = projectPath;
     }
 
+    public int getSemActive() {
+        return semActive;
+    }
+
+    public void setSemActive(int semActive) {
+        this.semActive = semActive;
+    }
+
     public int getAlertLimit() {
         return alertLimit;
     }
@@ -474,14 +470,6 @@ public class Project implements Serializable {
         this.blockIprange = blockIprange;
     }
 
-    public int getIncJson() {
-        return incJson;
-    }
-
-    public void setIncJson(int incJson) {
-        this.incJson = incJson;
-    }
-
     public int getIocCheck() {
         return iocCheck;
     }
@@ -498,20 +486,12 @@ public class Project implements Serializable {
         this.iocEvent = iocEvent;
     }
 
-    public int getStatRest() {
-        return statRest;
+    public int getPrometheusStat() {
+        return prometheusStat;
     }
 
-    public void setStatRest(int statRest) {
-        this.statRest = statRest;
-    }
-
-    public int getSemActive() {
-        return semActive;
-    }
-
-    public void setSemActive(int semActive) {
-        this.semActive = semActive;
+    public void setPrometheusStat(int prometheusStat) {
+        this.prometheusStat = prometheusStat;
     }
 
     public int getSendNetflow() {

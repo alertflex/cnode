@@ -131,7 +131,7 @@ public class GrayLog {
                 + "\",\"_user\":\""
                 + a.getUserName()
                 + "\",\"_file\":\""
-                + a.getFileName()
+                + a.getFilePath()
                 + "\",\"_location\":\""
                 + a.getLocation()
                 + "\",\"_action\":\""
