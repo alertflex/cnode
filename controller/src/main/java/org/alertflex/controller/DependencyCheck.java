@@ -190,7 +190,7 @@ public class DependencyCheck {
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
         a.setRegValue("indef");
-        a.setFilePath("indef");
+        a.setFileName("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
         a.setHashSha256("indef");

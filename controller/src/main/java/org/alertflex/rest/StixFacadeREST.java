@@ -142,8 +142,8 @@ public class StixFacadeREST {
             if (!a.getProcessName().isEmpty() && !a.getProcessName().equals("indef")) {
                 obj.put("process", a.getProcessName());
             }
-            if (!a.getFilePath().isEmpty() && !a.getFilePath().equals("indef")) {
-                obj.put("file", a.getFilePath());
+            if (!a.getFileName().isEmpty() && !a.getFileName().equals("indef")) {
+                obj.put("file", a.getFileName());
             }
             if (!a.getInfo().isEmpty()) {
                 obj.put("info", a.getInfo());

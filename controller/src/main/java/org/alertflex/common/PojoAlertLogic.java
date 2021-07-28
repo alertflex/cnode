@@ -45,7 +45,7 @@ public class PojoAlertLogic implements Serializable {
     private int srcPort = 0;
     private int dstPort = 0;
     private String regValue = "indef";
-    private String filePath = "indef";
+    private String fileName = "indef";
     private String hashMd5 = "indef";
     private String hashSha1 = "indef";
     private String hashSha256 = "indef";
@@ -94,7 +94,7 @@ public class PojoAlertLogic implements Serializable {
         srcPort = a.getSrcPort();
         dstPort = a.getDstPort();
         regValue = a.getRegValue();
-        filePath = a.getFilePath();
+        fileName = a.getFileName();
         hashMd5 = a.getHashMd5();
         hashSha1 = a.getHashSha1();
         hashSha256 = a.getHashSha256();
@@ -287,12 +287,12 @@ public class PojoAlertLogic implements Serializable {
         this.regValue = regValue;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getHashMd5() {

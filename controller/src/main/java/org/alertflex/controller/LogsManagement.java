@@ -908,7 +908,7 @@ public class LogsManagement {
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
         a.setRegValue(filename);
-        a.setFilePath("indef");
+        a.setFileName("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
         a.setHashSha256("indef");

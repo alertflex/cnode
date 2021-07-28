@@ -165,7 +165,7 @@ public class Nikto {
         a.setSrcHostname("indef");
         a.setDstHostname(ns.getHost());
         a.setRegValue("indef");
-        a.setFilePath("indef");
+        a.setFileName("indef");
         a.setHashMd5("indef");
         a.setHashSha1("indef");
         a.setHashSha256("indef");

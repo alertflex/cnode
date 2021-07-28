@@ -165,7 +165,7 @@ public class AlertsMessageBean implements MessageListener {
                         a.setSrcPort(((TextMessage) message).getIntProperty("src_port"));
                         a.setDstPort(((TextMessage) message).getIntProperty("dst_port"));
                         a.setRegValue(((TextMessage) message).getStringProperty("reg_value"));
-                        a.setFilePath(((TextMessage) message).getStringProperty("file_path"));
+                        a.setFileName(((TextMessage) message).getStringProperty("file_name"));
                         a.setHashMd5(((TextMessage) message).getStringProperty("hash_md5"));
                         a.setHashSha1(((TextMessage) message).getStringProperty("hash_sha1"));
                         a.setHashSha256(((TextMessage) message).getStringProperty("hash_sha256"));
@@ -375,7 +375,7 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFilePath())) {
+                if (!parameter.equals(a.getFileName())) {
                     continue;
                 }
             }
@@ -468,7 +468,7 @@ public class AlertsMessageBean implements MessageListener {
 
             parameter = res.getAlertFile();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getFilePath())) {
+                if (!parameter.equals(a.getFileName())) {
                     continue;
                 }
             }

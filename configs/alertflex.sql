@@ -36,7 +36,7 @@ CREATE TABLE `alert` (
   `dst_hostname` varchar(128) NOT NULL DEFAULT '',
   `src_port` int(10) unsigned NOT NULL DEFAULT '0',
   `dst_port` int(10) unsigned NOT NULL DEFAULT '0',
-  `file_path` varchar(1024) NOT NULL DEFAULT '',
+  `file_name` varchar(1024) NOT NULL DEFAULT '',
   `reg_value` varchar(512) NOT NULL DEFAULT '',
   `hash_md5`  varchar(128) NOT NULL DEFAULT '',
   `hash_sha1`	varchar(128) NOT NULL DEFAULT '',

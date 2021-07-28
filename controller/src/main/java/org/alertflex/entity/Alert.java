@@ -1,8 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *   Copyright 2021 Oleg Zharkov
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
+
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -22,10 +32,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "alert")
 @XmlRootElement
@@ -54,7 +60,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Alert.findByDstHostname", query = "SELECT a FROM Alert a WHERE a.dstHostname = :dstHostname"),
     @NamedQuery(name = "Alert.findBySrcPort", query = "SELECT a FROM Alert a WHERE a.srcPort = :srcPort"),
     @NamedQuery(name = "Alert.findByDstPort", query = "SELECT a FROM Alert a WHERE a.dstPort = :dstPort"),
-    @NamedQuery(name = "Alert.findByFilePath", query = "SELECT a FROM Alert a WHERE a.filePath = :filePath"),
+    @NamedQuery(name = "Alert.findByFileName", query = "SELECT a FROM Alert a WHERE a.fileName = :fileName"),
     @NamedQuery(name = "Alert.findByRegValue", query = "SELECT a FROM Alert a WHERE a.regValue = :regValue"),
     @NamedQuery(name = "Alert.findByHashMd5", query = "SELECT a FROM Alert a WHERE a.hashMd5 = :hashMd5"),
     @NamedQuery(name = "Alert.findByHashSha1", query = "SELECT a FROM Alert a WHERE a.hashSha1 = :hashSha1"),
@@ -191,8 +197,8 @@ public class Alert implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1024)
-    @Column(name = "file_path")
-    private String filePath;
+    @Column(name = "file_name")
+    private String fileName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -284,7 +290,7 @@ public class Alert implements Serializable {
         this.alertId = alertId;
     }
 
-    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String location, String status, String action, String filter, String info, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String filePath, String regValue, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String containerId, String containerName, String cloudInstance, String userName, String agentName, String timeEvent) {
+    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String location, String status, String action, String filter, String info, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String fileName, String regValue, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String containerId, String containerName, String cloudInstance, String userName, String agentName, String timeEvent) {
         this.alertId = alertId;
         this.alertUuid = alertUuid;
         this.refId = refId;
@@ -308,7 +314,7 @@ public class Alert implements Serializable {
         this.dstHostname = dstHostname;
         this.srcPort = srcPort;
         this.dstPort = dstPort;
-        this.filePath = filePath;
+        this.fileName = fileName;
         this.regValue = regValue;
         this.hashMd5 = hashMd5;
         this.hashSha1 = hashSha1;
@@ -510,12 +516,12 @@ public class Alert implements Serializable {
         this.dstPort = dstPort;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getRegValue() {
