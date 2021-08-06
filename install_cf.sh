@@ -241,5 +241,8 @@ fi
 echo "*** restart payara ***"
 sudo /etc/init.d/payara_domain1 restart
 
+rm -r /home/ec2-user/cnode
+rm /home/ec2-user/cr_env_ami.sh
+
 exit 0
 
