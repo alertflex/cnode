@@ -238,11 +238,8 @@ then
 	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 fi
 
-echo "*** clean env ***"
+echo "*** restart payara ***"
 sudo /etc/init.d/payara_domain1 restart
-rm password.txt
-rm reset_pass.sql
-rm -r ./configs
 
 exit 0
 
