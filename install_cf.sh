@@ -106,6 +106,7 @@ sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
 sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
+sudo cp $INSTALL_PATH/configs/index_ami.html /usr/share/nginx/html/index.html
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
@@ -238,7 +239,7 @@ then
 fi
 
 echo "*** clean env ***"
-# sudo /etc/init.d/payara_production restart
+sudo /etc/init.d/payara_domain1 restart
 rm password.txt
 rm reset_pass.sql
 rm -r ./configs
