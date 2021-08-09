@@ -23,13 +23,11 @@ fi
 
 echo "*** Installation Alertflex controller started***"
 
-sudo amazon-linux-extras enable epel nginx1
+sudo amazon-linux-extras enable epel nginx1 redis6
 sudo yum clean metadata
 
 echo "*** install packages  ***"
-sudo yum -y install wget epel-release nginx redis boost-devel boost-thread activemq-cpp.x86_64 activemq-cpp-devel.x86_64 hiredis hiredis-devel java-1.8.0-openjdk maven
-
-sudo systemctl enable redis
+sudo yum -y install wget epel-release nginx java-1.8.0-openjdk maven
 
 echo "*** Installation Mysql ***"
 sudo yum -y localinstall https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
