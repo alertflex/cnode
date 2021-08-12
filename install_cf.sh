@@ -23,7 +23,7 @@ fi
 
 echo "*** Installation Alertflex controller started***"
 
-sudo amazon-linux-extras enable epel nginx1 redis6
+sudo amazon-linux-extras enable epel
 sudo yum clean metadata
 
 echo "*** install packages  ***"
