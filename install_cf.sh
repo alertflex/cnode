@@ -36,6 +36,20 @@ sudo yum -y install mysql-community-server
 sudo systemctl start mysqld
 sudo systemctl enable mysqld
 
+echo "*** configure Nginx and web site ***"
+sudo rm -f /usr/share/nginx/html/img
+sudo cp -r ./html/* /usr/share/nginx/html/
+sudo mkdir /etc/nginx/ssl
+sudo chmod 700 /etc/nginx/ssl/
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -subj "/CN=$ADMIN_HOST"
+sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
+sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
+sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
+sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
+sudo cp $INSTALL_PATH/configs/index_ami.html /usr/share/nginx/html/index.html
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
 echo "*** Installation Activemq ***"
 sudo mkdir -p /opt
 cd /opt
@@ -61,12 +75,15 @@ sudo wget --no-check-certificate http://dev.mysql.com/get/Downloads/Connector-J/
 sudo unzip mysql-connector-java-5.1.35.zip mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar
 sudo cp mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar $GLASSFISH_PATH/glassfish/domains/domain1/lib/ext/ 
 
-sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
+cd $GLASSFISH_PATH/glassfish/domains/domain1/config/
+sudo cp $INSTALL_PATH/configs/logback.xml ./
+sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out nginx.p12 -name s1as -password pass:temp_pass
+sudo keytool -noprompt -importkeystore -destkeystore keystore.jks -deststorepass 'changeit' -srckeystore nginx.p12 -srcstorepass 'temp_pass' -srcstoretype PKCS12 -alias s1as
+sudo rm nginx.p12
 
 echo "* Installion ActiveMQ resource *"
 cd $INSTALL_PATH
 sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.1/activemq-rar-5.16.1.rar
-
 
 # create project work directory 
 sudo mkdir -p $PROJECT_PATH
@@ -95,19 +112,6 @@ sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
 
-echo "*** configure Nginx and web site ***"
-sudo rm -f /usr/share/nginx/html/img
-sudo cp -r ./html/* /usr/share/nginx/html/
-sudo mkdir /etc/nginx/ssl
-sudo chmod 700 /etc/nginx/ssl/
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -subj "/CN=$ADMIN_HOST"
-sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
-sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
-sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
-sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
-sudo systemctl start nginx
-sudo systemctl enable nginx
-
 # congigure mysql, get the temporary DB password and set new password
 temp_password=$(sudo grep password /var/log/mysqld.log | awk 'NR==1{print $NF}')
 sudo bash -c "echo \"ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_PWD'; flush privileges;\"" > reset_pass.sql
@@ -126,8 +130,7 @@ sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
 if [[ $INSTALL_MISP == external ]]
 then
-    sudo cp $INSTALL_PATH/configs/index_ami.html /usr/share/nginx/html/index.html
-	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
+        sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
 	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./configs/misp-db.sql
 	sudo mysql -u root -p$DB_PWD < ./configs/misp-db.sql
 else
