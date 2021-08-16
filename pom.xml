@@ -12,6 +12,7 @@
 	<modules>
 		<module>elasticshade</module>
         <module>controller</module>
+		<module>mc</module>
 	</modules>
 	
 </project>
