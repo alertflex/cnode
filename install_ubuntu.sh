@@ -220,18 +220,26 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  create-system-properties RedisHost=127.0.0.1
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  create-system-properties RedisPort=6379
 
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  delete-jvm-options '-Xms512m'
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  delete-jvm-options '-Xmx512m'
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  create-jvm-options '-Xms3g'
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  create-jvm-options '-Xmx3g'
+
 sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
 
 echo "* Installion Alertflex applications *"  
 cd $INSTALL_PATH
+git clone https://github.com/alertflex/mc.git
 sudo mvn package
+
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
 
 if [[ $INSTALL_MC == yes ]]
 then
-	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.1/alertflex-mc.war"
-	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
+	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy mc/target/alertflex-mc.war
 fi
+
+sudo /etc/init.d/payara_domain1 restart
 
 echo "*** clean env ***"
 rm password.txt

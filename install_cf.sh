@@ -46,7 +46,6 @@ sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
 sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
-sudo cp $INSTALL_PATH/configs/index_ami.html /usr/share/nginx/html/index.html
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
@@ -75,11 +74,7 @@ sudo wget --no-check-certificate http://dev.mysql.com/get/Downloads/Connector-J/
 sudo unzip mysql-connector-java-5.1.35.zip mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar
 sudo cp mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar $GLASSFISH_PATH/glassfish/domains/domain1/lib/ext/ 
 
-cd $GLASSFISH_PATH/glassfish/domains/domain1/config/
-sudo cp $INSTALL_PATH/configs/logback.xml ./
-sudo openssl pkcs12 -export -in /etc/nginx/ssl/nginx.crt -inkey /etc/nginx/ssl/nginx.key -out nginx.p12 -name s1as -password pass:temp_pass
-sudo keytool -noprompt -importkeystore -destkeystore keystore.jks -deststorepass 'changeit' -srckeystore nginx.p12 -srcstorepass 'temp_pass' -srcstoretype PKCS12 -alias s1as
-sudo rm nginx.p12
+sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
 
 echo "* Installion ActiveMQ resource *"
 cd $INSTALL_PATH
@@ -259,13 +254,14 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 echo "* Installion Alertflex applications *"  
 cd $INSTALL_PATH
+git clone https://github.com/alertflex/mc.git
 sudo mvn package
+
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
 
 if [[ $INSTALL_MC == yes ]]
 then
-	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.1/alertflex-mc.war"
-	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
+	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy mc/target/alertflex-mc.war
 fi
 
 echo "*** restart payara ***"
