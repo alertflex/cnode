@@ -254,14 +254,15 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 echo "* Installion Alertflex applications *"  
 cd $INSTALL_PATH
-git clone https://github.com/alertflex/mc.git
+
 sudo mvn package
 
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy controller/target/alertflex-ctrl.war
 
 if [[ $INSTALL_MC == yes ]]
 then
-	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy mc/target/alertflex-mc.war
+	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.1/alertflex-mc.war"
+	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 fi
 
 echo "*** restart payara ***"
