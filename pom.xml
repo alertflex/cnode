@@ -11,8 +11,7 @@
     <!-- sub modules -->
 	<modules>
 		<module>elasticshade</module>
-        <module>controller</module>
-		<module>mc</module>
+        	<module>controller</module>
 	</modules>
 	
 </project>
