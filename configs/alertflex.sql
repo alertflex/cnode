@@ -822,6 +822,7 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_t
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (23,'_project_id','XforceHash','XforceHash', 'low', 'medium', 'high',1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (24,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
 
+
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `event_id` varchar(512) NOT NULL DEFAULT '',
