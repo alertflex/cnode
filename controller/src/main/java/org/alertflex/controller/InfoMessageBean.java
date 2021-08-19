@@ -58,12 +58,10 @@ import org.alertflex.facade.DependencyScanFacade;
 import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.KubeScanFacade;
-import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.alertflex.facade.ZapScanFacade;
-import org.alertflex.facade.NiktoScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
@@ -138,13 +136,7 @@ public class InfoMessageBean implements MessageListener {
     private ZapScanFacade zapScanFacade;
     
     @EJB
-    private NmapScanFacade nmapScanFacade;
-    
-    @EJB
     private HunterScanFacade hunterScanFacade;
-    
-    @EJB
-    private NiktoScanFacade niktoScanFacade;
     
     @EJB
     private AgentPackagesFacade agentPackagesFacade;
@@ -257,14 +249,6 @@ public class InfoMessageBean implements MessageListener {
     
     public ZapScanFacade getZapScanFacade() {
         return this.zapScanFacade;
-    }
-    
-    public NiktoScanFacade getNiktoScanFacade() {
-        return this.niktoScanFacade;
-    }
-
-    public NmapScanFacade getNmapScanFacade() {
-        return this.nmapScanFacade;
     }
     
     public HunterScanFacade getHunterScanFacade() {
@@ -383,27 +367,15 @@ public class InfoMessageBean implements MessageListener {
                             break;
                             
                         case 9: 
-                            Nmap nmap = new Nmap(this);
-                            target = bytesMessage.getStringProperty("target");
-                            nmap.saveReport(data, target);
-                            break;
-                            
-                       case 10: 
                             Trivy trivy = new Trivy(this);
                             target = bytesMessage.getStringProperty("target");
                             trivy.saveReport(data, target);
                             break;
                             
-                        case 11: 
+                        case 10: 
                             Zap zap = new Zap(this);
                             target = bytesMessage.getStringProperty("target");
                             zap.saveReport(data, target);
-                            break;
-                            
-                        case 12: 
-                            Nikto nikto = new Nikto(this);
-                            target = bytesMessage.getStringProperty("target");
-                            nikto.saveReport(data, target);
                             break;
                             
                         default:
