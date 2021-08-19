@@ -641,41 +641,6 @@ CREATE TABLE `zap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `nikto_scan` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
-  `probe` varchar(128) NOT NULL DEFAULT '',
-  `host` varchar(512) NOT NULL DEFAULT '',
-  `ip` varchar(128) NOT NULL DEFAULT '',
-  `port` varchar(128) NOT NULL DEFAULT '',
-  `banner` varchar(512) NOT NULL DEFAULT '',
-  `vuln_id` varchar(128) NOT NULL DEFAULT '',
-  `vuln_OSVDB` varchar(128) NOT NULL DEFAULT '',
-  `vuln_method` varchar(512) NOT NULL DEFAULT '',
-  `vuln_url` varchar(1024) NOT NULL DEFAULT '',
-  `vuln_msg` varchar(2048) NOT NULL DEFAULT '',
-  `report_added` datetime DEFAULT NULL,
-  `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE `nmap_scan` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
-  `probe` varchar(128) NOT NULL DEFAULT '',
-  `host` varchar(128) NOT NULL DEFAULT '',
-  `protocol` varchar(128) NOT NULL DEFAULT '',
-  `portId` int(10) unsigned NOT NULL DEFAULT '0',
-  `state` varchar(64) NOT NULL DEFAULT '',
-  `name` varchar(128) NOT NULL DEFAULT '',
-  `report_added` datetime DEFAULT NULL,
-  `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `docker_scan` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
@@ -838,26 +803,24 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severit
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (4,'_project_id','Suricata','Suricata', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (5,'_project_id','Wazuh','Wazuh', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (6,'_project_id','Misc','Misc', 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (7,'_project_id','MISP','MISP', 3, 2, 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (8,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (9,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (10,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (11,'_project_id','AmazonInspector','Amazon Inspector', 'Informational', 'Low', 'Medium', 'High', 1,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (12,'_project_id','DependencyCheck','Dependency-heck', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`, `value1`, `value2`, `value3`, `value4`, `value5`) VALUES (13,'_project_id','DockerBench','Docker Bench for Security', 'PASS', 'INFO', 'NOTE', 'WARN', 'FAIL', 0,1,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (14,'_project_id','ElasticAnomaly','OpenDistro Anomaly Detection', 3, 5, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (15,'_project_id','GuardDuty','Amazon GuardDuty', 3, 5, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (16,'_project_id','KubeBench','Kube-Bench', 'PASS', 'INFO', 'NOTE', 'WARN', 'FAIL', 0,1,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (17,'_project_id','KubeHunter','Kube-Hunter', 'info', 'low', 'medium', 'high', 'critical', 1,1,2,3,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (18,'_project_id','Nmap','Nmap', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (7,'_project_id','AwsWaf','AwsWaf', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (8,'_project_id','MISP','MISP', 3, 2, 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (9,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (10,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (11,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (12,'_project_id','AmazonInspector','Amazon Inspector', 'Informational', 'Low', 'Medium', 'High', 1,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (13,'_project_id','DependencyCheck','Dependency-heck', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`, `value1`, `value2`, `value3`, `value4`, `value5`) VALUES (14,'_project_id','DockerBench','Docker Bench for Security', 'PASS', 'INFO', 'NOTE', 'WARN', 'FAIL', 0,1,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (15,'_project_id','ElasticAnomaly','OpenDistro Anomaly Detection', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (16,'_project_id','GuardDuty','Amazon GuardDuty', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (17,'_project_id','KubeBench','Kube-Bench', 'PASS', 'INFO', 'NOTE', 'WARN', 'FAIL', 0,1,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (18,'_project_id','KubeHunter','Kube-Hunter', 'info', 'low', 'medium', 'high', 'critical', 1,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (19,'_project_id','SonarQube','SonarQube', 'INFO', 'MINOR', 'MAJOR', 'CRITICAL', 'BLOCKER', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (20,'_project_id','Trivy','Trivy', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (21,'_project_id','ZAP','OWASP ZAP', 'False Positive', 'Informational', 'Low', 'Medium', 'High', 0,1,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (22,'_project_id','Nikto','Nikto', 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (23,'_project_id','XforceIp','XforceIp', 3, 5, 7);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (24,'_project_id','XforceHash','XforceHash', 'low', 'medium', 'high',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (25,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
-
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (22,'_project_id','XforceIp','XforceIp', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (23,'_project_id','XforceHash','XforceHash', 'low', 'medium', 'high',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (24,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

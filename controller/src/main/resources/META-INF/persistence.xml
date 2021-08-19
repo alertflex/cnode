@@ -26,8 +26,6 @@
     <class>org.alertflex.entity.ZapScan</class>
     <class>org.alertflex.entity.InspectorScan</class>
     <class>org.alertflex.entity.SonarScan</class>
-    <class>org.alertflex.entity.NmapScan</class>
-    <class>org.alertflex.entity.NiktoScan</class>
     <class>org.alertflex.entity.Response</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <validation-mode>NONE</validation-mode>
