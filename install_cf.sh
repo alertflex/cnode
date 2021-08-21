@@ -92,6 +92,8 @@ sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
+sudo cp ./configs/filters_v0.json $PROJECT_PATH/filters/
+
 if [[ $INSTALL_MISP == no ]]
 then
 	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
@@ -154,6 +156,7 @@ sudo openssl pkcs12 -in broker_cert.p12 -out $PROJECT_PATH/Broker.pem -password 
 sudo ln -snf  /opt/activemq/current/bin/activemq /etc/init.d/activemq
 sudo update-rc.d activemq defaults
 sudo chown -R activemq:users /opt/activemq/apache-activemq-5.16.1
+sudo service activemq start
 
 echo "*** Installation Glassfish/Payara AS ***"
 cd /opt
