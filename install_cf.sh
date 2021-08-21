@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # load technical project data for Alertflex controller
-source ./env_ami.sh
+source ./env_cf.sh
 
-export INSTALL_PATH=/home/ec2-user/cnode
-export PROJECT_PATH=/home/ec2-user/
+export INSTALL_PATH=/home/ubuntu/cnode
+export PROJECT_PATH=/home/ubuntu/
 export GLASSFISH_PATH=/opt/payara5
 export PROJECT_NAME=csm_solution
 export AMQ_USER=admin
@@ -22,65 +22,8 @@ then
     exit 1
 fi
 
-echo "*** Installation Alertflex controller started***"
-
-sudo amazon-linux-extras enable epel nginx1 docker
-sudo yum clean metadata
-
-echo "*** install packages  ***"
-sudo yum -y install wget epel-release nginx java-1.8.0-openjdk maven
-
-echo "*** Installation Mysql ***"
-sudo yum -y localinstall https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-sudo yum -y install mysql-community-server
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-
-echo "*** configure Nginx and web site ***"
-sudo rm -f /usr/share/nginx/html/img
-sudo cp -r ./html/* /usr/share/nginx/html/
-sudo mkdir /etc/nginx/ssl
-sudo chmod 700 /etc/nginx/ssl/
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -subj "/CN=$ADMIN_HOST"
-sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
-sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
-sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
-sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
-sudo systemctl start nginx
-sudo systemctl enable nginx
-
-echo "*** Installation Activemq ***"
-sudo mkdir -p /opt
-cd /opt
-FILE=apache-activemq-5.16.1-bin.tar.gz
-sudo wget https://archive.apache.org/dist/activemq/5.16.1/$FILE
-if [[ -f "$FILE" ]]
-then
-    echo "$FILE exist"
-else 
-    echo "$FILE does not exist"
-	exit 1
-fi
-sudo tar xvzf $FILE
-sudo ln -s /opt/apache-activemq-5.16.1 /opt/activemq
-
-echo "*** Installation Glassfish/Payara AS ***"
-sudo wget https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/5.2020.5/payara-5.2020.5.zip
-sudo mv *5.2020.5.zip payara-5.2020.5.zip
-sudo unzip payara-5.2020.5.zip
-sudo rm payara-5.2020.5.zip
-
-sudo wget --no-check-certificate http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.35.zip
-sudo unzip mysql-connector-java-5.1.35.zip mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar
-sudo cp mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar $GLASSFISH_PATH/glassfish/domains/domain1/lib/ext/ 
-
-sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
-
-echo "* Installion ActiveMQ resource *"
-cd $INSTALL_PATH
-sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.1/activemq-rar-5.16.1.rar
-
 # create project work directory 
+sudo mkdir -p /opt
 sudo mkdir -p $PROJECT_PATH
 sudo mkdir -p $PROJECT_PATH/reports
 sudo cp ./reports/alerts_report.jasper $PROJECT_PATH/reports/
@@ -107,12 +50,35 @@ sudo mkdir -p $PROJECT_PATH/geo
 sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
 
-# congigure mysql, get the temporary DB password and set new password
-temp_password=$(sudo grep password /var/log/mysqld.log | awk 'NR==1{print $NF}')
-sudo bash -c "echo \"ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_PWD'; flush privileges;\"" > reset_pass.sql
-sudo mysql -u root --password="$temp_password" --connect-expired-password < reset_pass.sql
+# install java 
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9
+sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
+sudo apt-get update
+sudo apt-get -y install zulu-8 unzip
 
-sudo bash -c "echo 'sql_mode=\"STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"' >> /etc/my.cnf"
+echo "*** Installation Nginx and web site ***"
+sudo apt-get -y install nginx
+sudo adduser --system --no-create-home --shell /bin/false --group --disabled-login nginx
+sudo cp -r ./html/* /usr/share/nginx/html
+sudo chown -R www-data:www-data /usr/share/nginx/html
+sudo mkdir /etc/nginx/ssl
+sudo chmod 700 /etc/nginx/ssl/
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -subj "/CN=$ADMIN_HOST"
+sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
+sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
+sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
+sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
+sudo service nginx restart
+
+echo "*** Installation Maven ***"
+sudo apt-get -y install maven
+
+echo "*** Installation Mysql ***"
+echo mysql-server mysql-server/root_password password $DB_PWD | sudo debconf-set-selections
+echo mysql-server mysql-server/root_password_again password $DB_PWD | sudo debconf-set-selections
+sudo apt-get -y install mysql-server mysql-client
+
+sudo bash -c "echo 'sql_mode=\"STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"' >> /etc/mysql/mysql.conf.d/mysqld.cnf"
 
 sudo sed -i "s|_project_id|$PROJECT_ID|g" ./configs/alertflex.sql
 sudo sed -i "s|_project_name|$PROJECT_NAME|g" ./configs/alertflex.sql
@@ -123,9 +89,11 @@ sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
-if [[ $INSTALL_MISP == external ]]
+sudo cp ./configs/filters_v0.json $PROJECT_PATH/filters/
+
+if [[ $INSTALL_MISP == no ]]
 then
-        sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
+	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
 	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./configs/misp-db.sql
 	sudo mysql -u root -p$DB_PWD < ./configs/misp-db.sql
 else
@@ -133,12 +101,15 @@ else
 	echo "*** Installation Docker and MISP container ***"
 	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./misp/misp-db.sql
 	sudo mysql -u root -p$DB_PWD < ./misp/misp-db.sql
-	sudo bash -c "echo 'bind-address = 0.0.0.0' >> /etc/my.cnf"
-	sudo systemctl stop mysqld
-	sudo systemctl start mysqld
-	sudo yum -y install docker
-	sudo systemctl start docker
-	sudo systemctl enable docker
+	sudo sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
+	sudo /etc/init.d/mysql stop
+	sudo /etc/init.d/mysql start
+	sudo apt-get update
+	sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+	sudo apt-get update
+	sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 	sudo docker network create --subnet 192.168.200.0/24 --gateway 192.168.200.1 misp-network
 	sudo cp /etc/nginx/ssl/nginx.key $INSTALL_PATH/misp
 	sudo cp /etc/nginx/ssl/nginx.crt $INSTALL_PATH/misp
@@ -153,39 +124,47 @@ else
 	sudo docker exec -i -e MYSQL_MISP_HOST=192.168.200.1 -e MYSQL_MISP_PASSWORD=$DB_PWD misp sh -c "/db-init.sh"
 fi
 
-echo "*** configure activemq ***"
-sudo sed -i "s/_admin_pwd/$ADMIN_PWD/g" $INSTALL_PATH/configs/jetty-realm.properties
-sudo cp $INSTALL_PATH/configs/jetty-realm.properties /opt/activemq/conf
+echo "*** Installation Activemq ***"
+sudo useradd -m activemq -d /opt/activemq
+cd /opt/activemq
+sudo wget https://archive.apache.org/dist/activemq/5.16.1/apache-activemq-5.16.1-bin.tar.gz
+sudo tar xvzf apache-activemq-5.16.1-bin.tar.gz
+sudo ln -snf apache-activemq-5.16.1 current
+cd $INSTALL_PATH
 
-sudo sed -i "s/_amq_user/$AMQ_USER/g" $INSTALL_PATH/configs/activemq.xml
-sudo sed -i "s/_amq_pwd/$AMQ_PWD/g" $INSTALL_PATH/configs/activemq.xml
-sudo sed -i "s/_amq_key/$AMQ_PWD/g" $INSTALL_PATH/configs/activemq.xml
-sudo cp $INSTALL_PATH/configs/activemq.xml /opt/activemq/conf/activemq.xml
+sudo sed -i "s/_admin_pwd/$ADMIN_PWD/g" ./configs/jetty-realm.properties
+sudo cp ./configs/jetty-realm.properties /opt/activemq/apache-activemq-5.16.1/conf
 
-sudo rm /opt/activemq/conf/*.ks
-sudo rm /opt/activemq/conf/*.ts
-sudo rm /opt/activemq/conf/*.cert
-
-sudo keytool -genkey -noprompt -alias broker -keyalg RSA -dname "CN=$AMQ_CN" -keystore /opt/activemq/conf/broker.ks -storepass $AMQ_PWD -keypass $AMQ_PWD
-sudo keytool -importkeystore -noprompt -srckeystore /opt/activemq/conf/broker.ks -destkeystore /opt/activemq/conf/broker_cert.p12 -srcstoretype jks -srcstorepass $AMQ_PWD -deststoretype pkcs12 -deststorepass $AMQ_PWD
-sudo openssl pkcs12 -in /opt/activemq/conf/broker_cert.p12 -out $PROJECT_PATH/Broker.pem -password pass:$AMQ_PWD -passout pass:$AMQ_PWD
+sudo sed -i "s/_amq_user/$AMQ_USER/g" ./configs/activemq.xml
+sudo sed -i "s/_amq_pwd/$AMQ_PWD/g" ./configs/activemq.xml
+sudo sed -i "s/_amq_key/$AMQ_PWD/g" ./configs/activemq.xml
+sudo cp ./configs/activemq.xml /opt/activemq/apache-activemq-5.16.1/conf/activemq.xml
 	
-sudo bash -c 'cat << EOF > /usr/lib/systemd/system/activemq.service
-[Unit]
-Description=activemq message queue
-After=network.target
-[Service]
-PIDFile=/opt/activemq/data/activemq.pid
-ExecStart=/opt/activemq/bin/activemq start
-ExecStop=/opt/activemq/bin/activemq stop
-User=root
-Group=root
-[Install]
-WantedBy=multi-user.target
-EOF'
+cd /opt/activemq/apache-activemq-5.16.1/conf
 
-sudo systemctl enable activemq.service
-sudo systemctl start activemq.service
+sudo rm *.ks
+sudo rm *.ts
+sudo rm *.cert
+
+sudo keytool -genkey -noprompt -alias broker -keyalg RSA -dname "CN=$AMQ_CN" -keystore broker.ks -storepass $AMQ_PWD -keypass $AMQ_PWD
+sudo keytool -importkeystore -noprompt -srckeystore broker.ks -destkeystore broker_cert.p12 -srcstoretype jks -srcstorepass $AMQ_PWD -deststoretype pkcs12 -deststorepass $AMQ_PWD
+sudo openssl pkcs12 -in broker_cert.p12 -out $PROJECT_PATH/Broker.pem -password pass:$AMQ_PWD -passout pass:$AMQ_PWD
+
+sudo ln -snf  /opt/activemq/current/bin/activemq /etc/init.d/activemq
+sudo update-rc.d activemq defaults
+sudo chown -R activemq:users /opt/activemq/apache-activemq-5.16.1
+sudo service activemq start
+
+echo "*** Installation Glassfish/Payara AS ***"
+cd /opt
+sudo wget https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/5.2020.5/payara-5.2020.5.zip
+sudo mv *5.2020.5.zip payara-5.2020.5.zip
+sudo unzip payara-5.2020.5.zip
+sudo rm payara-5.2020.5.zip
+
+sudo wget --no-check-certificate http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.35.zip
+sudo unzip mysql-connector-java-5.1.35.zip mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar
+sudo cp mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar $GLASSFISH_PATH/glassfish/domains/domain1/lib/ext/ 
 
 cd $INSTALL_PATH
 
@@ -233,9 +212,10 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 jaas-context=jdbcRealm:datasource-jndi="jdbc/alertflex_auth_jndi":group-table=groups:\
 user-table=users:digestrealm-password-enc-algorithm=AES:digest-algorithm=SHA-256:encoding=Hex:charset=UTF-8 JDBCRealm
 
-echo "* configure ActiveMQ resource *"
+echo "* Installion ActiveMQ resource *"
+sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.1/activemq-rar-5.16.1.rar
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy --type rar --name activemq-rar ./activemq-rar-5.16.1.rar
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-resource-adapter-config --threadpoolid thread-pool-1 --property ServerUrl=\"tcp://localhost:61616\":UserName=$AMQ_USER:Password=$AMQ_PWD activemq-rar
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-resource-adapter-config --threadpoolid thread-pool-1 --property ServerUrl=\"tcp\\://localhost\\:61616\":UserName=$AMQ_USER:Password=$AMQ_PWD activemq-rar
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-connector-connection-pool --raname activemq-rar --connectiondefinition javax.jms.ConnectionFactory --ping true jms/activeMQConnectionFactory-Connection-Pool
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-connector-resource --poolname jms/activeMQConnectionFactory-Connection-Pool --enabled true jms/activeMQConnectionFactory
 
@@ -251,6 +231,7 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  create-jvm-options '-Xms3g'
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER  create-jvm-options '-Xmx3g'
 
+sudo cp $INSTALL_PATH/configs/logback.xml $GLASSFISH_PATH/glassfish/domains/domain1/config/
 
 echo "* Installion Alertflex applications *"  
 cd $INSTALL_PATH
@@ -265,11 +246,11 @@ then
 	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 fi
 
-echo "*** restart payara ***"
 sudo /etc/init.d/payara_domain1 restart
 
-rm -r /home/ec2-user/cnode
-rm /home/ec2-user/cr_env_ami.sh
+echo "*** clean env ***"
+rm password.txt
+rm -r ./configs
 
+echo "* Please, reboot the cnode *"
 exit 0
-
