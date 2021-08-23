@@ -108,8 +108,6 @@ sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
-sudo cp ./configs/filters_v0.json $PROJECT_PATH/filters/
-
 if [[ $INSTALL_MISP == no ]]
 then
 	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
