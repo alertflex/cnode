@@ -102,14 +102,27 @@ public class RulesManagement {
             if (sl.isEmpty()) {
 
                 Sensor s = new Sensor();
-                s.setRefId(ref);
-                s.setNode(nodeName);
-                s.setName(sensorName);
+                s.getSensorPK().setRefId(ref);
+                s.getSensorPK().setNode(nodeName);
+                s.getSensorPK().setName(sensorName);
                 s.setDescription(sensorType + " sensor");
                 s.setSensorType(sensorType);
                 s.setProbe(probe);
                 s.setStatus(1);
                 eventBean.getSensorFacade().create(s);
+            
+            } else {
+                
+                if (sl.size() == 1) {
+                    
+                    Sensor s = sl.get(0);
+                    
+                    if (s.getStatus() == 0) {
+                        s.setStatus(1);
+                        eventBean.getSensorFacade().edit(s);
+                    } 
+                    
+                }
             }
 
             SensorRepository sr = new SensorRepository(pr.getNodeDir(), sensorName, sensorType);

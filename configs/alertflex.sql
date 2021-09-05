@@ -314,7 +314,6 @@ CREATE TABLE `node` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `sensor` (
-  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `node` varchar(255) NOT NULL DEFAULT '',
   `probe` varchar(255) NOT NULL,
@@ -322,7 +321,7 @@ CREATE TABLE `sensor` (
   `description` varchar(512) NOT NULL DEFAULT '',
   `sensor_type` varchar(64) NOT NULL DEFAULT '',
   `status` int(2) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`rec_id`)
+  PRIMARY KEY (`ref_id`,`node`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `container` (

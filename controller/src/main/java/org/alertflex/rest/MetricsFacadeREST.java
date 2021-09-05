@@ -122,7 +122,7 @@ public class MetricsFacadeREST {
                         
                         for (Sensor sensor : sensorsList) {
 
-                            String nids = sensor.getName();
+                            String nids = sensor.getSensorPK().getName();
 
                             if (nids != null || !nids.isEmpty()) {
 
