@@ -38,27 +38,27 @@ public class SensorFacade extends AbstractFacade<Sensor> {
         super(Sensor.class);
     }
 
-    public List<Sensor> findSensorByName(String ref, String node, String name) {
+    public Sensor findSensorByName(String ref, String node, String name) {
 
-        List<Sensor> sl = null;
+        Sensor s = null;
 
         try {
             em.flush();
 
             Query listQry = em.createQuery(
-                    "SELECT s FROM Sensor s WHERE s.node = :node AND s.refId = :ref AND s.name = :name")
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node AND s.sensorPK.refId = :ref AND s.sensorPK.name = :name")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("name", name);
 
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            sl = (List<Sensor>) listQry.getResultList();
+            s = (Sensor) listQry.getSingleResult();
 
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-            sl = null;
+
         }
 
-        return sl;
+        return s;
 
     }
     
@@ -70,7 +70,7 @@ public class SensorFacade extends AbstractFacade<Sensor> {
             em.flush();
 
             Query listQry = em.createQuery(
-                    "SELECT s FROM Sensor s WHERE s.node = :node AND s.refId = :ref AND s.probe = :probe")
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node AND s.sensorPK.refId = :ref AND s.probe = :probe")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("probe", probe);
 
             // Enable forced database query
@@ -94,7 +94,7 @@ public class SensorFacade extends AbstractFacade<Sensor> {
             em.flush();
 
             Query listQry = em.createQuery(
-                    "SELECT s FROM Sensor s WHERE s.refId = :ref").setParameter("ref", ref);
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :ref").setParameter("ref", ref);
 
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
@@ -117,7 +117,7 @@ public class SensorFacade extends AbstractFacade<Sensor> {
             em.flush();
 
             Query listQry = em.createQuery(
-                    "SELECT s FROM Sensor s WHERE s.node = :node AND s.refId = :ref AND s.sensorType = :type")
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node AND s.sensorPK.refId = :ref AND s.sensorType = :type")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("type", type);
 
             // Enable forced database query
@@ -141,7 +141,7 @@ public class SensorFacade extends AbstractFacade<Sensor> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT s.probe FROM Sensor s WHERE s.node = :node AND s.refId = :ref GROUP BY s.node")
+                "SELECT s.probe FROM Sensor s WHERE s.sensorPK.node = :node AND s.sensorPK.refId = :ref")
                     .setParameter("ref", ref).setParameter("node", node);
 
             // Enable forced database query

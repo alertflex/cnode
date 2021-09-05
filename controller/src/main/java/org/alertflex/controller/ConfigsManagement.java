@@ -27,6 +27,7 @@ import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Sensor;
+import org.alertflex.entity.SensorPK;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,33 +99,26 @@ public class ConfigsManagement {
                     return;
             }
             
-            List<Sensor> sl = eventBean.getSensorFacade().findSensorByName(ref, nodeName, sensorName);
+            Sensor s = eventBean.getSensorFacade().findSensorByName(ref, nodeName, sensorName);
 
-            if (sl.isEmpty()) {
+            if (s == null) {
 
-                Sensor s = new Sensor();
-                s.getSensorPK().setRefId(ref);
-                s.getSensorPK().setNode(nodeName);
-                s.getSensorPK().setName(sensorName);
+                SensorPK sensorPK = new SensorPK(ref, nodeName, sensorName);
+                s = new Sensor(sensorPK);
                 s.setDescription(sensorType + " sensor");
                 s.setSensorType(sensorType);
                 s.setProbe(probe);
                 s.setStatus(1);
                 eventBean.getSensorFacade().create(s);
-                
+            
             } else {
                 
-                if (sl.size() == 1) {
-                    
-                    Sensor s = sl.get(0);
-                    
-                    if (s.getStatus() == 0) {
-                        s.setStatus(1);
-                        eventBean.getSensorFacade().edit(s);
-                    } 
-                    
+                if (s.getStatus() == 0) {
+                    s.setStatus(1);
+                    eventBean.getSensorFacade().edit(s);
                 }
             }
+
 
             SensorRepository sr = new SensorRepository(pr.getNodeDir(), sensorName, sensorType);
             boolean ready = sr.getStatus();
