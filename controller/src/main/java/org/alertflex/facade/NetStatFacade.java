@@ -16,7 +16,6 @@
 package org.alertflex.facade;
 
 import java.sql.Timestamp;
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
@@ -59,7 +58,7 @@ public class NetStatFacade extends AbstractFacade<NetStat> {
         return deletedCount;
     }
 
-    public NetStat getLastRecord(String r, String n, String i) {
+    public NetStat getLastRecord(String r, String n, String s) {
 
         NetStat ns = null;
 
@@ -67,8 +66,8 @@ public class NetStatFacade extends AbstractFacade<NetStat> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT n FROM NetStat n WHERE n.refId = :ref AND n.nodeId = :node AND n.ids = :ids ORDER BY n.timeOfSurvey DESC")
-                    .setParameter("ref", r).setParameter("node", n).setParameter("ids", i).setMaxResults(1);
+                    "SELECT n FROM NetStat n WHERE n.refId = :ref AND n.node = :node AND n.sensor = :sensor ORDER BY n.timeOfSurvey DESC")
+                    .setParameter("ref", r).setParameter("node", n).setParameter("sensor", s).setMaxResults(1);
 
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

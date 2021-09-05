@@ -116,9 +116,10 @@ public class MetricsFacadeREST {
                 }
 
                 try {
-                    List<Sensor> sensorsList = sensorFacade.findSensorsByType(prj, nodeId, "suricata");
+                    List<Sensor> sensorsList = sensorFacade.findSensorsByType(prj, nodeId, "Suricata");
 
                     if (sensorsList != null || !sensorsList.isEmpty()) {
+                        
                         for (Sensor sensor : sensorsList) {
 
                             String nids = sensor.getSensorPK().getName();

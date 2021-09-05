@@ -138,6 +138,49 @@ CREATE TABLE `net_stat` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `net_countries` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(255) NOT NULL,
+  `sensor` varchar(255) NOT NULL,
+  `time_of_survey` datetime DEFAULT NULL,
+  `country` varchar(128) NOT NULL DEFAULT '',
+  `bytes` bigint unsigned NOT NULL DEFAULT '0',
+  `sessions` bigint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `net_topsessions` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(255) NOT NULL,
+  `sensor` varchar(255) NOT NULL,
+  `src_ip` varchar(255) NOT NULL DEFAULT '',
+  `src_country` varchar(128) NOT NULL DEFAULT '',
+  `dst_ip` varchar(255) NOT NULL DEFAULT '',
+  `dst_country` varchar(128) NOT NULL DEFAULT '',
+  `sessions` bigint unsigned NOT NULL DEFAULT '0',
+  `time_of_survey` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `net_topbytes` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(255) NOT NULL,
+  `sensor` varchar(255) NOT NULL,
+  `src_ip` varchar(255) NOT NULL DEFAULT '',
+  `src_country` varchar(128) NOT NULL DEFAULT '',
+  `dst_ip` varchar(255) NOT NULL DEFAULT '',
+  `dst_country` varchar(128) NOT NULL DEFAULT '',
+  `bytes` bigint unsigned NOT NULL DEFAULT '0',
+  `time_of_survey` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 USE alertflex;
 
@@ -275,9 +318,9 @@ CREATE TABLE `sensor` (
   `node` varchar(255) NOT NULL DEFAULT '',
   `probe` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `type` varchar(64) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `rules_update` int(2) unsigned NOT NULL DEFAULT '0',
+  `sensor_type` varchar(64) NOT NULL DEFAULT '',
+  `status` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ref_id`,`node`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -392,24 +435,6 @@ CREATE TABLE `bwlist_packages` (
   `list_type` int(2) unsigned NOT NULL DEFAULT '0',
   `date_add` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `incident` (
-  `inc_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `inc_uuid` char(37) NOT NULL DEFAULT '', -- id of incident
-  `alert_uuid` char(37) NOT NULL DEFAULT '', 
-  `ref_id` varchar(256) NOT NULL DEFAULT '',
-  `ref_ext` varchar(256) NOT NULL DEFAULT '',
-  `ref_type` varchar(32) NOT NULL DEFAULT '', -- internal, thehive, jira
-  `action` varchar(32) NOT NULL DEFAULT '', -- change status, notify, escalate to external system, add new alert, asign new user
-  `severity` int(10) unsigned NOT NULL DEFAULT '0',
-  `category` varchar(512) NOT NULL DEFAULT '',
-  `status` varchar(32) NOT NULL DEFAULT '', -- new, action, inprogress, pending, resolved, closed
-  `userid` varchar(256) NOT NULL,
-  `description` varchar(1024) NOT NULL DEFAULT '',
-  `time_of_creation` datetime DEFAULT NULL,
-  `time_of_action` datetime DEFAULT NULL,
-  PRIMARY KEY (`inc_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `response` (

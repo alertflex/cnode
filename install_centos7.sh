@@ -43,8 +43,6 @@ sudo cp ./reports/scanner_sonarqube.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_inspector.jasper $PROJECT_PATH/reports/
 
 sudo mkdir -p $PROJECT_PATH/filters
-sudo mkdir -p $PROJECT_PATH/geo
-sudo cp ./configs/GeoLiteCity.dat $PROJECT_PATH/geo/
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
 
 # create firewall rules
@@ -272,7 +270,7 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 if [[ $INSTALL_MC == yes ]]
 then
-	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.1/alertflex-mc.war"
+	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.2/alertflex-mc.war"
 	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 fi
 

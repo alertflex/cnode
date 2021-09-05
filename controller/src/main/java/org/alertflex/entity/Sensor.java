@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -40,9 +30,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node"),
     @NamedQuery(name = "Sensor.findByProbe", query = "SELECT s FROM Sensor s WHERE s.probe = :probe"),
     @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.sensorPK.name = :name"),
-    @NamedQuery(name = "Sensor.findByType", query = "SELECT s FROM Sensor s WHERE s.type = :type"),
     @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description"),
-    @NamedQuery(name = "Sensor.findByRulesUpdate", query = "SELECT s FROM Sensor s WHERE s.rulesUpdate = :rulesUpdate")})
+    @NamedQuery(name = "Sensor.findBySensorType", query = "SELECT s FROM Sensor s WHERE s.sensorType = :sensorType"),
+    @NamedQuery(name = "Sensor.findByStatus", query = "SELECT s FROM Sensor s WHERE s.status = :status")})
 public class Sensor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,18 +45,18 @@ public class Sensor implements Serializable {
     private String probe;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "type")
-    private String type;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 512)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "rules_update")
-    private int rulesUpdate;
+    @Size(min = 1, max = 64)
+    @Column(name = "sensor_type")
+    private String sensorType;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "status")
+    private int status;
 
     public Sensor() {
     }
@@ -75,12 +65,12 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public Sensor(SensorPK sensorPK, String probe, String type, String description, int rulesUpdate) {
+    public Sensor(SensorPK sensorPK, String probe, String description, String sensorType, int status) {
         this.sensorPK = sensorPK;
         this.probe = probe;
-        this.type = type;
         this.description = description;
-        this.rulesUpdate = rulesUpdate;
+        this.sensorType = sensorType;
+        this.status = status;
     }
 
     public Sensor(String refId, String node, String name) {
@@ -103,14 +93,6 @@ public class Sensor implements Serializable {
         this.probe = probe;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -119,12 +101,20 @@ public class Sensor implements Serializable {
         this.description = description;
     }
 
-    public int getRulesUpdate() {
-        return rulesUpdate;
+    public String getSensorType() {
+        return sensorType;
     }
 
-    public void setRulesUpdate(int rulesUpdate) {
-        this.rulesUpdate = rulesUpdate;
+    public void setSensorType(String sensorType) {
+        this.sensorType = sensorType;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override
