@@ -49,6 +49,9 @@ import org.alertflex.facade.EventsFacade;
 import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
 import org.alertflex.facade.NetStatFacade;
+import org.alertflex.facade.NetTopbytesFacade;
+import org.alertflex.facade.NetTopsessionsFacade;
+import org.alertflex.facade.NetCountriesFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AgentScaFacade;
@@ -113,6 +116,15 @@ public class InfoMessageBean implements MessageListener {
 
     @EJB
     private NetStatFacade netStatFacade;
+    
+    @EJB
+    private NetCountriesFacade netCountriesFacade;
+    
+    @EJB
+    private NetTopbytesFacade netTopbytesFacade;
+    
+    @EJB
+    private NetTopsessionsFacade netTopsessionsFacade;
 
     @EJB
     private AgentVulFacade agentVulFacade;
@@ -221,6 +233,18 @@ public class InfoMessageBean implements MessageListener {
 
     public NetStatFacade getNetStatFacade() {
         return this.netStatFacade;
+    }
+    
+    public NetCountriesFacade getNetCountriesFacade() {
+        return this.netCountriesFacade;
+    }
+    
+    public NetTopbytesFacade getNetTopbytesFacade() {
+        return this.netTopbytesFacade;
+    }
+    
+    public NetTopsessionsFacade getNetTopsessionsFacade() {
+        return this.netTopsessionsFacade;
     }
 
     public AgentVulFacade getAgentVulFacade() {

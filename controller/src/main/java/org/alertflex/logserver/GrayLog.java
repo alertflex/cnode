@@ -15,15 +15,12 @@
 
 package org.alertflex.logserver;
 
-import com.maxmind.geoip.Location;
-import com.maxmind.geoip.LookupService;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.alertflex.common.GeoIp;
 import org.alertflex.entity.Alert;
 import org.json.JSONObject;
 
@@ -157,79 +154,34 @@ public class GrayLog {
         }
     }
     
-    public void SendSuricataToLog(String log, LookupService ls) {
+    public void SendSuricataToLog(JSONObject obj) {
         
         String graylogJson ="";
         
         if (socket != null &&  iaHost != null && logPort != 0) {
             try {
                 
-                JSONObject obj = new JSONObject(log);
-        
                 String message = obj.getString("short_message");
                 
-                GeoIp dstIp;
-                GeoIp srcIp;
-                String srcip = "";
-                String dstip = "";
-                String cc = "";
-                float lat = 0;
-                float lon = 0;
-                
-                dstip = obj.getString("dstip");
-                dstIp = new GeoIp(dstip);
-                
-                srcip = obj.getString("srcip");
-                srcIp = new GeoIp(srcip);
-                
-                if (ls != null) {
-                
-                    try {
-                        
-                        InetAddress ia_src = InetAddress.getByName(srcip);
-                    
-                        if (!ia_src.isSiteLocalAddress()){
-                            Location loc = ls.getLocation(srcip);
-                            lat = loc.latitude;
-                            lon = loc.longitude;
-                            cc = loc.countryCode;
-                            
-                            srcIp = new GeoIp(srcip,cc,lat,lon);
-                        } 
-                        
-                        InetAddress ia_dst = InetAddress.getByName(dstip);
-                
-                        if (!ia_dst.isSiteLocalAddress()) {
-                            Location loc = ls.getLocation(dstip);
-                            lat = loc.latitude;
-                            lon = loc.longitude;
-                            cc = loc.countryCode;
-                            dstIp = new GeoIp(dstip,cc,lat,lon);
-                        }
-                    } catch (Exception e) {}
-                }
-            
                 switch(message) {
             
                     case "dns-nids":
-                        graylogJson = ConvertDnsToLog(obj,dstIp,srcIp);
+                        graylogJson = ConvertDnsToLog(obj);
                         break;
                     case "http-nids":
-                        graylogJson = ConvertHttpToLog(obj,dstIp,srcIp);
+                        graylogJson = ConvertHttpToLog(obj);
                         break;
                     case "netflow-nids":
-                        graylogJson = ConvertNetflowToLog(obj,dstIp,srcIp);
+                        graylogJson = ConvertNetflowToLog(obj);
                         break;
                     case "file-nids":
-                        graylogJson = ConvertFileToLog(obj,dstIp,srcIp);
+                        graylogJson = ConvertFileToLog(obj);
                         break;
                                        
                     default:
                         return;
                 }
                 
-                
-                                
                 byte [] data = graylogJson.getBytes(StandardCharsets.UTF_8);
                 DatagramPacket packet = new DatagramPacket( data, data.length, iaHost, logPort ) ;
                 socket.send( packet ) ;
@@ -241,7 +193,7 @@ public class GrayLog {
         }
     }
     
-    public String ConvertDnsToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
+    public String ConvertDnsToLog(JSONObject obj) {
         
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -262,21 +214,21 @@ public class GrayLog {
             + "\",\"_dns_type\":\""
             + obj.getString("dns_type")
             + "\",\"_src_ip\":\""
-            + srcIp.getIp()
+            + obj.getString("src_ip")
             + "\",\"_src_ip_geo_country\":\""
-            + srcIp.getCc()
+            + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
-            + srcIp.getLat() + "," + srcIp.getLon()
+            + obj.getString("src_ip_geo_location")
             + "\",\"_src_agent\":\""
             + obj.getString("srcagent")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + dstIp.getIp()
+            + obj.getString("dst_ip")
             + "\",\"_dst_ip_geo_country\":\""
-            + dstIp.getCc()
+            + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
-            + dstIp.getLat() + "," + dstIp.getLon()
+            + obj.getString("dst_ip_geo_location")
             + "\",\"_dst_agent\":\""
             + obj.getString("dstagent")
             + "\",\"_dst_port\":"
@@ -290,7 +242,7 @@ public class GrayLog {
         return report;
     }
     
-    public String ConvertHttpToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
+    public String ConvertHttpToLog(JSONObject obj) {
         
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -309,21 +261,21 @@ public class GrayLog {
             + "\",\"_controller_time\":\""
             + time
             + "\",\"_src_ip\":\""
-            + srcIp.getIp()
+            + obj.getString("src_ip")
             + "\",\"_src_ip_geo_country\":\""
-            + srcIp.getCc()
+            + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
-            + srcIp.getLat() + "," + srcIp.getLon()
+            + obj.getString("src_ip_geo_location")
             + "\",\"_src_agent\":\""
             + obj.getString("srcagent")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + dstIp.getIp()
+            + obj.getString("dst_ip")
             + "\",\"_dst_ip_geo_country\":\""
-            + dstIp.getCc()
+            + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
-            + dstIp.getLat() + "," + dstIp.getLon()
+            + obj.getString("dst_ip_geo_location")
             + "\",\"_dst_agent\":\""
             + obj.getString("dstagent")
             + "\",\"_dst_port\":"
@@ -341,7 +293,7 @@ public class GrayLog {
         return report;
     }
     
-    public String ConvertNetflowToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
+    public String ConvertNetflowToLog(JSONObject obj) {
         
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -364,21 +316,21 @@ public class GrayLog {
             + "\",\"_process\":\""
             + obj.getString("process")
             + "\",\"_src_ip\":\""
-            + srcIp.getIp()
+            + obj.getString("src_ip")
             + "\",\"_src_ip_geo_country\":\""
-            + srcIp.getCc()
+            + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
-            + srcIp.getLat() + "," + srcIp.getLon()
+            + obj.getString("src_ip_geo_location")
             + "\",\"_src_agent\":\""
             + obj.getString("srcagent")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + dstIp.getIp()
+            + obj.getString("dst_ip")
             + "\",\"_dst_ip_geo_country\":\""
-            + dstIp.getCc()
+            + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
-            + dstIp.getLat() + "," + dstIp.getLon()
+            + obj.getString("dst_ip_geo_location")
             + "\",\"_dst_agent\":\""
             + obj.getString("dstagent")
             + "\",\"_dst_port\":"
@@ -392,7 +344,7 @@ public class GrayLog {
         return report;
     }
     
-    public String ConvertFileToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
+    public String ConvertFileToLog(JSONObject obj) {
         
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -415,21 +367,21 @@ public class GrayLog {
             + "\",\"_process\":\""
             + obj.getString("process")
             + "\",\"_src_ip\":\""
-            + srcIp.getIp()
+            + obj.getString("src_ip")
             + "\",\"_src_ip_geo_country\":\""
-            + srcIp.getCc()
+            + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
-            + srcIp.getLat() + "," + srcIp.getLon()
+            + obj.getString("src_ip_geo_location")
             + "\",\"_src_agent\":\""
             + obj.getString("srcagent")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + dstIp.getIp()
+            + obj.getString("dst_ip")
             + "\",\"_dst_ip_geo_country\":\""
-            + dstIp.getCc()
+            + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
-            + dstIp.getLat() + "," + dstIp.getLon()
+            + obj.getString("dst_ip_geo_location")
             + "\",\"dst_agent\":\""
             + obj.getString("dstagent")
             + "\",\"_dst_port\":"
@@ -447,43 +399,14 @@ public class GrayLog {
         return report;
     }
     
-    public void SendAwsWafToLog(String log, LookupService ls) {
+    public void SendAwsWafToLog(JSONObject obj) {
         
         String graylogJson ="";
         
         if (socket != null &&  iaHost != null && logPort != 0) {
             try {
                 
-                JSONObject obj = new JSONObject(log);
-        
-                GeoIp srcIp;
-                String srcip = "";
-                String cc = "";
-                float lat = 0;
-                float lon = 0;
-                
-                srcip = obj.getString("clientIp");
-                srcIp = new GeoIp(srcip);
-                
-                if (ls != null) {
-                
-                    try {
-                        
-                        InetAddress ia_src = InetAddress.getByName(srcip);
-                    
-                        if (!ia_src.isSiteLocalAddress()){
-                            Location loc = ls.getLocation(srcip);
-                            lat = loc.latitude;
-                            lon = loc.longitude;
-                            cc = loc.countryCode;
-                            
-                            srcIp = new GeoIp(srcip,cc,lat,lon);
-                        } 
-                        
-                    } catch (Exception e) {}
-                }
-            
-                graylogJson = ConvertAwsWafEventToLog(obj, srcIp);
+                graylogJson = ConvertAwsWafEventToLog(obj);
                 
                 byte [] data = graylogJson.getBytes(StandardCharsets.UTF_8);
                 DatagramPacket packet = new DatagramPacket( data, data.length, iaHost, logPort ) ;
@@ -496,7 +419,7 @@ public class GrayLog {
         }
     }
     
-    public String ConvertAwsWafEventToLog(JSONObject obj, GeoIp ip) {
+    public String ConvertAwsWafEventToLog(JSONObject obj) {
         
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -522,14 +445,12 @@ public class GrayLog {
                 + obj.getString("terminatingRuleType")
                 + "\",\"_action\":\""
                 + obj.getString("action")
-                
                 + "\",\"_clientIp\":\""
-                + ip.getIp()
-                + "\",\"_src_ip_geo_country\":\""
-                + ip.getCc()
-                + "\",\"_src_ip_geo_location\":\""
-                + ip.getLat() + "," + ip.getLon()
-                
+                + obj.getString("clientIp")
+                + "\",\"_client_ip_geo_country\":\""
+                + obj.getString("client_ip_geo_country")
+                + "\",\"_client_ip_geo_location\":\""
+                + obj.getString("client_ip_geo_location")
                 + "\",\"_uri\":\""
                 + obj.getString("uri")
                 + "\",\"_args\":\""

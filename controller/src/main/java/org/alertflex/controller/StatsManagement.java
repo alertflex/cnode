@@ -35,6 +35,9 @@ import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
+import org.alertflex.entity.NetCountries;
+import org.alertflex.entity.NetTopbytes;
+import org.alertflex.entity.NetTopsessions;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Project;
@@ -615,7 +618,7 @@ public class StatsManagement {
                         net_stat.setNode(eventBean.getNode());
                         net_stat.setProbe(eventBean.getProbe());
                         
-                        net_stat.setSensor(eventBean.getProbe() + ".nids");
+                        net_stat.setSensor(arr.getJSONObject(i).getString("ids"));
 
                         net_stat.setInvalid(arr.getJSONObject(i).getLong("invalid"));
 
@@ -664,6 +667,85 @@ public class StatsManagement {
                     }
 
                     break;
+                    
+                case "net_topbytes": {
+                    
+                    arr = obj.getJSONArray("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        
+                    for (int i = 0; i < arr.length(); i++) {
+                            
+                        NetTopbytes net_talkers = new NetTopbytes();
+                    
+                        net_talkers.setRefId(eventBean.getRefId());
+                        net_talkers.setNode(eventBean.getNode());
+                        net_talkers.setProbe(eventBean.getProbe());
+                        net_talkers.setSensor(arr.getJSONObject(i).getString("sensor"));
+                        net_talkers.setDstIp(arr.getJSONObject(i).getString("dst_ip"));
+                        net_talkers.setSrcIp(arr.getJSONObject(i).getString("src_ip"));
+                        net_talkers.setDstCountry(arr.getJSONObject(i).getString("dst_country"));
+                        net_talkers.setSrcCountry(arr.getJSONObject(i).getString("src_country"));
+                        net_talkers.setBytes(arr.getJSONObject(i).getLong("bytes"));
+                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
+                        net_talkers.setTimeOfSurvey(date);
+                        
+                        eventBean.getNetTopbytesFacade().create(net_talkers);
+                    }
+                    break;
+                }
+                
+                case "net_topsessions": {
+                    
+                    arr = obj.getJSONArray("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        
+                    for (int i = 0; i < arr.length(); i++) {
+                            
+                        NetTopsessions net_talkers = new NetTopsessions();
+                    
+                        net_talkers.setRefId(eventBean.getRefId());
+                        net_talkers.setNode(eventBean.getNode());
+                        net_talkers.setProbe(eventBean.getProbe());
+                        net_talkers.setSensor(arr.getJSONObject(i).getString("sensor"));
+                        net_talkers.setDstIp(arr.getJSONObject(i).getString("dst_ip"));
+                        net_talkers.setSrcIp(arr.getJSONObject(i).getString("src_ip"));
+                        net_talkers.setDstCountry(arr.getJSONObject(i).getString("dst_country"));
+                        net_talkers.setSrcCountry(arr.getJSONObject(i).getString("src_country"));
+                        net_talkers.setSessions(arr.getJSONObject(i).getLong("sessions"));
+                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
+                        net_talkers.setTimeOfSurvey(date);
+                        
+                        eventBean.getNetTopsessionsFacade().create(net_talkers);
+                    }
+                    break;
+                }
+                    
+                case "net_countries": {
+                    
+                    arr = obj.getJSONArray("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        
+                    for (int i = 0; i < arr.length(); i++) {
+                            
+                        NetCountries net_country = new NetCountries();
+                    
+                        net_country.setRefId(eventBean.getRefId());
+                        net_country.setNode(eventBean.getNode());
+                        net_country.setProbe(eventBean.getProbe());
+                        net_country.setSensor(arr.getJSONObject(i).getString("sensor"));
+                        net_country.setCountry(arr.getJSONObject(i).getString("country"));
+                        net_country.setBytes(arr.getJSONObject(i).getLong("bytes"));
+                        net_country.setSessions(arr.getJSONObject(i).getLong("sessions"));
+                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
+                        net_country.setTimeOfSurvey(date);
+                        
+                        eventBean.getNetCountriesFacade().create(net_country);
+                    }
+                    break;
+                }
                     
                 default:
                     break;

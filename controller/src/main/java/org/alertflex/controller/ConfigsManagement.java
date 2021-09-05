@@ -17,6 +17,7 @@ package org.alertflex.controller;
 
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.common.SensorRepository;
+import java.util.List;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +27,6 @@ import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Sensor;
-import org.alertflex.entity.SensorPK;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,16 +98,18 @@ public class ConfigsManagement {
                     return;
             }
             
-            Sensor s = eventBean.getSensorFacade().findSensorByName(ref, nodeName, sensorName);
+            List<Sensor> sl = eventBean.getSensorFacade().findSensorByName(ref, nodeName, sensorName);
 
-            if (s == null) {
+            if (sl.isEmpty()) {
 
-                SensorPK sensorPK = new SensorPK(ref, nodeName, sensorName);
-                s = new Sensor(sensorPK);
+                Sensor s = new Sensor();
+                s.setRefId(ref);
+                s.setNode(nodeName);
+                s.setName(sensorName);
                 s.setDescription(sensorType + " sensor");
-                s.setType(sensorType);
+                s.setSensorType(sensorType);
                 s.setProbe(probe);
-                s.setRulesUpdate(0);
+                s.setStatus(1);
                 eventBean.getSensorFacade().create(s);
             }
 

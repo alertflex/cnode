@@ -15,19 +15,15 @@
 
 package org.alertflex.logserver;
 
-import com.maxmind.geoip.Location;
-import com.maxmind.geoip.LookupService;
 import hidden.org.elasticsearch.action.index.IndexRequest;
 import hidden.org.elasticsearch.action.index.IndexResponse;
 import hidden.org.elasticsearch.client.RequestOptions;
 import hidden.org.elasticsearch.client.RestHighLevelClient;
 import hidden.org.elasticsearch.common.xcontent.XContentType;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
-import org.alertflex.common.GeoIp;
 import org.alertflex.entity.Alert;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -82,78 +78,21 @@ public class ElasticSearch {
         }
     }
 
-    public void SendSuricataToLog(String log, LookupService ls) {
+    public void SendSuricataToLog(JSONObject obj) {
 
         String elasticJson = "";
 
         if (client != null) {
 
             try {
+                
+                Date date = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                String time = formatter.format(date);
+                
+                obj.append("controller_time", time);
 
-                JSONObject obj = new JSONObject(log);
-
-                String message = obj.getString("short_message");
-
-                GeoIp dstIp;
-                GeoIp srcIp;
-                String srcip = "";
-                String dstip = "";
-                String cc = "";
-                float lat = 0;
-                float lon = 0;
-
-                dstip = obj.getString("dstip");
-                dstIp = new GeoIp(dstip);
-
-                srcip = obj.getString("srcip");
-                srcIp = new GeoIp(srcip);
-
-                if (ls != null) {
-
-                    try {
-
-                        InetAddress ia_src = InetAddress.getByName(srcip);
-
-                        if (!ia_src.isSiteLocalAddress()) {
-                            Location loc = ls.getLocation(srcip);
-                            lat = loc.latitude;
-                            lon = loc.longitude;
-                            cc = loc.countryCode;
-
-                            srcIp = new GeoIp(srcip, cc, lat, lon);
-                        }
-
-                        InetAddress ia_dst = InetAddress.getByName(dstip);
-
-                        if (!ia_dst.isSiteLocalAddress()) {
-                            Location loc = ls.getLocation(dstip);
-                            lat = loc.latitude;
-                            lon = loc.longitude;
-                            cc = loc.countryCode;
-                            dstIp = new GeoIp(dstip, cc, lat, lon);
-                        }
-                    } catch (Exception e) {
-                    }
-                }
-
-                switch (message) {
-
-                    case "dns-nids":
-                        elasticJson = ConvertDnsToLog(obj, dstIp, srcIp);
-                        break;
-                    case "http-nids":
-                        elasticJson = ConvertHttpToLog(obj, dstIp, srcIp);
-                        break;
-                    case "netflow-nids":
-                        elasticJson = ConvertNetflowToLog(obj, dstIp, srcIp);
-                        break;
-                    case "file-nids":
-                        elasticJson = ConvertFileToLog(obj, dstIp, srcIp);
-                        break;
-
-                    default:
-                        return;
-                }
+                elasticJson = obj.getString("short_message");
 
                 if (!elasticJson.isEmpty()) {
                     checkDateIndex();
@@ -165,180 +104,6 @@ public class ElasticSearch {
                 logger.error("alertflex_ctrl_exception", e);
             }
         }
-    }
-
-    public String ConvertDnsToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String time = formatter.format(date);
-
-        String report = "{\"version\": \"1.1\",\"node\":\""
-                + obj.getString("node")
-                + "\",\"short_message\":\"dns-nids\",\"full_message\":\"DNS event from Suricata NIDS\",\"level\":"
-                + obj.getInt("level")
-                + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("project_id")
-                + "\",\"sensor\":\""
-                + obj.getString("sensor")
-                + "\",\"event_time\":\""
-                + obj.getString("event_time")
-                + "\",\"controller_time\":\""
-                + time
-                + "\",\"dns_type\":\""
-                + obj.getString("dns_type")
-                + "\",\"srcip\":"
-                + srcIp.getSrcIp()
-                + ",\"srcagent\":\""
-                + obj.getString("srcagent")
-                + "\",\"srcport\":"
-                + obj.getInt("srcport")
-                + ",\"dstip\":"
-                + dstIp.getDstIp()
-                + ",\"dstagent\":\""
-                + obj.getString("dstagent")
-                + "\",\"dstport\":"
-                + obj.getInt("dstport")
-                + ",\"rrname\":\""
-                + obj.getString("rrname")
-                + "\",\"rrtype\":\""
-                + obj.getString("rrtype")
-                + "\"}";
-
-        return report;
-    }
-
-    public String ConvertHttpToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String time = formatter.format(date);
-
-        String report = "{\"version\": \"1.1\",\"node\":\""
-                + obj.getString("node")
-                + "\",\"short_message\":\"http-nids\",\"full_message\":\"HTTP event from Suricata NIDS\",\"level\":"
-                + obj.getInt("level")
-                + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("project_id")
-                + "\",\"sensor\":\""
-                + obj.getString("sensor")
-                + "\",\"event_time\":\""
-                + obj.getString("event_time")
-                + "\",\"controller_time\":\""
-                + time
-                + "\",\"srcip\":"
-                + srcIp.getSrcIp()
-                + ",\"srcagent\":\""
-                + obj.getString("srcagent")
-                + "\",\"srcport\":"
-                + obj.getInt("srcport")
-                + ",\"dstip\":"
-                + dstIp.getDstIp()
-                + ",\"dstagent\":\""
-                + obj.getString("dstagent")
-                + "\",\"dstport\":"
-                + obj.getInt("dstport")
-                + ",\"url_hostname\":\""
-                + obj.getString("url_hostname")
-                + "\",\"url_path\":\""
-                + obj.getString("url_path")
-                + "\",\"http_user_agent\":\""
-                + obj.getString("http_user_agent")
-                + "\",\"http_content_type\":\""
-                + obj.getString("http_content_type")
-                + "\"}";
-
-        return report;
-    }
-
-    public String ConvertNetflowToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String time = formatter.format(date);
-
-        String report = "{\"version\": \"1.1\",\"node\":\""
-                + obj.getString("node")
-                + "\",\"short_message\":\"netflow-nids\",\"full_message\":\"Netflow event from Suricata NIDS\",\"level\":"
-                + obj.getInt("level")
-                + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("project_id")
-                + "\",\"sensor\":\""
-                + obj.getString("sensor")
-                + "\",\"event_time\":\""
-                + obj.getString("event_time")
-                + "\",\"controller_time\":\""
-                + time
-                + "\",\"protocol\":\""
-                + obj.getString("protocol")
-                + "\",\"process\":\""
-                + obj.getString("process")
-                + "\",\"srcip\":"
-                + srcIp.getSrcIp()
-                + ",\"srcagent\":\""
-                + obj.getString("srcagent")
-                + "\",\"srcport\":"
-                + obj.getInt("srcport")
-                + ",\"dstip\":"
-                + dstIp.getDstIp()
-                + ",\"dstagent\":\""
-                + obj.getString("dstagent")
-                + "\",\"dstport\":"
-                + obj.getInt("dstport")
-                + ",\"bytes\":"
-                + obj.getInt("bytes")
-                + ",\"packets\":"
-                + obj.getInt("packets")
-                + "}";
-
-        return report;
-    }
-
-    public String ConvertFileToLog(JSONObject obj, GeoIp dstIp, GeoIp srcIp) {
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String time = formatter.format(date);
-
-        String report = "{\"version\": \"1.1\",\"node\":\""
-                + obj.getString("node")
-                + "\",\"short_message\":\"file-nids\",\"full_message\":\"File event from Suricata NIDS\",\"level\":"
-                + obj.getInt("level")
-                + ",\"source_type\":\"NET\",\"source_name\":\"Suricata\",\"project_id\":\""
-                + obj.getString("project_id")
-                + "\",\"sensor\":\""
-                + obj.getString("sensor")
-                + "\",\"event_time\":\""
-                + obj.getString("event_time")
-                + "\",\"controller_time\":\""
-                + time
-                + "\",\"protocol\":\""
-                + obj.getString("protocol")
-                + "\",\"process\":\""
-                + obj.getString("process")
-                + "\",\"srcip\":"
-                + srcIp.getSrcIp()
-                + ",\"srcagent\":\""
-                + obj.getString("srcagent")
-                + "\",\"srcport\":"
-                + obj.getInt("srcport")
-                + ",\"dstip\":"
-                + dstIp.getDstIp()
-                + ",\"dstagent\":\""
-                + obj.getString("dstagent")
-                + "\",\"dstport\":"
-                + obj.getInt("dstport")
-                + ",\"size\":"
-                + obj.getInt("size")
-                + ",\"filename\":\""
-                + obj.getString("filename")
-                + "\",\"state\":\""
-                + obj.getString("state")
-                + "\",\"md5\":\""
-                + obj.getString("md5")
-                + "\"}";
-
-        return report;
     }
 
     public void SendAlertToLog(Alert a) {
@@ -441,47 +206,21 @@ public class ElasticSearch {
         }
     }
     
-    public void SendAwsWafToLog(String log, LookupService ls) {
+    public void SendAwsWafToLog(JSONObject obj) {
         
         String elasticJson = "";
 
         if (client != null) {
 
             try {
+                
+                Date date = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                String time = formatter.format(date);
+                
+                obj.append("controller_time", time);
 
-                JSONObject obj = new JSONObject(log);
-
-                GeoIp srcIp;
-                String srcip = "";
-                String cc = "";
-                float lat = 0;
-                float lon = 0;
-
-                srcip = obj.getString("clientIp");
-                srcIp = new GeoIp(srcip);
-
-                if (ls != null) {
-
-                    try {
-
-                        InetAddress ia_src = InetAddress.getByName(srcip);
-
-                        if (!ia_src.isSiteLocalAddress()) {
-                            
-                            Location loc = ls.getLocation(srcip);
-                            lat = loc.latitude;
-                            lon = loc.longitude;
-                            cc = loc.countryCode;
-
-                            srcIp = new GeoIp(srcip, cc, lat, lon);
-                        }
-
-                    } catch (Exception e) {
-                        
-                    }
-                }
-
-                elasticJson = ConvertAwsWafEventToLog(obj, srcIp);
+                elasticJson = obj.getString("short_message");
                 
 
                 if (!elasticJson.isEmpty()) {
@@ -496,55 +235,6 @@ public class ElasticSearch {
         }
 
         
-    }
-    
-    public String ConvertAwsWafEventToLog(JSONObject obj, GeoIp ip) {
-        
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String time = formatter.format(date);
-
-        String report = "{\"version\": \"1.1\",\"node\":\""
-                + obj.getString("node")
-                + "\",\"short_message\":\"event-awswaf\",\"full_message\":\"Event from AWS WAF\",\"level\":"
-                + obj.getInt("level")
-                + ",\"source_type\":\"NET\",\"source_name\":\"AwsWaf\",\"project_id\":\""
-                + obj.getString("project_id")
-                + "\",\"sensor\":\""
-                + obj.getString("sensor")
-                + "\",\"event_time\":\""
-                + obj.getString("collected_time")
-                + "\",\"controller_time\":\""
-                + time
-                + "\",\"description\":\""
-                + obj.getString("description")
-                + "\",\"terminatingRuleId\":\""
-                + obj.getString("terminatingRuleId")
-                + "\",\"terminatingRuleType\":\""
-                + obj.getString("terminatingRuleType")
-                + "\",\"action\":\""
-                + obj.getString("action")
-                
-                + "\",\"clientIp\": { \"ip\":"
-                + obj.getString("clientIp")
-                + "\",\"geoip\": { \"country_iso_code\":\""
-                + ip.getCc()
-                + "\",\"location\": { \"lat\":"
-                + ip.getLat()
-                + ",\"lon\":"
-                + ip.getLon()
-                + "} } }"
-                + ",\"uri\":\""
-                + obj.getString("uri")
-                + "\",\"args\":\""
-                + obj.getString("args")
-                + "\",\"httpMethod\":\""
-                + obj.getString("httpMethod")
-                + "\",\"server\":\""
-                + obj.getString("server")
-                + "\"}";
-
-        return report;
     }
     
     public void close() throws IOException {

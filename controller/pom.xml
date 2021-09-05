@@ -7,7 +7,7 @@
     <version>ctrl</version>
     <packaging>war</packaging>
 
-    <name>alertflex-ctrl_v73</name>
+    <name>alertflex-ctrl_v74</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -74,12 +74,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>1.2.3</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.maxmind.geoip</groupId>
-            <artifactId>geoip-api</artifactId>
-            <version>1.2.14</version>
         </dependency>
         
         <dependency>

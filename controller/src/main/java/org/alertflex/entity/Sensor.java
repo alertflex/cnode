@@ -18,8 +18,10 @@ package org.alertflex.entity;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -27,27 +29,37 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author root
- */
 @Entity
 @Table(name = "sensor")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Sensor.findAll", query = "SELECT s FROM Sensor s"),
-    @NamedQuery(name = "Sensor.findByRefId", query = "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :refId"),
-    @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node"),
+    @NamedQuery(name = "Sensor.findByRecId", query = "SELECT s FROM Sensor s WHERE s.recId = :recId"),
+    @NamedQuery(name = "Sensor.findByRefId", query = "SELECT s FROM Sensor s WHERE s.refId = :refId"),
+    @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.node = :node"),
     @NamedQuery(name = "Sensor.findByProbe", query = "SELECT s FROM Sensor s WHERE s.probe = :probe"),
-    @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.sensorPK.name = :name"),
-    @NamedQuery(name = "Sensor.findByType", query = "SELECT s FROM Sensor s WHERE s.type = :type"),
+    @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.name = :name"),
     @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description"),
-    @NamedQuery(name = "Sensor.findByRulesUpdate", query = "SELECT s FROM Sensor s WHERE s.rulesUpdate = :rulesUpdate")})
+    @NamedQuery(name = "Sensor.findBySensorType", query = "SELECT s FROM Sensor s WHERE s.sensorType = :sensorType"),
+    @NamedQuery(name = "Sensor.findByStatus", query = "SELECT s FROM Sensor s WHERE s.status = :status")})
 public class Sensor implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected SensorPK sensorPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "rec_id")
+    private Integer recId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "ref_id")
+    private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -55,9 +67,9 @@ public class Sensor implements Serializable {
     private String probe;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "type")
-    private String type;
+    @Size(min = 1, max = 255)
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -65,34 +77,54 @@ public class Sensor implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "rules_update")
-    private int rulesUpdate;
+    @Size(min = 1, max = 64)
+    @Column(name = "sensor_type")
+    private String sensorType;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "status")
+    private int status;
 
     public Sensor() {
     }
 
-    public Sensor(SensorPK sensorPK) {
-        this.sensorPK = sensorPK;
+    public Sensor(Integer recId) {
+        this.recId = recId;
     }
 
-    public Sensor(SensorPK sensorPK, String probe, String type, String description, int rulesUpdate) {
-        this.sensorPK = sensorPK;
+    public Sensor(Integer recId, String refId, String node, String probe, String name, String description, String sensorType, int status) {
+        this.recId = recId;
+        this.refId = refId;
+        this.node = node;
         this.probe = probe;
-        this.type = type;
+        this.name = name;
         this.description = description;
-        this.rulesUpdate = rulesUpdate;
+        this.sensorType = sensorType;
+        this.status = status;
     }
 
-    public Sensor(String refId, String node, String name) {
-        this.sensorPK = new SensorPK(refId, node, name);
+    public Integer getRecId() {
+        return recId;
     }
 
-    public SensorPK getSensorPK() {
-        return sensorPK;
+    public void setRecId(Integer recId) {
+        this.recId = recId;
     }
 
-    public void setSensorPK(SensorPK sensorPK) {
-        this.sensorPK = sensorPK;
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getProbe() {
@@ -103,12 +135,12 @@ public class Sensor implements Serializable {
         this.probe = probe;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -119,18 +151,26 @@ public class Sensor implements Serializable {
         this.description = description;
     }
 
-    public int getRulesUpdate() {
-        return rulesUpdate;
+    public String getSensorType() {
+        return sensorType;
     }
 
-    public void setRulesUpdate(int rulesUpdate) {
-        this.rulesUpdate = rulesUpdate;
+    public void setSensorType(String sensorType) {
+        this.sensorType = sensorType;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (sensorPK != null ? sensorPK.hashCode() : 0);
+        hash += (recId != null ? recId.hashCode() : 0);
         return hash;
     }
 
@@ -141,7 +181,7 @@ public class Sensor implements Serializable {
             return false;
         }
         Sensor other = (Sensor) object;
-        if ((this.sensorPK == null && other.sensorPK != null) || (this.sensorPK != null && !this.sensorPK.equals(other.sensorPK))) {
+        if ((this.recId == null && other.recId != null) || (this.recId != null && !this.recId.equals(other.recId))) {
             return false;
         }
         return true;
@@ -149,7 +189,7 @@ public class Sensor implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.Sensor[ sensorPK=" + sensorPK + " ]";
+        return "org.alertflex.entity.Sensor[ recId=" + recId + " ]";
     }
     
 }
