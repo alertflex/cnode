@@ -1,8 +1,8 @@
 The repository includes source code of Alertflex Controller, installation script and config files for Central node, MISP docker install script.
 
-Alertflex is a SecOps (Security Operations) solution that helps assemble processes and technology to deal with IT security risks, threats, and issues.
+Alertflex is a SecOps (Security Operations) solution that helps assemble processes and technology to deal with modern IT security risks, threats, and issues.
 
-The solution works as a Security Event Manager with SOAR functionality for a distributed grid of security sensors and scanners. At this moment Alertflex provides an orchestrator and a single user interface for more than 20 products. Integrated products are mostly free open-source software in the areas of IDS and DevSecOps, that can be unified by Alertflex into one or several projects.
+The solution works as a Security Event Manager and Orchestrator for a distributed grid of security sensors and scanners in Hybrid IT infrastructure (on-premises and cloud-based). Alertflex can monitor different types of platforms Windows, Linux, Docker, Kubernetes, AWS and provides a single user interface for more than 20 products. Integrated products are mostly free open-source software in the areas of IDS and DevSecOps, that can be unified by Alertflex into one or several projects.
 
 ![](https://github.com/alertflex/cnode/blob/master/img/hld-arch.png)
 
