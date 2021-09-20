@@ -214,23 +214,23 @@ public class GrayLog {
             + "\",\"_dns_type\":\""
             + obj.getString("dns_type")
             + "\",\"_src_ip\":\""
-            + obj.getString("src_ip")
+            + obj.getString("srcip")
             + "\",\"_src_ip_geo_country\":\""
             + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
             + obj.getString("src_ip_geo_location")
-            + "\",\"_src_agent\":\""
-            + obj.getString("srcagent")
+            + "\",\"_src_hostname\":\""
+            + obj.getString("srchostname")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + obj.getString("dst_ip")
+            + obj.getString("dstip")
             + "\",\"_dst_ip_geo_country\":\""
             + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
             + obj.getString("dst_ip_geo_location")
-            + "\",\"_dst_agent\":\""
-            + obj.getString("dstagent")
+            + "\",\"_dst_hostname\":\""
+            + obj.getString("dsthostname")
             + "\",\"_dst_port\":"
             + obj.getInt("dstport")
             + ",\"_rrname\":\""
@@ -261,23 +261,23 @@ public class GrayLog {
             + "\",\"_controller_time\":\""
             + time
             + "\",\"_src_ip\":\""
-            + obj.getString("src_ip")
+            + obj.getString("srcip")
             + "\",\"_src_ip_geo_country\":\""
             + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
             + obj.getString("src_ip_geo_location")
-            + "\",\"_src_agent\":\""
-            + obj.getString("srcagent")
+            + "\",\"_src_hostname\":\""
+            + obj.getString("srchostname")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + obj.getString("dst_ip")
+            + obj.getString("dstip")
             + "\",\"_dst_ip_geo_country\":\""
             + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
             + obj.getString("dst_ip_geo_location")
-            + "\",\"_dst_agent\":\""
-            + obj.getString("dstagent")
+            + "\",\"_dst_hostname\":\""
+            + obj.getString("dsthostname")
             + "\",\"_dst_port\":"
             + obj.getInt("dstport")
             + ",\"_url_hostname\":\""
@@ -316,23 +316,23 @@ public class GrayLog {
             + "\",\"_process\":\""
             + obj.getString("process")
             + "\",\"_src_ip\":\""
-            + obj.getString("src_ip")
+            + obj.getString("srcip")
             + "\",\"_src_ip_geo_country\":\""
             + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
             + obj.getString("src_ip_geo_location")
-            + "\",\"_src_agent\":\""
-            + obj.getString("srcagent")
+            + "\",\"_src_hostname\":\""
+            + obj.getString("srchostname")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + obj.getString("dst_ip")
+            + obj.getString("dstip")
             + "\",\"_dst_ip_geo_country\":\""
             + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
             + obj.getString("dst_ip_geo_location")
-            + "\",\"_dst_agent\":\""
-            + obj.getString("dstagent")
+            + "\",\"_dst_hostname\":\""
+            + obj.getString("dsthostname")
             + "\",\"_dst_port\":"
             + obj.getInt("dstport")
             + ",\"_bytes\":"
@@ -367,23 +367,23 @@ public class GrayLog {
             + "\",\"_process\":\""
             + obj.getString("process")
             + "\",\"_src_ip\":\""
-            + obj.getString("src_ip")
+            + obj.getString("srcip")
             + "\",\"_src_ip_geo_country\":\""
             + obj.getString("src_ip_geo_country")
             + "\",\"_src_ip_geo_location\":\""
             + obj.getString("src_ip_geo_location")
-            + "\",\"_src_agent\":\""
-            + obj.getString("srcagent")
+            + "\",\"_src_hostname\":\""
+            + obj.getString("srchostname")
             + "\",\"_src_port\":"
             + obj.getInt("srcport")
             + ",\"_dst_ip\":\""
-            + obj.getString("dst_ip")
+            + obj.getString("dstip")
             + "\",\"_dst_ip_geo_country\":\""
             + obj.getString("dst_ip_geo_country")
             + "\",\"_dst_ip_geo_location\":\""
             + obj.getString("dst_ip_geo_location")
-            + "\",\"dst_agent\":\""
-            + obj.getString("dstagent")
+            + "\",\"_dst_hostname\":\""
+            + obj.getString("dsthostname")
             + "\",\"_dst_port\":"
             + obj.getInt("dstport")
             + ",\"_size\":"

@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -43,7 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Hosts.findByName", query = "SELECT h FROM Hosts h WHERE h.name = :name"),
     @NamedQuery(name = "Hosts.findByNode", query = "SELECT h FROM Hosts h WHERE h.node = :node"),
     @NamedQuery(name = "Hosts.findByAgent", query = "SELECT h FROM Hosts h WHERE h.agent = :agent"),
-    @NamedQuery(name = "Hosts.findByProbe", query = "SELECT h FROM Hosts h WHERE h.probe = :probe"),
     @NamedQuery(name = "Hosts.findByEc2", query = "SELECT h FROM Hosts h WHERE h.ec2 = :ec2"),
     @NamedQuery(name = "Hosts.findByDescription", query = "SELECT h FROM Hosts h WHERE h.description = :description"),
     @NamedQuery(name = "Hosts.findByCred", query = "SELECT h FROM Hosts h WHERE h.cred = :cred"),
@@ -80,11 +69,6 @@ public class Hosts implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "probe")
-    private String probe;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
     @Column(name = "ec2")
     private String ec2;
     @Basic(optional = false)
@@ -114,13 +98,12 @@ public class Hosts implements Serializable {
         this.recId = recId;
     }
 
-    public Hosts(Integer recId, String refId, String name, String node, String agent, String probe, String ec2, String description, String cred, String address, int port) {
+    public Hosts(Integer recId, String refId, String name, String node, String agent, String ec2, String description, String cred, String address, int port) {
         this.recId = recId;
         this.refId = refId;
         this.name = name;
         this.node = node;
         this.agent = agent;
-        this.probe = probe;
         this.ec2 = ec2;
         this.description = description;
         this.cred = cred;
@@ -166,14 +149,6 @@ public class Hosts implements Serializable {
 
     public void setAgent(String agent) {
         this.agent = agent;
-    }
-
-    public String getProbe() {
-        return probe;
-    }
-
-    public void setProbe(String probe) {
-        this.probe = probe;
     }
 
     public String getEc2() {

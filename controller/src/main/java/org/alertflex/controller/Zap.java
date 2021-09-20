@@ -268,6 +268,7 @@ public class Zap {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
 

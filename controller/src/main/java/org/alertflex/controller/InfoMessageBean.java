@@ -61,9 +61,11 @@ import org.alertflex.facade.DependencyScanFacade;
 import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.KubeScanFacade;
+import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
+import org.alertflex.facade.SnykScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromGraylogPool;
@@ -146,6 +148,12 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private ZapScanFacade zapScanFacade;
+    
+    @EJB
+    private NmapScanFacade nmapScanFacade;
+    
+    @EJB
+    private SnykScanFacade snykScanFacade;
     
     @EJB
     private HunterScanFacade hunterScanFacade;
@@ -275,6 +283,14 @@ public class InfoMessageBean implements MessageListener {
         return this.zapScanFacade;
     }
     
+    public SnykScanFacade getSnykScanFacade() {
+        return this.snykScanFacade;
+    }
+    
+    public NmapScanFacade getNmapScanFacade() {
+        return this.nmapScanFacade;
+    }
+    
     public HunterScanFacade getHunterScanFacade() {
         return this.hunterScanFacade;
     }
@@ -319,7 +335,7 @@ public class InfoMessageBean implements MessageListener {
                 if (msg_type == 0) {
                     return;
                 }
-
+                
                 ref_id = bytesMessage.getStringProperty("ref_id");
                 project = projectFacade.findProjectByRef(ref_id);
                 
@@ -391,12 +407,24 @@ public class InfoMessageBean implements MessageListener {
                             break;
                             
                         case 9: 
+                            Nmap nmap = new Nmap(this);
+                            target = bytesMessage.getStringProperty("target");
+                            nmap.saveReport(data, target);
+                            break;
+                            
+                        case 10: 
+                            Snyk snyk = new Snyk(this);
+                            target = bytesMessage.getStringProperty("target");
+                            snyk.saveReport(data, target);
+                            break;
+                            
+                        case 11: 
                             Trivy trivy = new Trivy(this);
                             target = bytesMessage.getStringProperty("target");
                             trivy.saveReport(data, target);
                             break;
                             
-                        case 10: 
+                        case 12: 
                             Zap zap = new Zap(this);
                             target = bytesMessage.getStringProperty("target");
                             zap.saveReport(data, target);

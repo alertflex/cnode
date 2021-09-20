@@ -681,11 +681,14 @@ public class StatsManagement {
                         net_talkers.setRefId(eventBean.getRefId());
                         net_talkers.setNode(eventBean.getNode());
                         net_talkers.setProbe(eventBean.getProbe());
-                        net_talkers.setSensor(arr.getJSONObject(i).getString("sensor"));
+                        net_talkers.setSensorName(arr.getJSONObject(i).getString("sensor_name"));
+                        net_talkers.setSensorType(arr.getJSONObject(i).getString("sensor_type"));
                         net_talkers.setDstIp(arr.getJSONObject(i).getString("dst_ip"));
                         net_talkers.setSrcIp(arr.getJSONObject(i).getString("src_ip"));
                         net_talkers.setDstCountry(arr.getJSONObject(i).getString("dst_country"));
                         net_talkers.setSrcCountry(arr.getJSONObject(i).getString("src_country"));
+                        net_talkers.setDstHostname(arr.getJSONObject(i).getString("dst_hostname"));
+                        net_talkers.setSrcHostname(arr.getJSONObject(i).getString("src_hostname"));
                         net_talkers.setBytes(arr.getJSONObject(i).getLong("bytes"));
                         date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
                         net_talkers.setTimeOfSurvey(date);
@@ -708,12 +711,16 @@ public class StatsManagement {
                         net_talkers.setRefId(eventBean.getRefId());
                         net_talkers.setNode(eventBean.getNode());
                         net_talkers.setProbe(eventBean.getProbe());
-                        net_talkers.setSensor(arr.getJSONObject(i).getString("sensor"));
+                        net_talkers.setSensorName(arr.getJSONObject(i).getString("sensor_name"));
+                        net_talkers.setSensorType(arr.getJSONObject(i).getString("sensor_type"));
                         net_talkers.setDstIp(arr.getJSONObject(i).getString("dst_ip"));
                         net_talkers.setSrcIp(arr.getJSONObject(i).getString("src_ip"));
                         net_talkers.setDstCountry(arr.getJSONObject(i).getString("dst_country"));
                         net_talkers.setSrcCountry(arr.getJSONObject(i).getString("src_country"));
+                        net_talkers.setDstHostname(arr.getJSONObject(i).getString("dst_hostname"));
+                        net_talkers.setSrcHostname(arr.getJSONObject(i).getString("src_hostname"));
                         net_talkers.setSessions(arr.getJSONObject(i).getLong("sessions"));
+                        net_talkers.setTokenExist(0);
                         date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
                         net_talkers.setTimeOfSurvey(date);
                         
@@ -810,6 +817,7 @@ public class StatsManagement {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
     }
@@ -866,6 +874,7 @@ public class StatsManagement {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
     }
@@ -923,6 +932,7 @@ public class StatsManagement {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
     }
@@ -979,7 +989,8 @@ public class StatsManagement {
         a.setUrlPath("indef");
         a.setContainerId("indef");
         a.setContainerName("indef");
-       a.setCloudInstance("indef");
+        a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
     }
@@ -1036,6 +1047,7 @@ public class StatsManagement {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
     }

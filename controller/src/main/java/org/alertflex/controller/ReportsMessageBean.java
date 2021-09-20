@@ -51,6 +51,7 @@ import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.InspectorScanFacade;
 import org.alertflex.facade.KubeScanFacade;
+import org.alertflex.facade.SnykScanFacade;
 import org.alertflex.facade.SonarScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
@@ -59,6 +60,7 @@ import org.alertflex.reports.AlertsPie;
 import org.alertflex.reports.Finding;
 import org.alertflex.reports.JasperDataAlertsSeverity;
 import org.alertflex.reports.JasperDataAlertsSource;
+import org.alertflex.reports.JasperDataCloud;
 import org.alertflex.reports.JasperDataContainers;
 import org.alertflex.reports.JasperDataEndpoints;
 import org.alertflex.reports.JasperDataScanners;
@@ -90,6 +92,9 @@ public class ReportsMessageBean implements MessageListener {
     
     @EJB
     private ZapScanFacade zapScanFacade;
+    
+    @EJB
+    private SnykScanFacade snykScanFacade;
     
     @EJB
     private SonarScanFacade sonarScanFacade;
@@ -138,6 +143,10 @@ public class ReportsMessageBean implements MessageListener {
                         
                         case "Alerts" :
                             if (createAlertsReport(dir, interval)) responseText = "Ok";
+                            break;
+                            
+                        case "Cloud" :
+                            if (createCloudReport(dir, interval)) responseText = "Ok";
                             break;
                             
                         case "Containers" :
@@ -208,7 +217,7 @@ public class ReportsMessageBean implements MessageListener {
             Date end = new Date();
             Date start = new Date(end.getTime() - 1000 * interval);
             
-            List<Alert> alertsList = alertFacade.findIntervalsBetween(p.getRefId(), start, end, 1000);
+            List<Alert> alertsList = alertFacade.findIntervalsBetween(p.getRefId(), start, end, 10000);
 
             if ((alertsList != null) && (alertsList.size() > 0)) {
 
@@ -236,6 +245,56 @@ public class ReportsMessageBean implements MessageListener {
                 JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
 
                 JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "alerts_report.pdf");
+            }
+
+        } catch (JRException e) {
+            logger.error("alertflex_ctrl_exception", e);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public Boolean createCloudReport(String reportDir, int interval) {
+
+        try {
+
+            Date end = new Date();
+            Date start = new Date(end.getTime() - 1000 * interval);
+            
+            List<Alert> alertsList = alertFacade.findAlertsGuardDuty(p.getRefId(), start, end, 10000);
+            
+            List<Finding> inspectorFindings = new ArrayList();
+
+            List<Object[]> inspectorObjects = inspectorScanFacade.getFindings(p.getRefId());
+            
+            if (inspectorObjects != null && inspectorObjects.size() > 0) {
+                
+                for (Object[] o: inspectorObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    inspectorFindings.add(new Finding(f,c.intValue()));
+                }
+            }
+            
+            if ((alertsList != null) && (alertsList.size() > 0)) {
+
+                JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "cloud_report.jasper");
+
+                JasperDataCloud jasperDataCloud = new JasperDataCloud(inspectorFindings, alertsList, start, end, 50);
+                
+                Map<String, Object> params = new HashMap<String, Object>();
+
+                List<AlertsPie> alertsSeverityPie = jasperDataCloud.getBeanCollectionPie();
+                params.put("datasourceGuardduty", alertsSeverityPie);
+
+                params.put("datasourceInspector", jasperDataCloud.getInspectorFindings());
+
+                params.put("reportDir", reportDir);
+
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
+
+                JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "cloud_report.pdf");
             }
 
         } catch (JRException e) {
@@ -378,12 +437,12 @@ public class ReportsMessageBean implements MessageListener {
             List<Finding> zapFindings = new ArrayList();
             List<Finding> dependencyFindings = new ArrayList();
             List<Finding> sonarqubeFindings = new ArrayList();
-            List<Finding> inspectorFindings = new ArrayList();
+            List<Finding> snykFindings = new ArrayList();
 
             List<Object[]> zapObjects = zapScanFacade.getFindings(p.getRefId());
             List<Object[]> dependencyObjects = dependencyScanFacade.getFindings(p.getRefId());
             List<Object[]> sonarqubeObjects = sonarScanFacade.getFindings(p.getRefId());
-            List<Object[]> inspectorObjects = inspectorScanFacade.getFindings(p.getRefId());
+            List<Object[]> snykObjects = snykScanFacade.getFindings(p.getRefId());
             
             if (zapObjects != null && zapObjects.size() > 0) {
                 
@@ -403,12 +462,12 @@ public class ReportsMessageBean implements MessageListener {
                 }
             }
             
-            if (inspectorObjects != null && inspectorObjects.size() > 0) {
+            if (snykObjects != null && snykObjects.size() > 0) {
                 
-                for (Object[] o: inspectorObjects) {
+                for (Object[] o: snykObjects) {
                     String f = (String) o[0];
                     Long c = (Long) o[1];
-                    inspectorFindings.add(new Finding(f,c.intValue()));
+                    snykFindings.add(new Finding(f,c.intValue()));
                 }
             }
             
@@ -423,11 +482,11 @@ public class ReportsMessageBean implements MessageListener {
 
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "scanners_report.jasper");
                 
-            JasperDataScanners jasperDataScanners = new JasperDataScanners(inspectorFindings, dependencyFindings, sonarqubeFindings, zapFindings);
+            JasperDataScanners jasperDataScanners = new JasperDataScanners(snykFindings, dependencyFindings, sonarqubeFindings, zapFindings);
             
             Map<String, Object> params = new HashMap<String, Object>();
 
-            params.put("datasourceInspector", jasperDataScanners.getInspectorFindings());
+            params.put("datasourceSnyk", jasperDataScanners.getSnykFindings());
             params.put("datasourceDependency", jasperDataScanners.getDependencyFindings());
             params.put("datasourceSonarqube", jasperDataScanners.getSonarqubeFindings());
             params.put("datasourceZap", jasperDataScanners.getZapFindings());

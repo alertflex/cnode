@@ -35,7 +35,10 @@ sudo cp ./reports/scanners_report.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_zap.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_dependency.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_sonarqube.jasper $PROJECT_PATH/reports/
-sudo cp ./reports/scanner_inspector.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/scanner_snyk.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/cloud_report.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/cloud_ins.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/cloud_gd.jasper $PROJECT_PATH/reports/
 
 sudo mkdir -p $PROJECT_PATH/filters
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/

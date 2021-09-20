@@ -172,4 +172,29 @@ public class AlertFacade extends AbstractFacade<Alert> {
         return al;
 
     }
+    
+    public List<Alert> findAlertsGuardDuty(String r, Date start, Date end, int limit) {
+
+        List<Alert> alerts = null;
+
+        try {
+            em.flush();
+            
+            Query alertsListQry = em.createQuery("SELECT a FROM Alert a WHERE a.refId = :ref AND a.alertSource = :source AND a.timeCollr BETWEEN :start AND :end")
+                    .setParameter("ref", r)
+                    .setParameter("source", "GuardDuty")
+                    .setParameter("start", start)
+                    .setParameter("end", end);
+
+                // Enable forced database query
+                alertsListQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+                alerts = alertsListQry.setMaxResults(limit).getResultList();
+        
+        } catch (Exception e) {
+
+        }
+
+        return alerts;
+
+    }
 }

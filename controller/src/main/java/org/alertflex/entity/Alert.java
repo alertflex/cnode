@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "alert")
 @XmlRootElement
@@ -76,6 +70,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Alert.findByCloudInstance", query = "SELECT a FROM Alert a WHERE a.cloudInstance = :cloudInstance"),
     @NamedQuery(name = "Alert.findByUserName", query = "SELECT a FROM Alert a WHERE a.userName = :userName"),
     @NamedQuery(name = "Alert.findByAgentName", query = "SELECT a FROM Alert a WHERE a.agentName = :agentName"),
+    @NamedQuery(name = "Alert.findByIncidentExt", query = "SELECT a FROM Alert a WHERE a.incidentExt = :incidentExt"),
     @NamedQuery(name = "Alert.findByTimeEvent", query = "SELECT a FROM Alert a WHERE a.timeEvent = :timeEvent"),
     @NamedQuery(name = "Alert.findByTimeCollr", query = "SELECT a FROM Alert a WHERE a.timeCollr = :timeCollr"),
     @NamedQuery(name = "Alert.findByTimeCntrl", query = "SELECT a FROM Alert a WHERE a.timeCntrl = :timeCntrl")})
@@ -178,12 +173,12 @@ public class Alert implements Serializable {
     private String dstIp;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
+    @Size(min = 1, max = 512)
     @Column(name = "src_hostname")
     private String srcHostname;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
+    @Size(min = 1, max = 512)
     @Column(name = "dst_hostname")
     private String dstHostname;
     @Basic(optional = false)
@@ -274,6 +269,11 @@ public class Alert implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
+    @Column(name = "incident_ext")
+    private String incidentExt;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
     @Column(name = "time_event")
     private String timeEvent;
     @Column(name = "time_collr")
@@ -290,7 +290,7 @@ public class Alert implements Serializable {
         this.alertId = alertId;
     }
 
-    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String location, String status, String action, String filter, String info, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String fileName, String regValue, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String containerId, String containerName, String cloudInstance, String userName, String agentName, String timeEvent) {
+    public Alert(Long alertId, String alertUuid, String refId, String nodeId, String sensorId, String categories, String description, int alertSeverity, String alertSource, String alertType, String eventId, String eventSeverity, String location, String status, String action, String filter, String info, String srcIp, String dstIp, String srcHostname, String dstHostname, int srcPort, int dstPort, String fileName, String regValue, String hashMd5, String hashSha1, String hashSha256, String processName, String processCmdline, String processPath, String urlHostname, String urlPath, String containerId, String containerName, String cloudInstance, String userName, String agentName, String incidentExt, String timeEvent) {
         this.alertId = alertId;
         this.alertUuid = alertUuid;
         this.refId = refId;
@@ -329,6 +329,7 @@ public class Alert implements Serializable {
         this.cloudInstance = cloudInstance;
         this.userName = userName;
         this.agentName = agentName;
+        this.incidentExt = incidentExt;
         this.timeEvent = timeEvent;
     }
 
@@ -642,6 +643,14 @@ public class Alert implements Serializable {
 
     public void setAgentName(String agentName) {
         this.agentName = agentName;
+    }
+
+    public String getIncidentExt() {
+        return incidentExt;
+    }
+
+    public void setIncidentExt(String incidentExt) {
+        this.incidentExt = incidentExt;
     }
 
     public String getTimeEvent() {

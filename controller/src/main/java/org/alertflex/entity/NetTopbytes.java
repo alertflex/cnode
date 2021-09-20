@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "net_topbytes")
 @XmlRootElement
@@ -41,11 +35,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "NetTopbytes.findByRefId", query = "SELECT n FROM NetTopbytes n WHERE n.refId = :refId"),
     @NamedQuery(name = "NetTopbytes.findByNode", query = "SELECT n FROM NetTopbytes n WHERE n.node = :node"),
     @NamedQuery(name = "NetTopbytes.findByProbe", query = "SELECT n FROM NetTopbytes n WHERE n.probe = :probe"),
-    @NamedQuery(name = "NetTopbytes.findBySensor", query = "SELECT n FROM NetTopbytes n WHERE n.sensor = :sensor"),
+    @NamedQuery(name = "NetTopbytes.findBySensorName", query = "SELECT n FROM NetTopbytes n WHERE n.sensorName = :sensorName"),
+    @NamedQuery(name = "NetTopbytes.findBySensorType", query = "SELECT n FROM NetTopbytes n WHERE n.sensorType = :sensorType"),
     @NamedQuery(name = "NetTopbytes.findBySrcIp", query = "SELECT n FROM NetTopbytes n WHERE n.srcIp = :srcIp"),
     @NamedQuery(name = "NetTopbytes.findBySrcCountry", query = "SELECT n FROM NetTopbytes n WHERE n.srcCountry = :srcCountry"),
     @NamedQuery(name = "NetTopbytes.findByDstIp", query = "SELECT n FROM NetTopbytes n WHERE n.dstIp = :dstIp"),
     @NamedQuery(name = "NetTopbytes.findByDstCountry", query = "SELECT n FROM NetTopbytes n WHERE n.dstCountry = :dstCountry"),
+    @NamedQuery(name = "NetTopbytes.findBySrcHostname", query = "SELECT n FROM NetTopbytes n WHERE n.srcHostname = :srcHostname"),
+    @NamedQuery(name = "NetTopbytes.findByDstHostname", query = "SELECT n FROM NetTopbytes n WHERE n.dstHostname = :dstHostname"),
     @NamedQuery(name = "NetTopbytes.findByBytes", query = "SELECT n FROM NetTopbytes n WHERE n.bytes = :bytes"),
     @NamedQuery(name = "NetTopbytes.findByTimeOfSurvey", query = "SELECT n FROM NetTopbytes n WHERE n.timeOfSurvey = :timeOfSurvey")})
 public class NetTopbytes implements Serializable {
@@ -74,11 +71,16 @@ public class NetTopbytes implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "sensor")
-    private String sensor;
+    @Column(name = "sensor_name")
+    private String sensorName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
+    @Column(name = "sensor_type")
+    private String sensorType;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
     @Column(name = "src_ip")
     private String srcIp;
     @Basic(optional = false)
@@ -88,7 +90,7 @@ public class NetTopbytes implements Serializable {
     private String srcCountry;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 128)
     @Column(name = "dst_ip")
     private String dstIp;
     @Basic(optional = false)
@@ -96,6 +98,16 @@ public class NetTopbytes implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "dst_country")
     private String dstCountry;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "src_hostname")
+    private String srcHostname;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "dst_hostname")
+    private String dstHostname;
     @Basic(optional = false)
     @NotNull
     @Column(name = "bytes")
@@ -111,16 +123,19 @@ public class NetTopbytes implements Serializable {
         this.recId = recId;
     }
 
-    public NetTopbytes(Integer recId, String refId, String node, String probe, String sensor, String srcIp, String srcCountry, String dstIp, String dstCountry, long bytes) {
+    public NetTopbytes(Integer recId, String refId, String node, String probe, String sensorName, String sensorType, String srcIp, String srcCountry, String dstIp, String dstCountry, String srcHostname, String dstHostname, long bytes) {
         this.recId = recId;
         this.refId = refId;
         this.node = node;
         this.probe = probe;
-        this.sensor = sensor;
+        this.sensorName = sensorName;
+        this.sensorType = sensorType;
         this.srcIp = srcIp;
         this.srcCountry = srcCountry;
         this.dstIp = dstIp;
         this.dstCountry = dstCountry;
+        this.srcHostname = srcHostname;
+        this.dstHostname = dstHostname;
         this.bytes = bytes;
     }
 
@@ -156,12 +171,20 @@ public class NetTopbytes implements Serializable {
         this.probe = probe;
     }
 
-    public String getSensor() {
-        return sensor;
+    public String getSensorName() {
+        return sensorName;
     }
 
-    public void setSensor(String sensor) {
-        this.sensor = sensor;
+    public void setSensorName(String sensorName) {
+        this.sensorName = sensorName;
+    }
+
+    public String getSensorType() {
+        return sensorType;
+    }
+
+    public void setSensorType(String sensorType) {
+        this.sensorType = sensorType;
     }
 
     public String getSrcIp() {
@@ -194,6 +217,22 @@ public class NetTopbytes implements Serializable {
 
     public void setDstCountry(String dstCountry) {
         this.dstCountry = dstCountry;
+    }
+
+    public String getSrcHostname() {
+        return srcHostname;
+    }
+
+    public void setSrcHostname(String srcHostname) {
+        this.srcHostname = srcHostname;
+    }
+
+    public String getDstHostname() {
+        return dstHostname;
+    }
+
+    public void setDstHostname(String dstHostname) {
+        this.dstHostname = dstHostname;
     }
 
     public long getBytes() {

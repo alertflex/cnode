@@ -65,6 +65,7 @@ public class PojoAlertLogic implements Serializable {
     private String action = "indef";
     private String filter = "indef";
     private String info = "indef";
+    private String incidentExt = "indef";
     private String timeEvent = "indef";
     private Date timeCollr = new Date();
     private Date timeCntrl = new Date();
@@ -114,6 +115,7 @@ public class PojoAlertLogic implements Serializable {
         action = a.getAction();
         filter = a.getFilter();
         info = a.getInfo();
+        incidentExt = a.getIncidentExt();
         timeEvent = a.getTimeEvent();
         timeCollr = a.getTimeCollr();
         timeCntrl = a.getTimeCntrl();
@@ -445,6 +447,13 @@ public class PojoAlertLogic implements Serializable {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+    public String getIncidentExt() {
+        return incidentExt;
+    }
+
+    public void setIncidentExt(String inc) {
+        this.incidentExt = inc;
     }
 
     public String getTimeEvent() {

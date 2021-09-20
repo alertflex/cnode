@@ -26,18 +26,18 @@ public class JasperDataScanners {
     
     List<Finding> zapFindings;
     List<Finding> dependencyFindings;
-    List<Finding> inspectorFindings;
+    List<Finding> snykFindings;
     List<Finding> sonarqubeFindings;
     
-    public JasperDataScanners(List<Finding> lif, List<Finding> ldf, List<Finding> lsf, List<Finding> lzf) {
+    public JasperDataScanners(List<Finding> lsnykf, List<Finding> ldf, List<Finding> lsonarf, List<Finding> lzf) {
         
         zapFindings = lzf;
         
         dependencyFindings = ldf;
         
-        inspectorFindings = lif;
+        snykFindings = lsnykf;
         
-        sonarqubeFindings = lsf;
+        sonarqubeFindings = lsonarf;
     }
     
     /**
@@ -51,8 +51,8 @@ public class JasperDataScanners {
         return dependencyFindings;
     }
 
-    public Collection<Finding> getInspectorFindings() {
-        return inspectorFindings;
+    public Collection<Finding> getSnykFindings() {
+        return snykFindings;
     }
     
     public Collection<Finding> getSonarqubeFindings() {

@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -32,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "net_topsessions")
 @XmlRootElement
@@ -41,12 +35,16 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "NetTopsessions.findByRefId", query = "SELECT n FROM NetTopsessions n WHERE n.refId = :refId"),
     @NamedQuery(name = "NetTopsessions.findByNode", query = "SELECT n FROM NetTopsessions n WHERE n.node = :node"),
     @NamedQuery(name = "NetTopsessions.findByProbe", query = "SELECT n FROM NetTopsessions n WHERE n.probe = :probe"),
-    @NamedQuery(name = "NetTopsessions.findBySensor", query = "SELECT n FROM NetTopsessions n WHERE n.sensor = :sensor"),
+    @NamedQuery(name = "NetTopsessions.findBySensorName", query = "SELECT n FROM NetTopsessions n WHERE n.sensorName = :sensorName"),
+    @NamedQuery(name = "NetTopsessions.findBySensorType", query = "SELECT n FROM NetTopsessions n WHERE n.sensorType = :sensorType"),
     @NamedQuery(name = "NetTopsessions.findBySrcIp", query = "SELECT n FROM NetTopsessions n WHERE n.srcIp = :srcIp"),
     @NamedQuery(name = "NetTopsessions.findBySrcCountry", query = "SELECT n FROM NetTopsessions n WHERE n.srcCountry = :srcCountry"),
     @NamedQuery(name = "NetTopsessions.findByDstIp", query = "SELECT n FROM NetTopsessions n WHERE n.dstIp = :dstIp"),
     @NamedQuery(name = "NetTopsessions.findByDstCountry", query = "SELECT n FROM NetTopsessions n WHERE n.dstCountry = :dstCountry"),
+    @NamedQuery(name = "NetTopsessions.findBySrcHostname", query = "SELECT n FROM NetTopsessions n WHERE n.srcHostname = :srcHostname"),
+    @NamedQuery(name = "NetTopsessions.findByDstHostname", query = "SELECT n FROM NetTopsessions n WHERE n.dstHostname = :dstHostname"),
     @NamedQuery(name = "NetTopsessions.findBySessions", query = "SELECT n FROM NetTopsessions n WHERE n.sessions = :sessions"),
+    @NamedQuery(name = "NetTopsessions.findByTokenExist", query = "SELECT n FROM NetTopsessions n WHERE n.tokenExist = :tokenExist"),
     @NamedQuery(name = "NetTopsessions.findByTimeOfSurvey", query = "SELECT n FROM NetTopsessions n WHERE n.timeOfSurvey = :timeOfSurvey")})
 public class NetTopsessions implements Serializable {
 
@@ -74,11 +72,16 @@ public class NetTopsessions implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "sensor")
-    private String sensor;
+    @Column(name = "sensor_name")
+    private String sensorName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
+    @Column(name = "sensor_type")
+    private String sensorType;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
     @Column(name = "src_ip")
     private String srcIp;
     @Basic(optional = false)
@@ -88,7 +91,7 @@ public class NetTopsessions implements Serializable {
     private String srcCountry;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 128)
     @Column(name = "dst_ip")
     private String dstIp;
     @Basic(optional = false)
@@ -98,8 +101,22 @@ public class NetTopsessions implements Serializable {
     private String dstCountry;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "src_hostname")
+    private String srcHostname;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "dst_hostname")
+    private String dstHostname;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "sessions")
     private long sessions;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "token_exist")
+    private int tokenExist;
     @Column(name = "time_of_survey")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeOfSurvey;
@@ -111,17 +128,21 @@ public class NetTopsessions implements Serializable {
         this.recId = recId;
     }
 
-    public NetTopsessions(Integer recId, String refId, String node, String probe, String sensor, String srcIp, String srcCountry, String dstIp, String dstCountry, long sessions) {
+    public NetTopsessions(Integer recId, String refId, String node, String probe, String sensorName, String sensorType, String srcIp, String srcCountry, String dstIp, String dstCountry, String srcHostname, String dstHostname, long sessions, int tokenExist) {
         this.recId = recId;
         this.refId = refId;
         this.node = node;
         this.probe = probe;
-        this.sensor = sensor;
+        this.sensorName = sensorName;
+        this.sensorType = sensorType;
         this.srcIp = srcIp;
         this.srcCountry = srcCountry;
         this.dstIp = dstIp;
         this.dstCountry = dstCountry;
+        this.srcHostname = srcHostname;
+        this.dstHostname = dstHostname;
         this.sessions = sessions;
+        this.tokenExist = tokenExist;
     }
 
     public Integer getRecId() {
@@ -156,12 +177,20 @@ public class NetTopsessions implements Serializable {
         this.probe = probe;
     }
 
-    public String getSensor() {
-        return sensor;
+    public String getSensorName() {
+        return sensorName;
     }
 
-    public void setSensor(String sensor) {
-        this.sensor = sensor;
+    public void setSensorName(String sensorName) {
+        this.sensorName = sensorName;
+    }
+
+    public String getSensorType() {
+        return sensorType;
+    }
+
+    public void setSensorType(String sensorType) {
+        this.sensorType = sensorType;
     }
 
     public String getSrcIp() {
@@ -196,12 +225,36 @@ public class NetTopsessions implements Serializable {
         this.dstCountry = dstCountry;
     }
 
+    public String getSrcHostname() {
+        return srcHostname;
+    }
+
+    public void setSrcHostname(String srcHostname) {
+        this.srcHostname = srcHostname;
+    }
+
+    public String getDstHostname() {
+        return dstHostname;
+    }
+
+    public void setDstHostname(String dstHostname) {
+        this.dstHostname = dstHostname;
+    }
+
     public long getSessions() {
         return sessions;
     }
 
     public void setSessions(long sessions) {
         this.sessions = sessions;
+    }
+
+    public int getTokenExist() {
+        return tokenExist;
+    }
+
+    public void setTokenExist(int tokenExist) {
+        this.tokenExist = tokenExist;
     }
 
     public Date getTimeOfSurvey() {

@@ -203,6 +203,7 @@ public class DependencyCheck {
         a.setContainerId("indef");
         a.setContainerName("indef");
         a.setCloudInstance("indef");
+        a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
 

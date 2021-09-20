@@ -24,6 +24,8 @@
     <class>org.alertflex.entity.KubeScan</class>
     <class>org.alertflex.entity.HunterScan</class>
     <class>org.alertflex.entity.ZapScan</class>
+    <class>org.alertflex.entity.SnykScan</class>
+    <class>org.alertflex.entity.NmapScan</class>
     <class>org.alertflex.entity.InspectorScan</class>
     <class>org.alertflex.entity.SonarScan</class>
     <class>org.alertflex.entity.Response</class>

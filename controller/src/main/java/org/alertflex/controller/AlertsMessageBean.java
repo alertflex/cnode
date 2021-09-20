@@ -178,6 +178,7 @@ public class AlertsMessageBean implements MessageListener {
                         a.setContainerId(((TextMessage) message).getStringProperty("container_id"));
                         a.setContainerName(((TextMessage) message).getStringProperty("container_name"));
                         a.setCloudInstance(((TextMessage) message).getStringProperty("cloud_instance"));
+                        a.setIncidentExt("indef");
 
                         // enrich alert by new cat
                         List<String> newCats = alertCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
