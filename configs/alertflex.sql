@@ -236,7 +236,6 @@ CREATE TABLE `project` (
   `falcon_key` varchar(512) NOT NULL DEFAULT '',
   `vmray_url` varchar(512) NOT NULL DEFAULT '',
   `vmray_key` varchar(512) NOT NULL DEFAULT '',
-  `aws_region` varchar(128) NOT NULL DEFAULT '',
   `sonar_url` varchar(512) NOT NULL DEFAULT '',
   `sonar_user` varchar(512) NOT NULL DEFAULT '',
   `sonar_pass` varchar(512) NOT NULL DEFAULT '',
@@ -245,10 +244,13 @@ CREATE TABLE `project` (
   `zap_key` varchar(512) NOT NULL DEFAULT '',
   `xforce_key` varchar(512) NOT NULL DEFAULT '',
   `xforce_pass` varchar(512) NOT NULL DEFAULT '',
+  `aws_region` varchar(128) NOT NULL DEFAULT '',
+  `aws_ipinsights` varchar(256) NOT NULL DEFAULT '',
+  `sqs_cloudtrail` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 0, 0, 0, 100, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", "", 0, "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 0, 0, 0, 100, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", 0, "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -526,9 +528,24 @@ CREATE TABLE `logic_job` (
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `type_logic`  int(2) unsigned NOT NULL DEFAULT '0', -- 0 - condition based on alert, 1 - new parameters based on alert
+  `type_logic`  int(10) unsigned NOT NULL DEFAULT '0', -- 0 set parameters, 1 - new playbook, 2 - stop playbook, 3 - goto job
   `script` text,
   `new_playbook` varchar(512) NOT NULL DEFAULT '',
+  `new_playid` int(10) unsigned NOT NULL DEFAULT '0',
+  `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `notify_job` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `playbook` varchar(255) NOT NULL,
+  `play_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `notify_users` varchar(1024) DEFAULT NULL,
+  `notify_msg` varchar(512) DEFAULT NULL,
+  `send_slack` int(2) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -892,6 +909,8 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`,
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (24,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (25,'_project_id','Nmap','Nmap', 1);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (26,'_project_id','Snyk','Snyk', 'info', 'low', 'medium', 'high', 'critical', 1,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (27,'_project_id','IpInsight','IpInsight', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (28,'_project_id','CloudTrail','CloudTrail', 3, 5, 7);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
