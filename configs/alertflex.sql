@@ -528,7 +528,7 @@ CREATE TABLE `logic_job` (
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `type_logic`  int(10) unsigned NOT NULL DEFAULT '0', -- 0 set parameters, 1 - new playbook, 2 - stop playbook, 3 - goto job
+  `type_logic`  int(10) unsigned NOT NULL DEFAULT '0', 
   `script` text,
   `new_playbook` varchar(512) NOT NULL DEFAULT '',
   `new_playid` int(10) unsigned NOT NULL DEFAULT '0',
@@ -560,8 +560,9 @@ CREATE TABLE `script_job` (
   `host` varchar(255) NOT NULL DEFAULT '',
   `script_params` varchar(1024) NOT NULL DEFAULT '',
   `script_name` varchar(512) NOT NULL DEFAULT '',
-  `script_type` int(2) unsigned NOT NULL DEFAULT '0', -- ansible, ssh
+  `script_type` int(2) unsigned NOT NULL DEFAULT '0', -- 0 - ansible, 1 - ssh, 2 - calico
   `script` text,
+  `block_ip` int(2) unsigned NOT NULL DEFAULT '0', -- 0 - none, 1 - block dst ip, 2 - block src ip
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)

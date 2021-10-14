@@ -229,7 +229,7 @@ body {
   font-size: 14px;
   line-height: 20px;
   color: #999999;
-  background-color: #3f3f3f;
+  background-color: #323232;
 }
 
 a {
@@ -2039,7 +2039,7 @@ table {
 }
 
 .table .table {
-  background-color: #3f3f3f;
+  background-color: #323232;
 }
 
 .table-condensed th,
@@ -4087,7 +4087,7 @@ input[type="submit"].btn.btn-mini {
 .nav-tabs > .active > a:focus {
   color: #999999;
   cursor: default;
-  background-color: #3f3f3f;
+  background-color: #323232;
   border: 1px solid #ddd;
   border-bottom-color: transparent;
 }
@@ -5002,7 +5002,7 @@ input[type="submit"].btn.btn-mini {
   padding: 4px 12px;
   line-height: 20px;
   text-decoration: none;
-  background-color: #3f3f3f;
+  background-color: #323232;
   border: 1px solid transparent;
   border-left-width: 0;
 }
@@ -6199,13 +6199,13 @@ html {
 body {
   min-height: 100%;
   background-color: #121417;
-  background-image: -moz-linear-gradient(top, #3f3f3f, #333333);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3f3f3f), to(#333333));
-  background-image: -webkit-linear-gradient(top, #3f3f3f, #333333);
-  background-image: -o-linear-gradient(top, #3f3f3f, #333333);
-  background-image: linear-gradient(to bottom, #3f3f3f, #333333);
+  background-image: -moz-linear-gradient(top, #323232, #333333);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#323232), to(#333333));
+  background-image: -webkit-linear-gradient(top, #323232, #333333);
+  background-image: -o-linear-gradient(top, #323232, #333333);
+  background-image: linear-gradient(to bottom, #323232, #333333);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3f3f3f', endColorstr='#ff333333', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff323232', endColorstr='#ff333333', GradientType=0);
 }
 
 .page-header {
@@ -6387,7 +6387,7 @@ div.subnav-fixed {
 }
 
 .nav-tabs .open .dropdown-toggle {
-  background-color: #3f3f3f;
+  background-color: #323232;
   border-color: transparent;
 }
 
@@ -6401,7 +6401,7 @@ div.subnav-fixed {
 }
 
 .nav-pills .open .dropdown-toggle {
-  background-color: #3f3f3f;
+  background-color: #323232;
 }
 
 .nav-pills .dropdown-menu li > a:hover {
@@ -6475,7 +6475,7 @@ div.subnav-fixed {
 
 .pager li > a,
 .pager li > span {
-  background-color: #3f3f3f;
+  background-color: #323232;
   border: none;
 }
 
@@ -6486,7 +6486,7 @@ div.subnav-fixed {
 
 .pager .disabled a,
 .pager .disabled a:hover {
-  background-color: #3f3f3f;
+  background-color: #323232;
 }
 
 .btn {
@@ -6951,7 +6951,7 @@ label {
 }
 
 .progress {
-  background-color: #3f3f3f;
+  background-color: #323232;
   background-image: none;
   -webkit-border-radius: 0;
      -moz-border-radius: 0;
