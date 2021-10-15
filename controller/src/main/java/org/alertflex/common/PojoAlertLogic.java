@@ -1,16 +1,18 @@
 /*
- *   Copyright 2021 Oleg Zharkov
+ * Copyright (C) 2021 Oleg Zharkov
  *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * You should have received a copy of the Server Side Public License
+ * along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
 package org.alertflex.common;
@@ -19,12 +21,17 @@ import java.io.Serializable;
 import java.util.Date;
 import org.alertflex.entity.Alert;
 
-public class PojoAlertLogic implements Serializable {
+public class PojoAlertLogic  implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    String generatedParams = "indef";
-    Boolean runPayload = false; // means need to runPayload 
+    String stringParam1 = "indef";
+    String stringParam2 = "indef";
+    String stringParam3 = "indef";
+    Boolean booleanParam = false;
+    Integer intParam = 0;
+    Long longParam = 0L;
+    Double doubleParam = 0.0;
 
     private Long alertId = 0L;
     private String alertUuid = "indef";
@@ -70,6 +77,7 @@ public class PojoAlertLogic implements Serializable {
     private Date timeCollr = new Date();
     private Date timeCntrl = new Date();
     
+
     public PojoAlertLogic() {
 
     }
@@ -121,20 +129,60 @@ public class PojoAlertLogic implements Serializable {
         timeCntrl = a.getTimeCntrl();
     }
 
-    public Boolean getRunPayload() {
-        return runPayload;
+    public Boolean getBooleanParam() {
+        return booleanParam;
     }
 
-    public void setRunPayload(Boolean rp) {
-        runPayload = rp;
+    public void setBooleanParam(Boolean bp) {
+        booleanParam = bp;
     }
 
-    public String getGeneratedParams() {
-        return generatedParams;
+    public String getStringParam1() {
+        return stringParam1;
     }
 
-    public void setGeneratedParams(String p) {
-        generatedParams = p;
+    public void setStringParam1(String p) {
+        stringParam1 = p;
+    }
+    
+    public String getStringParam2() {
+        return stringParam2;
+    }
+
+    public void setStringParam2(String p) {
+        stringParam2 = p;
+    }
+    
+    public String getStringParam3() {
+        return stringParam3;
+    }
+
+    public void setStringParam3(String p) {
+        stringParam3 = p;
+    }
+    
+    public Integer getIntParam() {
+        return intParam;
+    }
+
+    public void setIntParam(Integer p) {
+        intParam = p;
+    }
+    
+    public Long getLongParam() {
+        return longParam;
+    }
+
+    public void setLongParam(Long p) {
+        longParam = p;
+    }
+    
+    public Double getDoubleParam() {
+        return doubleParam;
+    }
+
+    public void setDoubleParam(Double p) {
+        doubleParam = p;
     }
 
     public Long getAlertId() {
@@ -448,6 +496,7 @@ public class PojoAlertLogic implements Serializable {
     public void setInfo(String info) {
         this.info = info;
     }
+    
     public String getIncidentExt() {
         return incidentExt;
     }
@@ -478,6 +527,16 @@ public class PojoAlertLogic implements Serializable {
 
     public void setTimeCntrl(Date timeCntrl) {
         this.timeCntrl = timeCntrl;
+    }
+    
+    public void resetParams() {
+        stringParam1 = "indef";
+        stringParam2 = "indef";
+        stringParam3 = "indef";
+        doubleParam = 0.0;
+        intParam = 0;
+        longParam = 0L;
+        booleanParam = false;
     }
 
 }
