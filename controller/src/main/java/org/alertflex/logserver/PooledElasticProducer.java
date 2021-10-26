@@ -76,17 +76,28 @@ public class PooledElasticProducer {
                 return;
             }
 
-            String host = prj.getElkHost();
+            String url = prj.getElkHost();
+            Boolean sslUrl = false;
             
+            String[] words = url.split("//");
+            
+            if (words.length != 2) return;
+            
+            url = words[0];
+            if (url.equals("https:")) sslUrl = true;
+            
+            String host = words[1];
             if ( host.isEmpty() || host.equals("indef")) return;
-
+            
             String user = prj.getElkUser();
 
             String password = prj.getElkPass();
 
             int port = prj.getElkPort();
 
-            if (!user.isEmpty() && !password.isEmpty()) {
+            if (sslUrl) {
+                
+                if (user.isEmpty() || password.isEmpty()) return;
 
                 String keyStorePass = prj.getElkStorepass();
                 String keystorePath = prj.getElkKeystore();
@@ -161,8 +172,9 @@ public class PooledElasticProducer {
                 }
 
             } else {
-
-                if (!host.isEmpty()) {
+                
+                if (user.isEmpty() || password.isEmpty()) {
+                    
                     RestHighLevelClient client = new RestHighLevelClient(
                             RestClient.builder(
                                     new HttpHost(host, 9200, "http"),
@@ -171,6 +183,23 @@ public class PooledElasticProducer {
                     );
 
                     es = new ElasticSearch(client);
+                
+                } else {
+                
+                    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
+
+                    RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "http"))
+                            .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+                                @Override
+                                public HttpAsyncClientBuilder customizeHttpClient(
+                                        HttpAsyncClientBuilder httpClientBuilder) {
+                                    return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                                }
+                            }));
+
+                    es = new ElasticSearch(client);
+                    
                 }
             }
 

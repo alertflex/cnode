@@ -4,7 +4,7 @@
 	
 	<groupId>org.alertflex</groupId>
     <artifactId>elasticshade</artifactId>
-    <version>7.3.2</version>
+    <version>7.10.2</version>
     <packaging>jar</packaging>
 	
     <properties>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.3.2</version>
+            <version>7.10.2</version>
         </dependency>
     </dependencies>
 	
@@ -26,7 +26,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

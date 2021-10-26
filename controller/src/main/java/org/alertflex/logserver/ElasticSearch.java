@@ -92,7 +92,7 @@ public class ElasticSearch {
                 
                 obj.append("controller_time", time);
 
-                elasticJson = obj.getString("short_message");
+                elasticJson = obj.toString();
 
                 if (!elasticJson.isEmpty()) {
                     checkDateIndex();
@@ -220,7 +220,7 @@ public class ElasticSearch {
                 
                 obj.append("controller_time", time);
 
-                elasticJson = obj.getString("short_message");
+                elasticJson = obj.toString();
                 
 
                 if (!elasticJson.isEmpty()) {
