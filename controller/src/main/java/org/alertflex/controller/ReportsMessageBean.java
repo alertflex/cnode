@@ -275,28 +275,27 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     inspectorFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                inspectorFindings.add(new Finding("none",1));
             }
             
-            if ((alertsList != null) && (alertsList.size() > 0)) {
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "cloud_report.jasper");
 
-                JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "cloud_report.jasper");
+            JasperDataCloud jasperDataCloud = new JasperDataCloud(inspectorFindings, alertsList, start, end, 50);
+            
+            Map<String, Object> params = new HashMap<String, Object>();
 
-                JasperDataCloud jasperDataCloud = new JasperDataCloud(inspectorFindings, alertsList, start, end, 50);
-                
-                Map<String, Object> params = new HashMap<String, Object>();
+            List<AlertsPie> alertsSeverityPie = jasperDataCloud.getBeanCollectionPie();
+            params.put("datasourceGuardduty", alertsSeverityPie);
 
-                List<AlertsPie> alertsSeverityPie = jasperDataCloud.getBeanCollectionPie();
-                params.put("datasourceGuardduty", alertsSeverityPie);
+            params.put("datasourceInspector", jasperDataCloud.getInspectorFindings());
 
-                params.put("datasourceInspector", jasperDataCloud.getInspectorFindings());
+            params.put("reportDir", reportDir);
 
-                params.put("reportDir", reportDir);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
 
-                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-
-                JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "cloud_report.pdf");
-            }
-
+            JasperExportManager.exportReportToPdfFile(jasperPrint, reportDir + "cloud_report.pdf");
+        
         } catch (JRException e) {
             logger.error("alertflex_ctrl_exception", e);
             return false;
@@ -326,6 +325,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     dockerBenchFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                dockerBenchFindings.add(new Finding("none",1));
             }
             
             if (kubeBenchObjects != null && kubeBenchObjects.size() > 0) {
@@ -335,6 +336,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     kubeBenchFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                kubeBenchFindings.add(new Finding("none",1));
             }
             
             if (kubeHunterObjects != null && kubeHunterObjects.size() > 0) {
@@ -344,6 +347,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     kubeHunterFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                kubeHunterFindings.add(new Finding("none",1));
             }
             
             if (trivyObjects != null && trivyObjects.size() > 0) {
@@ -353,6 +358,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     trivyFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                trivyFindings.add(new Finding("none",1));
             }
             
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "containers_report.jasper");
@@ -396,6 +403,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     misconfigFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                misconfigFindings.add(new Finding("none",1));
             }
             
             if (vulnObjects != null && vulnObjects.size() > 0) {
@@ -405,6 +414,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     vulnFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                vulnFindings.add(new Finding("none",1));
             }
             
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "endpoints_report.jasper");
@@ -451,6 +462,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     zapFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                zapFindings.add(new Finding("none",1));
             }
             
             if (dependencyObjects != null && dependencyObjects.size() > 0) {
@@ -460,6 +473,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     dependencyFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                dependencyFindings.add(new Finding("none",1));
             }
             
             if (snykObjects != null && snykObjects.size() > 0) {
@@ -469,6 +484,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     snykFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                snykFindings.add(new Finding("none",1));
             }
             
             if (sonarqubeObjects != null && sonarqubeObjects.size() > 0) {
@@ -478,6 +495,8 @@ public class ReportsMessageBean implements MessageListener {
                     Long c = (Long) o[1];
                     sonarqubeFindings.add(new Finding(f,c.intValue()));
                 }
+            } else {
+                sonarqubeFindings.add(new Finding("none",1));
             }
 
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "scanners_report.jasper");

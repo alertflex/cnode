@@ -57,29 +57,35 @@ public class JasperDataCloud {
         CounterInterval ciSev1 = new CounterInterval("Sev1");
         CounterInterval ciSev2 = new CounterInterval("Sev2");
         CounterInterval ciSev3 = new CounterInterval("Sev3");
+        
+        if ((alertsList != null) && (alertsList.size() > 0)) {
 
-        for (Alert a : alertsList) {
+            for (Alert a : alertsList) {
 
-            switch (a.getAlertSeverity()) {
-                case 0:
-                    ciSev0.setCounter();
-                    break;
-                case 1:
-                    ciSev1.setCounter();
-                    break;
-                case 2:
-                    ciSev2.setCounter();
-                    break;
-                case 3:
-                    ciSev3.setCounter();
-                    break;
+                switch (a.getAlertSeverity()) {
+                    case 0:
+                        ciSev0.setCounter();
+                        break;
+                    case 1:
+                        ciSev1.setCounter();
+                        break;
+                    case 2:
+                        ciSev2.setCounter();
+                        break;
+                    case 3:
+                        ciSev3.setCounter();
+                        break;
+                }
             }
-        }
 
-        dataPie.add(new AlertsPie("Sev0", ciSev0.getCounter()));
-        dataPie.add(new AlertsPie("Sev1", ciSev1.getCounter()));
-        dataPie.add(new AlertsPie("Sev2", ciSev2.getCounter()));
-        dataPie.add(new AlertsPie("Sev3", ciSev3.getCounter()));
+            dataPie.add(new AlertsPie("Sev0", ciSev0.getCounter()));
+            dataPie.add(new AlertsPie("Sev1", ciSev1.getCounter()));
+            dataPie.add(new AlertsPie("Sev2", ciSev2.getCounter()));
+            dataPie.add(new AlertsPie("Sev3", ciSev3.getCounter()));
+        
+        } else {
+            dataPie.add(new AlertsPie("none", 1));
+        }
     }
     
     public List<AlertsPie> getBeanCollectionPie() {
