@@ -521,6 +521,19 @@ CREATE TABLE `report_job` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `scanreport_task` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `report_uuid` varchar(255) NOT NULL,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `source` varchar(128) NOT NULL DEFAULT '',
+  `severity` int(10) unsigned NOT NULL DEFAULT '0',
+  `num` int(10) unsigned NOT NULL DEFAULT '0',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_type` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `logic_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,

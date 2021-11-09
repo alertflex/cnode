@@ -11,6 +11,7 @@
       </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rest/*</url-pattern>
@@ -23,23 +24,32 @@
     </login-config>
     
     <security-constraint>
+        
         <display-name>REST interface</display-name>
+        
         <web-resource-collection>
             <web-resource-name>Alert area</web-resource-name>
-            <url-pattern>/rest/alert/*</url-pattern>
+            <url-pattern>/rest/alerts/*</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Playbook area</web-resource-name>
+            <url-pattern>/rest/playbook/*</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>STIX area</web-resource-name>
             <url-pattern>/rest/stix-alerts/*</url-pattern>
         </web-resource-collection>
+        
         <auth-constraint>
             <description/>
             <role-name>admin</role-name>
             <role-name>user</role-name>
         </auth-constraint>
+        
         <user-data-constraint>
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
+    
     </security-constraint>
     
     <security-role>

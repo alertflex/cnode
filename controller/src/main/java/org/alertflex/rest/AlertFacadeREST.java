@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-@Path("alert")
+@Path("alerts")
 public class AlertFacadeREST extends AbstractFacade<Alert> {
 
     private static final Logger logger = LoggerFactory.getLogger(AlertFacadeREST.class);
