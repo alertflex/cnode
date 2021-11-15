@@ -25,8 +25,6 @@ import java.util.zip.GZIPOutputStream;
 import javax.persistence.PersistenceException;
 import org.alertflex.common.ProjectRepository;
 import org.alertflex.entity.Agent;
-import org.alertflex.entity.AgentPackages;
-import org.alertflex.entity.BwlistPackages;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
@@ -236,119 +234,6 @@ public class StatsManagement {
                         } else {
                             contExisting.setReportUpdated(new Date());
                             eventBean.getContainerFacade().edit(contExisting);
-                        }
-                    }
-
-                    break;
-                
-                case "packages_list":
-
-                    agent = obj.getString("agent");
-
-                    data = obj.getJSONObject("data");
-
-                    arr = data.getJSONArray("affected_items");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-                    for (int i = 0; i < arr.length(); i++) {
-                        
-                        JSONObject scan = arr.getJSONObject(i).getJSONObject("scan");
-                        Date time = formatter.parse(scan.getString("time"));
-
-                        long size = 0;
-                        if (arr.getJSONObject(i).has("size")) {
-                            size = arr.getJSONObject(i).getLong("size");
-                        }
-
-                        String architecture = "";
-                        if (arr.getJSONObject(i).has("architecture")) {
-                            architecture = arr.getJSONObject(i).getString("architecture");
-                        }
-
-                        String priority = "";
-                        if (arr.getJSONObject(i).has("priority")) {
-                            priority = arr.getJSONObject(i).getString("priority");
-                        }
-
-                        String version = "";
-                        if (arr.getJSONObject(i).has("version")) {
-                            version = arr.getJSONObject(i).getString("version");
-                        }
-
-                        String vendor = "";
-                        if (arr.getJSONObject(i).has("vendor")) {
-                            vendor = arr.getJSONObject(i).getString("vendor");
-                        }
-
-                        String format = "";
-                        if (arr.getJSONObject(i).has("format")) {
-                            format = arr.getJSONObject(i).getString("format");
-                        }
-
-                        String section = "";
-                        if (arr.getJSONObject(i).has("section")) {
-                            section = arr.getJSONObject(i).getString("section");
-                        }
-
-                        String name = "";
-                        if (arr.getJSONObject(i).has("name")) {
-                            name = arr.getJSONObject(i).getString("name");
-                        }
-
-                        String description = "";
-                        if (arr.getJSONObject(i).has("description")) {
-                            description = arr.getJSONObject(i).getString("description");
-                        }
-                        
-                        // check exist in black list
-                        BwlistPackages bp = eventBean.getBwlistPackagesFacade().findByName(ref, nodeName, name);
-                        
-                        if (bp != null) {
-                            
-                            createBwlistAlert(ref, nodeName, agent, name);
-                            
-                        } else {
-                        
-                            AgentPackages pExisting = eventBean.getAgentPackagesFacade().findPackage(ref, nodeName, agent, name, version);
-
-                            if (pExisting == null) {
-
-                                AgentPackages p = new AgentPackages();
-
-                                p.setRefId(ref);
-                                p.setNodeId(nodeName);
-                                p.setAgent(agent);
-                                p.setPackageSize(size);
-                                p.setArchitecture(architecture);
-                                p.setPriority(priority);
-                                p.setVersion(version);
-                                p.setVendor(vendor);
-                                p.setPackageFormat(format);
-                                p.setPackageSection(section);
-                                p.setName(name);
-                                p.setDescription(description);
-                                p.setTimeScan(time);
-                                p.setDateAdd(date);
-                                p.setDateUpdate(date);
-
-                                eventBean.getAgentPackagesFacade().create(p);
-
-                            } else {
-
-                                pExisting.setPackageSize(size);
-                                pExisting.setArchitecture(architecture);
-                                pExisting.setPriority(priority);
-                                pExisting.setVersion(version);
-                                pExisting.setVendor(vendor);
-                                pExisting.setPackageFormat(format);
-                                pExisting.setPackageSection(section);
-                                pExisting.setName(name);
-                                pExisting.setTimeScan(time);
-                                pExisting.setDateUpdate(date);
-
-                                eventBean.getAgentPackagesFacade().edit(pExisting);
-                            }
                         }
                     }
 

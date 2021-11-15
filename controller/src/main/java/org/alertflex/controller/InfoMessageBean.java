@@ -39,8 +39,6 @@ import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentFacade;
-import org.alertflex.facade.AgentPackagesFacade;
-import org.alertflex.facade.BwlistPackagesFacade;
 import org.alertflex.facade.HomeNetworkFacade;
 import org.alertflex.facade.HostsFacade;
 import org.alertflex.facade.AlertFacade;
@@ -159,12 +157,6 @@ public class InfoMessageBean implements MessageListener {
     private HunterScanFacade hunterScanFacade;
     
     @EJB
-    private AgentPackagesFacade agentPackagesFacade;
-    
-    @EJB
-    private BwlistPackagesFacade bwlistPackagesFacade;
-    
-     @EJB
     private ProjectFacade projectFacade;
     Project project;
     String ref_id;
@@ -293,14 +285,6 @@ public class InfoMessageBean implements MessageListener {
     
     public HunterScanFacade getHunterScanFacade() {
         return this.hunterScanFacade;
-    }
-    
-    public AgentPackagesFacade getAgentPackagesFacade() {
-        return this.agentPackagesFacade;
-    }
-    
-    public BwlistPackagesFacade getBwlistPackagesFacade() {
-        return this.bwlistPackagesFacade;
     }
     
     public Project getProject() {
