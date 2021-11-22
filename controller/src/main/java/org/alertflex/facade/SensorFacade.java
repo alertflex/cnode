@@ -70,7 +70,7 @@ public class SensorFacade extends AbstractFacade<Sensor> {
             em.flush();
 
             Query listQry = em.createQuery(
-                    "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node AND s.sensorPK.refId = :ref AND s.probe = :probe")
+                    "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node AND s.sensorPK.refId = :ref AND s.hostName = :probe")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("probe", probe);
 
             // Enable forced database query

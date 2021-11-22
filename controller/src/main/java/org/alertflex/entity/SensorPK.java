@@ -27,21 +27,21 @@ public class SensorPK implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "node")
-    private String node;
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "node")
+    private String node;
 
     public SensorPK() {
     }
 
-    public SensorPK(String refId, String node, String name) {
+    public SensorPK(String refId, String name, String node) {
         this.refId = refId;
-        this.node = node;
         this.name = name;
+        this.node = node;
     }
 
     public String getRefId() {
@@ -52,14 +52,6 @@ public class SensorPK implements Serializable {
         this.refId = refId;
     }
 
-    public String getNode() {
-        return node;
-    }
-
-    public void setNode(String node) {
-        this.node = node;
-    }
-
     public String getName() {
         return name;
     }
@@ -68,12 +60,20 @@ public class SensorPK implements Serializable {
         this.name = name;
     }
 
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (refId != null ? refId.hashCode() : 0);
-        hash += (node != null ? node.hashCode() : 0);
         hash += (name != null ? name.hashCode() : 0);
+        hash += (node != null ? node.hashCode() : 0);
         return hash;
     }
 
@@ -87,10 +87,10 @@ public class SensorPK implements Serializable {
         if ((this.refId == null && other.refId != null) || (this.refId != null && !this.refId.equals(other.refId))) {
             return false;
         }
-        if ((this.node == null && other.node != null) || (this.node != null && !this.node.equals(other.node))) {
+        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
             return false;
         }
-        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
+        if ((this.node == null && other.node != null) || (this.node != null && !this.node.equals(other.node))) {
             return false;
         }
         return true;
@@ -98,7 +98,7 @@ public class SensorPK implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.SensorPK[ refId=" + refId + ", node=" + node + ", name=" + name + " ]";
+        return "org.alertflex.entity.SensorPK[ refId=" + refId + ", name=" + name + ", node=" + node + " ]";
     }
     
 }

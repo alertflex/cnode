@@ -12,7 +12,6 @@
  *   express or implied. See the License for the specific language governing
  *   permissions and limitations under the License.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -36,22 +35,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "agent")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Agent.findAll", query = "SELECT a FROM Agent a")
-    , @NamedQuery(name = "Agent.findByRecId", query = "SELECT a FROM Agent a WHERE a.recId = :recId")
-    , @NamedQuery(name = "Agent.findByRefId", query = "SELECT a FROM Agent a WHERE a.refId = :refId")
-    , @NamedQuery(name = "Agent.findByNodeId", query = "SELECT a FROM Agent a WHERE a.nodeId = :nodeId")
-    , @NamedQuery(name = "Agent.findByAgentId", query = "SELECT a FROM Agent a WHERE a.agentId = :agentId")
-    , @NamedQuery(name = "Agent.findByAgentKey", query = "SELECT a FROM Agent a WHERE a.agentKey = :agentKey")
-    , @NamedQuery(name = "Agent.findByIp", query = "SELECT a FROM Agent a WHERE a.ip = :ip")
-    , @NamedQuery(name = "Agent.findByName", query = "SELECT a FROM Agent a WHERE a.name = :name")
-    , @NamedQuery(name = "Agent.findByStatus", query = "SELECT a FROM Agent a WHERE a.status = :status")
-    , @NamedQuery(name = "Agent.findByDateAdd", query = "SELECT a FROM Agent a WHERE a.dateAdd = :dateAdd")
-    , @NamedQuery(name = "Agent.findByVersion", query = "SELECT a FROM Agent a WHERE a.version = :version")
-    , @NamedQuery(name = "Agent.findByManager", query = "SELECT a FROM Agent a WHERE a.manager = :manager")
-    , @NamedQuery(name = "Agent.findByOsPlatform", query = "SELECT a FROM Agent a WHERE a.osPlatform = :osPlatform")
-    , @NamedQuery(name = "Agent.findByOsVersion", query = "SELECT a FROM Agent a WHERE a.osVersion = :osVersion")
-    , @NamedQuery(name = "Agent.findByOsName", query = "SELECT a FROM Agent a WHERE a.osName = :osName")
-    , @NamedQuery(name = "Agent.findByDateUpdate", query = "SELECT a FROM Agent a WHERE a.dateUpdate = :dateUpdate")})
+    @NamedQuery(name = "Agent.findAll", query = "SELECT a FROM Agent a"),
+    @NamedQuery(name = "Agent.findByRecId", query = "SELECT a FROM Agent a WHERE a.recId = :recId"),
+    @NamedQuery(name = "Agent.findByRefId", query = "SELECT a FROM Agent a WHERE a.refId = :refId"),
+    @NamedQuery(name = "Agent.findByNodeId", query = "SELECT a FROM Agent a WHERE a.nodeId = :nodeId"),
+    @NamedQuery(name = "Agent.findByAgentId", query = "SELECT a FROM Agent a WHERE a.agentId = :agentId"),
+    @NamedQuery(name = "Agent.findByAgentKey", query = "SELECT a FROM Agent a WHERE a.agentKey = :agentKey"),
+    @NamedQuery(name = "Agent.findByIp", query = "SELECT a FROM Agent a WHERE a.ip = :ip"),
+    @NamedQuery(name = "Agent.findByName", query = "SELECT a FROM Agent a WHERE a.name = :name"),
+    @NamedQuery(name = "Agent.findByStatus", query = "SELECT a FROM Agent a WHERE a.status = :status"),
+    @NamedQuery(name = "Agent.findByDateAdd", query = "SELECT a FROM Agent a WHERE a.dateAdd = :dateAdd"),
+    @NamedQuery(name = "Agent.findByVersion", query = "SELECT a FROM Agent a WHERE a.version = :version"),
+    @NamedQuery(name = "Agent.findByManager", query = "SELECT a FROM Agent a WHERE a.manager = :manager"),
+    @NamedQuery(name = "Agent.findByGroupName", query = "SELECT a FROM Agent a WHERE a.groupName = :groupName"),
+    @NamedQuery(name = "Agent.findByOsPlatform", query = "SELECT a FROM Agent a WHERE a.osPlatform = :osPlatform"),
+    @NamedQuery(name = "Agent.findByOsVersion", query = "SELECT a FROM Agent a WHERE a.osVersion = :osVersion"),
+    @NamedQuery(name = "Agent.findByOsName", query = "SELECT a FROM Agent a WHERE a.osName = :osName"),
+    @NamedQuery(name = "Agent.findByDateUpdate", query = "SELECT a FROM Agent a WHERE a.dateUpdate = :dateUpdate")})
 public class Agent implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -113,6 +113,11 @@ public class Agent implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
+    @Column(name = "group_name")
+    private String groupName;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
     @Column(name = "os_platform")
     private String osPlatform;
     @Basic(optional = false)
@@ -136,7 +141,7 @@ public class Agent implements Serializable {
         this.recId = recId;
     }
 
-    public Agent(Integer recId, String refId, String nodeId, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String osPlatform, String osVersion, String osName) {
+    public Agent(Integer recId, String refId, String nodeId, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String groupName, String osPlatform, String osVersion, String osName) {
         this.recId = recId;
         this.refId = refId;
         this.nodeId = nodeId;
@@ -148,6 +153,7 @@ public class Agent implements Serializable {
         this.dateAdd = dateAdd;
         this.version = version;
         this.manager = manager;
+        this.groupName = groupName;
         this.osPlatform = osPlatform;
         this.osVersion = osVersion;
         this.osName = osName;
@@ -239,6 +245,14 @@ public class Agent implements Serializable {
 
     public void setManager(String manager) {
         this.manager = manager;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public String getOsPlatform() {

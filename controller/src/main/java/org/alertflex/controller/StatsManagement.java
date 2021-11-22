@@ -31,6 +31,7 @@ import org.alertflex.entity.NodeMonitor;
 import org.alertflex.entity.NetStat;
 import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
+import org.alertflex.entity.AgentsGroup;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
 import org.alertflex.entity.NetCountries;
@@ -127,6 +128,7 @@ public class StatsManagement {
                         String osPlatform = arr.getJSONObject(i).getString("os_platform");
                         String osVersion = arr.getJSONObject(i).getString("os_version");
                         String osName = arr.getJSONObject(i).getString("os_name");
+                        String group = arr.getJSONObject(i).getString("group");
 
                         Agent agExisting = eventBean.getAgentFacade().findAgentByName(ref, nodeName, agent);
                         
@@ -150,6 +152,7 @@ public class StatsManagement {
                             a.setOsPlatform(osPlatform);
                             a.setOsVersion(osVersion);
                             a.setOsName(osName);
+                            a.setGroupName(group);
 
                             eventBean.getAgentFacade().create(a);
 
@@ -165,8 +168,49 @@ public class StatsManagement {
                             agExisting.setOsPlatform(osPlatform);
                             agExisting.setOsVersion(osVersion);
                             agExisting.setOsName(osName);
+                            agExisting.setGroupName(group);
 
                             eventBean.getAgentFacade().edit(agExisting);
+                        }
+                    }
+                    
+                    break;
+                    
+                case "groups_list": 
+
+                    arr = obj.getJSONArray("data");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                    for (int i = 0; i < arr.length(); i++) {
+
+                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
+
+                        String group = arr.getJSONObject(i).getString("name");
+                        int count = arr.getJSONObject(i).getInt("count");
+                        
+                        AgentsGroup agExisting = eventBean.getAgentsGroupFacade().findAgentsGroupByName(ref, nodeName, group);
+                        
+                        if (agExisting == null) {
+                            
+                            AgentsGroup g = new AgentsGroup();
+
+                            g.setRefId(ref);
+                            g.setNodeId(nodeName);
+                            g.setGroupRef("indef");
+                            g.setGroupName(group);
+                            g.setAgentsCount(count);
+                            g.setDateAdd(date);
+                            g.setDateUpdate(date);
+
+                            eventBean.getAgentsGroupFacade().create(g);
+
+                        } else {
+
+                            agExisting.setDateUpdate(date);
+                            agExisting.setAgentsCount(count);
+                            
+                            eventBean.getAgentsGroupFacade().edit(agExisting);
                         }
                     }
                     
@@ -389,7 +433,7 @@ public class StatsManagement {
 
                         eventBean.getAgentVulFacade().create(v);
 
-                        // createNewVulnAlert(v);
+                        createNewVulnAlert(v);
                         
                     } else {
 
@@ -783,7 +827,7 @@ public class StatsManagement {
 
         a.setDescription(as.getTitle());
         a.setEventId("3");
-        a.setLocation("Wazuh SCA");
+        a.setLocation("indef");
         a.setAction("indef");
         a.setStatus("processed");
         a.setFilter("indef");
@@ -841,7 +885,7 @@ public class StatsManagement {
 
         a.setDescription(av.getTitle());
         a.setEventId("4");
-        a.setLocation("Wazuh Vuln");
+        a.setLocation(av.getVulnRef());
         a.setAction("indef");
         a.setStatus("processed");
         a.setFilter("indef");
@@ -854,7 +898,7 @@ public class StatsManagement {
 
         a.setAgentName(av.getAgent());
         a.setUserName("indef");
-        a.setCategories("sca");
+        a.setCategories("vulnerability");
         a.setSrcIp("indef");
         a.setDstIp("indef");
         a.setDstPort(0);
@@ -862,69 +906,12 @@ public class StatsManagement {
         a.setSrcHostname("indef");
         a.setDstHostname("indef");
         a.setRegValue("indef");
-        a.setFileName("indef");
+        a.setFileName(av.getPkgName());
         a.setHashMd5("indef");
         a.setHashSha1("indef");
         a.setHashSha256("indef");
         a.setProcessId(0);
         a.setProcessName("indef");
-        a.setProcessCmdline("indef");
-        a.setProcessPath("indef");
-        a.setUrlHostname("indef");
-        a.setUrlPath("indef");
-        a.setContainerId("indef");
-        a.setContainerName("indef");
-        a.setCloudInstance("indef");
-        a.setIncidentExt("indef");
-
-        eventBean.createAlert(a);
-    }
-    
-    public void createBwlistAlert(String ref, String node, String agent, String name) {
-
-        Alert a = new Alert();
-
-        a.setRefId(ref);
-        a.setNodeId(node);
-        a.setAlertUuid(UUID.randomUUID().toString());
-
-        int sev = 2;
-        a.setAlertSeverity(sev);
-        a.setEventSeverity(Integer.toString(sev));
-
-        a.setAlertSource("Alertflex");
-        a.setAlertType("HOST");
-        a.setSensorId("indef");
-
-        a.setDescription("Package name exists in Black and White list");
-        a.setEventId("5");
-        a.setLocation("packages bw-list");
-        a.setAction("indef");
-        a.setStatus("processed");
-        a.setFilter("indef");
-        a.setInfo("");
-
-        a.setTimeEvent("");
-        Date date = new Date();
-        a.setTimeCollr(date);
-        a.setTimeCntrl(date);
-
-        a.setAgentName(agent);
-        a.setUserName("indef");
-        a.setCategories("bw-list");
-        a.setSrcIp("indef");
-        a.setDstIp("indef");
-        a.setDstPort(0);
-        a.setSrcPort(0);
-        a.setSrcHostname("indef");
-        a.setDstHostname("indef");
-        a.setRegValue("indef");
-        a.setFileName("indef");
-        a.setHashMd5("indef");
-        a.setHashSha1("indef");
-        a.setHashSha256("indef");
-        a.setProcessId(0);
-        a.setProcessName(name);
         a.setProcessCmdline("indef");
         a.setProcessPath("indef");
         a.setUrlHostname("indef");

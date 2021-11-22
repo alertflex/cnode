@@ -323,11 +323,12 @@ CREATE TABLE `node` (
 
 CREATE TABLE `sensor` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node` varchar(255) NOT NULL DEFAULT '',
-  `probe` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `node` varchar(255) NOT NULL DEFAULT '',
+  `host_name` varchar(512) NOT NULL,
   `description` varchar(512) NOT NULL DEFAULT '',
   `sensor_type` varchar(64) NOT NULL DEFAULT '',
+  `rulegroup_name` varchar(64) NOT NULL DEFAULT '',
   `status` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ref_id`,`node`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -361,9 +362,22 @@ CREATE TABLE `agent` (
   `date_add` varchar(128) NOT NULL DEFAULT '',
   `version` varchar(128) NOT NULL DEFAULT '',
   `manager` varchar(128) NOT NULL DEFAULT '',
+  `group_name` varchar(512) NOT NULL DEFAULT '', -- add group
   `os_platform` varchar(512) NOT NULL DEFAULT '',
   `os_version` varchar(512) NOT NULL DEFAULT '',
   `os_name` varchar(128) NOT NULL DEFAULT '',
+  `date_update` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `agents_group` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `group_name` varchar(128) NOT NULL DEFAULT '', 
+  `group_ref` varchar(128) NOT NULL DEFAULT '',
+  `agents_count` int(10) unsigned NOT NULL DEFAULT '0',
+  `date_add` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -842,6 +856,23 @@ CREATE TABLE `snyk_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `cloudsploit_scan` (
+  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `cloud_type` varchar(128) NOT NULL DEFAULT '',
+  `plugin` varchar(128) NOT NULL DEFAULT '',
+  `category` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(512) NOT NULL DEFAULT '',
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  `resource` varchar(128) NOT NULL DEFAULT '',
+  `region` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(128) NOT NULL DEFAULT '',
+  `message` varchar(1024) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `alert_priority` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
@@ -894,6 +925,7 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severit
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (26,'_project_id','Snyk','Snyk', 'info', 'low', 'medium', 'high', 'critical', 1,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (27,'_project_id','IpInsight','IpInsight', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (28,'_project_id','CloudTrail','CloudTrail', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (29,'_project_id','CloudSploit','CloudSploit', 'OK', 'UNKNOWN', 'WARN', 'FAIL', 0,1,2,3);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

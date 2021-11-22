@@ -29,6 +29,8 @@
     <class>org.alertflex.entity.ScanreportTask</class>
     <class>org.alertflex.entity.Response</class>
     <class>org.alertflex.entity.Playbook</class>
+    <class>org.alertflex.entity.AgentsGroup</class>
+    <class>org.alertflex.entity.CloudsploitScan</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <validation-mode>NONE</validation-mode>
     <properties>

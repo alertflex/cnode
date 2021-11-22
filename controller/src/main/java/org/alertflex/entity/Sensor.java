@@ -27,11 +27,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Sensor.findAll", query = "SELECT s FROM Sensor s"),
     @NamedQuery(name = "Sensor.findByRefId", query = "SELECT s FROM Sensor s WHERE s.sensorPK.refId = :refId"),
-    @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node"),
-    @NamedQuery(name = "Sensor.findByProbe", query = "SELECT s FROM Sensor s WHERE s.probe = :probe"),
     @NamedQuery(name = "Sensor.findByName", query = "SELECT s FROM Sensor s WHERE s.sensorPK.name = :name"),
+    @NamedQuery(name = "Sensor.findByNode", query = "SELECT s FROM Sensor s WHERE s.sensorPK.node = :node"),
+    @NamedQuery(name = "Sensor.findByHostName", query = "SELECT s FROM Sensor s WHERE s.hostName = :hostName"),
     @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description"),
     @NamedQuery(name = "Sensor.findBySensorType", query = "SELECT s FROM Sensor s WHERE s.sensorType = :sensorType"),
+    @NamedQuery(name = "Sensor.findByRulegroupName", query = "SELECT s FROM Sensor s WHERE s.rulegroupName = :rulegroupName"),
     @NamedQuery(name = "Sensor.findByStatus", query = "SELECT s FROM Sensor s WHERE s.status = :status")})
 public class Sensor implements Serializable {
 
@@ -40,9 +41,9 @@ public class Sensor implements Serializable {
     protected SensorPK sensorPK;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "probe")
-    private String probe;
+    @Size(min = 1, max = 512)
+    @Column(name = "host_name")
+    private String hostName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -55,6 +56,11 @@ public class Sensor implements Serializable {
     private String sensorType;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 64)
+    @Column(name = "rulegroup_name")
+    private String rulegroupName;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "status")
     private int status;
 
@@ -65,16 +71,17 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public Sensor(SensorPK sensorPK, String probe, String description, String sensorType, int status) {
+    public Sensor(SensorPK sensorPK, String hostName, String description, String sensorType, String rulegroupName, int status) {
         this.sensorPK = sensorPK;
-        this.probe = probe;
+        this.hostName = hostName;
         this.description = description;
         this.sensorType = sensorType;
+        this.rulegroupName = rulegroupName;
         this.status = status;
     }
 
-    public Sensor(String refId, String node, String name) {
-        this.sensorPK = new SensorPK(refId, node, name);
+    public Sensor(String refId, String name, String node) {
+        this.sensorPK = new SensorPK(refId, name, node);
     }
 
     public SensorPK getSensorPK() {
@@ -85,12 +92,12 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public String getProbe() {
-        return probe;
+    public String getHostName() {
+        return hostName;
     }
 
-    public void setProbe(String probe) {
-        this.probe = probe;
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public String getDescription() {
@@ -107,6 +114,14 @@ public class Sensor implements Serializable {
 
     public void setSensorType(String sensorType) {
         this.sensorType = sensorType;
+    }
+
+    public String getRulegroupName() {
+        return rulegroupName;
+    }
+
+    public void setRulegroupName(String rulegroupName) {
+        this.rulegroupName = rulegroupName;
     }
 
     public int getStatus() {

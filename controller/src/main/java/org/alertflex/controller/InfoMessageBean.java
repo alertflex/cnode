@@ -53,6 +53,7 @@ import org.alertflex.facade.NetCountriesFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AgentScaFacade;
+import org.alertflex.facade.AgentsGroupFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.ContainerFacade;
 import org.alertflex.facade.DependencyScanFacade;
@@ -155,6 +156,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private HunterScanFacade hunterScanFacade;
+    
+    @EJB 
+    private AgentsGroupFacade agentsGroupFacade;
     
     @EJB
     private ProjectFacade projectFacade;
@@ -287,6 +291,11 @@ public class InfoMessageBean implements MessageListener {
         return this.hunterScanFacade;
     }
     
+    
+    public AgentsGroupFacade getAgentsGroupFacade() {
+        return this.agentsGroupFacade;
+    }
+    
     public Project getProject() {
         return this.project;
     }
@@ -356,59 +365,53 @@ public class InfoMessageBean implements MessageListener {
                         break;
 
                         case 3: 
-                            ConfigsManagement cm = new ConfigsManagement(this);
-                            sensor = bytesMessage.getIntProperty("sensor");
-                            cm.saveConfig(sensor, data);
-                            break;
-
-                        case 4: 
                             RulesManagement rm = new RulesManagement(this);
                             sensor = bytesMessage.getIntProperty("sensor");
                             String rule = bytesMessage.getStringProperty("rule");
                             rm.saveRule(sensor, rule, data);
                             break;
                             
-                        case 5: 
+                        case 4: 
                             DependencyCheck dc = new DependencyCheck(this);
                             target = bytesMessage.getStringProperty("target");
                             dc.saveReport(data, target);
                             break;
 
-                        case 6: 
+                        case 5: 
                             DockerBench db = new DockerBench(this);
                             db.saveReport(data);
                             break;
 
-                        case 7: 
+                        case 6: 
                             KubeBench kubeBench = new KubeBench(this);
                             kubeBench.saveReport(data);
                             break;
                             
-                        case 8: 
+                        case 7: 
                             KubeHunter kubeHunter = new KubeHunter(this);
                             target = bytesMessage.getStringProperty("target");
                             kubeHunter.saveReport(data, target);
                             break;
                             
-                        case 9: 
+                        case 8: 
                             Nmap nmap = new Nmap(this);
                             target = bytesMessage.getStringProperty("target");
                             nmap.saveReport(data, target);
                             break;
                             
-                        case 10: 
+                        case 9: 
                             Snyk snyk = new Snyk(this);
                             target = bytesMessage.getStringProperty("target");
                             snyk.saveReport(data, target);
                             break;
                             
-                        case 11: 
+                        case 10: 
                             Trivy trivy = new Trivy(this);
                             target = bytesMessage.getStringProperty("target");
                             trivy.saveReport(data, target);
                             break;
                             
-                        case 12: 
+                        case 11: 
                             Zap zap = new Zap(this);
                             target = bytesMessage.getStringProperty("target");
                             zap.saveReport(data, target);

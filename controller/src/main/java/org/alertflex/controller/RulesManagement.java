@@ -102,11 +102,12 @@ public class RulesManagement {
 
             if (s == null) {
 
-                SensorPK sensorPK = new SensorPK(ref, nodeName, sensorName);
+                SensorPK sensorPK = new SensorPK(ref, sensorName, nodeName);
                 s = new Sensor(sensorPK);
                 s.setDescription(sensorType + " sensor");
                 s.setSensorType(sensorType);
-                s.setProbe(probe);
+                s.setHostName(probe);
+                s.setRulegroupName("indef");
                 s.setStatus(1);
                 eventBean.getSensorFacade().create(s);
             
