@@ -2,9 +2,9 @@ The functionality of the Alertflex project is close to Gartner's definition of C
 
 The project was tested for small size organizations and can keep a stream of security events 50 EPS and high (required 8 Gb minimum memory for central node). If you want to try Alertflex for a large organization with a high load of events and many running automation playbooks, it should be possible as well, due to Alertflex software components can be split into microservices.
 
-This repository includes the source code of Alertflex Controller, installation script and config files for Central node, customized MISP docker file.
-
 ![](https://github.com/alertflex/cnode/blob/master/img/hld-arch.png)
+
+This repository includes the source code of Alertflex Controller, installation script and config files for Central node, customized MISP docker file.
 
 For more information, please see [solution description](https://alertflex.github.io/solution.html) and [project documentation](https://alertflex.github.io/doc/index.html)
 	
