@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -27,6 +17,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "project")
 @XmlRootElement
@@ -38,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive"),
     @NamedQuery(name = "Project.findByAlertLimit", query = "SELECT p FROM Project p WHERE p.alertLimit = :alertLimit"),
     @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange"),
-    @NamedQuery(name = "Project.findByStatTimerange", query = "SELECT p FROM Project p WHERE p.statTimerange = :statTimerange"),
+    @NamedQuery(name = "Project.findByNodeTimerange", query = "SELECT p FROM Project p WHERE p.nodeTimerange = :nodeTimerange"),
+    @NamedQuery(name = "Project.findByNetTimerange", query = "SELECT p FROM Project p WHERE p.netTimerange = :netTimerange"),
     @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
     @NamedQuery(name = "Project.findByBlockIprange", query = "SELECT p FROM Project p WHERE p.blockIprange = :blockIprange"),
     @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck"),
@@ -120,8 +115,12 @@ public class Project implements Serializable {
     private int alertTimerange;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "stat_timerange")
-    private int statTimerange;
+    @Column(name = "node_timerange")
+    private int nodeTimerange;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "net_timerange")
+    private int netTimerange;
     @Basic(optional = false)
     @NotNull
     @Column(name = "task_timerange")
@@ -360,14 +359,15 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int statTimerange, int taskTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights, String sqsCloudtrail) {
+    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int nodeTimerange, int netTimerange, int taskTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights, String sqsCloudtrail) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
         this.semActive = semActive;
         this.alertLimit = alertLimit;
         this.alertTimerange = alertTimerange;
-        this.statTimerange = statTimerange;
+        this.nodeTimerange = nodeTimerange;
+        this.netTimerange = netTimerange;
         this.taskTimerange = taskTimerange;
         this.blockIprange = blockIprange;
         this.iocCheck = iocCheck;
@@ -466,12 +466,20 @@ public class Project implements Serializable {
         this.alertTimerange = alertTimerange;
     }
 
-    public int getStatTimerange() {
-        return statTimerange;
+    public int getNodeTimerange() {
+        return nodeTimerange;
     }
 
-    public void setStatTimerange(int statTimerange) {
-        this.statTimerange = statTimerange;
+    public void setNodeTimerange(int nodeTimerange) {
+        this.nodeTimerange = nodeTimerange;
+    }
+
+    public int getNetTimerange() {
+        return netTimerange;
+    }
+
+    public void setNetTimerange(int netTimerange) {
+        this.netTimerange = netTimerange;
     }
 
     public int getTaskTimerange() {

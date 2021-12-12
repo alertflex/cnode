@@ -444,6 +444,8 @@ public class StatsManagement {
                     break;
 
                 case "node_alerts":
+                    
+                    if (project.getNodeTimerange() == 0) return;
 
                     JSONObject na = obj.getJSONObject("data");
                     
@@ -492,6 +494,8 @@ public class StatsManagement {
                 
                 case "node_monitor":
                     
+                    if (project.getNodeTimerange() == 0) return;
+                    
                     Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
                     
                     if (node == null) {
@@ -534,6 +538,8 @@ public class StatsManagement {
                     break;
                 
                 case "net_stat": 
+                    
+                    if (project.getNetTimerange() == 0) return;
 
                     arr = obj.getJSONArray("data");
                     
@@ -599,6 +605,8 @@ public class StatsManagement {
                     
                 case "net_topbytes": {
                     
+                    if (project.getNetTimerange() == 0) return;
+                    
                     arr = obj.getJSONArray("data");
                     
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -628,6 +636,8 @@ public class StatsManagement {
                 }
                 
                 case "net_topsessions": {
+                    
+                    if (project.getNetTimerange() == 0) return;
                     
                     arr = obj.getJSONArray("data");
                     
@@ -659,6 +669,8 @@ public class StatsManagement {
                 }
                     
                 case "net_countries": {
+                    
+                    if (project.getNetTimerange() == 0) return;
                     
                     arr = obj.getJSONArray("data");
                     

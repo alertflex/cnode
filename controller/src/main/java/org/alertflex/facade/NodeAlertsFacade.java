@@ -68,7 +68,7 @@ public class NodeAlertsFacade extends AbstractFacade<NodeAlerts> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT n FROM NodeAlerts n WHERE n.refId = :ref AND n.nodeId = :node AND n.timeOfSurvey BETWEEN :start AND :end ORDER BY n.timeOfSurvey")
+                    "SELECT n FROM NodeAlerts n WHERE n.refId = :ref AND n.node = :node AND n.timeOfSurvey BETWEEN :start AND :end ORDER BY n.timeOfSurvey")
                     .setParameter("ref", r).setParameter("node", n).setParameter("start", start).setParameter("end", end);
 
             // Enable forced database query
