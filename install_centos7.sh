@@ -73,6 +73,9 @@ echo "*** Installation Nginx and web site ***"
 sudo yum -y install nginx
 sudo rm -f /usr/share/nginx/html/img
 sudo cp -r ./html/* /usr/share/nginx/html/
+sudo cd /usr/share/nginx/html/
+sudo git clone https://github.com/alertflex/doc.git
+sudo cd $INSTALL_PATH
 sudo setsebool -P httpd_can_network_connect 1
 sudo mkdir /etc/nginx/ssl
 sudo chmod 700 /etc/nginx/ssl/
