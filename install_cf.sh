@@ -61,9 +61,7 @@ echo "*** Installation Nginx and web site ***"
 sudo apt-get -y install nginx
 sudo adduser --system --no-create-home --shell /bin/false --group --disabled-login nginx
 sudo cp -r ./html/* /usr/share/nginx/html
-sudo cd /usr/share/nginx/html/
-sudo git clone https://github.com/alertflex/doc.git
-sudo cd $INSTALL_PATH
+sudo git clone https://github.com/alertflex/doc.git /usr/share/nginx/html/doc
 sudo chown -R www-data:www-data /usr/share/nginx/html
 sudo mkdir /etc/nginx/ssl
 sudo chmod 700 /etc/nginx/ssl/
