@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
 
 @Stateless
 @Path("stix-alerts")
-public class StixFacadeREST {
+public class StixAlertsREST {
 
-    private static final Logger logger = LoggerFactory.getLogger(StixFacadeREST.class);
+    private static final Logger logger = LoggerFactory.getLogger(StixAlertsREST.class);
 
     @EJB
     private UsersFacade usersFacade;
@@ -48,7 +48,7 @@ public class StixFacadeREST {
     @EJB
     private AlertFacade alertFacade;
 
-    public StixFacadeREST() {
+    public StixAlertsREST() {
 
     }
 

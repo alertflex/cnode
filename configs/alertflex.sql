@@ -304,13 +304,14 @@ CREATE TABLE `credential` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `users` varchar(1024) DEFAULT NULL,
   `username` varchar(512) NOT NULL DEFAULT '',
   `pass` varchar(512) DEFAULT NULL,
   `description` varchar(512) NOT NULL DEFAULT '',
   `ssl_key` text,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `credential` (`name`,`ref_id`,`username`,`pass`,`description`,`ssl_key`) VALUES ('dummy','_project_id','','','','');
 
 CREATE TABLE `node` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
@@ -476,8 +477,10 @@ CREATE TABLE `playbook` (
   `name` varchar(255) NOT NULL,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `webhook` varchar(512) NOT NULL DEFAULT '',
+  `webhook_id` varchar(512) NOT NULL DEFAULT '',
+  `webhook_type` varchar(512) NOT NULL DEFAULT '',
   `timerange` int(10) unsigned NOT NULL DEFAULT '0',
+  `time_of_run` datetime DEFAULT NULL,
   `notify_users` varchar(1024) DEFAULT NULL,
   `msg_success` varchar(512) DEFAULT NULL,
   `msg_error` varchar(512) DEFAULT NULL,
@@ -486,7 +489,6 @@ CREATE TABLE `playbook` (
   `num_runs` int(10) unsigned NOT NULL DEFAULT '0',
   `num_errors` int(10) unsigned NOT NULL DEFAULT '0',
   `job_error` int(10) unsigned NOT NULL DEFAULT '0',
-  `time_of_run` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

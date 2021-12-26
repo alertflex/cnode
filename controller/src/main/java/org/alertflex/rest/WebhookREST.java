@@ -58,13 +58,15 @@ public class WebhookREST {
     @POST
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response push(@PathParam("id") String id, @Context SecurityContext sc) {
+    public Response push(@PathParam("id") String id, String jsonBody) {
 
         if (id != null && !id.isEmpty()) {
 
             Playbook p = playbookFacade.findPlaybookByWebhook(id);
 
             if (p != null) {
+                
+                if (jsonBody.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).build();
 
                 sendPlaybookToMQ(p);
                 return Response.ok().build();

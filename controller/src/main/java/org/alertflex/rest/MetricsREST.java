@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @Path("metrics")
 @Produces(MediaType.TEXT_PLAIN)
-public class MetricsFacadeREST {
+public class MetricsREST {
 
-    private static final Logger logger = LoggerFactory.getLogger(MetricsFacadeREST.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetricsREST.class);
 
     @EJB
     private ProjectFacade projectFacade;
@@ -66,7 +66,7 @@ public class MetricsFacadeREST {
 
     StringBuilder sb;
 
-    public MetricsFacadeREST() {
+    public MetricsREST() {
 
     }
 

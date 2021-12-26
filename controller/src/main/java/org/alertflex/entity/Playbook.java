@@ -41,8 +41,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Playbook.findByName", query = "SELECT p FROM Playbook p WHERE p.name = :name"),
     @NamedQuery(name = "Playbook.findByRefId", query = "SELECT p FROM Playbook p WHERE p.refId = :refId"),
     @NamedQuery(name = "Playbook.findByDescription", query = "SELECT p FROM Playbook p WHERE p.description = :description"),
-    @NamedQuery(name = "Playbook.findByWebhook", query = "SELECT p FROM Playbook p WHERE p.webhook = :webhook"),
+    @NamedQuery(name = "Playbook.findByWebhookId", query = "SELECT p FROM Playbook p WHERE p.webhookId = :webhookId"),
+    @NamedQuery(name = "Playbook.findByWebhookType", query = "SELECT p FROM Playbook p WHERE p.webhookType = :webhookType"),
     @NamedQuery(name = "Playbook.findByTimerange", query = "SELECT p FROM Playbook p WHERE p.timerange = :timerange"),
+    @NamedQuery(name = "Playbook.findByTimeOfRun", query = "SELECT p FROM Playbook p WHERE p.timeOfRun = :timeOfRun"),
     @NamedQuery(name = "Playbook.findByNotifyUsers", query = "SELECT p FROM Playbook p WHERE p.notifyUsers = :notifyUsers"),
     @NamedQuery(name = "Playbook.findByMsgSuccess", query = "SELECT p FROM Playbook p WHERE p.msgSuccess = :msgSuccess"),
     @NamedQuery(name = "Playbook.findByMsgError", query = "SELECT p FROM Playbook p WHERE p.msgError = :msgError"),
@@ -50,9 +52,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Playbook.findByEnable", query = "SELECT p FROM Playbook p WHERE p.enable = :enable"),
     @NamedQuery(name = "Playbook.findByNumRuns", query = "SELECT p FROM Playbook p WHERE p.numRuns = :numRuns"),
     @NamedQuery(name = "Playbook.findByNumErrors", query = "SELECT p FROM Playbook p WHERE p.numErrors = :numErrors"),
-    @NamedQuery(name = "Playbook.findByJobError", query = "SELECT p FROM Playbook p WHERE p.jobError = :jobError"),
-    @NamedQuery(name = "Playbook.findByTimeOfRun", query = "SELECT p FROM Playbook p WHERE p.timeOfRun = :timeOfRun"),
-    @NamedQuery(name = "Playbook.findByCpNames", query = "SELECT p FROM Playbook p WHERE p.cpNames = :cpNames")})
+    @NamedQuery(name = "Playbook.findByJobError", query = "SELECT p FROM Playbook p WHERE p.jobError = :jobError")})
 public class Playbook implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -79,12 +79,20 @@ public class Playbook implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "webhook")
-    private String webhook;
+    @Column(name = "webhook_id")
+    private String webhookId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "webhook_type")
+    private String webhookType;
     @Basic(optional = false)
     @NotNull
     @Column(name = "timerange")
     private int timerange;
+    @Column(name = "time_of_run")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeOfRun;
     @Size(max = 1024)
     @Column(name = "notify_users")
     private String notifyUsers;
@@ -113,12 +121,6 @@ public class Playbook implements Serializable {
     @NotNull
     @Column(name = "job_error")
     private int jobError;
-    @Column(name = "time_of_run")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timeOfRun;
-    @Size(max = 255)
-    @Column(name = "cp_names")
-    private String cpNames;
 
     public Playbook() {
     }
@@ -127,12 +129,13 @@ public class Playbook implements Serializable {
         this.recId = recId;
     }
 
-    public Playbook(Integer recId, String name, String refId, String description, String webhook, int timerange, int enable, int numRuns, int numErrors, int jobError) {
+    public Playbook(Integer recId, String name, String refId, String description, String webhookId, String webhookType, int timerange, int enable, int numRuns, int numErrors, int jobError) {
         this.recId = recId;
         this.name = name;
         this.refId = refId;
         this.description = description;
-        this.webhook = webhook;
+        this.webhookId = webhookId;
+        this.webhookType = webhookType;
         this.timerange = timerange;
         this.enable = enable;
         this.numRuns = numRuns;
@@ -172,12 +175,20 @@ public class Playbook implements Serializable {
         this.description = description;
     }
 
-    public String getWebhook() {
-        return webhook;
+    public String getWebhookId() {
+        return webhookId;
     }
 
-    public void setWebhook(String webhook) {
-        this.webhook = webhook;
+    public void setWebhookId(String webhookId) {
+        this.webhookId = webhookId;
+    }
+
+    public String getWebhookType() {
+        return webhookType;
+    }
+
+    public void setWebhookType(String webhookType) {
+        this.webhookType = webhookType;
     }
 
     public int getTimerange() {
@@ -186,6 +197,14 @@ public class Playbook implements Serializable {
 
     public void setTimerange(int timerange) {
         this.timerange = timerange;
+    }
+
+    public Date getTimeOfRun() {
+        return timeOfRun;
+    }
+
+    public void setTimeOfRun(Date timeOfRun) {
+        this.timeOfRun = timeOfRun;
     }
 
     public String getNotifyUsers() {
@@ -250,22 +269,6 @@ public class Playbook implements Serializable {
 
     public void setJobError(int jobError) {
         this.jobError = jobError;
-    }
-
-    public Date getTimeOfRun() {
-        return timeOfRun;
-    }
-
-    public void setTimeOfRun(Date timeOfRun) {
-        this.timeOfRun = timeOfRun;
-    }
-
-    public String getCpNames() {
-        return cpNames;
-    }
-
-    public void setCpNames(String cpNames) {
-        this.cpNames = cpNames;
     }
 
     @Override
