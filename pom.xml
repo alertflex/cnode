@@ -10,8 +10,7 @@
 
     <!-- sub modules -->
 	<modules>
-		<module>elasticshade</module>
-        	<module>controller</module>
+		<module>controller</module>
 	</modules>
 	
 </project>

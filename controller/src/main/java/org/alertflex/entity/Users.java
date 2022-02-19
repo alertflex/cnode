@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -27,19 +17,24 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "users")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u")
-    , @NamedQuery(name = "Users.findByUserid", query = "SELECT u FROM Users u WHERE u.userid = :userid")
-    , @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password")
-    , @NamedQuery(name = "Users.findByRefId", query = "SELECT u FROM Users u WHERE u.refId = :refId")
-    , @NamedQuery(name = "Users.findByLayoutMenu", query = "SELECT u FROM Users u WHERE u.layoutMenu = :layoutMenu")
-    , @NamedQuery(name = "Users.findByDashboardRange", query = "SELECT u FROM Users u WHERE u.dashboardRange = :dashboardRange")
-    , @NamedQuery(name = "Users.findByEmail", query = "SELECT u FROM Users u WHERE u.email = :email")
-    , @NamedQuery(name = "Users.findByMobile", query = "SELECT u FROM Users u WHERE u.mobile = :mobile")
-    , @NamedQuery(name = "Users.findBySendSms", query = "SELECT u FROM Users u WHERE u.sendSms = :sendSms")})
+    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
+    @NamedQuery(name = "Users.findByUserid", query = "SELECT u FROM Users u WHERE u.userid = :userid"),
+    @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password"),
+    @NamedQuery(name = "Users.findByRefId", query = "SELECT u FROM Users u WHERE u.refId = :refId"),
+    @NamedQuery(name = "Users.findByLayoutMenu", query = "SELECT u FROM Users u WHERE u.layoutMenu = :layoutMenu"),
+    @NamedQuery(name = "Users.findByColorTheme", query = "SELECT u FROM Users u WHERE u.colorTheme = :colorTheme"),
+    @NamedQuery(name = "Users.findByDashboardRange", query = "SELECT u FROM Users u WHERE u.dashboardRange = :dashboardRange"),
+    @NamedQuery(name = "Users.findByEmail", query = "SELECT u FROM Users u WHERE u.email = :email"),
+    @NamedQuery(name = "Users.findByMobile", query = "SELECT u FROM Users u WHERE u.mobile = :mobile"),
+    @NamedQuery(name = "Users.findBySendSms", query = "SELECT u FROM Users u WHERE u.sendSms = :sendSms")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,6 +58,10 @@ public class Users implements Serializable {
     @NotNull
     @Column(name = "layout_menu")
     private int layoutMenu;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "color_theme")
+    private int colorTheme;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dashboard_range")
@@ -90,11 +89,12 @@ public class Users implements Serializable {
         this.userid = userid;
     }
 
-    public Users(String userid, String password, String refId, int layoutMenu, int dashboardRange, String email, String mobile, int sendSms) {
+    public Users(String userid, String password, String refId, int layoutMenu, int colorTheme, int dashboardRange, String email, String mobile, int sendSms) {
         this.userid = userid;
         this.password = password;
         this.refId = refId;
         this.layoutMenu = layoutMenu;
+        this.colorTheme = colorTheme;
         this.dashboardRange = dashboardRange;
         this.email = email;
         this.mobile = mobile;
@@ -131,6 +131,14 @@ public class Users implements Serializable {
 
     public void setLayoutMenu(int layoutMenu) {
         this.layoutMenu = layoutMenu;
+    }
+
+    public int getColorTheme() {
+        return colorTheme;
+    }
+
+    public void setColorTheme(int colorTheme) {
+        this.colorTheme = colorTheme;
     }
 
     public int getDashboardRange() {

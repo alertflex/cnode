@@ -41,7 +41,6 @@ import org.alertflex.facade.ResponseFacade;
 import org.alertflex.entity.Response;
 import org.alertflex.facade.AlertCategoryFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.slf4j.LoggerFactory;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -52,6 +51,8 @@ import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 @MessageDriven(activationConfig = {
@@ -61,7 +62,7 @@ import org.alertflex.logserver.GrayLog;
 @Stateless
 public class AlertsMessageBean implements MessageListener {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(AlertsMessageBean.class);
+    private static final Logger logger = LogManager.getLogger(AlertsMessageBean.class);
 
     @Inject
     @FromElasticPool

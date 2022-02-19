@@ -25,12 +25,12 @@ import org.alertflex.entity.SnykScan;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Snyk {
 
-    private static final Logger logger = LoggerFactory.getLogger(Snyk.class);
+    private static final Logger logger = LogManager.getLogger(Snyk.class);
 
     private InfoMessageBean eventBean;
     Project project;

@@ -24,7 +24,6 @@ import javax.ejb.EJB;
 import javax.ejb.ActivationConfigProperty;
 import javax.jms.Message;
 import org.alertflex.facade.ProjectFacade;
-import org.slf4j.LoggerFactory;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateless;
 import javax.jms.Connection;
@@ -65,6 +64,8 @@ import org.alertflex.reports.JasperDataContainers;
 import org.alertflex.reports.JasperDataEndpoints;
 import org.alertflex.reports.JasperDataScanners;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 @MessageDriven(activationConfig = {
@@ -74,7 +75,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 @Stateless
 public class ReportsMessageBean implements MessageListener {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReportsMessageBean.class);
+    private static final Logger logger = LogManager.getLogger(ReportsMessageBean.class);
 
     @EJB
     private ProjectFacade projectFacade;

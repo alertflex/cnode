@@ -258,6 +258,7 @@ CREATE TABLE `users` (
   `password` varchar(150) NOT NULL,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `layout_menu` int(2) unsigned NOT NULL DEFAULT '0',
+  `color_theme` int(2) unsigned NOT NULL DEFAULT '0',
   `dashboard_range` int(10) unsigned NOT NULL DEFAULT '0',
   `email` varchar(255) NOT NULL DEFAULT '',
   `mobile` varchar(255) NOT NULL DEFAULT '',
@@ -265,7 +266,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO users VALUES ("_project_user",SHA2("_project_pwd", 256), "_project_id", 0, 1, "", "", 0);
+INSERT INTO users VALUES ("_project_user",SHA2("_project_pwd", 256), "_project_id", 0, 1, 1, "", "", 0);
 
 CREATE TABLE `groups` (
   `groupid` varchar(100) NOT NULL,

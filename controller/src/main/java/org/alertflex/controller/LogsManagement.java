@@ -27,13 +27,13 @@ import org.alertflex.logserver.ElasticSearch;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.alertflex.logserver.GrayLog;
 
 public class LogsManagement {
 
-    private static final Logger logger = LoggerFactory.getLogger(LogsManagement.class);
+    private static final Logger logger = LogManager.getLogger(LogsManagement.class);
 
     private InfoMessageBean eventBean;
 

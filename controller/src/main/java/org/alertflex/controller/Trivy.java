@@ -24,12 +24,12 @@ import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Trivy {
 
-    private static final Logger logger = LoggerFactory.getLogger(Trivy.class);
+    private static final Logger logger = LogManager.getLogger(Trivy.class);
 
     private InfoMessageBean eventBean;
     Project project;

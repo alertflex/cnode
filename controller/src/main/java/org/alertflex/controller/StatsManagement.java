@@ -43,14 +43,14 @@ import org.alertflex.entity.Project;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StatsManagement {
     
     private static final long TIMEOUT = 1 * 1000;
 
-    private static final Logger logger = LoggerFactory.getLogger(StatsManagement.class);
+    private static final Logger logger = LogManager.getLogger(StatsManagement.class);
 
     private InfoMessageBean eventBean;
     

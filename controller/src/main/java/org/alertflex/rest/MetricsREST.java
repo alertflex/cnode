@@ -36,15 +36,15 @@ import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
 import org.alertflex.facade.NetStatFacade;
 import org.alertflex.facade.ProjectFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @Path("metrics")
 @Produces(MediaType.TEXT_PLAIN)
 public class MetricsREST {
 
-    private static final Logger logger = LoggerFactory.getLogger(MetricsREST.class);
+    private static final Logger logger = LogManager.getLogger(MetricsREST.class);
 
     @EJB
     private ProjectFacade projectFacade;

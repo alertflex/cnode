@@ -28,12 +28,12 @@ import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Sensor;
 import org.alertflex.entity.SensorPK;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RulesManagement {
 
-    private static final Logger logger = LoggerFactory.getLogger(RulesManagement.class);
+    private static final Logger logger = LogManager.getLogger(RulesManagement.class);
 
     private InfoMessageBean eventBean;
     Project project;

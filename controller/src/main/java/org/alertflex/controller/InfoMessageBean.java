@@ -70,8 +70,8 @@ import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 @MessageDriven(activationConfig = {
@@ -81,7 +81,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class InfoMessageBean implements MessageListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(InfoMessageBean.class);
+    private static final Logger logger = LogManager.getLogger(InfoMessageBean.class);
 
     @Inject
     @FromElasticPool

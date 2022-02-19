@@ -39,14 +39,14 @@ import org.alertflex.entity.Playbook;
 import org.alertflex.facade.PlaybookFacade;
 import org.alertflex.facade.UsersFacade;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @Path("webhook")
 public class WebhookREST {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebhookREST.class);
+    private static final Logger logger = LogManager.getLogger(WebhookREST.class);
 
     @EJB
     private PlaybookFacade playbookFacade;

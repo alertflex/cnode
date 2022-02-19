@@ -25,9 +25,9 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import hidden.org.elasticsearch.client.RestClient;
-import hidden.org.elasticsearch.client.RestClientBuilder;
-import hidden.org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;

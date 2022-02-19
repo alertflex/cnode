@@ -24,12 +24,12 @@ import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DependencyCheck {
 
-    private static final Logger logger = LoggerFactory.getLogger(DependencyCheck.class);
+    private static final Logger logger = LogManager.getLogger(DependencyCheck.class);
 
     private InfoMessageBean eventBean;
     Project project;

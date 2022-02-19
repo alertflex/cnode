@@ -15,23 +15,23 @@
 
 package org.alertflex.logserver;
 
-import hidden.org.elasticsearch.action.index.IndexRequest;
-import hidden.org.elasticsearch.action.index.IndexResponse;
-import hidden.org.elasticsearch.client.RequestOptions;
-import hidden.org.elasticsearch.client.RestHighLevelClient;
-import hidden.org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
 import org.alertflex.entity.Alert;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ElasticSearch {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticSearch.class);
+    private static final Logger logger = LogManager.getLogger(ElasticSearch.class);
 
     private RestHighLevelClient client = null;
 

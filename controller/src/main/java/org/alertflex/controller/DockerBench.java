@@ -24,13 +24,14 @@ import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class DockerBench {
 
-    private static final Logger logger = LoggerFactory.getLogger(DockerBench.class);
-
+    private static final Logger logger = LogManager.getLogger(DockerBench.class);
+    
     private InfoMessageBean eventBean;
     Project project;
     Node node;

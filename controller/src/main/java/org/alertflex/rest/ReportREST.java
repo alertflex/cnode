@@ -26,8 +26,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import org.alertflex.facade.ScanreportTaskFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.List;
 import org.alertflex.entity.ScanreportTask;
 import org.json.JSONArray;
@@ -37,7 +37,7 @@ import org.json.JSONObject;
 @Path("report")
 public class ReportREST {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReportREST.class);
+    private static final Logger logger = LogManager.getLogger(ReportREST.class);
 
     @EJB
     private ScanreportTaskFacade scanreportTaskFacade;

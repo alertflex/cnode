@@ -32,13 +32,13 @@ import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.NmapScan;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 public class Nmap {
 
-    private static final Logger logger = LoggerFactory.getLogger(Nmap.class);
+    private static final Logger logger = LogManager.getLogger(Nmap.class);
 
     private InfoMessageBean eventBean;
     Project project;
