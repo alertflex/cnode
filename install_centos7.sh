@@ -141,8 +141,8 @@ fi
 
 echo "*** Installation Activemq ***"
 cd /opt
-FILE=apache-activemq-5.16.2-bin.tar.gz
-sudo wget https://archive.apache.org/dist/activemq/5.16.2/$FILE
+FILE=apache-activemq-5.16.1-bin.tar.gz
+sudo wget https://archive.apache.org/dist/activemq/5.16.1/$FILE
 if [[ -f "$FILE" ]]
 then
     echo "$FILE exist"
@@ -151,7 +151,7 @@ else
 	exit 1
 fi
 sudo tar xvzf $FILE
-sudo ln -s /opt/apache-activemq-5.16.2 /opt/activemq
+sudo ln -s /opt/apache-activemq-5.16.1 /opt/activemq
 
 sudo sed -i "s/_admin_pwd/$ADMIN_PWD/g" $INSTALL_PATH/configs/jetty-realm.properties
 sudo cp $INSTALL_PATH/configs/jetty-realm.properties /opt/activemq/conf
@@ -244,8 +244,8 @@ jaas-context=jdbcRealm:datasource-jndi="jdbc/alertflex_auth_jndi":group-table=gr
 user-table=users:digestrealm-password-enc-algorithm=AES:digest-algorithm=SHA-256:encoding=Hex:charset=UTF-8 JDBCRealm
 
 echo "* Installion ActiveMQ resource *"
-sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.2/activemq-rar-5.16.2.rar
-sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy --type rar --name activemq-rar ./activemq-rar-5.16.2.rar
+sudo wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/5.16.1/activemq-rar-5.16.1.rar
+sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy --type rar --name activemq-rar ./activemq-rar-5.16.1.rar
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-resource-adapter-config --threadpoolid thread-pool-1 --property ServerUrl=\"tcp://localhost:61616\":UserName=$AMQ_USER:Password=$AMQ_PWD activemq-rar
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-connector-connection-pool --raname activemq-rar --connectiondefinition javax.jms.ConnectionFactory --ping true jms/activeMQConnectionFactory-Connection-Pool
 sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER create-connector-resource --poolname jms/activeMQConnectionFactory-Connection-Pool --enabled true jms/activeMQConnectionFactory
