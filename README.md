@@ -8,9 +8,9 @@ The project was tested for small size organizations and can keep a stream of sec
 
 This repository includes the source code of Alertflex Controller, installation script and config files for Central node, customized MISP docker file.
 
-For more information, please see [solution description](https://alertflex.github.io/solution.html) and [project documentation](https://alertflex.github.io/doc/index.html)
+For more information, please see [solution description](https://alertflex.org/solution.html) and [project documentation](https://alertflex.org/doc/index.html)
 	
 Please [open an issue on GitHub](https://github.com/alertflex/altprobe/issues), if you'd like to report a bug or request a feature. 
-Have a question or need tech support, send an email to address: olegzhr@gmail.com
+Have a question or need tech support, send an email to address: info@alertflex.org
 and join the community via [Alertflex Discord server](https://discord.gg/wDSz7rDMWv)
 
