@@ -24,39 +24,39 @@ import java.util.List;
  */
 public class JasperDataScanners {
     
-    List<Finding> zapFindings;
-    List<Finding> dependencyFindings;
-    List<Finding> snykFindings;
-    List<Finding> sonarqubeFindings;
     
-    public JasperDataScanners(List<Finding> lsnykf, List<Finding> ldf, List<Finding> lsonarf, List<Finding> lzf) {
-        
-        zapFindings = lzf;
+    List<Finding> dependencyFindings;
+    List<Finding> nmapFindings;
+    List<Finding> sonarqubeFindings;
+    List<Finding> zapFindings;
+    
+    public JasperDataScanners(List<Finding> ldf, List<Finding> lnf,  List<Finding> lsf, List<Finding> lzf) {
         
         dependencyFindings = ldf;
         
-        snykFindings = lsnykf;
+        nmapFindings = lnf;
         
-        sonarqubeFindings = lsonarf;
+        sonarqubeFindings = lsf;
+        
+        zapFindings = lzf;
     }
     
     /**
      *
      */
-    public Collection<Finding> getZapFindings() {
-        return zapFindings;
-    }
-    
     public Collection<Finding> getDependencyFindings() {
         return dependencyFindings;
     }
 
-    public Collection<Finding> getSnykFindings() {
-        return snykFindings;
+    public Collection<Finding> getNmapFindings() {
+        return nmapFindings;
     }
     
     public Collection<Finding> getSonarqubeFindings() {
         return sonarqubeFindings;
     }
     
+    public Collection<Finding> getZapFindings() {
+        return zapFindings;
+    }
 }

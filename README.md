@@ -1,2 +1,1 @@
-This repository includes the source code of Alertflex Controller, installation script and config files for Central node.
-
+The repository includes the Controller source code, installation scripts and config files for Central node.

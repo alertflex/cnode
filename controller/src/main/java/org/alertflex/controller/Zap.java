@@ -172,7 +172,7 @@ public class Zap {
                         zs.setWascid(0);
                     }
 
-                    zs.setNodeId(n);
+                    zs.setNode(n);
                     zs.setProbe(p);
                     zs.setRefId(r);
                     zs.setTarget(target);

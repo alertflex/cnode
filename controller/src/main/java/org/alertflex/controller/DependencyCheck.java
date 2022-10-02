@@ -74,7 +74,7 @@ public class DependencyCheck {
                     
                         DependencyScan ds = new DependencyScan();
                         ds.setRefId(r);
-                        ds.setNodeId(n);
+                        ds.setNode(n);
                         ds.setProbe(p);
                         ds.setProjectId(target);
                         ds.setFileName(fileName);

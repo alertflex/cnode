@@ -46,7 +46,7 @@ public class AgentsGroupFacade extends AbstractFacade<AgentsGroup> {
             em.flush();
 
             Query agentsProcessQry = em.createQuery(
-                    "SELECT a FROM AgentsGroup a WHERE a.refId = :ref AND a.nodeId = :node")
+                    "SELECT a FROM AgentsGroup a WHERE a.refId = :ref AND a.node = :node")
                     .setParameter("ref", ref).setParameter("node", node);
             agentsProcessQry.setMaxResults(1);
             // Enable forced database query
@@ -69,7 +69,7 @@ public class AgentsGroupFacade extends AbstractFacade<AgentsGroup> {
             em.flush();
 
             Query agentsProcessQry = em.createQuery(
-                    "SELECT a FROM AgentsGroup a WHERE a.refId = :ref AND a.nodeId = :node AND a.groupName = :name")
+                    "SELECT a FROM AgentsGroup a WHERE a.refId = :ref AND a.node = :node AND a.groupName = :name")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("name", name);
             agentsProcessQry.setMaxResults(1);
             // Enable forced database query

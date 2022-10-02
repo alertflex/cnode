@@ -125,7 +125,7 @@ public class KubeBench {
                         if (ksExisting == null) {
                             
                             ks.setRefId(r);
-                            ks.setNodeId(n);
+                            ks.setNode(n);
                             ks.setProbe(p);
                             ks.setTestId(id);
                             ks.setTestType(type);

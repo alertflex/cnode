@@ -83,7 +83,7 @@ public class Nmap {
                 if (nsExisting == null) {
                     
                     ns.setHost(target);
-                    ns.setNodeId(n);
+                    ns.setNode(n);
                     ns.setRefId(r);
                     ns.setProbe(p);
                     ns.setPortId(port);

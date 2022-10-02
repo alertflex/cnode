@@ -71,7 +71,7 @@ public class DockerBench {
                     DockerScan ds = new DockerScan();
 
                     ds.setRefId(r);
-                    ds.setNodeId(n);
+                    ds.setNode(n);
                     ds.setProbe(p);
                     ds.setTestDesc(testDesc);
                     ds.setReportAdded(date);
@@ -88,7 +88,7 @@ public class DockerBench {
 
                     DockerScan dsExisting = eventBean.getDockerScanFacade().findScan(
                         ds.getRefId(),
-                        ds.getNodeId(),
+                        ds.getNode(),
                         ds.getProbe(),
                         ds.getResultId());
 

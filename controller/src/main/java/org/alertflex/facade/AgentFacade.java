@@ -46,7 +46,7 @@ public class AgentFacade extends AbstractFacade<Agent> {
             em.flush();
 
             Query agentProcessQry = em.createQuery(
-                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node")
+                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.node = :node")
                     .setParameter("ref", ref).setParameter("node", node);
             agentProcessQry.setMaxResults(1);
             // Enable forced database query
@@ -69,7 +69,7 @@ public class AgentFacade extends AbstractFacade<Agent> {
             em.flush();
 
             Query agentProcessQry = em.createQuery(
-                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node AND a.name = :name")
+                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.node = :node AND a.name = :name")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("name", name);
             agentProcessQry.setMaxResults(1);
             // Enable forced database query
@@ -92,7 +92,8 @@ public class AgentFacade extends AbstractFacade<Agent> {
             em.flush();
 
             Query agentProcessQry = em.createQuery(
-                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.nodeId = :nodeId AND a.agentId = :id").setParameter("ref", ref).setParameter("nodeId", node).setParameter("id", id);
+                    "SELECT a FROM Agent a WHERE a.refId = :ref AND a.node = :node AND a.agentId = :id")
+                    .setParameter("ref", ref).setParameter("node", node).setParameter("id", id);
             agentProcessQry.setMaxResults(1);
             // Enable forced database query
             agentProcessQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
@@ -113,7 +114,7 @@ public class AgentFacade extends AbstractFacade<Agent> {
             em.flush();
 
             Query agentProcessQry = em.createQuery(
-                    "SELECT a.name FROM Agent a WHERE a.refId = :ref AND a.nodeId = :node AND a.ip = :ip").setParameter("ref", ref).setParameter("node", node).setParameter("ip", ip);
+                    "SELECT a.name FROM Agent a WHERE a.refId = :ref AND a.node = :node AND a.ip = :ip").setParameter("ref", ref).setParameter("node", node).setParameter("ip", ip);
             agentProcessQry.setMaxResults(1);
             // Enable forced database query
             agentProcessQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

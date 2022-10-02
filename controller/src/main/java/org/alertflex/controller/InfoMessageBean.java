@@ -39,7 +39,7 @@ import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentFacade;
-import org.alertflex.facade.HomeNetworkFacade;
+import org.alertflex.facade.NetworksFacade;
 import org.alertflex.facade.HostsFacade;
 import org.alertflex.facade.AlertFacade;
 import org.alertflex.facade.AttributesFacade;
@@ -47,8 +47,6 @@ import org.alertflex.facade.EventsFacade;
 import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
 import org.alertflex.facade.NetStatFacade;
-import org.alertflex.facade.NetTopbytesFacade;
-import org.alertflex.facade.NetTopsessionsFacade;
 import org.alertflex.facade.NetCountriesFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
@@ -64,7 +62,7 @@ import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
-import org.alertflex.facade.SnykScanFacade;
+import org.alertflex.facade.TfsecScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromGraylogPool;
@@ -98,7 +96,7 @@ public class InfoMessageBean implements MessageListener {
     private ContainerFacade containerFacade;
 
     @EJB
-    private HomeNetworkFacade homeNetworkFacade;
+    private NetworksFacade homeNetworkFacade;
     
     @EJB
     private HostsFacade hostsFacade;
@@ -121,12 +119,6 @@ public class InfoMessageBean implements MessageListener {
     @EJB
     private NetCountriesFacade netCountriesFacade;
     
-    @EJB
-    private NetTopbytesFacade netTopbytesFacade;
-    
-    @EJB
-    private NetTopsessionsFacade netTopsessionsFacade;
-
     @EJB
     private AgentVulFacade agentVulFacade;
 
@@ -152,7 +144,7 @@ public class InfoMessageBean implements MessageListener {
     private NmapScanFacade nmapScanFacade;
     
     @EJB
-    private SnykScanFacade snykScanFacade;
+    private TfsecScanFacade tfsecScanFacade;
     
     @EJB
     private HunterScanFacade hunterScanFacade;
@@ -195,7 +187,7 @@ public class InfoMessageBean implements MessageListener {
         return graylogFromPool;
     }
 
-    public HomeNetworkFacade getHomeNetworkFacade() {
+    public NetworksFacade getHomeNetworkFacade() {
         return this.homeNetworkFacade;
     }
     
@@ -243,14 +235,6 @@ public class InfoMessageBean implements MessageListener {
         return this.netCountriesFacade;
     }
     
-    public NetTopbytesFacade getNetTopbytesFacade() {
-        return this.netTopbytesFacade;
-    }
-    
-    public NetTopsessionsFacade getNetTopsessionsFacade() {
-        return this.netTopsessionsFacade;
-    }
-
     public AgentVulFacade getAgentVulFacade() {
         return this.agentVulFacade;
     }
@@ -279,8 +263,8 @@ public class InfoMessageBean implements MessageListener {
         return this.zapScanFacade;
     }
     
-    public SnykScanFacade getSnykScanFacade() {
-        return this.snykScanFacade;
+    public TfsecScanFacade getTfsecScanFacade() {
+        return this.tfsecScanFacade;
     }
     
     public NmapScanFacade getNmapScanFacade() {
@@ -335,7 +319,7 @@ public class InfoMessageBean implements MessageListener {
                 if (project != null) {
                     
                     node = bytesMessage.getStringProperty("node_id");
-                    probe = bytesMessage.getStringProperty("probe_id");
+                    probe = bytesMessage.getStringProperty("host_name");
                     
                     byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
                     bytesMessage.readBytes(buffer);
@@ -400,9 +384,9 @@ public class InfoMessageBean implements MessageListener {
                             break;
                             
                         case 9: 
-                            Snyk snyk = new Snyk(this);
+                            Tfsec tfsec = new Tfsec(this);
                             target = bytesMessage.getStringProperty("target");
-                            snyk.saveReport(data, target);
+                            tfsec.saveReport(data, target);
                             break;
                             
                         case 10: 

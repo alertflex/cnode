@@ -21,22 +21,22 @@ import org.alertflex.entity.Alert;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
-import org.alertflex.entity.SnykScan;
+import org.alertflex.entity.TfsecScan;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Snyk {
+public class Tfsec {
 
-    private static final Logger logger = LogManager.getLogger(Snyk.class);
+    private static final Logger logger = LogManager.getLogger(Tfsec.class);
 
     private InfoMessageBean eventBean;
     Project project;
     Node node;
 
-    public Snyk(InfoMessageBean eb) {
+    public Tfsec(InfoMessageBean eb) {
         this.eventBean = eb;
         this.project = eventBean.getProject();
 
@@ -58,91 +58,86 @@ public class Snyk {
             }
 
             JSONObject obj = new JSONObject(report);
-            JSONArray arr = obj.getJSONArray("vulnerabilities");
+            JSONArray arr = obj.getJSONArray("results");
             
             for (int i = 0; i < arr.length(); i++) {
                 
-                JSONObject vuln = arr.getJSONObject(i);
+                JSONObject res = arr.getJSONObject(i);
                 
-                SnykScan ss = new SnykScan();
+                TfsecScan ts = new TfsecScan();
                 
-                ss.setRefId(r);
-                ss.setNodeId(n);
-                ss.setProbe(p);
+                ts.setRefId(r);
+                ts.setNode(n);
+                ts.setProbe(p);
                 
-                ss.setProjectId(target);
+                ts.setProjectId(target);
 
-                String id = vuln.getString("id");
-                ss.setVulnId(id);
+                String ruleId = res.getString("rule_id");
+                ts.setRuleId(ruleId);
                 
-                String packageName = vuln.getString("name");
-                ss.setPackageName(packageName);
+                String longId = res.getString("long_id");
+                ts.setLongId(longId);
                 
-                String packageManager = vuln.getString("packageManager");
-                ss.setPackageManager(packageManager);
+                String ruleDescription = res.getString("rule_description");
+                ts.setRuleDescription(ruleDescription);
                 
-                String severity = vuln.getString("severity");
-                ss.setSeverity(severity);
+                String ruleProvider = res.getString("rule_provider");
+                ts.setRuleProvider(ruleProvider);
                 
-                String language = vuln.getString("language");
-                ss.setLanguage(language);
+                String ruleService = res.getString("rule_service");
+                ts.setRuleService(ruleService);
                 
-                String title = vuln.getString("title");
-                ss.setTitle(title);
+                String impact = res.getString("impact");
+                ts.setImpact(impact);
                 
-                String desc = vuln.getString("description"); // 2048
-                if (desc.length() >= 2048) {
-                    String substrDesc = desc.substring(0, 2046);
-                    ss.setDescription(substrDesc);
+                String resolution = res.getString("resolution");
+                ts.setResolution(resolution);
+                
+                String links = res.getJSONArray("links").toString();
+                if (links.length() >= 2048) {
+                    String substrLinks = links.substring(0, 2046);
+                    ts.setLinks(substrLinks);
                 } else {
-                    ss.setDescription(desc);
+                    ts.setLinks(links);
                 }
                 
-                String version = vuln.getString("version");
-                ss.setVulnVersion(version);
+                String description = res.getString("description");
+                ts.setDescription(description);
                 
-                String publicationTime = vuln.getString("publicationTime");
-                ss.setPublicationTime(publicationTime);
+                String severity = res.getString("severity");
+                ts.setSeverity(severity);
                 
-                JSONArray ref = vuln.getJSONArray("references");
-                String references = "";
-                for (int j = 0; j < ref.length(); j++) {
-                    JSONObject url = ref.getJSONObject(j);
-                    references = references + " " + url.getString("url"); //2048
-                }
+                String resource = res.getString("resource");
+                ts.setResource(resource);
                 
-                if (references.length() >= 2048) {
-                    String substrReferences = references.substring(0, 2046);
-                    ss.setVulnRef(substrReferences);
-                } else {
-                    ss.setVulnRef(references);
-                }
+                int status = res.getInt("status");
+                ts.setStatus(status);
                 
-                JSONObject identifiers = vuln.getJSONObject("identifiers");
+                JSONObject location = res.getJSONObject("location");
 
-                String[] cveArr = toStringArray(identifiers.getJSONArray("CVE"));
-                String CVE = String.join(", ", cveArr);
-                ss.setVulnCve(CVE);
+                String filename = location.getString("filename");
+                ts.setFilename(filename);
                 
-                String[] cweArr = toStringArray(identifiers.getJSONArray("CWE"));
-                String CWE = String.join(", ", cweArr);
-                ss.setVulnCwe(CWE);
+                int startLine = location.getInt("start_line");
+                ts.setStartLine(startLine);
                 
-                ss.setReportAdded(date);
-                ss.setReportUpdated(date);
+                int endLine = location.getInt("end_line");
+                ts.setEndLine(endLine);
                 
-                SnykScan ssExisting = eventBean.getSnykScanFacade().findVulnerability(r, n, p, target, id, packageName);
+                ts.setReportAdded(date);
+                ts.setReportUpdated(date);
                 
-                if (ssExisting == null) {
+                TfsecScan tsExisting = eventBean.getTfsecScanFacade().findVulnerability(r, n, p, target, ruleId, filename);               
+                if (tsExisting == null) {
 
-                    eventBean.getSnykScanFacade().create(ss);
+                    eventBean.getTfsecScanFacade().create(ts);
                     
-                    createSnykScanAlert(ss);
+                    createTfsecScanAlert(ts);
                     
                 } else {
 
-                    ssExisting.setReportUpdated(date);
-                    eventBean.getSnykScanFacade().edit(ssExisting);
+                    tsExisting.setReportUpdated(date);
+                    eventBean.getTfsecScanFacade().edit(tsExisting);
                 }
                 
             }
@@ -152,7 +147,7 @@ public class Snyk {
         }
     }
     
-    public void createSnykScanAlert(SnykScan ss) {
+    public void createTfsecScanAlert(TfsecScan ts) {
 
         Alert a = new Alert();
 
@@ -160,23 +155,27 @@ public class Snyk {
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
         
-        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ss.getRefId(), "Snyk");
+        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ts.getRefId(), "Tfsec");
         
-        int sev = ap.getSeverityDefault();
-        if (ss.getSeverity().equals(ap.getText1())) sev = ap.getValue1();
-        if (ss.getSeverity().equals(ap.getText2())) sev = ap.getValue2();
-        if (ss.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
-        if (ss.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
-        if (ss.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        int sev = 0;
+        
+        if (ap != null) {
+            sev = ap.getSeverityDefault();
+            if (ts.getSeverity().equals(ap.getText1())) sev = ap.getValue1();
+            if (ts.getSeverity().equals(ap.getText2())) sev = ap.getValue2();
+            if (ts.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
+            if (ts.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
+            if (ts.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
+            if (sev < ap.getSeverityThreshold()) return;
+        }
 
         a.setAlertSeverity(sev);
-        a.setEventSeverity(ss.getSeverity());
+        a.setEventSeverity(ts.getSeverity());
         
         a.setEventId("1");
-        a.setCategories("snyk");
+        a.setCategories("tfsec");
         
-        String desc = ss.getDescription();
+        String desc = ts.getDescription();
         if (desc.length() >= 1024) {
             String substrDesc = desc.substring(0, 1022);
             a.setDescription(substrDesc);
@@ -184,23 +183,23 @@ public class Snyk {
             a.setDescription(desc);
         }
         
-        a.setAlertSource("Snyk");
+        a.setAlertSource("Tfsec");
         a.setAlertType("MISC");
 
-        a.setSensorId(ss.getProbe());
-        a.setLocation(ss.getPackageName());
+        a.setSensorId(ts.getProbe());
+        a.setLocation(ts.getFilename());
         a.setAction("indef");
         a.setStatus("processed");
         a.setFilter("");
         
-        String info = ss.getVulnRef();
+        String info = ts.getLinks();
         if (info.length() >= 1024) {
             String substrInfo = info.substring(0, 1022);
             a.setInfo(substrInfo);
         } else {
             a.setInfo(info);
         }
-        a.setInfo(ss.getRefId());
+        a.setInfo(ts.getRefId());
         
         a.setTimeEvent("indef");
         Date date = new Date();

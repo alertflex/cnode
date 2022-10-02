@@ -46,7 +46,7 @@ public class DockerScanFacade extends AbstractFacade<DockerScan> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT d FROM DockerScan d WHERE d.refId = :ref AND d.nodeId = :node AND d.probe = :probe AND d.resultId = :id")
+                    "SELECT d FROM DockerScan d WHERE d.refId = :ref AND d.node = :node AND d.probe = :probe AND d.resultId = :id")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)

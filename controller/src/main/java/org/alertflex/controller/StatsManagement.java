@@ -34,12 +34,13 @@ import org.alertflex.entity.AgentVul;
 import org.alertflex.entity.AgentsGroup;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
+import org.alertflex.entity.Hosts;
 import org.alertflex.entity.NetCountries;
-import org.alertflex.entity.NetTopbytes;
-import org.alertflex.entity.NetTopsessions;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Project;
+import org.alertflex.entity.Sensor;
+import org.alertflex.entity.SensorPK;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -139,7 +140,7 @@ public class StatsManagement {
                             Agent a = new Agent();
 
                             a.setRefId(ref);
-                            a.setNodeId(nodeName);
+                            a.setNode(nodeName);
                             a.setDateUpdate(date);
                             a.setStatus(status);
                             a.setAgentId(id);
@@ -196,7 +197,7 @@ public class StatsManagement {
                             AgentsGroup g = new AgentsGroup();
 
                             g.setRefId(ref);
-                            g.setNodeId(nodeName);
+                            g.setNode(nodeName);
                             g.setGroupRef("indef");
                             g.setGroupName(group);
                             g.setAgentsCount(count);
@@ -259,7 +260,7 @@ public class StatsManagement {
                             Container c = new Container();
 
                             c.setRefId(ref);
-                            c.setNodeId(nodeName);
+                            c.setNode(nodeName);
                             c.setProbe(probe);
                             c.setContainerName(containerName);
                             c.setContainerId(containerId);
@@ -353,7 +354,7 @@ public class StatsManagement {
                             AgentSca a = new AgentSca();
 
                             a.setRefId(ref);
-                            a.setNodeId(nodeName);
+                            a.setNode(nodeName);
                             a.setAgent(agent);
                             a.setScaId(id);
                             a.setPolicyId(policyId);
@@ -387,7 +388,7 @@ public class StatsManagement {
                     AgentVul v = new AgentVul();
 
                     v.setRefId(eventBean.getRefId());
-                    v.setNodeId(eventBean.getNode());
+                    v.setNode(eventBean.getNode());
                     v.setAgent(jv.getString("agent"));
                     v.setVulnerability(jv.getString("cve"));
                     v.setSeverity(jv.getString("severity"));
@@ -424,7 +425,7 @@ public class StatsManagement {
                     v.setReportUpdated(date);
 
                     AgentVul vExisting = eventBean.getAgentVulFacade().findVulnerability(v.getRefId(),
-                            v.getNodeId(),
+                            v.getNode(),
                             v.getAgent(),
                             v.getVulnerability(),
                             v.getPkgName());
@@ -505,11 +506,30 @@ public class StatsManagement {
                         NodePK nodePK = new NodePK(ref, nodeName);
                         node = new Node();
                         node.setNodePK(nodePK);
-                        node.setUnit("change unit");
                         node.setDescription("change desc");
+                        node.setNodeType("indef");
+                        node.setVpc("indef");
                         node.setCommandsControl(0);
                         node.setFiltersControl(0);
                         eventBean.getNodeFacade().create(node);
+                    }
+                    
+                    Hosts host = eventBean.getHostsFacade().findHost(ref, eventBean.getProbe());
+            
+                    if (host == null) {
+
+                        host = new Hosts();
+                        host.setName(eventBean.getProbe());
+                        host.setNode(nodeName);
+                        host.setRefId(ref);
+                        host.setCred("dummmy");
+                        host.setAddress("127.0.0.1");
+                        host.setPort(22);
+                        host.setDescription("change desc");
+                        host.setHostType("collector");
+                        host.setAgent("indef");
+                        host.setCloudInstance("indef");
+                        eventBean.getHostsFacade().create(host);
                     }
                     
                     JSONObject nm = obj.getJSONObject("data");
@@ -517,14 +537,26 @@ public class StatsManagement {
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     NodeMonitor node_monitor = new NodeMonitor();
-
+                    
+                    long eventsCRS = nm.getLong("crs");
+                    if (eventsCRS > 0) checkSensor(ref, nodeName, 0);
+                    
+                    long eventsWaf = nm.getLong("waf");
+                    if (eventsWaf > 0) checkSensor(ref, nodeName, 1);
+                    
+                    long eventsNids = nm.getLong("nids");
+                    if (eventsNids > 0) checkSensor(ref, nodeName, 2);
+                    
+                    long eventsHids = nm.getLong("hids");
+                    if (eventsHids > 0) checkSensor(ref, nodeName, 3);
+                    
                     node_monitor.setRefId(ref);
-                    node_monitor.setNodeId(nodeName);
+                    node_monitor.setNode(nodeName);
                     node_monitor.setProbe(eventBean.getProbe());
-                    node_monitor.setEventsHids(nm.getLong("hids"));
-                    node_monitor.setEventsNids(nm.getLong("nids"));
-                    node_monitor.setEventsWaf(nm.getLong("waf"));
-                    node_monitor.setEventsCrs(nm.getLong("crs"));
+                    node_monitor.setEventsHids(eventsHids);
+                    node_monitor.setEventsNids(eventsNids);
+                    node_monitor.setEventsWaf(eventsWaf);
+                    node_monitor.setEventsCrs(eventsCRS);
                     node_monitor.setLogCounter(nm.getLong("log_counter"));
                     node_monitor.setLogVolume(nm.getLong("log_volume"));
                     node_monitor.setStatCounter(nm.getLong("stat_counter"));
@@ -534,7 +566,7 @@ public class StatsManagement {
                     node_monitor.setTimeOfSurvey(date);
 
                     eventBean.getNodeMonitorFacade().create(node_monitor);
-
+                    
                     break;
                 
                 case "net_stat": 
@@ -603,71 +635,6 @@ public class StatsManagement {
 
                     break;
                     
-                case "net_topbytes": {
-                    
-                    if (project.getNetTimerange() == 0) return;
-                    
-                    arr = obj.getJSONArray("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        
-                    for (int i = 0; i < arr.length(); i++) {
-                            
-                        NetTopbytes net_talkers = new NetTopbytes();
-                    
-                        net_talkers.setRefId(eventBean.getRefId());
-                        net_talkers.setNode(eventBean.getNode());
-                        net_talkers.setProbe(eventBean.getProbe());
-                        net_talkers.setSensorName(arr.getJSONObject(i).getString("sensor_name"));
-                        net_talkers.setSensorType(arr.getJSONObject(i).getString("sensor_type"));
-                        net_talkers.setDstIp(arr.getJSONObject(i).getString("dst_ip"));
-                        net_talkers.setSrcIp(arr.getJSONObject(i).getString("src_ip"));
-                        net_talkers.setDstCountry(arr.getJSONObject(i).getString("dst_country"));
-                        net_talkers.setSrcCountry(arr.getJSONObject(i).getString("src_country"));
-                        net_talkers.setDstHostname(arr.getJSONObject(i).getString("dst_hostname"));
-                        net_talkers.setSrcHostname(arr.getJSONObject(i).getString("src_hostname"));
-                        net_talkers.setBytes(arr.getJSONObject(i).getLong("bytes"));
-                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
-                        net_talkers.setTimeOfSurvey(date);
-                        
-                        eventBean.getNetTopbytesFacade().create(net_talkers);
-                    }
-                    break;
-                }
-                
-                case "net_topsessions": {
-                    
-                    if (project.getNetTimerange() == 0) return;
-                    
-                    arr = obj.getJSONArray("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        
-                    for (int i = 0; i < arr.length(); i++) {
-                            
-                        NetTopsessions net_talkers = new NetTopsessions();
-                    
-                        net_talkers.setRefId(eventBean.getRefId());
-                        net_talkers.setNode(eventBean.getNode());
-                        net_talkers.setProbe(eventBean.getProbe());
-                        net_talkers.setSensorName(arr.getJSONObject(i).getString("sensor_name"));
-                        net_talkers.setSensorType(arr.getJSONObject(i).getString("sensor_type"));
-                        net_talkers.setDstIp(arr.getJSONObject(i).getString("dst_ip"));
-                        net_talkers.setSrcIp(arr.getJSONObject(i).getString("src_ip"));
-                        net_talkers.setDstCountry(arr.getJSONObject(i).getString("dst_country"));
-                        net_talkers.setSrcCountry(arr.getJSONObject(i).getString("src_country"));
-                        net_talkers.setDstHostname(arr.getJSONObject(i).getString("dst_hostname"));
-                        net_talkers.setSrcHostname(arr.getJSONObject(i).getString("src_hostname"));
-                        net_talkers.setSessions(arr.getJSONObject(i).getLong("sessions"));
-                        net_talkers.setTokenExist(0);
-                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
-                        net_talkers.setTimeOfSurvey(date);
-                        
-                        eventBean.getNetTopsessionsFacade().create(net_talkers);
-                    }
-                    break;
-                }
-                    
                 case "net_countries": {
                     
                     if (project.getNetTimerange() == 0) return;
@@ -704,13 +671,68 @@ public class StatsManagement {
             logger.error(stat);
         }
     }
+    
+    public void checkSensor(String ref, String node, int type) {
+        
+        String sensorName;
+        String sensorType;
+        String probe = eventBean.getProbe();
+                
+        switch (type) {
+            case 0:
+                sensorName = probe + ".crs";
+                sensorType = "Falco";
+                break;
+                
+            case 1:
+                sensorName = probe + ".waf";
+                sensorType = "ModSecurity";
+                break;
+                    
+            case 2:
+                sensorName = probe + ".nids";
+                sensorType = "Suricata";
+                break;
+                
+            case 3:
+                sensorName = probe + ".hids";
+                sensorType = "Wazuh";
+                break;
+            
+            default:
+                return;
+        }
+
+        Sensor s = eventBean.getSensorFacade().findSensorByName(ref, node, sensorName);
+
+        if (s == null) {
+
+            SensorPK sensorPK = new SensorPK(ref, sensorName, node);
+            s = new Sensor(sensorPK);
+            s.setDescription(sensorType + " sensor");
+            s.setSensorType(sensorType);
+            s.setHostName(probe);
+            s.setAwsidsRulegroup("indef");
+            s.setK8sPolicy("indef");
+            s.setSuricataRule("indef");
+            s.setStatus(1);
+            eventBean.getSensorFacade().create(s);
+        
+        } else {
+            
+            if (s.getStatus() == 0) {
+                s.setStatus(1);
+                eventBean.getSensorFacade().edit(s);
+            }
+        }
+    }
 
     public void createNewAgentAlert(Agent ag) {
 
         Alert a = new Alert();
 
         a.setRefId(ag.getRefId());
-        a.setNodeId(ag.getNodeId());
+        a.setNodeId(ag.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ag.getRefId(), "Alertflex");
@@ -768,7 +790,7 @@ public class StatsManagement {
         Alert a = new Alert();
 
         a.setRefId(c.getRefId());
-        a.setNodeId(c.getNodeId());
+        a.setNodeId(c.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(c.getRefId(), "Alertflex");
@@ -825,7 +847,7 @@ public class StatsManagement {
         Alert a = new Alert();
 
         a.setRefId(as.getRefId());
-        a.setNodeId(as.getNodeId());
+        a.setNodeId(as.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(as.getRefId(), "Alertflex");
@@ -883,7 +905,7 @@ public class StatsManagement {
         Alert a = new Alert();
 
         a.setRefId(av.getRefId());
-        a.setNodeId(av.getNodeId());
+        a.setNodeId(av.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(av.getRefId(), "Alertflex");

@@ -16,13 +16,13 @@
 package org.alertflex.controller;
 
 import org.alertflex.common.ProjectRepository;
-import java.util.List;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import org.alertflex.common.SensorRepository;
+import org.alertflex.entity.Hosts;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
@@ -66,12 +66,32 @@ public class RulesManagement {
                 NodePK nodePK = new NodePK(ref, nodeName);
                 node = new Node();
                 node.setNodePK(nodePK);
-                node.setUnit("change unit");
                 node.setDescription("change desc");
+                node.setNodeType("indef");
+                node.setVpc("indef");
                 node.setCommandsControl(0);
                 node.setFiltersControl(0);
                 eventBean.getNodeFacade().create(node);
             }
+            
+            Hosts host = eventBean.getHostsFacade().findHost(ref, probe);
+            
+            if (host == null) {
+
+                host = new Hosts();
+                host.setName(probe);
+                host.setNode(nodeName);
+                host.setRefId(ref);
+                host.setCred("dummmy");
+                host.setAddress("127.0.0.1");
+                host.setPort(22);
+                host.setDescription("change desc");
+                host.setHostType("collector");
+                host.setAgent("indef");
+                host.setCloudInstance("indef");
+                eventBean.getHostsFacade().create(host);
+            }
+            
             
             switch (type) {
                 case 0:
@@ -107,17 +127,13 @@ public class RulesManagement {
                 s.setDescription(sensorType + " sensor");
                 s.setSensorType(sensorType);
                 s.setHostName(probe);
-                s.setRulegroupName("indef");
+                s.setAwsidsRulegroup("indef");
+                s.setK8sPolicy("indef");
+                s.setSuricataRule("indef");
                 s.setStatus(1);
                 eventBean.getSensorFacade().create(s);
             
-            } else {
-                
-                if (s.getStatus() == 0) {
-                    s.setStatus(1);
-                    eventBean.getSensorFacade().edit(s);
-                }
-            }
+            } 
 
             SensorRepository sr = new SensorRepository(pr.getNodeDir(), sensorName, sensorType);
             boolean ready = sr.getStatus();

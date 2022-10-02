@@ -46,7 +46,7 @@ public class HunterScanFacade extends AbstractFacade<HunterScan> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT h FROM HunterScan h WHERE h.refId = :ref AND h.nodeId = :node AND h.probe = :probe AND h.target = :target AND h.location = :loc AND h.vid = :vid AND h.cat = :cat")
+                    "SELECT h FROM HunterScan h WHERE h.refId = :ref AND h.node = :node AND h.probe = :probe AND h.target = :target AND h.location = :loc AND h.vid = :vid AND h.cat = :cat")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)

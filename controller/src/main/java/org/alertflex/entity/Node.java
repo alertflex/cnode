@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -35,13 +25,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "node")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Node.findAll", query = "SELECT n FROM Node n")
-    , @NamedQuery(name = "Node.findByRefId", query = "SELECT n FROM Node n WHERE n.nodePK.refId = :refId")
-    , @NamedQuery(name = "Node.findByName", query = "SELECT n FROM Node n WHERE n.nodePK.name = :name")
-    , @NamedQuery(name = "Node.findByDescription", query = "SELECT n FROM Node n WHERE n.description = :description")
-    , @NamedQuery(name = "Node.findByUnit", query = "SELECT n FROM Node n WHERE n.unit = :unit")
-    , @NamedQuery(name = "Node.findByCommandsControl", query = "SELECT n FROM Node n WHERE n.commandsControl = :commandsControl")
-    , @NamedQuery(name = "Node.findByFiltersControl", query = "SELECT n FROM Node n WHERE n.filtersControl = :filtersControl")})
+    @NamedQuery(name = "Node.findAll", query = "SELECT n FROM Node n"),
+    @NamedQuery(name = "Node.findByRefId", query = "SELECT n FROM Node n WHERE n.nodePK.refId = :refId"),
+    @NamedQuery(name = "Node.findByName", query = "SELECT n FROM Node n WHERE n.nodePK.name = :name"),
+    @NamedQuery(name = "Node.findByDescription", query = "SELECT n FROM Node n WHERE n.description = :description"),
+    @NamedQuery(name = "Node.findByNodeType", query = "SELECT n FROM Node n WHERE n.nodeType = :nodeType"),
+    @NamedQuery(name = "Node.findByVpc", query = "SELECT n FROM Node n WHERE n.vpc = :vpc"),
+    @NamedQuery(name = "Node.findByCommandsControl", query = "SELECT n FROM Node n WHERE n.commandsControl = :commandsControl"),
+    @NamedQuery(name = "Node.findByFiltersControl", query = "SELECT n FROM Node n WHERE n.filtersControl = :filtersControl")})
 public class Node implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,9 +45,14 @@ public class Node implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "unit")
-    private String unit;
+    @Size(min = 1, max = 128)
+    @Column(name = "node_type")
+    private String nodeType;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "vpc")
+    private String vpc;
     @Basic(optional = false)
     @NotNull
     @Column(name = "commands_control")
@@ -73,10 +69,11 @@ public class Node implements Serializable {
         this.nodePK = nodePK;
     }
 
-    public Node(NodePK nodePK, String description, String unit, int commandsControl, int filtersControl) {
+    public Node(NodePK nodePK, String description, String nodeType, String vpc, int commandsControl, int filtersControl) {
         this.nodePK = nodePK;
         this.description = description;
-        this.unit = unit;
+        this.nodeType = nodeType;
+        this.vpc = vpc;
         this.commandsControl = commandsControl;
         this.filtersControl = filtersControl;
     }
@@ -101,12 +98,20 @@ public class Node implements Serializable {
         this.description = description;
     }
 
-    public String getUnit() {
-        return unit;
+    public String getNodeType() {
+        return nodeType;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public String getVpc() {
+        return vpc;
+    }
+
+    public void setVpc(String vpc) {
+        this.vpc = vpc;
     }
 
     public int getCommandsControl() {

@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByNodeTimerange", query = "SELECT p FROM Project p WHERE p.nodeTimerange = :nodeTimerange"),
     @NamedQuery(name = "Project.findByNetTimerange", query = "SELECT p FROM Project p WHERE p.netTimerange = :netTimerange"),
     @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
+    @NamedQuery(name = "Project.findBySensorTimerange", query = "SELECT p FROM Project p WHERE p.sensorTimerange = :sensorTimerange"),
     @NamedQuery(name = "Project.findByBlockIprange", query = "SELECT p FROM Project p WHERE p.blockIprange = :blockIprange"),
     @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck"),
     @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent"),
@@ -125,6 +126,10 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "task_timerange")
     private int taskTimerange;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "sensor_timerange")
+    private int sensorTimerange;
     @Basic(optional = false)
     @NotNull
     @Column(name = "block_iprange")
@@ -359,7 +364,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int nodeTimerange, int netTimerange, int taskTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights, String sqsCloudtrail) {
+    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int nodeTimerange, int netTimerange, int taskTimerange, int sensorTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights, String sqsCloudtrail) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -369,6 +374,7 @@ public class Project implements Serializable {
         this.nodeTimerange = nodeTimerange;
         this.netTimerange = netTimerange;
         this.taskTimerange = taskTimerange;
+        this.sensorTimerange = sensorTimerange;
         this.blockIprange = blockIprange;
         this.iocCheck = iocCheck;
         this.iocEvent = iocEvent;
@@ -488,6 +494,14 @@ public class Project implements Serializable {
 
     public void setTaskTimerange(int taskTimerange) {
         this.taskTimerange = taskTimerange;
+    }
+
+    public int getSensorTimerange() {
+        return sensorTimerange;
+    }
+
+    public void setSensorTimerange(int sensorTimerange) {
+        this.sensorTimerange = sensorTimerange;
     }
 
     public int getBlockIprange() {

@@ -46,7 +46,7 @@ public class ContainerFacade extends AbstractFacade<Container> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT c FROM Container c WHERE c.nodeId = :node AND c.refId = :ref AND c.probe = :probe")
+                "SELECT c FROM Container c WHERE c.node = :node AND c.refId = :ref AND c.probe = :probe")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("probe", probe);
 
             // Enable forced database query
@@ -68,7 +68,7 @@ public class ContainerFacade extends AbstractFacade<Container> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT c FROM Container c WHERE c.nodeId = :node AND c.refId = :ref AND c.probe = :probe AND c.imageId = :id")
+                "SELECT c FROM Container c WHERE c.node = :node AND c.refId = :ref AND c.probe = :probe AND c.imageId = :id")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("probe", probe).setParameter("id", id);
 
             // Enable forced database query

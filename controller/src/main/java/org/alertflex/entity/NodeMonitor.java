@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "NodeMonitor.findAll", query = "SELECT n FROM NodeMonitor n"),
     @NamedQuery(name = "NodeMonitor.findByRecId", query = "SELECT n FROM NodeMonitor n WHERE n.recId = :recId"),
     @NamedQuery(name = "NodeMonitor.findByRefId", query = "SELECT n FROM NodeMonitor n WHERE n.refId = :refId"),
-    @NamedQuery(name = "NodeMonitor.findByNodeId", query = "SELECT n FROM NodeMonitor n WHERE n.nodeId = :nodeId"),
+    @NamedQuery(name = "NodeMonitor.findByNode", query = "SELECT n FROM NodeMonitor n WHERE n.node = :node"),
     @NamedQuery(name = "NodeMonitor.findByProbe", query = "SELECT n FROM NodeMonitor n WHERE n.probe = :probe"),
     @NamedQuery(name = "NodeMonitor.findByEventsCrs", query = "SELECT n FROM NodeMonitor n WHERE n.eventsCrs = :eventsCrs"),
     @NamedQuery(name = "NodeMonitor.findByEventsHids", query = "SELECT n FROM NodeMonitor n WHERE n.eventsHids = :eventsHids"),
@@ -60,8 +60,8 @@ public class NodeMonitor implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -110,10 +110,10 @@ public class NodeMonitor implements Serializable {
         this.recId = recId;
     }
 
-    public NodeMonitor(Long recId, String refId, String nodeId, String probe, long eventsCrs, long eventsHids, long eventsNids, long eventsWaf, long logCounter, long logVolume, long statCounter, long statVolume) {
+    public NodeMonitor(Long recId, String refId, String node, String probe, long eventsCrs, long eventsHids, long eventsNids, long eventsWaf, long logCounter, long logVolume, long statCounter, long statVolume) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.probe = probe;
         this.eventsCrs = eventsCrs;
         this.eventsHids = eventsHids;
@@ -141,12 +141,12 @@ public class NodeMonitor implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getProbe() {

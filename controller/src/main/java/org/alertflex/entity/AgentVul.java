@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -43,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AgentVul.findAll", query = "SELECT a FROM AgentVul a"),
     @NamedQuery(name = "AgentVul.findByRecId", query = "SELECT a FROM AgentVul a WHERE a.recId = :recId"),
     @NamedQuery(name = "AgentVul.findByRefId", query = "SELECT a FROM AgentVul a WHERE a.refId = :refId"),
-    @NamedQuery(name = "AgentVul.findByNodeId", query = "SELECT a FROM AgentVul a WHERE a.nodeId = :nodeId"),
+    @NamedQuery(name = "AgentVul.findByNode", query = "SELECT a FROM AgentVul a WHERE a.node = :node"),
     @NamedQuery(name = "AgentVul.findByAgent", query = "SELECT a FROM AgentVul a WHERE a.agent = :agent"),
     @NamedQuery(name = "AgentVul.findByPkgName", query = "SELECT a FROM AgentVul a WHERE a.pkgName = :pkgName"),
     @NamedQuery(name = "AgentVul.findByPkgVersion", query = "SELECT a FROM AgentVul a WHERE a.pkgVersion = :pkgVersion"),
@@ -70,8 +60,8 @@ public class AgentVul implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -126,10 +116,10 @@ public class AgentVul implements Serializable {
         this.recId = recId;
     }
 
-    public AgentVul(Long recId, String refId, String nodeId, String agent, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
+    public AgentVul(Long recId, String refId, String node, String agent, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.agent = agent;
         this.pkgName = pkgName;
         this.pkgVersion = pkgVersion;
@@ -156,12 +146,12 @@ public class AgentVul implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getAgent() {

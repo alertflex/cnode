@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AgentsGroup.findAll", query = "SELECT a FROM AgentsGroup a"),
     @NamedQuery(name = "AgentsGroup.findByRecId", query = "SELECT a FROM AgentsGroup a WHERE a.recId = :recId"),
     @NamedQuery(name = "AgentsGroup.findByRefId", query = "SELECT a FROM AgentsGroup a WHERE a.refId = :refId"),
-    @NamedQuery(name = "AgentsGroup.findByNodeId", query = "SELECT a FROM AgentsGroup a WHERE a.nodeId = :nodeId"),
+    @NamedQuery(name = "AgentsGroup.findByNode", query = "SELECT a FROM AgentsGroup a WHERE a.node = :node"),
     @NamedQuery(name = "AgentsGroup.findByGroupName", query = "SELECT a FROM AgentsGroup a WHERE a.groupName = :groupName"),
     @NamedQuery(name = "AgentsGroup.findByGroupRef", query = "SELECT a FROM AgentsGroup a WHERE a.groupRef = :groupRef"),
     @NamedQuery(name = "AgentsGroup.findByAgentsCount", query = "SELECT a FROM AgentsGroup a WHERE a.agentsCount = :agentsCount"),
@@ -55,8 +55,8 @@ public class AgentsGroup implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -85,10 +85,10 @@ public class AgentsGroup implements Serializable {
         this.recId = recId;
     }
 
-    public AgentsGroup(Integer recId, String refId, String nodeId, String groupName, String groupRef, int agentsCount) {
+    public AgentsGroup(Integer recId, String refId, String node, String groupName, String groupRef, int agentsCount) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.groupName = groupName;
         this.groupRef = groupRef;
         this.agentsCount = agentsCount;
@@ -110,12 +110,12 @@ public class AgentsGroup implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getGroupName() {

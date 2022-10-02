@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -40,19 +30,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "agent_sca")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AgentSca.findAll", query = "SELECT a FROM AgentSca a")
-    , @NamedQuery(name = "AgentSca.findByRecId", query = "SELECT a FROM AgentSca a WHERE a.recId = :recId")
-    , @NamedQuery(name = "AgentSca.findByNodeId", query = "SELECT a FROM AgentSca a WHERE a.nodeId = :nodeId")
-    , @NamedQuery(name = "AgentSca.findByRefId", query = "SELECT a FROM AgentSca a WHERE a.refId = :refId")
-    , @NamedQuery(name = "AgentSca.findByAgent", query = "SELECT a FROM AgentSca a WHERE a.agent = :agent")
-    , @NamedQuery(name = "AgentSca.findByPolicyId", query = "SELECT a FROM AgentSca a WHERE a.policyId = :policyId")
-    , @NamedQuery(name = "AgentSca.findByScaId", query = "SELECT a FROM AgentSca a WHERE a.scaId = :scaId")
-    , @NamedQuery(name = "AgentSca.findByDescription", query = "SELECT a FROM AgentSca a WHERE a.description = :description")
-    , @NamedQuery(name = "AgentSca.findByTitle", query = "SELECT a FROM AgentSca a WHERE a.title = :title")
-    , @NamedQuery(name = "AgentSca.findByRationale", query = "SELECT a FROM AgentSca a WHERE a.rationale = :rationale")
-    , @NamedQuery(name = "AgentSca.findByRemediation", query = "SELECT a FROM AgentSca a WHERE a.remediation = :remediation")
-    , @NamedQuery(name = "AgentSca.findByReportAdded", query = "SELECT a FROM AgentSca a WHERE a.reportAdded = :reportAdded")
-    , @NamedQuery(name = "AgentSca.findByReportUpdated", query = "SELECT a FROM AgentSca a WHERE a.reportUpdated = :reportUpdated")})
+    @NamedQuery(name = "AgentSca.findAll", query = "SELECT a FROM AgentSca a"),
+    @NamedQuery(name = "AgentSca.findByRecId", query = "SELECT a FROM AgentSca a WHERE a.recId = :recId"),
+    @NamedQuery(name = "AgentSca.findByNode", query = "SELECT a FROM AgentSca a WHERE a.node = :node"),
+    @NamedQuery(name = "AgentSca.findByRefId", query = "SELECT a FROM AgentSca a WHERE a.refId = :refId"),
+    @NamedQuery(name = "AgentSca.findByAgent", query = "SELECT a FROM AgentSca a WHERE a.agent = :agent"),
+    @NamedQuery(name = "AgentSca.findByPolicyId", query = "SELECT a FROM AgentSca a WHERE a.policyId = :policyId"),
+    @NamedQuery(name = "AgentSca.findByScaId", query = "SELECT a FROM AgentSca a WHERE a.scaId = :scaId"),
+    @NamedQuery(name = "AgentSca.findByDescription", query = "SELECT a FROM AgentSca a WHERE a.description = :description"),
+    @NamedQuery(name = "AgentSca.findByTitle", query = "SELECT a FROM AgentSca a WHERE a.title = :title"),
+    @NamedQuery(name = "AgentSca.findByRationale", query = "SELECT a FROM AgentSca a WHERE a.rationale = :rationale"),
+    @NamedQuery(name = "AgentSca.findByRemediation", query = "SELECT a FROM AgentSca a WHERE a.remediation = :remediation"),
+    @NamedQuery(name = "AgentSca.findByReportAdded", query = "SELECT a FROM AgentSca a WHERE a.reportAdded = :reportAdded"),
+    @NamedQuery(name = "AgentSca.findByReportUpdated", query = "SELECT a FROM AgentSca a WHERE a.reportUpdated = :reportUpdated")})
 public class AgentSca implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -64,8 +54,8 @@ public class AgentSca implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 150)
@@ -119,9 +109,9 @@ public class AgentSca implements Serializable {
         this.recId = recId;
     }
 
-    public AgentSca(Long recId, String nodeId, String refId, String agent, String policyId, int scaId, String description, String title, String rationale, String remediation) {
+    public AgentSca(Long recId, String node, String refId, String agent, String policyId, int scaId, String description, String title, String rationale, String remediation) {
         this.recId = recId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.refId = refId;
         this.agent = agent;
         this.policyId = policyId;
@@ -140,12 +130,12 @@ public class AgentSca implements Serializable {
         this.recId = recId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getRefId() {

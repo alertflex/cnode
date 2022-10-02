@@ -32,7 +32,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Sensor.findByHostName", query = "SELECT s FROM Sensor s WHERE s.hostName = :hostName"),
     @NamedQuery(name = "Sensor.findByDescription", query = "SELECT s FROM Sensor s WHERE s.description = :description"),
     @NamedQuery(name = "Sensor.findBySensorType", query = "SELECT s FROM Sensor s WHERE s.sensorType = :sensorType"),
-    @NamedQuery(name = "Sensor.findByRulegroupName", query = "SELECT s FROM Sensor s WHERE s.rulegroupName = :rulegroupName"),
+    @NamedQuery(name = "Sensor.findByAwsidsRulegroup", query = "SELECT s FROM Sensor s WHERE s.awsidsRulegroup = :awsidsRulegroup"),
+    @NamedQuery(name = "Sensor.findByK8sPolicy", query = "SELECT s FROM Sensor s WHERE s.k8sPolicy = :k8sPolicy"),
+    @NamedQuery(name = "Sensor.findBySuricataRule", query = "SELECT s FROM Sensor s WHERE s.suricataRule = :suricataRule"),
     @NamedQuery(name = "Sensor.findByStatus", query = "SELECT s FROM Sensor s WHERE s.status = :status")})
 public class Sensor implements Serializable {
 
@@ -56,9 +58,19 @@ public class Sensor implements Serializable {
     private String sensorType;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "rulegroup_name")
-    private String rulegroupName;
+    @Size(min = 1, max = 512)
+    @Column(name = "awsids_rulegroup")
+    private String awsidsRulegroup;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "k8s_policy")
+    private String k8sPolicy;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "suricata_rule")
+    private String suricataRule;
     @Basic(optional = false)
     @NotNull
     @Column(name = "status")
@@ -71,12 +83,14 @@ public class Sensor implements Serializable {
         this.sensorPK = sensorPK;
     }
 
-    public Sensor(SensorPK sensorPK, String hostName, String description, String sensorType, String rulegroupName, int status) {
+    public Sensor(SensorPK sensorPK, String hostName, String description, String sensorType, String awsidsRulegroup, String k8sPolicy, String suricataRule, int status) {
         this.sensorPK = sensorPK;
         this.hostName = hostName;
         this.description = description;
         this.sensorType = sensorType;
-        this.rulegroupName = rulegroupName;
+        this.awsidsRulegroup = awsidsRulegroup;
+        this.k8sPolicy = k8sPolicy;
+        this.suricataRule = suricataRule;
         this.status = status;
     }
 
@@ -116,12 +130,28 @@ public class Sensor implements Serializable {
         this.sensorType = sensorType;
     }
 
-    public String getRulegroupName() {
-        return rulegroupName;
+    public String getAwsidsRulegroup() {
+        return awsidsRulegroup;
     }
 
-    public void setRulegroupName(String rulegroupName) {
-        this.rulegroupName = rulegroupName;
+    public void setAwsidsRulegroup(String awsidsRulegroup) {
+        this.awsidsRulegroup = awsidsRulegroup;
+    }
+
+    public String getK8sPolicy() {
+        return k8sPolicy;
+    }
+
+    public void setK8sPolicy(String k8sPolicy) {
+        this.k8sPolicy = k8sPolicy;
+    }
+
+    public String getSuricataRule() {
+        return suricataRule;
+    }
+
+    public void setSuricataRule(String suricataRule) {
+        this.suricataRule = suricataRule;
     }
 
     public int getStatus() {

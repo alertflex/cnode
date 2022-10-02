@@ -6,56 +6,52 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Alertflex | SecOps solution</title>
+        <title>CSM solution</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
         <link rel="stylesheet" href="css/bootstrap.css">
-		<link rel="stylesheet" href="css/style.css">
 		<link rel="stylesheet" href="css/font-awesome.min.css">
-		
         
-		<link rel="icon" href="box.ico">
-		<link rel="shortcut icon" href="box.ico" />
+		<link rel="icon" href="img/box.ico">
+		<link rel="shortcut icon" href="img/box.ico" />
 		
     </head>
     <body>
+    
+	<!-- Static navbar -->
+    
+    <nav class="navbar navbar-default navbar-fixed-top"  >
+		<div class="container">
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >
+				<ul class="nav navbar-nav navbar-left" >
+					<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');" ><i class="fa fa-sitemap"></i> Alertflex</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right" >
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-bars"></i></a>
+						<ul class="dropdown-menu">
+						    <li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/admin');" ><i class="fa fa-paper-plane"></i> Active MQ</a></li>
+							<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':4848');" ><i class="fa fa-cubes"></i> Payara AS</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div> <!-- /.navbar-collapse -->
+		</div> <!-- /.container -->
+    </nav> <!-- /.navbar -->
 	
-	<div id="home" class="jumbotron">
-        <section id="portfolio" style="margin-top:100px;">
-			<div class="container" >
-				<div class="row">
-					<div class="col-sm-6 portfolio-item">
-						<a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');" class="portfolio-link" >
-							<div class="caption">
-								<div class="caption-content">
-									<i class="fa fa-search-plus fa-3x"></i>
-								</div>
-							</div>
-							<i class="fa fa-sitemap fa-4x" style="color:#fff;"></i>
-						
-							<div style="padding-top:10px;" class="functional">
-								<h2 style="color:#ECF0F1; ">Alertflex Management Console</h2> 
-							</div>
-						</a>
-					</div>
-					<div class="col-sm-6 portfolio-item">
-						<a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':8443');" class="portfolio-link" >
-							<div class="caption">
-								<div class="caption-content">
-									<i class="fa fa-search-plus fa-3x"></i>
-								</div>
-							</div>
-							<i class="fa fa-comments fa-4x" style="color:#fff;"></i>
-						
-							<div style="padding-top:10px; " class="functional">
-								<h2 style="color:#ECF0F1; ">MISP - Open Source Threat Intelligence Platform (optional)</h2> 
-							</div>
-						</a>
-					</div>
-				<div >
+	<div id="home" >
+        <div class="container">
+		
+			<div class="row" style="margin-top: 3%;">
+				<div class="col-md-12" class="img-responsive" align="left">
+					<a href="#" title="Click to open Alertflex console" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');">
+						<img src="img/back.svg" height="45%" width="45%" >
+					</a>
+                </div>
 			</div>
-		</section>
+			
+		</div> <!-- /.container -->
     </div> <!-- /.jumbotron -->
 	
 	<!-- Bootstrap core JavaScript

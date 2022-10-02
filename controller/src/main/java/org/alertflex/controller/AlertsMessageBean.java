@@ -47,6 +47,8 @@ import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
 import org.alertflex.common.PojoAlertLogic;
+import org.alertflex.entity.Sensor;
+import org.alertflex.facade.SensorFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.logserver.FromGraylogPool;
@@ -84,10 +86,15 @@ public class AlertsMessageBean implements MessageListener {
     @EJB
     private ResponseFacade responseFacade;
     
+    @EJB
+    private SensorFacade sensorFacade;
+    
     Alert a = null;
     
     @Override
     public void onMessage(Message message) {
+        
+        Boolean logAlert = false;
         
         try {
 
@@ -180,7 +187,27 @@ public class AlertsMessageBean implements MessageListener {
                         a.setContainerName(((TextMessage) message).getStringProperty("container_name"));
                         a.setCloudInstance(((TextMessage) message).getStringProperty("cloud_instance"));
                         a.setIncidentExt("indef");
-
+                        
+                        // check k8s alert 
+                        // if yes need to load all falco sensors 
+                        // and calculate active 
+                        // next step alert came from not active - miss this alert
+                        
+                        if (a.getAlertSource().equals("Falco") && !a.getCloudInstance().equals("indef")) {
+                        
+                            List<Sensor> ls = sensorFacade.findSensorsByType(ref_id, a.getNodeId(), "Falco");
+                            if (ls.size() > 1) {
+                                
+                                for (Sensor s: ls) {
+                                    if (s.getStatus()> 0) {
+                                        if(s.getSensorPK().getName().equals(a.getSensorId())) {
+                                            break;
+                                        } else return;
+                                    }            
+                                }
+                            }
+                        }
+                        
                         // enrich alert by new cat
                         List<String> newCats = alertCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
                         if (newCats != null && !newCats.isEmpty()) {
@@ -218,11 +245,13 @@ public class AlertsMessageBean implements MessageListener {
                             if (!a.getStatus().equals("remove")) alertFacade.create(a);
                         }
                         
-                        // send alert to log server
-                        if (elasticFromPool != null) elasticFromPool.SendAlertToLog(a);
+                        logAlert = ((TextMessage) message).getBooleanProperty("log_alert");
                         
                         // send alert to log server
-                        if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
+                        if (elasticFromPool != null && logAlert) elasticFromPool.SendAlertToLog(a);
+                        
+                        // send alert to log server
+                        if (graylogFromPool != null && logAlert) graylogFromPool.SendAlertToLog(a);
 
                     } else {
                         

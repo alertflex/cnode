@@ -46,7 +46,7 @@ public class KubeScanFacade extends AbstractFacade<KubeScan> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT k FROM KubeScan k WHERE k.refId = :ref AND k.nodeId = :node AND k.probe = :probe AND k.testId = :id AND k.sectionNumber = :section AND k.resultNumber = :number")
+                    "SELECT k FROM KubeScan k WHERE k.refId = :ref AND k.node = :node AND k.probe = :probe AND k.testId = :id AND k.sectionNumber = :section AND k.resultNumber = :number")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)

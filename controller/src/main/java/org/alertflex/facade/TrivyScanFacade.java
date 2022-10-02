@@ -45,7 +45,7 @@ public class TrivyScanFacade extends AbstractFacade<TrivyScan> {
         try {
             em.flush();
 
-            Query vQry = em.createQuery("SELECT t FROM TrivyScan t WHERE t.refId = :ref AND t.nodeId = :node AND t.probe = :probe AND t.imageName = :image AND t.vulnerability = :vuln AND t.pkgName = :pkg")
+            Query vQry = em.createQuery("SELECT t FROM TrivyScan t WHERE t.refId = :ref AND t.node = :node AND t.probe = :probe AND t.imageName = :image AND t.vulnerability = :vuln AND t.pkgName = :pkg")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)

@@ -68,7 +68,7 @@ public class NodeMonitorFacade extends AbstractFacade<NodeMonitor> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT n FROM NodeMonitor n WHERE n.refId = :ref AND n.nodeId = :node AND n.timeOfSurvey BETWEEN :start AND :end ORDER BY n.timeOfSurvey")
+                    "SELECT n FROM NodeMonitor n WHERE n.refId = :ref AND n.node = :node AND n.timeOfSurvey BETWEEN :start AND :end ORDER BY n.timeOfSurvey")
                     .setParameter("ref", r).setParameter("node", n).setParameter("start", start).setParameter("end", end);
 
             // Enable forced database query

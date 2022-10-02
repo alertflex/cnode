@@ -95,7 +95,7 @@ CREATE TABLE `node_alerts` (
 CREATE TABLE `node_monitor` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(255) NOT NULL DEFAULT '',
+  `node` varchar(255) NOT NULL DEFAULT '',
   `probe` varchar(255) NOT NULL,
   `events_crs` bigint unsigned NOT NULL DEFAULT '0',
   `events_hids` bigint unsigned NOT NULL DEFAULT '0',
@@ -152,43 +152,6 @@ CREATE TABLE `net_countries` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `net_topsessions` (
-  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node` varchar(128) NOT NULL DEFAULT '',
-  `probe` varchar(255) NOT NULL,
-  `sensor_name` varchar(255) NOT NULL,
-  `sensor_type` varchar(255) NOT NULL,
-  `src_ip` varchar(128) NOT NULL DEFAULT '',
-  `src_country` varchar(128) NOT NULL DEFAULT '',
-  `dst_ip` varchar(128) NOT NULL DEFAULT '',
-  `dst_country` varchar(128) NOT NULL DEFAULT '',
-  `src_hostname` varchar(512) NOT NULL DEFAULT '',
-  `dst_hostname` varchar(512) NOT NULL DEFAULT '',
-  `sessions` bigint unsigned NOT NULL DEFAULT '0',
-  `token_exist` int(2) unsigned NOT NULL DEFAULT '0',
-  `time_of_survey` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `net_topbytes` (
-  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node` varchar(128) NOT NULL DEFAULT '',
-  `probe` varchar(255) NOT NULL,
-  `sensor_name` varchar(255) NOT NULL,
-  `sensor_type` varchar(255) NOT NULL,
-  `src_ip` varchar(128) NOT NULL DEFAULT '',
-  `src_country` varchar(128) NOT NULL DEFAULT '',
-  `dst_ip` varchar(128) NOT NULL DEFAULT '',
-  `dst_country` varchar(128) NOT NULL DEFAULT '',
-  `src_hostname` varchar(512) NOT NULL DEFAULT '',
-  `dst_hostname` varchar(512) NOT NULL DEFAULT '',
-  `bytes` bigint unsigned NOT NULL DEFAULT '0',
-  `time_of_survey` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 USE alertflex;
 
 CREATE TABLE `project` (
@@ -201,6 +164,7 @@ CREATE TABLE `project` (
   `node_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `net_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
+  `sensor_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `block_iprange` int(10) unsigned NOT NULL DEFAULT '0',
   `ioc_check` int(2) unsigned NOT NULL DEFAULT '0',
   `ioc_event` int(10) unsigned NOT NULL DEFAULT '0',
@@ -251,7 +215,8 @@ CREATE TABLE `project` (
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 0, 0, 0, 0, 100, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", 0, "", "", "", "", "", "");
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 0, 0, 0, 0, 30, 100, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "", 0, "", "", "", "", "", "");
+
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -276,31 +241,6 @@ CREATE TABLE `groups` (
 
 INSERT INTO groups VALUES ("admin", "_project_user");
 
-CREATE TABLE `home_network` (
-  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node_id` varchar(255) NOT NULL DEFAULT '',
-  `description` varchar(512) NOT NULL DEFAULT '',
-  `network` varchar(128) NOT NULL DEFAULT '',
-  `netmask` varchar(128) NOT NULL DEFAULT '',
-  `alert_suppress` int(2) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `hosts` (
-  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `name` varchar(512) NOT NULL DEFAULT '',
-  `node` varchar(255) NOT NULL DEFAULT '',
-  `agent` varchar(255) NOT NULL DEFAULT '',
-  `ec2` varchar(255) NOT NULL DEFAULT '',
-  `description` varchar(512) NOT NULL DEFAULT '',
-  `cred` varchar(255) NOT NULL DEFAULT '',
-  `address` varchar(512) NOT NULL DEFAULT '',
-  `port` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `credential` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -314,15 +254,33 @@ CREATE TABLE `credential` (
 
 INSERT INTO `credential` (`name`,`ref_id`,`username`,`pass`,`description`,`ssl_key`) VALUES ('dummy','_project_id','','','','');
 
+CREATE TABLE `hosts` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(512) NOT NULL DEFAULT '',
+  `node` varchar(255) NOT NULL DEFAULT '',
+  `agent` varchar(255) NOT NULL DEFAULT '',
+  `host_type` varchar(128) NOT NULL DEFAULT '', -- collector, agent
+  `cloud_instance` varchar(512) NOT NULL DEFAULT '',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `cred` varchar(255) NOT NULL DEFAULT '',
+  `address` varchar(512) NOT NULL DEFAULT '',
+  `port` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `node` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL,
   `description` varchar(512) NOT NULL DEFAULT '',
-  `unit` varchar(512) NOT NULL DEFAULT '',
+  `node_type` varchar(128) NOT NULL DEFAULT '',
+  `vpc` varchar(128) NOT NULL DEFAULT '',
   `commands_control` int(2) unsigned NOT NULL DEFAULT '0', 
   `filters_control` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ref_id`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `node` (`ref_id`,`name`,`description`,`node_type`,`vpc`,`commands_control`,`filters_control`) VALUES ('_project_id','cnode','Central node','internal','indef',0,0);
 
 CREATE TABLE `sensor` (
   `ref_id` varchar(255) NOT NULL DEFAULT '',
@@ -331,15 +289,40 @@ CREATE TABLE `sensor` (
   `host_name` varchar(512) NOT NULL,
   `description` varchar(512) NOT NULL DEFAULT '',
   `sensor_type` varchar(64) NOT NULL DEFAULT '',
-  `rulegroup_name` varchar(64) NOT NULL DEFAULT '',
+  `awsids_rulegroup` varchar(512) NOT NULL DEFAULT '',
+  `k8s_policy` varchar(512) NOT NULL DEFAULT '',
+  `suricata_rule` varchar(512) NOT NULL DEFAULT '',
   `status` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ref_id`,`node`,`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `networks` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `node` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `network` varchar(128) NOT NULL DEFAULT '',
+  `netmask` varchar(128) NOT NULL DEFAULT '',
+  `net_acl` varchar(128) NOT NULL DEFAULT '',
+  `net_type` int(2) unsigned NOT NULL DEFAULT '0', --  0 home, 1 manageable, 2 allowed
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `policy` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `namespace` varchar(512) NOT NULL DEFAULT '',
+  `policy_type` int(10) unsigned NOT NULL DEFAULT '0', -- 0 - calico, 1 - k8s
+  `policy_text` text,
+  PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `container` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `container_name` varchar(1024) NOT NULL DEFAULT '',
   `container_id` varchar(1024) NOT NULL DEFAULT '',
@@ -356,7 +339,7 @@ CREATE TABLE `container` (
 CREATE TABLE `agent` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `agent_id` varchar(32) NOT NULL DEFAULT '',
   `agent_key` varchar(512) NOT NULL DEFAULT '',
   `ip` varchar(128) NOT NULL DEFAULT '',
@@ -376,7 +359,7 @@ CREATE TABLE `agent` (
 CREATE TABLE `agents_group` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `group_name` varchar(128) NOT NULL DEFAULT '', 
   `group_ref` varchar(128) NOT NULL DEFAULT '',
   `agents_count` int(10) unsigned NOT NULL DEFAULT '0',
@@ -387,7 +370,7 @@ CREATE TABLE `agents_group` (
 
 CREATE TABLE `agent_sca` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `agent` varchar(128) NOT NULL DEFAULT '',
   `policy_id` varchar(512) NOT NULL DEFAULT '',
@@ -404,7 +387,7 @@ CREATE TABLE `agent_sca` (
 CREATE TABLE `agent_vul` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `agent` varchar(128) NOT NULL DEFAULT '',
   `pkg_name` varchar(512) NOT NULL DEFAULT '',
   `pkg_version` varchar(512) NOT NULL DEFAULT '',
@@ -415,19 +398,6 @@ CREATE TABLE `agent_vul` (
   `severity` varchar(128) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `bwlist_ip` (
-  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '', -- in case aws node is cnode
-  `actuator` varchar(512) NOT NULL, -- naclId for aws, probe for suricata
-  `block_type` int(2) unsigned NOT NULL DEFAULT '0', -- suricata , 1 - aws nacl
-  `rule_number` int(10) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(512) NOT NULL DEFAULT '',
-  `expire_ip` int(10) unsigned NOT NULL DEFAULT '0',
-  `date_add` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -464,11 +434,9 @@ CREATE TABLE `response` (
 CREATE TABLE `correlation` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `corrl_id` varchar(255) DEFAULT NULL,
-  `alert_source` varchar(128) NOT NULL DEFAULT '',
-  `corrl_type` varchar(128) DEFAULT NULL,
-  `corrl_cause` varchar(512) NOT NULL DEFAULT '',
-  `aggr_counter` int(10) unsigned NOT NULL DEFAULT '0',
+  `corrl_name` varchar(255) DEFAULT NULL,
+  `jpql_string` varchar(2048) NOT NULL DEFAULT '',
+  `aggr_limit` int(10) unsigned NOT NULL DEFAULT '0',
   `aggr_period` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -493,17 +461,50 @@ CREATE TABLE `playbook` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `blockip_job` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL,
+  `playbook` varchar(255) NOT NULL,
+  `play_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `description` varchar(512) NOT NULL DEFAULT '',
+  `block_type` int(10) unsigned NOT NULL DEFAULT '0',  -- 0 - auto, 1 - nacl, 2 - policy, 3 - suricata rule
+  `policy` varchar(512) NOT NULL, 
+  `rule` varchar(512) NOT NULL DEFAULT '',
+  `nacl` varchar(512) NOT NULL, 
+  `block_params` varchar(128) NOT NULL DEFAULT '', -- LogicOutput, SrcIp, DstIp
+  `ip_expire` int(10) unsigned NOT NULL DEFAULT '0',
+  `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
+  `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `blockip_list` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `node` varchar(255) NOT NULL DEFAULT '',
+  `sensor_host` varchar(512) NOT NULL, -- sensor for suricata, sensor for policy
+  `block_type` int(10) unsigned NOT NULL DEFAULT '0', -- 0 - auto, 1 - nacl, 2 - policy, 3 - suricata
+  `actuator` varchar(512) NOT NULL, -- nacl,  policy name
+  `nacl_rule` int(10) unsigned NOT NULL DEFAULT '0',
+  `ip` varchar(128) NOT NULL DEFAULT '',
+  `ip_expire` int(10) unsigned NOT NULL DEFAULT '0',
+  `date_add` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE `report_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
+  `report_type` int(10) unsigned NOT NULL DEFAULT '0',
   `notify_users` varchar(1024) DEFAULT NULL,
-  `type_report` varchar(128) DEFAULT NULL,
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -552,33 +553,31 @@ CREATE TABLE `notify_job` (
 
 CREATE TABLE `script_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL,
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `host` varchar(255) NOT NULL DEFAULT '',
-  `script_params` varchar(1024) NOT NULL DEFAULT '',
+  `dst_host` varchar(255) NOT NULL DEFAULT '',
+  `script_type` int(10) unsigned NOT NULL DEFAULT '0', -- 0 - ansible, 1 - ssh
   `script_name` varchar(512) NOT NULL DEFAULT '',
-  `script_type` int(2) unsigned NOT NULL DEFAULT '0', -- 0 - ansible, 1 - ssh
+  `script_params` varchar(1024) NOT NULL DEFAULT '',
   `script` text,
-  `block_ip` int(2) unsigned NOT NULL DEFAULT '0', -- 0 - none, 1 - block dst ip, 2 - block src ip
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `ar_job` (
+CREATE TABLE `command_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL,
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `ref_id` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `type_response` int(2) unsigned NOT NULL DEFAULT '0',
+  `command_type` int(10) unsigned NOT NULL DEFAULT '0', -- AnomalyDetection, AwsLambda, Docker (if Falco), WazuhAR
   `command_params` varchar(1024) NOT NULL DEFAULT '',
   `command_name` varchar(1024) NOT NULL DEFAULT '',
-  `expire_ip` int(10) unsigned NOT NULL DEFAULT '0',
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`rec_id`)
@@ -601,15 +600,15 @@ CREATE TABLE `files_job` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `scan_job` (
+CREATE TABLE `posture_job` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
-  `scan_type` varchar(255) NOT NULL,
+  `posture_type` int(10) unsigned NOT NULL DEFAULT '0',
   `value1` varchar(512) NOT NULL,
   `value2` varchar(512) NOT NULL,
   `value3` int(10) unsigned NOT NULL DEFAULT '0',
@@ -625,7 +624,7 @@ CREATE TABLE `cti_job` (
   `playbook` varchar(255) NOT NULL,
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `description` varchar(512) NOT NULL DEFAULT '',
-  `cti_type` int(2) unsigned NOT NULL DEFAULT '0', -- virustotal, x-force
+  `cti_type` int(10) unsigned NOT NULL DEFAULT '0', -- virustotal, x-force
   `cti_params` varchar(1024) NOT NULL DEFAULT '',
   `wait_result` int(10) unsigned NOT NULL DEFAULT '0',
   `error_exit` int(2) unsigned NOT NULL DEFAULT '0',
@@ -639,7 +638,7 @@ CREATE TABLE `sandbox_job` (
   `play_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ref_id` varchar(255) NOT NULL DEFAULT '',
   `sensor_type` varchar(255) NOT NULL DEFAULT '',
-  `sandbox_type` varchar(255) NOT NULL DEFAULT '',
+  `sandbox_type` int(10) unsigned NOT NULL DEFAULT '0', 
   `host_name` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(512) NOT NULL DEFAULT '',
   `file_path` varchar(512) NOT NULL DEFAULT '',
@@ -670,7 +669,7 @@ CREATE TABLE `sandbox_task` (
 CREATE TABLE `zap_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `target` varchar(512) NOT NULL DEFAULT '',
   `alert_ref` varchar(128) NOT NULL DEFAULT '',
@@ -693,7 +692,7 @@ CREATE TABLE `zap_scan` (
 CREATE TABLE `docker_scan` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `test_desc` varchar(512) NOT NULL DEFAULT '',
   `result_id` varchar(128) NOT NULL DEFAULT '',
@@ -708,7 +707,7 @@ CREATE TABLE `docker_scan` (
 CREATE TABLE `trivy_scan` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `image_name` varchar(1024) NOT NULL DEFAULT '',
   `image_type` varchar(1024) NOT NULL DEFAULT '',
@@ -728,7 +727,7 @@ CREATE TABLE `trivy_scan` (
 CREATE TABLE `kube_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `test_id` varchar(512) NOT NULL DEFAULT '',
   `test_name` varchar(512) NOT NULL DEFAULT '',
@@ -749,7 +748,7 @@ CREATE TABLE `kube_scan` (
 CREATE TABLE `hunter_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `target` varchar(512) NOT NULL DEFAULT '',
   `kube_type` varchar(512) NOT NULL DEFAULT '',
@@ -787,7 +786,7 @@ CREATE TABLE `inspector_scan` (
 CREATE TABLE `dependency_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `project_id` varchar(512) NOT NULL DEFAULT '',
   `file_name` varchar(1024) NOT NULL DEFAULT '',
@@ -804,7 +803,7 @@ CREATE TABLE `dependency_scan` (
 CREATE TABLE `sonar_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `project_id` varchar(512) NOT NULL DEFAULT '',
   `project_path` varchar(1024) NOT NULL DEFAULT '',
@@ -825,7 +824,7 @@ CREATE TABLE `sonar_scan` (
 CREATE TABLE `nmap_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `host` varchar(128) NOT NULL DEFAULT '',
   `protocol` varchar(128) NOT NULL DEFAULT '',
@@ -837,24 +836,27 @@ CREATE TABLE `nmap_scan` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `snyk_scan` (
+CREATE TABLE `tfsec_scan` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `node_id` varchar(128) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `project_id` varchar(1024) NOT NULL DEFAULT '',
-  `vuln_id` varchar(1024) NOT NULL DEFAULT '',
-  `package_name` varchar(1024) NOT NULL DEFAULT '',
-  `package_manager` varchar(128) NOT NULL DEFAULT '',
-  `severity` varchar(128) NOT NULL DEFAULT '',
-  `language` varchar(128) NOT NULL DEFAULT '',
-  `title` varchar(1024) NOT NULL DEFAULT '',
-  `description` varchar(2048) NOT NULL DEFAULT '',
-  `vuln_version` varchar(128) NOT NULL DEFAULT '',
-  `vuln_ref` varchar(2048) NOT NULL DEFAULT '',
-  `vuln_cve` varchar(512) NOT NULL DEFAULT '',
-  `vuln_cwe` varchar(512) NOT NULL DEFAULT '',
-  `publication_time` varchar(512) NOT NULL DEFAULT '',
+  `rule_id` varchar(64) NOT NULL DEFAULT '',
+  `long_id` varchar(128) NOT NULL DEFAULT '',
+  `rule_description` varchar(1024) NOT NULL DEFAULT '',
+  `rule_provider` varchar(128) NOT NULL DEFAULT '',
+  `rule_service` varchar(128) NOT NULL DEFAULT '',
+  `impact` varchar(1024) NOT NULL DEFAULT '',
+  `resolution` varchar(1024) NOT NULL DEFAULT '',
+  `links` varchar(2048) NOT NULL DEFAULT '',
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  `severity` varchar(64) NOT NULL DEFAULT '',
+  `status` int(10) unsigned NOT NULL DEFAULT '0',
+  `resource` varchar(512) NOT NULL DEFAULT '',
+  `filename` varchar(1024) NOT NULL DEFAULT '',
+  `start_line` int(10) unsigned NOT NULL DEFAULT '0',
+  `end_line` int(10) unsigned NOT NULL DEFAULT '0',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -915,7 +917,7 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`,
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (12,'_project_id','AmazonInspector','Amazon Inspector', 'Informational', 'Low', 'Medium', 'High', 1,1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (13,'_project_id','DependencyCheck','Dependency-heck', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`, `value1`, `value2`, `value3`, `value4`, `value5`) VALUES (14,'_project_id','DockerBench','Docker Bench for Security', 'PASS', 'INFO', 'NOTE', 'WARN', 'FAIL', 0,1,1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (15,'_project_id','AnomalyDetection','OpenDistro Anomaly Detection', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (15,'_project_id','AnomalyDetection','OpenSerach Anomaly Detection', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (16,'_project_id','GuardDuty','Amazon GuardDuty', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (17,'_project_id','KubeBench','Kube-Bench', 'PASS', 'INFO', 'NOTE', 'WARN', 'FAIL', 0,1,1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (18,'_project_id','KubeHunter','Kube-Hunter', 'info', 'low', 'medium', 'high', 'critical', 1,1,2,3,3);
@@ -926,7 +928,7 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_t
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (23,'_project_id','XforceHash','XforceHash', 'low', 'medium', 'high',1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (24,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (25,'_project_id','Nmap','Nmap', 1);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (26,'_project_id','Snyk','Snyk', 'info', 'low', 'medium', 'high', 'critical', 1,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (26,'_project_id','Tfsec','Tfsec', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (27,'_project_id','IpInsight','IpInsight', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (28,'_project_id','CloudTrail','CloudTrail', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (29,'_project_id','CloudSploit','CloudSploit', 'OK', 'UNKNOWN', 'WARN', 'FAIL', 0,1,2,3);

@@ -72,7 +72,7 @@ public class Trivy {
                     TrivyScan ts = new TrivyScan();
 
                     ts.setRefId(r);
-                    ts.setNodeId(n);
+                    ts.setNode(n);
                     ts.setProbe(p);
                     ts.setImageName(imageName);
                     ts.setImageType(imageType);

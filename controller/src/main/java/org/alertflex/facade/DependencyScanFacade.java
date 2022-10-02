@@ -45,7 +45,7 @@ public class DependencyScanFacade extends AbstractFacade<DependencyScan> {
         try {
             em.flush();
 
-            Query vQry = em.createQuery("SELECT d FROM DependencyScan d WHERE d.refId = :ref AND d.nodeId = :node AND d.probe = :probe AND d.projectId = :prj AND d.vulnName = :name AND d.fileName = :file")
+            Query vQry = em.createQuery("SELECT d FROM DependencyScan d WHERE d.refId = :ref AND d.node = :node AND d.probe = :probe AND d.projectId = :prj AND d.vulnName = :name AND d.fileName = :file")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)

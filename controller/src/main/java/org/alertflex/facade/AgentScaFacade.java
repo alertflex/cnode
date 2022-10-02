@@ -47,7 +47,7 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT a FROM AgentSca a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.scaId = :id AND a.policyId = :policy")
+                    "SELECT a FROM AgentSca a WHERE a.refId = :ref AND a.node = :node AND a.agent = :agent AND a.scaId = :id AND a.policyId = :policy")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("agent", agent)

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SonarScan.findAll", query = "SELECT s FROM SonarScan s"),
     @NamedQuery(name = "SonarScan.findByRecId", query = "SELECT s FROM SonarScan s WHERE s.recId = :recId"),
     @NamedQuery(name = "SonarScan.findByRefId", query = "SELECT s FROM SonarScan s WHERE s.refId = :refId"),
-    @NamedQuery(name = "SonarScan.findByNodeId", query = "SELECT s FROM SonarScan s WHERE s.nodeId = :nodeId"),
+    @NamedQuery(name = "SonarScan.findByNode", query = "SELECT s FROM SonarScan s WHERE s.node = :node"),
     @NamedQuery(name = "SonarScan.findByProbe", query = "SELECT s FROM SonarScan s WHERE s.probe = :probe"),
     @NamedQuery(name = "SonarScan.findByProjectId", query = "SELECT s FROM SonarScan s WHERE s.projectId = :projectId"),
     @NamedQuery(name = "SonarScan.findByProjectPath", query = "SELECT s FROM SonarScan s WHERE s.projectPath = :projectPath"),
@@ -64,8 +64,8 @@ public class SonarScan implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -138,10 +138,10 @@ public class SonarScan implements Serializable {
         this.recId = recId;
     }
 
-    public SonarScan(Long recId, String refId, String nodeId, String probe, String projectId, String projectPath, String issueKey, String issueSeverity, int severity, String rule, String component, String message, String status, String tags, int line) {
+    public SonarScan(Long recId, String refId, String node, String probe, String projectId, String projectPath, String issueKey, String issueSeverity, int severity, String rule, String component, String message, String status, String tags, int line) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.probe = probe;
         this.projectId = projectId;
         this.projectPath = projectPath;
@@ -172,12 +172,12 @@ public class SonarScan implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getProbe() {

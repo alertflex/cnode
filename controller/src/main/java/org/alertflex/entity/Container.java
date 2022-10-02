@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -43,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Container.findAll", query = "SELECT c FROM Container c"),
     @NamedQuery(name = "Container.findByRecId", query = "SELECT c FROM Container c WHERE c.recId = :recId"),
     @NamedQuery(name = "Container.findByRefId", query = "SELECT c FROM Container c WHERE c.refId = :refId"),
-    @NamedQuery(name = "Container.findByNodeId", query = "SELECT c FROM Container c WHERE c.nodeId = :nodeId"),
+    @NamedQuery(name = "Container.findByNode", query = "SELECT c FROM Container c WHERE c.node = :node"),
     @NamedQuery(name = "Container.findByProbe", query = "SELECT c FROM Container c WHERE c.probe = :probe"),
     @NamedQuery(name = "Container.findByContainerName", query = "SELECT c FROM Container c WHERE c.containerName = :containerName"),
     @NamedQuery(name = "Container.findByContainerId", query = "SELECT c FROM Container c WHERE c.containerId = :containerId"),
@@ -70,8 +60,8 @@ public class Container implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -126,10 +116,10 @@ public class Container implements Serializable {
         this.recId = recId;
     }
 
-    public Container(Integer recId, String refId, String nodeId, String probe, String containerName, String containerId, String imageName, String imageId, String command, String state, String status) {
+    public Container(Integer recId, String refId, String node, String probe, String containerName, String containerId, String imageName, String imageId, String command, String state, String status) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.probe = probe;
         this.containerName = containerName;
         this.containerId = containerId;
@@ -156,12 +146,12 @@ public class Container implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getProbe() {

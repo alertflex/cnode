@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DependencyScan.findAll", query = "SELECT d FROM DependencyScan d"),
     @NamedQuery(name = "DependencyScan.findByRecId", query = "SELECT d FROM DependencyScan d WHERE d.recId = :recId"),
     @NamedQuery(name = "DependencyScan.findByRefId", query = "SELECT d FROM DependencyScan d WHERE d.refId = :refId"),
-    @NamedQuery(name = "DependencyScan.findByNodeId", query = "SELECT d FROM DependencyScan d WHERE d.nodeId = :nodeId"),
+    @NamedQuery(name = "DependencyScan.findByNode", query = "SELECT d FROM DependencyScan d WHERE d.node = :node"),
     @NamedQuery(name = "DependencyScan.findByProbe", query = "SELECT d FROM DependencyScan d WHERE d.probe = :probe"),
     @NamedQuery(name = "DependencyScan.findByProjectId", query = "SELECT d FROM DependencyScan d WHERE d.projectId = :projectId"),
     @NamedQuery(name = "DependencyScan.findByFileName", query = "SELECT d FROM DependencyScan d WHERE d.fileName = :fileName"),
@@ -60,8 +60,8 @@ public class DependencyScan implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -116,10 +116,10 @@ public class DependencyScan implements Serializable {
         this.recId = recId;
     }
 
-    public DependencyScan(Long recId, String refId, String nodeId, String probe, String projectId, String fileName, String filePath, String severity, String vulnName, String vulnRef, String description) {
+    public DependencyScan(Long recId, String refId, String node, String probe, String projectId, String fileName, String filePath, String severity, String vulnName, String vulnRef, String description) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.probe = probe;
         this.projectId = projectId;
         this.fileName = fileName;
@@ -146,12 +146,12 @@ public class DependencyScan implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getProbe() {

@@ -46,7 +46,7 @@ public class NmapScanFacade extends AbstractFacade<NmapScan> {
             em.flush();
 
             Query vQry = em.createQuery(
-                    "SELECT n FROM NmapScan n WHERE n.refId = :ref AND n.nodeId = :node AND n.probe = :probe AND n.host = :host AND n.portId = :p AND n.state = :s")
+                    "SELECT n FROM NmapScan n WHERE n.refId = :ref AND n.node = :node AND n.probe = :probe AND n.host = :host AND n.portId = :p AND n.state = :s")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)
@@ -88,6 +88,28 @@ public class NmapScanFacade extends AbstractFacade<NmapScan> {
         }
 
         return nsList;
+    }
+    
+    public List<Object[]> getFindings(String ref) {
+
+        List<Object[]> f = null;
+
+        try {
+            em.flush();
+            
+            Query qry = em.createQuery(
+                    "SELECT n.state, COUNT(n) FROM NmapScan n WHERE n.refId = :ref GROUP BY n.state")
+                    .setParameter("ref", ref);
+            // Enable forced database query
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f =  (List<Object[]>) qry.getResultList();
+
+        } catch (Exception e) {
+            f = null;
+        }
+
+        return f;
     }
 
 }

@@ -47,7 +47,7 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
             em.flush();
 
             Query vQry = em.createQuery(
-                    "SELECT a FROM AgentVul a WHERE a.refId = :ref AND a.nodeId = :node AND a.agent = :agent AND a.vulnerability = :vuln AND a.pkgName = :pkg")
+                    "SELECT a FROM AgentVul a WHERE a.refId = :ref AND a.node = :node AND a.agent = :agent AND a.vulnerability = :vuln AND a.pkgName = :pkg")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("agent", agent)

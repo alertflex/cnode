@@ -1,16 +1,7 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package org.alertflex.entity;
 
@@ -31,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "agent")
 @XmlRootElement
@@ -38,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Agent.findAll", query = "SELECT a FROM Agent a"),
     @NamedQuery(name = "Agent.findByRecId", query = "SELECT a FROM Agent a WHERE a.recId = :recId"),
     @NamedQuery(name = "Agent.findByRefId", query = "SELECT a FROM Agent a WHERE a.refId = :refId"),
-    @NamedQuery(name = "Agent.findByNodeId", query = "SELECT a FROM Agent a WHERE a.nodeId = :nodeId"),
+    @NamedQuery(name = "Agent.findByNode", query = "SELECT a FROM Agent a WHERE a.node = :node"),
     @NamedQuery(name = "Agent.findByAgentId", query = "SELECT a FROM Agent a WHERE a.agentId = :agentId"),
     @NamedQuery(name = "Agent.findByAgentKey", query = "SELECT a FROM Agent a WHERE a.agentKey = :agentKey"),
     @NamedQuery(name = "Agent.findByIp", query = "SELECT a FROM Agent a WHERE a.ip = :ip"),
@@ -68,8 +63,8 @@ public class Agent implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
@@ -141,10 +136,10 @@ public class Agent implements Serializable {
         this.recId = recId;
     }
 
-    public Agent(Integer recId, String refId, String nodeId, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String groupName, String osPlatform, String osVersion, String osName) {
+    public Agent(Integer recId, String refId, String node, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String groupName, String osPlatform, String osVersion, String osName) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.agentId = agentId;
         this.agentKey = agentKey;
         this.ip = ip;
@@ -175,12 +170,12 @@ public class Agent implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getAgentId() {

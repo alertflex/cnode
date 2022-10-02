@@ -40,10 +40,12 @@ sudo cp ./reports/scanners_report.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_zap.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_dependency.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_sonarqube.jasper $PROJECT_PATH/reports/
-sudo cp ./reports/scanner_snyk.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/scanner_nmap.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/cloud_report.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/cloud_ins.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/cloud_gd.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/cloud_sploit.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/cloud_tfsec.jasper $PROJECT_PATH/reports/
 
 sudo mkdir -p $PROJECT_PATH/filters
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
@@ -109,35 +111,9 @@ sudo sed -i "s/_db_host/$DB_HOST/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_user/$DB_USER/g" ./configs/alertflex.sql
 sudo sed -i "s/_db_pwd/$DB_PWD/g" ./configs/alertflex.sql
 
-if [[ $INSTALL_MISP == no ]]
-then
-	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
-	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./configs/misp-db.sql
-	sudo mysql -u root -p$DB_PWD < ./configs/misp-db.sql
-else
-	sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
-	echo "*** Installation Docker and MISP container ***"
-	sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./misp/misp-db.sql
-	sudo mysql -u root -p$DB_PWD < ./misp/misp-db.sql
-	sudo bash -c "echo 'bind-address = 0.0.0.0' >> /etc/my.cnf"
-	sudo systemctl stop mysqld
-	sudo systemctl start mysqld
-	sudo curl -fsSL https://get.docker.com/ | sh
-	sudo systemctl start docker
-	sudo systemctl enable docker
-	sudo docker network create --subnet 192.168.200.0/24 --gateway 192.168.200.1 misp-network
-	sudo cp /etc/nginx/ssl/nginx.key $INSTALL_PATH/misp
-	sudo cp /etc/nginx/ssl/nginx.crt $INSTALL_PATH/misp
-	cd $INSTALL_PATH/misp
-	sudo docker build \
-	--build-arg MYSQL_MISP_HOST=192.168.200.1 \
-	--build-arg MYSQL_MISP_PASSWORD=$DB_PWD \
-	--build-arg MISP_FQDN=$MISP_URL \
-	--build-arg MISP_GPG_PASSWORD=$MISP_GPG \
-	-t alertflex/misp .
-	sudo docker run -d --name misp -p 8443:443 --net misp-network --ip 192.168.200.2 --restart=always alertflex/misp
-	sudo docker exec -i -e MYSQL_MISP_HOST=192.168.200.1 -e MYSQL_MISP_PASSWORD=$DB_PWD misp sh -c "/db-init.sh"
-fi
+sudo mysql -u root -p$DB_PWD < ./configs/alertflex.sql
+sudo sed -i "s/_mispdb_pwd/$DB_PWD/g" ./configs/misp-db.sql
+sudo mysql -u root -p$DB_PWD < ./configs/misp-db.sql
 
 echo "*** Installation Activemq ***"
 cd /opt
@@ -271,7 +247,7 @@ sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER 
 
 if [[ $INSTALL_MC == yes ]]
 then
-	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.2/alertflex-mc.war"
+	sudo curl -LO "https://github.com/alertflex/cnode/releases/download/v1.0.89/alertflex-mc.war"
 	sudo $GLASSFISH_PATH/bin/asadmin --passwordfile password.txt --user $ADMIN_USER deploy alertflex-mc.war
 fi
 

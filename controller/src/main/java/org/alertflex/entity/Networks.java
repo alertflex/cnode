@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -29,19 +19,24 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
-@Table(name = "home_network")
+@Table(name = "networks")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "HomeNetwork.findAll", query = "SELECT h FROM HomeNetwork h")
-    , @NamedQuery(name = "HomeNetwork.findByRecId", query = "SELECT h FROM HomeNetwork h WHERE h.recId = :recId")
-    , @NamedQuery(name = "HomeNetwork.findByRefId", query = "SELECT h FROM HomeNetwork h WHERE h.refId = :refId")
-    , @NamedQuery(name = "HomeNetwork.findByNodeId", query = "SELECT h FROM HomeNetwork h WHERE h.nodeId = :nodeId")
-    , @NamedQuery(name = "HomeNetwork.findByDescription", query = "SELECT h FROM HomeNetwork h WHERE h.description = :description")
-    , @NamedQuery(name = "HomeNetwork.findByNetwork", query = "SELECT h FROM HomeNetwork h WHERE h.network = :network")
-    , @NamedQuery(name = "HomeNetwork.findByNetmask", query = "SELECT h FROM HomeNetwork h WHERE h.netmask = :netmask")
-    , @NamedQuery(name = "HomeNetwork.findByAlertSuppress", query = "SELECT h FROM HomeNetwork h WHERE h.alertSuppress = :alertSuppress")})
-public class HomeNetwork implements Serializable {
+    @NamedQuery(name = "Networks.findAll", query = "SELECT n FROM Networks n"),
+    @NamedQuery(name = "Networks.findByRecId", query = "SELECT n FROM Networks n WHERE n.recId = :recId"),
+    @NamedQuery(name = "Networks.findByRefId", query = "SELECT n FROM Networks n WHERE n.refId = :refId"),
+    @NamedQuery(name = "Networks.findByNode", query = "SELECT n FROM Networks n WHERE n.node = :node"),
+    @NamedQuery(name = "Networks.findByDescription", query = "SELECT n FROM Networks n WHERE n.description = :description"),
+    @NamedQuery(name = "Networks.findByNetwork", query = "SELECT n FROM Networks n WHERE n.network = :network"),
+    @NamedQuery(name = "Networks.findByNetmask", query = "SELECT n FROM Networks n WHERE n.netmask = :netmask"),
+    @NamedQuery(name = "Networks.findByNetAcl", query = "SELECT n FROM Networks n WHERE n.netAcl = :netAcl"),
+    @NamedQuery(name = "Networks.findByNetType", query = "SELECT n FROM Networks n WHERE n.netType = :netType")})
+public class Networks implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,8 +52,8 @@ public class HomeNetwork implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -76,24 +71,30 @@ public class HomeNetwork implements Serializable {
     private String netmask;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "alert_suppress")
-    private int alertSuppress;
+    @Size(min = 1, max = 128)
+    @Column(name = "net_acl")
+    private String netAcl;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "net_type")
+    private int netType;
 
-    public HomeNetwork() {
+    public Networks() {
     }
 
-    public HomeNetwork(Integer recId) {
+    public Networks(Integer recId) {
         this.recId = recId;
     }
 
-    public HomeNetwork(Integer recId, String refId, String nodeId, String description, String network, String netmask, int alertSuppress) {
+    public Networks(Integer recId, String refId, String node, String description, String network, String netmask, String netAcl, int netType) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.description = description;
         this.network = network;
         this.netmask = netmask;
-        this.alertSuppress = alertSuppress;
+        this.netAcl = netAcl;
+        this.netType = netType;
     }
 
     public Integer getRecId() {
@@ -112,12 +113,12 @@ public class HomeNetwork implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getDescription() {
@@ -144,12 +145,20 @@ public class HomeNetwork implements Serializable {
         this.netmask = netmask;
     }
 
-    public int getAlertSuppress() {
-        return alertSuppress;
+    public String getNetAcl() {
+        return netAcl;
     }
 
-    public void setAlertSuppress(int alertSuppress) {
-        this.alertSuppress = alertSuppress;
+    public void setNetAcl(String netAcl) {
+        this.netAcl = netAcl;
+    }
+
+    public int getNetType() {
+        return netType;
+    }
+
+    public void setNetType(int netType) {
+        this.netType = netType;
     }
 
     @Override
@@ -162,10 +171,10 @@ public class HomeNetwork implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof HomeNetwork)) {
+        if (!(object instanceof Networks)) {
             return false;
         }
-        HomeNetwork other = (HomeNetwork) object;
+        Networks other = (Networks) object;
         if ((this.recId == null && other.recId != null) || (this.recId != null && !this.recId.equals(other.recId))) {
             return false;
         }
@@ -174,7 +183,7 @@ public class HomeNetwork implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.HomeNetwork[ recId=" + recId + " ]";
+        return "org.alertflex.entity.Networks[ recId=" + recId + " ]";
     }
-
+    
 }

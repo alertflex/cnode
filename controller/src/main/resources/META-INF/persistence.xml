@@ -13,7 +13,7 @@
     <class>org.alertflex.entity.SensorPK</class>
     <class>org.alertflex.entity.AlertPriority</class>
     <class>org.alertflex.entity.AlertCategory</class>
-    <class>org.alertflex.entity.HomeNetwork</class>
+    <class>org.alertflex.entity.Networks</class>
     <class>org.alertflex.entity.Hosts</class>
     <class>org.alertflex.entity.Project</class>
     <class>org.alertflex.entity.Users</class>
@@ -22,7 +22,7 @@
     <class>org.alertflex.entity.KubeScan</class>
     <class>org.alertflex.entity.HunterScan</class>
     <class>org.alertflex.entity.ZapScan</class>
-    <class>org.alertflex.entity.SnykScan</class>
+    <class>org.alertflex.entity.TfsecScan</class>
     <class>org.alertflex.entity.NmapScan</class>
     <class>org.alertflex.entity.InspectorScan</class>
     <class>org.alertflex.entity.SonarScan</class>
@@ -44,8 +44,6 @@
     <class>org.alertflex.entity.NodeAlerts</class>
     <class>org.alertflex.entity.NetStat</class>
     <class>org.alertflex.entity.NetCountries</class>
-    <class>org.alertflex.entity.NetTopbytes</class>
-    <class>org.alertflex.entity.NetTopsessions</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <validation-mode>NONE</validation-mode>
     <properties>

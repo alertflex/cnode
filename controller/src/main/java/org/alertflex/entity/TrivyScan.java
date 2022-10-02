@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -43,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "TrivyScan.findAll", query = "SELECT t FROM TrivyScan t"),
     @NamedQuery(name = "TrivyScan.findByRecId", query = "SELECT t FROM TrivyScan t WHERE t.recId = :recId"),
     @NamedQuery(name = "TrivyScan.findByRefId", query = "SELECT t FROM TrivyScan t WHERE t.refId = :refId"),
-    @NamedQuery(name = "TrivyScan.findByNodeId", query = "SELECT t FROM TrivyScan t WHERE t.nodeId = :nodeId"),
+    @NamedQuery(name = "TrivyScan.findByNode", query = "SELECT t FROM TrivyScan t WHERE t.node = :node"),
     @NamedQuery(name = "TrivyScan.findByProbe", query = "SELECT t FROM TrivyScan t WHERE t.probe = :probe"),
     @NamedQuery(name = "TrivyScan.findByImageName", query = "SELECT t FROM TrivyScan t WHERE t.imageName = :imageName"),
     @NamedQuery(name = "TrivyScan.findByImageType", query = "SELECT t FROM TrivyScan t WHERE t.imageType = :imageType"),
@@ -73,8 +63,8 @@ public class TrivyScan implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    @Column(name = "node_id")
-    private String nodeId;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -144,10 +134,10 @@ public class TrivyScan implements Serializable {
         this.recId = recId;
     }
 
-    public TrivyScan(Long recId, String refId, String nodeId, String probe, String imageName, String imageType, String imageId, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
+    public TrivyScan(Long recId, String refId, String node, String probe, String imageName, String imageType, String imageId, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeId = nodeId;
+        this.node = node;
         this.probe = probe;
         this.imageName = imageName;
         this.imageType = imageType;
@@ -177,12 +167,12 @@ public class TrivyScan implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getProbe() {

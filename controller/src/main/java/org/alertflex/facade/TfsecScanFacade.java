@@ -21,10 +21,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.SnykScan;
+import org.alertflex.entity.TfsecScan;
 
 @Stateless
-public class SnykScanFacade extends AbstractFacade<SnykScan> {
+public class TfsecScanFacade extends AbstractFacade<TfsecScan> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -34,34 +34,34 @@ public class SnykScanFacade extends AbstractFacade<SnykScan> {
         return em;
     }
 
-    public SnykScanFacade() {
-        super(SnykScan.class);
+    public TfsecScanFacade() {
+        super(TfsecScan.class);
     }
 
-    public SnykScan findVulnerability(String ref, String node, String probe, String prj, String id, String pkg) {
+    public TfsecScan findVulnerability(String ref, String node, String probe, String prj, String rule, String filename) {
 
-        SnykScan ss;
+        TfsecScan ts;
 
         try {
             em.flush();
 
-            Query vQry = em.createQuery("SELECT s FROM SnykScan s WHERE s.refId = :ref AND s.nodeId = :node AND s.probe = :probe AND s.projectId = :prj AND s.vulnId = :id AND s.packageName = :pkg")
+            Query vQry = em.createQuery("SELECT t FROM TfsecScan t WHERE t.refId = :ref AND t.node = :node AND t.probe = :probe AND t.projectId = :prj AND t.ruleId = :rule AND t.filename = :file")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)
                     .setParameter("prj", prj)
-                    .setParameter("id", id)
-                    .setParameter("pkg", pkg);
+                    .setParameter("rule", rule)
+                    .setParameter("file", filename);
             vQry.setMaxResults(1);
             // Enable forced database query
             vQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            ss = (SnykScan) vQry.getSingleResult();
+            ts = (TfsecScan) vQry.getSingleResult();
 
         } catch (Exception e) {
-            ss = null;
+            ts = null;
         }
 
-        return ss;
+        return ts;
 
     }
     
@@ -73,7 +73,7 @@ public class SnykScanFacade extends AbstractFacade<SnykScan> {
             em.flush();
             
             Query qry = em.createQuery(
-                    "SELECT s.severity, COUNT(s) FROM SnykScan s WHERE s.refId = :ref GROUP BY s.severity")
+                    "SELECT t.severity, COUNT(t) FROM TfsecScan t WHERE t.refId = :ref GROUP BY t.severity")
                     .setParameter("ref", ref);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

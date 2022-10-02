@@ -45,12 +45,14 @@ import org.alertflex.entity.Project;
 import org.alertflex.facade.AgentScaFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AlertFacade;
+import org.alertflex.facade.CloudsploitScanFacade;
 import org.alertflex.facade.DependencyScanFacade;
 import org.alertflex.facade.DockerScanFacade;
 import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.InspectorScanFacade;
 import org.alertflex.facade.KubeScanFacade;
-import org.alertflex.facade.SnykScanFacade;
+import org.alertflex.facade.NmapScanFacade;
+import org.alertflex.facade.TfsecScanFacade;
 import org.alertflex.facade.SonarScanFacade;
 import org.alertflex.facade.ZapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
@@ -95,7 +97,13 @@ public class ReportsMessageBean implements MessageListener {
     private ZapScanFacade zapScanFacade;
     
     @EJB
-    private SnykScanFacade snykScanFacade;
+    private NmapScanFacade nmapScanFacade;
+    
+    @EJB
+    private TfsecScanFacade tfsecScanFacade;
+    
+    @EJB
+    private CloudsploitScanFacade cloudsploitScanFacade;
     
     @EJB
     private SonarScanFacade sonarScanFacade;
@@ -259,16 +267,13 @@ public class ReportsMessageBean implements MessageListener {
     public Boolean createCloudReport(String reportDir, int interval) {
 
         try {
-
+            
             Date end = new Date();
             Date start = new Date(end.getTime() - 1000 * interval);
-            
             List<Alert> alertsList = alertFacade.findAlertsGuardDuty(p.getRefId(), start, end, 10000);
-            
-            List<Finding> inspectorFindings = new ArrayList();
 
+            List<Finding> inspectorFindings = new ArrayList();
             List<Object[]> inspectorObjects = inspectorScanFacade.getFindings(p.getRefId());
-            
             if (inspectorObjects != null && inspectorObjects.size() > 0) {
                 
                 for (Object[] o: inspectorObjects) {
@@ -280,17 +285,43 @@ public class ReportsMessageBean implements MessageListener {
                 inspectorFindings.add(new Finding("none",1));
             }
             
+            List<Finding> sploitFindings = new ArrayList();
+            List<Object[]> sploitObjects = cloudsploitScanFacade.getFindings(p.getRefId());
+            if (sploitObjects != null && sploitObjects.size() > 0) {
+                
+                for (Object[] o: sploitObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    sploitFindings.add(new Finding(f,c.intValue()));
+                }
+            } else {
+                sploitFindings.add(new Finding("none",1));
+            }
+            
+            List<Finding> tfsecFindings = new ArrayList();
+            List<Object[]> tfsecObjects = tfsecScanFacade.getFindings(p.getRefId());
+            if (tfsecObjects != null && tfsecObjects.size() > 0) {
+                
+                for (Object[] o: tfsecObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    tfsecFindings.add(new Finding(f,c.intValue()));
+                }
+            } else {
+                tfsecFindings.add(new Finding("none",1));
+            }
+            
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "cloud_report.jasper");
 
-            JasperDataCloud jasperDataCloud = new JasperDataCloud(inspectorFindings, alertsList, start, end, 50);
+            JasperDataCloud jasperDataCloud = new JasperDataCloud(inspectorFindings, sploitFindings, tfsecFindings, alertsList, start, end, 50);
             
             Map<String, Object> params = new HashMap<String, Object>();
 
             List<AlertsPie> alertsSeverityPie = jasperDataCloud.getBeanCollectionPie();
             params.put("datasourceGuardduty", alertsSeverityPie);
-
             params.put("datasourceInspector", jasperDataCloud.getInspectorFindings());
-
+            params.put("datasourceCloudsploit", jasperDataCloud.getSploitFindings());
+            params.put("datasourceTfsec", jasperDataCloud.getTfsecFindings());
             params.put("reportDir", reportDir);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
@@ -449,12 +480,12 @@ public class ReportsMessageBean implements MessageListener {
             List<Finding> zapFindings = new ArrayList();
             List<Finding> dependencyFindings = new ArrayList();
             List<Finding> sonarqubeFindings = new ArrayList();
-            List<Finding> snykFindings = new ArrayList();
+            List<Finding> nmapFindings = new ArrayList();
 
             List<Object[]> zapObjects = zapScanFacade.getFindings(p.getRefId());
             List<Object[]> dependencyObjects = dependencyScanFacade.getFindings(p.getRefId());
             List<Object[]> sonarqubeObjects = sonarScanFacade.getFindings(p.getRefId());
-            List<Object[]> snykObjects = snykScanFacade.getFindings(p.getRefId());
+            List<Object[]> nmapObjects = nmapScanFacade.getFindings(p.getRefId());
             
             if (zapObjects != null && zapObjects.size() > 0) {
                 
@@ -478,15 +509,15 @@ public class ReportsMessageBean implements MessageListener {
                 dependencyFindings.add(new Finding("none",1));
             }
             
-            if (snykObjects != null && snykObjects.size() > 0) {
+            if (nmapObjects != null && nmapObjects.size() > 0) {
                 
-                for (Object[] o: snykObjects) {
+                for (Object[] o: nmapObjects) {
                     String f = (String) o[0];
                     Long c = (Long) o[1];
-                    snykFindings.add(new Finding(f,c.intValue()));
+                    nmapFindings.add(new Finding(f,c.intValue()));
                 }
             } else {
-                snykFindings.add(new Finding("none",1));
+                nmapFindings.add(new Finding("none",1));
             }
             
             if (sonarqubeObjects != null && sonarqubeObjects.size() > 0) {
@@ -502,11 +533,11 @@ public class ReportsMessageBean implements MessageListener {
 
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "scanners_report.jasper");
                 
-            JasperDataScanners jasperDataScanners = new JasperDataScanners(snykFindings, dependencyFindings, sonarqubeFindings, zapFindings);
+            JasperDataScanners jasperDataScanners = new JasperDataScanners(dependencyFindings, nmapFindings, sonarqubeFindings, zapFindings);
             
             Map<String, Object> params = new HashMap<String, Object>();
 
-            params.put("datasourceSnyk", jasperDataScanners.getSnykFindings());
+            params.put("datasourceNmap", jasperDataScanners.getNmapFindings());
             params.put("datasourceDependency", jasperDataScanners.getDependencyFindings());
             params.put("datasourceSonarqube", jasperDataScanners.getSonarqubeFindings());
             params.put("datasourceZap", jasperDataScanners.getZapFindings());

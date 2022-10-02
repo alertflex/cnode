@@ -60,7 +60,7 @@ public class KubeHunter {
             
             HunterScan hs = new HunterScan();
             hs.setRefId(r);
-            hs.setNodeId(n);
+            hs.setNode(n);
             hs.setProbe(p);
             
             JSONArray arr = reportJson.getJSONArray("nodes");

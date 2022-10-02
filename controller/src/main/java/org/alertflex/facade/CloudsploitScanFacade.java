@@ -21,10 +21,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.HomeNetwork;
+import org.alertflex.entity.CloudsploitScan;
 
 @Stateless
-public class HomeNetworkFacade extends AbstractFacade<HomeNetwork> {
+public class CloudsploitScanFacade extends AbstractFacade<CloudsploitScan> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -34,31 +34,30 @@ public class HomeNetworkFacade extends AbstractFacade<HomeNetwork> {
         return em;
     }
 
-    public HomeNetworkFacade() {
-        super(HomeNetwork.class);
+    public CloudsploitScanFacade() {
+        super(CloudsploitScan.class);
     }
 
-    public List<HomeNetwork> findByRef(String ref) {
+    public List<Object[]> getFindings(String ref) {
 
-        List<HomeNetwork> hn = null;
+        List<Object[]> f = null;
 
         try {
             em.flush();
-
-            Query listQry = em.createQuery(
-                    "SELECT h FROM HomeNetwork h WHERE h.refId = :ref").setParameter("ref", ref);
-
+            
+            Query qry = em.createQuery(
+                    "SELECT c.status, COUNT(c) FROM CloudsploitScan c WHERE c.refId = :ref GROUP BY c.status")
+                    .setParameter("ref", ref);
             // Enable forced database query
-            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            hn = (List<HomeNetwork>) listQry.getResultList();
+            qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            
+            f =  (List<Object[]>) qry.getResultList();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
+            f = null;
         }
 
-        return hn;
-
+        return f;
     }
 
 }

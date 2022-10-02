@@ -46,7 +46,7 @@ public class ZapScanFacade extends AbstractFacade<ZapScan> {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT z FROM ZapScan z WHERE z.refId = :ref AND z.nodeId = :node AND z.probe = :probe AND z.target = :target AND z.alertRef = :alert")
+                    "SELECT z FROM ZapScan z WHERE z.refId = :ref AND z.node = :node AND z.probe = :probe AND z.target = :target AND z.alertRef = :alert")
                     .setParameter("ref", ref)
                     .setParameter("node", node)
                     .setParameter("probe", probe)
