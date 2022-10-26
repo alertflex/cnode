@@ -7,6 +7,7 @@
     <class>org.alertflex.entity.AgentVul</class>
     <class>org.alertflex.entity.DockerScan</class>
     <class>org.alertflex.entity.Container</class>
+    <class>org.alertflex.entity.Pod</class>
     <class>org.alertflex.entity.Node</class>
     <class>org.alertflex.entity.NodePK</class>
     <class>org.alertflex.entity.Sensor</class>

@@ -60,6 +60,7 @@ import org.alertflex.facade.HunterScanFacade;
 import org.alertflex.facade.KubeScanFacade;
 import org.alertflex.facade.NmapScanFacade;
 import org.alertflex.facade.TrivyScanFacade;
+import org.alertflex.facade.PodFacade;
 import org.alertflex.facade.NodeFacade;
 import org.alertflex.facade.SensorFacade;
 import org.alertflex.facade.TfsecScanFacade;
@@ -151,6 +152,9 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB 
     private AgentsGroupFacade agentsGroupFacade;
+    
+    @EJB 
+    private PodFacade podFacade;
     
     @EJB
     private ProjectFacade projectFacade;
@@ -278,6 +282,10 @@ public class InfoMessageBean implements MessageListener {
     
     public AgentsGroupFacade getAgentsGroupFacade() {
         return this.agentsGroupFacade;
+    }
+    
+    public PodFacade getPodFacade() {
+        return this.podFacade;
     }
     
     public Project getProject() {

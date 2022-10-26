@@ -336,6 +336,23 @@ CREATE TABLE `container` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `pod` (
+  `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `node_probe` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `name_space` varchar(255) NOT NULL DEFAULT '',
+  `uid` varchar(255) NOT NULL DEFAULT '',
+  `host_ip` varchar(255) NOT NULL DEFAULT '',
+  `pod_ip` varchar(255) NOT NULL DEFAULT '',
+  `phase` varchar(128) NOT NULL DEFAULT '',
+  `node_name` varchar(255) NOT NULL DEFAULT '',
+  `creation_timestamp` varchar(255) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `agent` (
   `rec_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(255) NOT NULL DEFAULT '',

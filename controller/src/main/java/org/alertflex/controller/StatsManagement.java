@@ -38,6 +38,7 @@ import org.alertflex.entity.Hosts;
 import org.alertflex.entity.NetCountries;
 import org.alertflex.entity.Node;
 import org.alertflex.entity.NodePK;
+import org.alertflex.entity.Pod;
 import org.alertflex.entity.Project;
 import org.alertflex.entity.Sensor;
 import org.alertflex.entity.SensorPK;
@@ -86,6 +87,8 @@ public class StatsManagement {
     }
 
     public void persistStats(JSONObject obj) throws ParseException {
+        
+        String probe = "";
 
         String stat = obj.toString();
 
@@ -221,7 +224,7 @@ public class StatsManagement {
 
                     arr = obj.getJSONArray("data");
                     
-                    String probe = obj.getString("probe");
+                    probe = obj.getString("probe");
                     
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -279,6 +282,54 @@ public class StatsManagement {
                         } else {
                             contExisting.setReportUpdated(new Date());
                             eventBean.getContainerFacade().edit(contExisting);
+                        }
+                    }
+
+                    break;
+                    
+                case "pods_list": 
+
+                    arr = obj.getJSONArray("data");
+                    
+                    probe = obj.getString("probe");
+                    
+                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    
+                    for (int i = 0; i < arr.length(); i++) {
+                        
+                        String name = arr.getJSONObject(i).getString("name");
+                        String nameSpace = arr.getJSONObject(i).getString("name_space");
+                        String creationTimestamp = arr.getJSONObject(i).getString("creation_timestamp");
+                        String uid = arr.getJSONObject(i).getString("uid");
+                        String hostIp = arr.getJSONObject(i).getString("host_ip");
+                        String podIp = arr.getJSONObject(i).getString("pod_ip");
+                        String phase = arr.getJSONObject(i).getString("phase");
+                        String nodeK8s = arr.getJSONObject(i).getString("node_name");
+                        
+                        Pod podExisting = eventBean.getPodFacade().findByName(ref, nodeName, name);
+
+                        if (podExisting == null) {
+
+                            Pod p = new Pod();
+
+                            p.setRefId(ref);
+                            p.setNodeProbe(nodeName);
+                            p.setName(name);
+                            p.setNameSpace(nameSpace);
+                            p.setCreationTimestamp(creationTimestamp);
+                            p.setUid(uid);
+                            p.setHostIp(hostIp);
+                            p.setPodIp(podIp);
+                            p.setPhase(phase);
+                            p.setNodeName(nodeK8s);
+                            p.setReportAdded(new Date());
+                            p.setReportUpdated(new Date());
+
+                            eventBean.getPodFacade().create(p);
+
+                        } else {
+                            podExisting.setReportUpdated(new Date());
+                            eventBean.getPodFacade().edit(podExisting);
                         }
                     }
 
