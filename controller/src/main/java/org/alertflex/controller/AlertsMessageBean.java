@@ -47,12 +47,13 @@ import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.MessageListener;
 import org.alertflex.common.PojoAlertLogic;
-import org.alertflex.entity.Sensor;
-import org.alertflex.facade.SensorFacade;
+import org.alertflex.facade.ProbeFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromElasticPool;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
+import org.alertflex.supp.GitlabIncident;
+import org.alertflex.supp.HiveIncident;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,7 +88,7 @@ public class AlertsMessageBean implements MessageListener {
     private ResponseFacade responseFacade;
     
     @EJB
-    private SensorFacade sensorFacade;
+    private ProbeFacade sensorFacade;
     
     Alert a = null;
     
@@ -119,11 +120,11 @@ public class AlertsMessageBean implements MessageListener {
                         a = new Alert();
 
                         a.setRefId(ref_id);
-                        a.setNodeId(((TextMessage) message).getStringProperty("node_id"));
+                        a.setNode(((TextMessage) message).getStringProperty("node"));
                         a.setAlertUuid(((TextMessage) message).getStringProperty("alert_uuid"));
                         a.setAlertSource(((TextMessage) message).getStringProperty("alert_source"));
                         a.setAlertType(((TextMessage) message).getStringProperty("alert_type"));
-                        a.setSensorId(((TextMessage) message).getStringProperty("sensor_id"));
+                        a.setProbe(((TextMessage) message).getStringProperty("probe"));
                         a.setAlertSeverity(((TextMessage) message).getIntProperty("alert_severity"));
                         a.setEventId(((TextMessage) message).getStringProperty("event_id"));
                         int sev = ((TextMessage) message).getIntProperty("event_severity");
@@ -188,26 +189,6 @@ public class AlertsMessageBean implements MessageListener {
                         a.setCloudInstance(((TextMessage) message).getStringProperty("cloud_instance"));
                         a.setIncidentExt("indef");
                         
-                        // check k8s alert 
-                        // if yes need to load all falco sensors 
-                        // and calculate active 
-                        // next step alert came from not active - miss this alert
-                        
-                        if (a.getAlertSource().equals("Falco") && !a.getCloudInstance().equals("indef")) {
-                        
-                            List<Sensor> ls = sensorFacade.findSensorsByType(ref_id, a.getNodeId(), "Falco");
-                            if (ls.size() > 1) {
-                                
-                                for (Sensor s: ls) {
-                                    if (s.getStatus()> 0) {
-                                        if(s.getSensorPK().getName().equals(a.getSensorId())) {
-                                            break;
-                                        } else return;
-                                    }            
-                                }
-                            }
-                        }
-                        
                         // enrich alert by new cat
                         List<String> newCats = alertCategoryFacade.findCatsByEvent(a.getAlertSource(), a.getEventId());
                         if (newCats != null && !newCats.isEmpty()) {
@@ -247,11 +228,31 @@ public class AlertsMessageBean implements MessageListener {
                         
                         logAlert = ((TextMessage) message).getBooleanProperty("log_alert");
                         
-                        // send alert to log server
-                        if (elasticFromPool != null && logAlert) elasticFromPool.SendAlertToLog(a);
+                        if (logAlert) { // send alert to log server
                         
-                        // send alert to log server
-                        if (graylogFromPool != null && logAlert) graylogFromPool.SendAlertToLog(a);
+                            if (elasticFromPool != null && logAlert) elasticFromPool.SendAlertToLog(a);
+                        
+                            if (graylogFromPool != null && logAlert) graylogFromPool.SendAlertToLog(a);
+                        }   
+                        
+                        if (project.getSendIncident() == 1) {
+                            
+                            if (!project.getGitlabUrl().isEmpty()) {
+                                
+                                GitlabIncident gitlabIncident = new GitlabIncident();
+                
+                                gitlabIncident.createIncident(project, a, "alertflex", "new");
+                            }
+                            
+                            if (!project.getHiveKey().isEmpty()) {
+                                
+                                HiveIncident hiveIncident = new HiveIncident();
+                
+                                hiveIncident.createIncident(project, a, "alertflex", "new");
+                            }
+                            
+                        }
+                        
 
                     } else {
                         
@@ -283,6 +284,23 @@ public class AlertsMessageBean implements MessageListener {
                         
                                     // send alert to log server
                                     if (graylogFromPool != null) graylogFromPool.SendAlertToLog(a);
+                                    
+                                    if (project.getSendIncident() == 1) {
+                            
+                                        if (!project.getGitlabUrl().isEmpty()) {
+                                
+                                            GitlabIncident gitlabIncident = new GitlabIncident();
+                
+                                            gitlabIncident.createIncident(project, a, "alertflex", "new");
+                                        }
+                            
+                                        if (!project.getHiveKey().isEmpty()) {
+                                
+                                            HiveIncident hiveIncident = new HiveIncident();
+                
+                                            hiveIncident.createIncident(project, a, "alertflex", "new");
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -397,9 +415,9 @@ public class AlertsMessageBean implements MessageListener {
                 }
             }
 
-            parameter = res.getAlertSensor();
+            parameter = res.getAlertProbe();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSensorId())) {
+                if (!parameter.equals(a.getProbe())) {
                     continue;
                 }
             }
@@ -490,9 +508,9 @@ public class AlertsMessageBean implements MessageListener {
                 }
             }
 
-            parameter = res.getAlertSensor();
+            parameter = res.getAlertProbe();
             if (!parameter.isEmpty() && !parameter.equals("indef")) {
-                if (!parameter.equals(a.getSensorId())) {
+                if (!parameter.equals(a.getProbe())) {
                     continue;
                 }
             }

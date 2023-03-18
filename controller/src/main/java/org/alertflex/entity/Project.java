@@ -33,14 +33,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByAlertLimit", query = "SELECT p FROM Project p WHERE p.alertLimit = :alertLimit"),
     @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange"),
     @NamedQuery(name = "Project.findByNodeTimerange", query = "SELECT p FROM Project p WHERE p.nodeTimerange = :nodeTimerange"),
-    @NamedQuery(name = "Project.findByNetTimerange", query = "SELECT p FROM Project p WHERE p.netTimerange = :netTimerange"),
     @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
+    @NamedQuery(name = "Project.findByPostureTimerange", query = "SELECT p FROM Project p WHERE p.postureTimerange = :postureTimerange"),
     @NamedQuery(name = "Project.findBySensorTimerange", query = "SELECT p FROM Project p WHERE p.sensorTimerange = :sensorTimerange"),
     @NamedQuery(name = "Project.findByBlockIprange", query = "SELECT p FROM Project p WHERE p.blockIprange = :blockIprange"),
     @NamedQuery(name = "Project.findByIocCheck", query = "SELECT p FROM Project p WHERE p.iocCheck = :iocCheck"),
     @NamedQuery(name = "Project.findByIocEvent", query = "SELECT p FROM Project p WHERE p.iocEvent = :iocEvent"),
     @NamedQuery(name = "Project.findByPrometheusStat", query = "SELECT p FROM Project p WHERE p.prometheusStat = :prometheusStat"),
     @NamedQuery(name = "Project.findBySendNetflow", query = "SELECT p FROM Project p WHERE p.sendNetflow = :sendNetflow"),
+    @NamedQuery(name = "Project.findBySendIncident", query = "SELECT p FROM Project p WHERE p.sendIncident = :sendIncident"),
     @NamedQuery(name = "Project.findByGraylogHost", query = "SELECT p FROM Project p WHERE p.graylogHost = :graylogHost"),
     @NamedQuery(name = "Project.findByGraylogPort", query = "SELECT p FROM Project p WHERE p.graylogPort = :graylogPort"),
     @NamedQuery(name = "Project.findByElkHost", query = "SELECT p FROM Project p WHERE p.elkHost = :elkHost"),
@@ -54,11 +55,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByHiveKey", query = "SELECT p FROM Project p WHERE p.hiveKey = :hiveKey"),
     @NamedQuery(name = "Project.findByMispUrl", query = "SELECT p FROM Project p WHERE p.mispUrl = :mispUrl"),
     @NamedQuery(name = "Project.findByMispKey", query = "SELECT p FROM Project p WHERE p.mispKey = :mispKey"),
-    @NamedQuery(name = "Project.findByJiraUrl", query = "SELECT p FROM Project p WHERE p.jiraUrl = :jiraUrl"),
-    @NamedQuery(name = "Project.findByJiraUser", query = "SELECT p FROM Project p WHERE p.jiraUser = :jiraUser"),
-    @NamedQuery(name = "Project.findByJiraPass", query = "SELECT p FROM Project p WHERE p.jiraPass = :jiraPass"),
-    @NamedQuery(name = "Project.findByJiraProject", query = "SELECT p FROM Project p WHERE p.jiraProject = :jiraProject"),
-    @NamedQuery(name = "Project.findByJiraType", query = "SELECT p FROM Project p WHERE p.jiraType = :jiraType"),
+    @NamedQuery(name = "Project.findByGitlabUrl", query = "SELECT p FROM Project p WHERE p.gitlabUrl = :gitlabUrl"),
+    @NamedQuery(name = "Project.findByGitlabKey", query = "SELECT p FROM Project p WHERE p.gitlabKey = :gitlabKey"),
     @NamedQuery(name = "Project.findByVtKey", query = "SELECT p FROM Project p WHERE p.vtKey = :vtKey"),
     @NamedQuery(name = "Project.findByTwiliosmsAccount", query = "SELECT p FROM Project p WHERE p.twiliosmsAccount = :twiliosmsAccount"),
     @NamedQuery(name = "Project.findByTwiliosmsToken", query = "SELECT p FROM Project p WHERE p.twiliosmsToken = :twiliosmsToken"),
@@ -72,17 +70,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByFalconKey", query = "SELECT p FROM Project p WHERE p.falconKey = :falconKey"),
     @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl"),
     @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey"),
-    @NamedQuery(name = "Project.findBySonarUrl", query = "SELECT p FROM Project p WHERE p.sonarUrl = :sonarUrl"),
-    @NamedQuery(name = "Project.findBySonarUser", query = "SELECT p FROM Project p WHERE p.sonarUser = :sonarUser"),
-    @NamedQuery(name = "Project.findBySonarPass", query = "SELECT p FROM Project p WHERE p.sonarPass = :sonarPass"),
-    @NamedQuery(name = "Project.findByZapHost", query = "SELECT p FROM Project p WHERE p.zapHost = :zapHost"),
-    @NamedQuery(name = "Project.findByZapPort", query = "SELECT p FROM Project p WHERE p.zapPort = :zapPort"),
-    @NamedQuery(name = "Project.findByZapKey", query = "SELECT p FROM Project p WHERE p.zapKey = :zapKey"),
     @NamedQuery(name = "Project.findByXforceKey", query = "SELECT p FROM Project p WHERE p.xforceKey = :xforceKey"),
     @NamedQuery(name = "Project.findByXforcePass", query = "SELECT p FROM Project p WHERE p.xforcePass = :xforcePass"),
     @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion"),
-    @NamedQuery(name = "Project.findByAwsIpinsights", query = "SELECT p FROM Project p WHERE p.awsIpinsights = :awsIpinsights"),
-    @NamedQuery(name = "Project.findBySqsCloudtrail", query = "SELECT p FROM Project p WHERE p.sqsCloudtrail = :sqsCloudtrail")})
+    @NamedQuery(name = "Project.findByAwsIpinsights", query = "SELECT p FROM Project p WHERE p.awsIpinsights = :awsIpinsights")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -120,12 +111,12 @@ public class Project implements Serializable {
     private int nodeTimerange;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "net_timerange")
-    private int netTimerange;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "task_timerange")
     private int taskTimerange;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "posture_timerange")
+    private int postureTimerange;
     @Basic(optional = false)
     @NotNull
     @Column(name = "sensor_timerange")
@@ -150,6 +141,10 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "send_netflow")
     private int sendNetflow;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "send_incident")
+    private int sendIncident;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -216,28 +211,13 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "jira_url")
-    private String jiraUrl;
+    @Column(name = "gitlab_url")
+    private String gitlabUrl;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "jira_user")
-    private String jiraUser;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "jira_pass")
-    private String jiraPass;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "jira_project")
-    private String jiraProject;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "jira_type")
-    private String jiraType;
+    @Column(name = "gitlab_key")
+    private String gitlabKey;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -305,35 +285,6 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "sonar_url")
-    private String sonarUrl;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "sonar_user")
-    private String sonarUser;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "sonar_pass")
-    private String sonarPass;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "zap_host")
-    private String zapHost;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "zap_port")
-    private int zapPort;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "zap_key")
-    private String zapKey;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
     @Column(name = "xforce_key")
     private String xforceKey;
     @Basic(optional = false)
@@ -351,11 +302,6 @@ public class Project implements Serializable {
     @Size(min = 1, max = 256)
     @Column(name = "aws_ipinsights")
     private String awsIpinsights;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 256)
-    @Column(name = "sqs_cloudtrail")
-    private String sqsCloudtrail;
 
     public Project() {
     }
@@ -364,7 +310,7 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int nodeTimerange, int netTimerange, int taskTimerange, int sensorTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String jiraUrl, String jiraUser, String jiraPass, String jiraProject, String jiraType, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String sonarUrl, String sonarUser, String sonarPass, String zapHost, int zapPort, String zapKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights, String sqsCloudtrail) {
+    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int nodeTimerange, int taskTimerange, int postureTimerange, int sensorTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, int sendIncident, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String gitlabUrl, String gitlabKey, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
@@ -372,14 +318,15 @@ public class Project implements Serializable {
         this.alertLimit = alertLimit;
         this.alertTimerange = alertTimerange;
         this.nodeTimerange = nodeTimerange;
-        this.netTimerange = netTimerange;
         this.taskTimerange = taskTimerange;
+        this.postureTimerange = postureTimerange;
         this.sensorTimerange = sensorTimerange;
         this.blockIprange = blockIprange;
         this.iocCheck = iocCheck;
         this.iocEvent = iocEvent;
         this.prometheusStat = prometheusStat;
         this.sendNetflow = sendNetflow;
+        this.sendIncident = sendIncident;
         this.graylogHost = graylogHost;
         this.graylogPort = graylogPort;
         this.elkHost = elkHost;
@@ -393,11 +340,8 @@ public class Project implements Serializable {
         this.hiveKey = hiveKey;
         this.mispUrl = mispUrl;
         this.mispKey = mispKey;
-        this.jiraUrl = jiraUrl;
-        this.jiraUser = jiraUser;
-        this.jiraPass = jiraPass;
-        this.jiraProject = jiraProject;
-        this.jiraType = jiraType;
+        this.gitlabUrl = gitlabUrl;
+        this.gitlabKey = gitlabKey;
         this.vtKey = vtKey;
         this.twiliosmsAccount = twiliosmsAccount;
         this.twiliosmsToken = twiliosmsToken;
@@ -411,17 +355,10 @@ public class Project implements Serializable {
         this.falconKey = falconKey;
         this.vmrayUrl = vmrayUrl;
         this.vmrayKey = vmrayKey;
-        this.sonarUrl = sonarUrl;
-        this.sonarUser = sonarUser;
-        this.sonarPass = sonarPass;
-        this.zapHost = zapHost;
-        this.zapPort = zapPort;
-        this.zapKey = zapKey;
         this.xforceKey = xforceKey;
         this.xforcePass = xforcePass;
         this.awsRegion = awsRegion;
         this.awsIpinsights = awsIpinsights;
-        this.sqsCloudtrail = sqsCloudtrail;
     }
 
     public String getRefId() {
@@ -480,20 +417,20 @@ public class Project implements Serializable {
         this.nodeTimerange = nodeTimerange;
     }
 
-    public int getNetTimerange() {
-        return netTimerange;
-    }
-
-    public void setNetTimerange(int netTimerange) {
-        this.netTimerange = netTimerange;
-    }
-
     public int getTaskTimerange() {
         return taskTimerange;
     }
 
     public void setTaskTimerange(int taskTimerange) {
         this.taskTimerange = taskTimerange;
+    }
+
+    public int getPostureTimerange() {
+        return postureTimerange;
+    }
+
+    public void setPostureTimerange(int postureTimerange) {
+        this.postureTimerange = postureTimerange;
     }
 
     public int getSensorTimerange() {
@@ -542,6 +479,14 @@ public class Project implements Serializable {
 
     public void setSendNetflow(int sendNetflow) {
         this.sendNetflow = sendNetflow;
+    }
+
+    public int getSendIncident() {
+        return sendIncident;
+    }
+
+    public void setSendIncident(int sendIncident) {
+        this.sendIncident = sendIncident;
     }
 
     public String getGraylogHost() {
@@ -648,44 +593,20 @@ public class Project implements Serializable {
         this.mispKey = mispKey;
     }
 
-    public String getJiraUrl() {
-        return jiraUrl;
+    public String getGitlabUrl() {
+        return gitlabUrl;
     }
 
-    public void setJiraUrl(String jiraUrl) {
-        this.jiraUrl = jiraUrl;
+    public void setGitlabUrl(String gitlabUrl) {
+        this.gitlabUrl = gitlabUrl;
     }
 
-    public String getJiraUser() {
-        return jiraUser;
+    public String getGitlabKey() {
+        return gitlabKey;
     }
 
-    public void setJiraUser(String jiraUser) {
-        this.jiraUser = jiraUser;
-    }
-
-    public String getJiraPass() {
-        return jiraPass;
-    }
-
-    public void setJiraPass(String jiraPass) {
-        this.jiraPass = jiraPass;
-    }
-
-    public String getJiraProject() {
-        return jiraProject;
-    }
-
-    public void setJiraProject(String jiraProject) {
-        this.jiraProject = jiraProject;
-    }
-
-    public String getJiraType() {
-        return jiraType;
-    }
-
-    public void setJiraType(String jiraType) {
-        this.jiraType = jiraType;
+    public void setGitlabKey(String gitlabKey) {
+        this.gitlabKey = gitlabKey;
     }
 
     public String getVtKey() {
@@ -792,54 +713,6 @@ public class Project implements Serializable {
         this.vmrayKey = vmrayKey;
     }
 
-    public String getSonarUrl() {
-        return sonarUrl;
-    }
-
-    public void setSonarUrl(String sonarUrl) {
-        this.sonarUrl = sonarUrl;
-    }
-
-    public String getSonarUser() {
-        return sonarUser;
-    }
-
-    public void setSonarUser(String sonarUser) {
-        this.sonarUser = sonarUser;
-    }
-
-    public String getSonarPass() {
-        return sonarPass;
-    }
-
-    public void setSonarPass(String sonarPass) {
-        this.sonarPass = sonarPass;
-    }
-
-    public String getZapHost() {
-        return zapHost;
-    }
-
-    public void setZapHost(String zapHost) {
-        this.zapHost = zapHost;
-    }
-
-    public int getZapPort() {
-        return zapPort;
-    }
-
-    public void setZapPort(int zapPort) {
-        this.zapPort = zapPort;
-    }
-
-    public String getZapKey() {
-        return zapKey;
-    }
-
-    public void setZapKey(String zapKey) {
-        this.zapKey = zapKey;
-    }
-
     public String getXforceKey() {
         return xforceKey;
     }
@@ -870,14 +743,6 @@ public class Project implements Serializable {
 
     public void setAwsIpinsights(String awsIpinsights) {
         this.awsIpinsights = awsIpinsights;
-    }
-
-    public String getSqsCloudtrail() {
-        return sqsCloudtrail;
-    }
-
-    public void setSqsCloudtrail(String sqsCloudtrail) {
-        this.sqsCloudtrail = sqsCloudtrail;
     }
 
     @Override

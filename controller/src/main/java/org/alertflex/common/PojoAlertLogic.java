@@ -1,18 +1,16 @@
 /*
- * Copyright (C) 2021 Oleg Zharkov
+ *   Copyright 2021 Oleg Zharkov
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Server Side Public License, version 1,
- * as published by MongoDB, Inc.
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the Server Side Public License
- * along with this program. If not, see
- * <http://www.mongodb.com/licensing/server-side-public-license>.
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
  */
 
 package org.alertflex.common;
@@ -36,8 +34,8 @@ public class PojoAlertLogic  implements Serializable {
     private Long alertId = 0L;
     private String alertUuid = "indef";
     private String refId = "indef";
-    private String nodeId = "indef";
-    private String sensorId = "indef";
+    private String node = "indef";
+    private String probe = "indef";
     private String categories = "indef";
     private String description = "indef";
     private int alertSeverity = 0;
@@ -87,8 +85,8 @@ public class PojoAlertLogic  implements Serializable {
         alertId = a.getAlertId();
         alertUuid = a.getAlertUuid();
         refId = a.getRefId();
-        nodeId = a.getNodeId();
-        sensorId = a.getSensorId();
+        node = a.getNode();
+        probe = a.getProbe();
         categories = a.getCategories();
         description = a.getDescription();
         alertSeverity = a.getAlertSeverity();
@@ -209,20 +207,20 @@ public class PojoAlertLogic  implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNode(String node) {
+        this.node = node;
     }
 
-    public String getSensorId() {
-        return sensorId;
+    public String getProbe() {
+        return probe;
     }
 
-    public void setSensorId(String sensorId) {
-        this.sensorId = sensorId;
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public String getCategories() {

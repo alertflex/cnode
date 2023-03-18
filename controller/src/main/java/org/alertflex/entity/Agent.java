@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Agent.findByRecId", query = "SELECT a FROM Agent a WHERE a.recId = :recId"),
     @NamedQuery(name = "Agent.findByRefId", query = "SELECT a FROM Agent a WHERE a.refId = :refId"),
     @NamedQuery(name = "Agent.findByNode", query = "SELECT a FROM Agent a WHERE a.node = :node"),
+    @NamedQuery(name = "Agent.findByProbe", query = "SELECT a FROM Agent a WHERE a.probe = :probe"),
     @NamedQuery(name = "Agent.findByAgentId", query = "SELECT a FROM Agent a WHERE a.agentId = :agentId"),
     @NamedQuery(name = "Agent.findByAgentKey", query = "SELECT a FROM Agent a WHERE a.agentKey = :agentKey"),
     @NamedQuery(name = "Agent.findByIp", query = "SELECT a FROM Agent a WHERE a.ip = :ip"),
@@ -41,8 +42,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Agent.findByStatus", query = "SELECT a FROM Agent a WHERE a.status = :status"),
     @NamedQuery(name = "Agent.findByDateAdd", query = "SELECT a FROM Agent a WHERE a.dateAdd = :dateAdd"),
     @NamedQuery(name = "Agent.findByVersion", query = "SELECT a FROM Agent a WHERE a.version = :version"),
-    @NamedQuery(name = "Agent.findByManager", query = "SELECT a FROM Agent a WHERE a.manager = :manager"),
-    @NamedQuery(name = "Agent.findByGroupName", query = "SELECT a FROM Agent a WHERE a.groupName = :groupName"),
     @NamedQuery(name = "Agent.findByOsPlatform", query = "SELECT a FROM Agent a WHERE a.osPlatform = :osPlatform"),
     @NamedQuery(name = "Agent.findByOsVersion", query = "SELECT a FROM Agent a WHERE a.osVersion = :osVersion"),
     @NamedQuery(name = "Agent.findByOsName", query = "SELECT a FROM Agent a WHERE a.osName = :osName"),
@@ -65,6 +64,11 @@ public class Agent implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "node")
     private String node;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
@@ -102,16 +106,6 @@ public class Agent implements Serializable {
     private String version;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "manager")
-    private String manager;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "group_name")
-    private String groupName;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 512)
     @Column(name = "os_platform")
     private String osPlatform;
@@ -136,10 +130,11 @@ public class Agent implements Serializable {
         this.recId = recId;
     }
 
-    public Agent(Integer recId, String refId, String node, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String manager, String groupName, String osPlatform, String osVersion, String osName) {
+    public Agent(Integer recId, String refId, String node, String probe, String agentId, String agentKey, String ip, String name, String status, String dateAdd, String version, String osPlatform, String osVersion, String osName) {
         this.recId = recId;
         this.refId = refId;
         this.node = node;
+        this.probe = probe;
         this.agentId = agentId;
         this.agentKey = agentKey;
         this.ip = ip;
@@ -147,8 +142,6 @@ public class Agent implements Serializable {
         this.status = status;
         this.dateAdd = dateAdd;
         this.version = version;
-        this.manager = manager;
-        this.groupName = groupName;
         this.osPlatform = osPlatform;
         this.osVersion = osVersion;
         this.osName = osName;
@@ -176,6 +169,14 @@ public class Agent implements Serializable {
 
     public void setNode(String node) {
         this.node = node;
+    }
+
+    public String getProbe() {
+        return probe;
+    }
+
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public String getAgentId() {
@@ -232,22 +233,6 @@ public class Agent implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getManager() {
-        return manager;
-    }
-
-    public void setManager(String manager) {
-        this.manager = manager;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
     }
 
     public String getOsPlatform() {

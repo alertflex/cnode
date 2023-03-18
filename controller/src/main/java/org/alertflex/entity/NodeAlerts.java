@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "NodeAlerts.findByRecId", query = "SELECT n FROM NodeAlerts n WHERE n.recId = :recId"),
     @NamedQuery(name = "NodeAlerts.findByRefId", query = "SELECT n FROM NodeAlerts n WHERE n.refId = :refId"),
     @NamedQuery(name = "NodeAlerts.findByNode", query = "SELECT n FROM NodeAlerts n WHERE n.node = :node"),
-    @NamedQuery(name = "NodeAlerts.findByProbe", query = "SELECT n FROM NodeAlerts n WHERE n.probe = :probe"),
+    @NamedQuery(name = "NodeAlerts.findByHost", query = "SELECT n FROM NodeAlerts n WHERE n.host = :host"),
     @NamedQuery(name = "NodeAlerts.findByCrsAgg", query = "SELECT n FROM NodeAlerts n WHERE n.crsAgg = :crsAgg"),
     @NamedQuery(name = "NodeAlerts.findByCrsFilter", query = "SELECT n FROM NodeAlerts n WHERE n.crsFilter = :crsFilter"),
     @NamedQuery(name = "NodeAlerts.findByCrsS0", query = "SELECT n FROM NodeAlerts n WHERE n.crsS0 = :crsS0"),
@@ -81,8 +81,8 @@ public class NodeAlerts implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "probe")
-    private String probe;
+    @Column(name = "host")
+    private String host;
     @Basic(optional = false)
     @NotNull
     @Column(name = "crs_agg")
@@ -190,11 +190,11 @@ public class NodeAlerts implements Serializable {
         this.recId = recId;
     }
 
-    public NodeAlerts(Long recId, String refId, String node, String probe, long crsAgg, long crsFilter, long crsS0, long crsS1, long crsS2, long crsS3, long hidsAgg, long hidsFilter, long hidsS0, long hidsS1, long hidsS2, long hidsS3, long nidsAgg, long nidsFilter, long nidsS0, long nidsS1, long nidsS2, long nidsS3, long wafAgg, long wafFilter, long wafS0, long wafS1, long wafS2, long wafS3) {
+    public NodeAlerts(Long recId, String refId, String node, String host, long crsAgg, long crsFilter, long crsS0, long crsS1, long crsS2, long crsS3, long hidsAgg, long hidsFilter, long hidsS0, long hidsS1, long hidsS2, long hidsS3, long nidsAgg, long nidsFilter, long nidsS0, long nidsS1, long nidsS2, long nidsS3, long wafAgg, long wafFilter, long wafS0, long wafS1, long wafS2, long wafS3) {
         this.recId = recId;
         this.refId = refId;
         this.node = node;
-        this.probe = probe;
+        this.host = host;
         this.crsAgg = crsAgg;
         this.crsFilter = crsFilter;
         this.crsS0 = crsS0;
@@ -245,12 +245,12 @@ public class NodeAlerts implements Serializable {
         this.node = node;
     }
 
-    public String getProbe() {
-        return probe;
+    public String getHost() {
+        return host;
     }
 
-    public void setProbe(String probe) {
-        this.probe = probe;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public long getCrsAgg() {

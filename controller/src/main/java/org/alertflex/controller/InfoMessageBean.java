@@ -15,6 +15,7 @@
 
 package org.alertflex.controller;
 
+import org.alertflex.posture.AppSecret;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,28 +47,39 @@ import org.alertflex.facade.AttributesFacade;
 import org.alertflex.facade.EventsFacade;
 import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
-import org.alertflex.facade.NetStatFacade;
-import org.alertflex.facade.NetCountriesFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AgentScaFacade;
-import org.alertflex.facade.AgentsGroupFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.ContainerFacade;
-import org.alertflex.facade.DependencyScanFacade;
-import org.alertflex.facade.DockerScanFacade;
-import org.alertflex.facade.HunterScanFacade;
-import org.alertflex.facade.KubeScanFacade;
-import org.alertflex.facade.NmapScanFacade;
-import org.alertflex.facade.TrivyScanFacade;
 import org.alertflex.facade.PodFacade;
 import org.alertflex.facade.NodeFacade;
-import org.alertflex.facade.SensorFacade;
-import org.alertflex.facade.TfsecScanFacade;
-import org.alertflex.facade.ZapScanFacade;
+import org.alertflex.facade.PostureTaskFacade;
+import org.alertflex.facade.PostureAppsecretFacade;
+import org.alertflex.facade.PostureDockerconfigFacade;
+import org.alertflex.facade.PostureK8sconfigFacade;
+import org.alertflex.facade.PostureAppvulnFacade;
+import org.alertflex.facade.PostureDockervulnFacade;
+import org.alertflex.facade.PostureTerraformFacade;
+import org.alertflex.facade.PostureK8svulnFacade;
+import org.alertflex.facade.PostureCloudformationFacade;
+import org.alertflex.facade.PostureKubehunterFacade;
+import org.alertflex.facade.PostureZapFacade;
+import org.alertflex.facade.ProbeFacade;
 import org.alertflex.logserver.ElasticSearch;
 import org.alertflex.logserver.FromGraylogPool;
 import org.alertflex.logserver.GrayLog;
+import org.alertflex.posture.AppSbom;
+import org.alertflex.posture.AppVuln;
+import org.alertflex.posture.CloudFormation;
+import org.alertflex.posture.DockerConfig;
+import org.alertflex.posture.DockerSbom;
+import org.alertflex.posture.DockerVuln;
+import org.alertflex.posture.K8sConfig;
+import org.alertflex.posture.K8sVuln;
+import org.alertflex.posture.KubeHunter;
+import org.alertflex.posture.Terraform;
+import org.alertflex.posture.Zap;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,16 +103,20 @@ public class InfoMessageBean implements MessageListener {
     GrayLog graylogFromPool;
 
     @EJB
-    private AgentFacade agentFacade;
-    
-    @EJB
-    private ContainerFacade containerFacade;
+    private ProjectFacade projectFacade;
+    Project project;
+    String ref_id;
 
     @EJB
-    private NetworksFacade homeNetworkFacade;
+    private NodeFacade nodeFacade;
+    String node;
+    String host;
     
     @EJB
     private HostsFacade hostsFacade;
+    
+    @EJB
+    private ProbeFacade probeFacade;
 
     @EJB
     private AlertFacade alertFacade;
@@ -115,10 +131,7 @@ public class InfoMessageBean implements MessageListener {
     private NodeAlertsFacade nodeAlertsFacade;
 
     @EJB
-    private NetStatFacade netStatFacade;
-    
-    @EJB
-    private NetCountriesFacade netCountriesFacade;
+    private AgentFacade agentFacade;
     
     @EJB
     private AgentVulFacade agentVulFacade;
@@ -126,54 +139,53 @@ public class InfoMessageBean implements MessageListener {
     @EJB
     private AgentScaFacade agentScaFacade;
     
-    @EJB
-    private DockerScanFacade dockerScanFacade;
-    
-    @EJB
-    private DependencyScanFacade dependencyScanFacade;
-
-    @EJB
-    private TrivyScanFacade trivyScanFacade;
-    
-    @EJB
-    private KubeScanFacade kubeScanFacade;
-    
-    @EJB
-    private ZapScanFacade zapScanFacade;
-    
-    @EJB
-    private NmapScanFacade nmapScanFacade;
-    
-    @EJB
-    private TfsecScanFacade tfsecScanFacade;
-    
-    @EJB
-    private HunterScanFacade hunterScanFacade;
-    
-    @EJB 
-    private AgentsGroupFacade agentsGroupFacade;
-    
     @EJB 
     private PodFacade podFacade;
     
     @EJB
-    private ProjectFacade projectFacade;
-    Project project;
-    String ref_id;
+    private ContainerFacade containerFacade;
 
     @EJB
-    private NodeFacade nodeFacade;
-    String node;
-    String probe;
-
-    @EJB
-    private SensorFacade sensorFacade;
-
+    private NetworksFacade homeNetworkFacade;
+    
     @EJB
     private AttributesFacade attributesFacade;
 
     @EJB
     private EventsFacade eventsFacade;
+    
+    @EJB
+    private PostureTaskFacade postureTaskFacade;
+    
+    @EJB
+    private PostureAppsecretFacade postureAppsecretFacade;
+    
+    @EJB
+    private PostureDockerconfigFacade postureDockerconfigFacade;
+    
+    @EJB
+    private PostureK8sconfigFacade postureK8sconfigFacade;
+    
+    @EJB
+    private PostureDockervulnFacade postureDockervulnFacade;
+    
+    @EJB
+    private PostureK8svulnFacade postureK8svulnFacade;
+    
+    @EJB
+    private PostureAppvulnFacade postureAppvulnFacade;
+    
+    @EJB
+    private PostureKubehunterFacade postureKubehunterFacade;
+    
+    @EJB
+    private PostureTerraformFacade postureTerraformFacade;
+    
+    @EJB
+    private PostureCloudformationFacade postureCloudformationFacade;
+    
+    @EJB
+    private PostureZapFacade postureZapFacade;
 
     public AgentFacade getAgentFacade() {
         return this.agentFacade;
@@ -199,20 +211,20 @@ public class InfoMessageBean implements MessageListener {
         return this.hostsFacade;
     }
 
-    public SensorFacade getSensorFacade() {
-        return this.sensorFacade;
-    }
-
     public NodeFacade getNodeFacade() {
         return this.nodeFacade;
+    }
+    
+    public ProbeFacade getProbeFacade() {
+        return this.probeFacade;
     }
 
     public String getNode() {
         return this.node;
     }
     
-    public String getProbe() {
-        return this.probe;
+    public String getHost() {
+        return this.host;
     }
 
     public AlertFacade getAlertFacade() {
@@ -231,14 +243,6 @@ public class InfoMessageBean implements MessageListener {
         return this.nodeAlertsFacade;
     }
 
-    public NetStatFacade getNetStatFacade() {
-        return this.netStatFacade;
-    }
-    
-    public NetCountriesFacade getNetCountriesFacade() {
-        return this.netCountriesFacade;
-    }
-    
     public AgentVulFacade getAgentVulFacade() {
         return this.agentVulFacade;
     }
@@ -247,41 +251,48 @@ public class InfoMessageBean implements MessageListener {
         return this.agentScaFacade;
     }
     
-    public DockerScanFacade getDockerScanFacade() {
-        return this.dockerScanFacade;
+    public PostureTaskFacade getPostureTaskFacade() {
+        return this.postureTaskFacade;
     }
     
-    public DependencyScanFacade getDependencyScanFacade() {
-        return this.dependencyScanFacade;
+    public PostureAppsecretFacade getPostureAppsecretFacade() {
+        return this.postureAppsecretFacade;
     }
     
-    public KubeScanFacade getKubeScanFacade() {
-        return this.kubeScanFacade;
-    }
-
-    public TrivyScanFacade getTrivyScanFacade() {
-        return this.trivyScanFacade;
+    public PostureDockerconfigFacade getPostureDockerconfigFacade() {
+        return this.postureDockerconfigFacade;
     }
     
-    public ZapScanFacade getZapScanFacade() {
-        return this.zapScanFacade;
+    public PostureK8sconfigFacade getPostureK8sconfigFacade() {
+        return this.postureK8sconfigFacade;
     }
     
-    public TfsecScanFacade getTfsecScanFacade() {
-        return this.tfsecScanFacade;
+    public PostureAppvulnFacade getPostureAppvulnFacade() {
+        return this.postureAppvulnFacade;
     }
     
-    public NmapScanFacade getNmapScanFacade() {
-        return this.nmapScanFacade;
+    public PostureDockervulnFacade getPostureDockervulnFacade() {
+        return this.postureDockervulnFacade;
     }
     
-    public HunterScanFacade getHunterScanFacade() {
-        return this.hunterScanFacade;
+    public PostureK8svulnFacade getPostureK8svulnFacade() {
+        return this.postureK8svulnFacade;
     }
     
+    public PostureKubehunterFacade getPostureKubehunterFacade() {
+        return this.postureKubehunterFacade;
+    }
     
-    public AgentsGroupFacade getAgentsGroupFacade() {
-        return this.agentsGroupFacade;
+    public PostureTerraformFacade getPostureTerraformFacade() {
+        return this.postureTerraformFacade;
+    }
+    
+    public PostureCloudformationFacade getPostureCloudformationFacade() {
+        return this.postureCloudformationFacade;
+    }
+    
+    public PostureZapFacade getPostureZapFacade() {
+        return this.postureZapFacade;
     }
     
     public PodFacade getPodFacade() {
@@ -307,17 +318,18 @@ public class InfoMessageBean implements MessageListener {
     @Override
     public void onMessage(Message message) {
 
-        int msg_type;
-
+        int msgType;
+        String uuid;
+        
         try {
 
             if (message instanceof BytesMessage) {
 
                 BytesMessage bytesMessage = (BytesMessage) message;
 
-                msg_type = bytesMessage.getIntProperty("msg_type");
+                msgType = bytesMessage.getIntProperty("msg_type");
 
-                if (msg_type == 0) {
+                if (msgType == 0) {
                     return;
                 }
                 
@@ -327,7 +339,7 @@ public class InfoMessageBean implements MessageListener {
                 if (project != null) {
                     
                     node = bytesMessage.getStringProperty("node_id");
-                    probe = bytesMessage.getStringProperty("host_name");
+                    host = bytesMessage.getStringProperty("host_name");
                     
                     byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
                     bytesMessage.readBytes(buffer);
@@ -340,10 +352,9 @@ public class InfoMessageBean implements MessageListener {
                         return;
                     }
                     
-                    int sensor;
                     String target;
 
-                    switch (msg_type) {
+                    switch (msgType) {
                         case 1:
                             StatsManagement sm = new StatsManagement(this);
                             sm.EvaluateStats(data);
@@ -357,56 +368,92 @@ public class InfoMessageBean implements MessageListener {
                         break;
 
                         case 3: 
-                            RulesManagement rm = new RulesManagement(this);
-                            sensor = bytesMessage.getIntProperty("sensor");
-                            String rule = bytesMessage.getStringProperty("rule");
-                            rm.saveRule(sensor, rule, data);
+                            ProbesManagement pm = new ProbesManagement(this);
+                            pm.setStatus(data);
                             break;
                             
-                        case 4: 
-                            DependencyCheck dc = new DependencyCheck(this);
+                        case 4: // appSecret
+                            AppSecret appSecret = new AppSecret(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dc.saveReport(data, target);
+                            appSecret.saveReport(data, target, uuid);
                             break;
 
-                        case 5: 
-                            DockerBench db = new DockerBench(this);
-                            db.saveReport(data);
-                            break;
-
-                        case 6: 
-                            KubeBench kubeBench = new KubeBench(this);
-                            kubeBench.saveReport(data);
+                        case 5: // dockerConfig
+                            DockerConfig dockerConfig = new DockerConfig(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            dockerConfig.saveReport(data, target, uuid);
                             break;
                             
-                        case 7: 
+                        case 6: // k8sConfig
+                            K8sConfig k8sConfig = new K8sConfig(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            k8sConfig.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 7: // appVuln
+                            AppVuln appVuln = new AppVuln(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            appVuln.saveReport(data, target, uuid);
+                            break;
+
+                        case 8: // dockerVuln
+                            DockerVuln dockerVuln = new DockerVuln(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            dockerVuln.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 9: // k8sVuln
+                            K8sVuln k8sVuln = new K8sVuln(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            k8sVuln.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 10: // appSbom
+                            AppSbom appSbom = new AppSbom(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            appSbom.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 11: // dockerSbom
+                            DockerSbom dockerSbom = new DockerSbom(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            dockerSbom.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 12: // cloudFormation
+                            CloudFormation cloudFormation = new CloudFormation(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            cloudFormation.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 13: // terraform
+                            Terraform terraform = new Terraform(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            terraform.saveReport(data, target, uuid);
+                            break;
+                            
+                        case 14: // kube-hunter
                             KubeHunter kubeHunter = new KubeHunter(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            kubeHunter.saveReport(data, target);
+                            kubeHunter.saveReport(data, target, uuid);
                             break;
-                            
-                        case 8: 
-                            Nmap nmap = new Nmap(this);
-                            target = bytesMessage.getStringProperty("target");
-                            nmap.saveReport(data, target);
-                            break;
-                            
-                        case 9: 
-                            Tfsec tfsec = new Tfsec(this);
-                            target = bytesMessage.getStringProperty("target");
-                            tfsec.saveReport(data, target);
-                            break;
-                            
-                        case 10: 
-                            Trivy trivy = new Trivy(this);
-                            target = bytesMessage.getStringProperty("target");
-                            trivy.saveReport(data, target);
-                            break;
-                            
-                        case 11: 
+                                                        
+                        case 15: // zap
                             Zap zap = new Zap(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            zap.saveReport(data, target);
+                            zap.saveReport(data, target, uuid);
                             break;
                             
                         default:
@@ -426,9 +473,9 @@ public class InfoMessageBean implements MessageListener {
 
                 TextMessage textMessage = (TextMessage) message;
 
-                msg_type = textMessage.getIntProperty("msg_type");
+                msgType = textMessage.getIntProperty("msg_type");
 
-                if (msg_type == 1) {
+                if (msgType == 1) {
                     ref_id = textMessage.getStringProperty("ref_id");
                     node = textMessage.getStringProperty("node_id");
                     String agent = textMessage.getStringProperty("agent_name");
@@ -473,7 +520,7 @@ public class InfoMessageBean implements MessageListener {
         return (compressed[0] == (byte) (GZIPInputStream.GZIP_MAGIC)) && (compressed[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8));
     }
 
-    void createAlert(Alert a) {
+    public void createAlert(Alert a) {
 
         // save alert in MySQL 
         if (project.getSemActive() > 0) {
@@ -481,8 +528,6 @@ public class InfoMessageBean implements MessageListener {
             alertFacade.create(a);
             sendAlertToMQ(a);
         }
-        
-        
     }
 
     public void sendAlertToMQ(Alert a) {

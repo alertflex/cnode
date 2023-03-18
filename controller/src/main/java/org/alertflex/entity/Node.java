@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Node.findByDescription", query = "SELECT n FROM Node n WHERE n.description = :description"),
     @NamedQuery(name = "Node.findByNodeType", query = "SELECT n FROM Node n WHERE n.nodeType = :nodeType"),
     @NamedQuery(name = "Node.findByVpc", query = "SELECT n FROM Node n WHERE n.vpc = :vpc"),
+    @NamedQuery(name = "Node.findByNetAcl", query = "SELECT n FROM Node n WHERE n.netAcl = :netAcl"),
     @NamedQuery(name = "Node.findByCommandsControl", query = "SELECT n FROM Node n WHERE n.commandsControl = :commandsControl"),
     @NamedQuery(name = "Node.findByFiltersControl", query = "SELECT n FROM Node n WHERE n.filtersControl = :filtersControl")})
 public class Node implements Serializable {
@@ -55,6 +56,11 @@ public class Node implements Serializable {
     private String vpc;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "net_acl")
+    private String netAcl;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "commands_control")
     private int commandsControl;
     @Basic(optional = false)
@@ -69,11 +75,12 @@ public class Node implements Serializable {
         this.nodePK = nodePK;
     }
 
-    public Node(NodePK nodePK, String description, String nodeType, String vpc, int commandsControl, int filtersControl) {
+    public Node(NodePK nodePK, String description, String nodeType, String vpc, String netAcl, int commandsControl, int filtersControl) {
         this.nodePK = nodePK;
         this.description = description;
         this.nodeType = nodeType;
         this.vpc = vpc;
+        this.netAcl = netAcl;
         this.commandsControl = commandsControl;
         this.filtersControl = filtersControl;
     }
@@ -112,6 +119,14 @@ public class Node implements Serializable {
 
     public void setVpc(String vpc) {
         this.vpc = vpc;
+    }
+
+    public String getNetAcl() {
+        return netAcl;
+    }
+
+    public void setNetAcl(String netAcl) {
+        this.netAcl = netAcl;
     }
 
     public int getCommandsControl() {

@@ -106,7 +106,7 @@ public class StixAlertsREST {
             obj.put("event", a.getEventId());
             obj.put("source", a.getAlertSource());
             obj.put("type", a.getAlertType());
-            obj.put("node", a.getNodeId());
+            obj.put("node", a.getNode());
             obj.put("user", a.getUserName());
             obj.put("severity", a.getAlertSeverity());
             obj.put("description", a.getDescription());

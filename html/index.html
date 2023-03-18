@@ -10,9 +10,10 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
+		<link rel="stylesheet" href="css/swagger-ui.css"/>
         <link rel="stylesheet" href="css/bootstrap.css">
 		<link rel="stylesheet" href="css/font-awesome.min.css">
-        
+		<link rel="stylesheet" href="css/style.css">        
 		<link rel="icon" href="img/box.ico">
 		<link rel="shortcut icon" href="img/box.ico" />
 		
@@ -20,18 +21,23 @@
     <body>
     
 	<!-- Static navbar -->
-    
     <nav class="navbar navbar-default navbar-fixed-top"  >
 		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="https://alertflex.org" style="color: #2a69a7; font-weight: bold;" >Alertflex</a>
+			</div> <!-- /.navbar-header -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >
-				<ul class="nav navbar-nav navbar-left" >
-					<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');" ><i class="fa fa-sitemap"></i> Alertflex</a></li>
-				</ul>
 				<ul class="nav navbar-nav navbar-right" >
 					<li class="dropdown">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-bars"></i></a>
 						<ul class="dropdown-menu">
 						    <li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/admin');" ><i class="fa fa-paper-plane"></i> Active MQ</a></li>
+							<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');" ><i class="fa fa-sitemap"></i> Alertflex MC</a></li>
 							<li><a href="#" onclick="javascript:window.location.assign('https://' + window.location.hostname + ':4848');" ><i class="fa fa-cubes"></i> Payara AS</a></li>
 						</ul>
 					</li>
@@ -45,18 +51,35 @@
 		
 			<div class="row" style="margin-top: 3%;">
 				<div class="col-md-12" class="img-responsive" align="left">
-					<a href="#" title="Click to open Alertflex console" onclick="javascript:window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');">
-						<img src="img/back.svg" height="45%" width="45%" >
-					</a>
+					<div id="swagger-ui"></div> <!-- Div to hold the UI component -->
+						<script>
+							window.onload = function () {
+								// Begin Swagger UI call region
+								const ui = SwaggerUIBundle({
+									url: "api.yaml", //Location of Open API spec in the repo
+									dom_id: '#swagger-ui',
+									deepLinking: true,
+									presets: [
+										SwaggerUIBundle.presets.apis,
+										SwaggerUIBundle.SwaggerUIStandalonePreset
+									],
+									plugins: [
+										SwaggerUIBundle.plugins.DownloadUrl
+									],
+								})
+								window.ui = ui
+							}
+						</script>
+					</div>
                 </div>
 			</div>
-			
 		</div> <!-- /.container -->
     </div> <!-- /.jumbotron -->
 	
 	<!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+	<script src="js/swagger-ui-bundle.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
 	    

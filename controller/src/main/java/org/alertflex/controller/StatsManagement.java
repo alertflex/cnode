@@ -23,25 +23,17 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 import javax.persistence.PersistenceException;
-import org.alertflex.common.ProjectRepository;
+import org.alertflex.supp.ProjectRepository;
 import org.alertflex.entity.Agent;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
-import org.alertflex.entity.NetStat;
 import org.alertflex.entity.AgentSca;
 import org.alertflex.entity.AgentVul;
-import org.alertflex.entity.AgentsGroup;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
-import org.alertflex.entity.Hosts;
-import org.alertflex.entity.NetCountries;
-import org.alertflex.entity.Node;
-import org.alertflex.entity.NodePK;
 import org.alertflex.entity.Pod;
 import org.alertflex.entity.Project;
-import org.alertflex.entity.Sensor;
-import org.alertflex.entity.SensorPK;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -152,12 +144,11 @@ public class StatsManagement {
                             a.setIp(ip);
                             a.setDateAdd(dateAdd);
                             a.setVersion(version);
-                            a.setManager(managerHost);
+                            a.setProbe(managerHost);
                             a.setOsPlatform(osPlatform);
                             a.setOsVersion(osVersion);
                             a.setOsName(osName);
-                            a.setGroupName(group);
-
+                            
                             eventBean.getAgentFacade().create(a);
 
                             createNewAgentAlert(a);
@@ -168,58 +159,17 @@ public class StatsManagement {
                             agExisting.setStatus(status);
                             agExisting.setDateAdd(dateAdd);
                             agExisting.setVersion(version);
-                            agExisting.setManager(managerHost);
+                            agExisting.setProbe(managerHost);
                             agExisting.setOsPlatform(osPlatform);
                             agExisting.setOsVersion(osVersion);
                             agExisting.setOsName(osName);
-                            agExisting.setGroupName(group);
-
+                            
                             eventBean.getAgentFacade().edit(agExisting);
                         }
                     }
                     
                     break;
                     
-                case "groups_list": 
-
-                    arr = obj.getJSONArray("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                    for (int i = 0; i < arr.length(); i++) {
-
-                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
-
-                        String group = arr.getJSONObject(i).getString("name");
-                        int count = arr.getJSONObject(i).getInt("count");
-                        
-                        AgentsGroup agExisting = eventBean.getAgentsGroupFacade().findAgentsGroupByName(ref, nodeName, group);
-                        
-                        if (agExisting == null) {
-                            
-                            AgentsGroup g = new AgentsGroup();
-
-                            g.setRefId(ref);
-                            g.setNode(nodeName);
-                            g.setGroupRef("indef");
-                            g.setGroupName(group);
-                            g.setAgentsCount(count);
-                            g.setDateAdd(date);
-                            g.setDateUpdate(date);
-
-                            eventBean.getAgentsGroupFacade().create(g);
-
-                        } else {
-
-                            agExisting.setDateUpdate(date);
-                            agExisting.setAgentsCount(count);
-                            
-                            eventBean.getAgentsGroupFacade().edit(agExisting);
-                        }
-                    }
-                    
-                    break;
-                
                 case "containers_list": 
 
                     arr = obj.getJSONArray("data");
@@ -313,15 +263,15 @@ public class StatsManagement {
                             Pod p = new Pod();
 
                             p.setRefId(ref);
-                            p.setNodeProbe(nodeName);
+                            p.setNode(nodeName);
                             p.setName(name);
-                            p.setNameSpace(nameSpace);
+                            p.setNamespace(nameSpace);
                             p.setCreationTimestamp(creationTimestamp);
                             p.setUid(uid);
                             p.setHostIp(hostIp);
                             p.setPodIp(podIp);
                             p.setPhase(phase);
-                            p.setNodeName(nodeK8s);
+                            p.setK8sNode(nodeK8s);
                             p.setReportAdded(new Date());
                             p.setReportUpdated(new Date());
 
@@ -420,7 +370,7 @@ public class StatsManagement {
 
                             eventBean.getAgentScaFacade().create(a);
 
-                           // createNewScaAlert(a);
+                            createNewScaAlert(a, eventBean.getHost());
                             
                         } else {
                             scaExisting.setReportUpdated(date);
@@ -485,7 +435,7 @@ public class StatsManagement {
 
                         eventBean.getAgentVulFacade().create(v);
 
-                        createNewVulnAlert(v);
+                        createNewVulnAlert(v, eventBean.getHost());
                         
                     } else {
 
@@ -507,7 +457,7 @@ public class StatsManagement {
 
                     node_alerts.setRefId(eventBean.getRefId());
                     node_alerts.setNode(eventBean.getNode());
-                    node_alerts.setProbe(eventBean.getProbe());
+                    node_alerts.setHost(eventBean.getHost());
 
                     node_alerts.setCrsAgg(na.getLong("crs_agg"));
                     node_alerts.setCrsFilter(na.getLong("crs_filter"));
@@ -546,43 +496,6 @@ public class StatsManagement {
                 
                 case "node_monitor":
                     
-                    if (project.getNodeTimerange() == 0) return;
-                    
-                    Node node = eventBean.getNodeFacade().findByNodeName(ref, nodeName);
-                    
-                    if (node == null) {
-                        
-                        pr.initNode(nodeName);
-
-                        NodePK nodePK = new NodePK(ref, nodeName);
-                        node = new Node();
-                        node.setNodePK(nodePK);
-                        node.setDescription("change desc");
-                        node.setNodeType("indef");
-                        node.setVpc("indef");
-                        node.setCommandsControl(0);
-                        node.setFiltersControl(0);
-                        eventBean.getNodeFacade().create(node);
-                    }
-                    
-                    Hosts host = eventBean.getHostsFacade().findHost(ref, eventBean.getProbe());
-            
-                    if (host == null) {
-
-                        host = new Hosts();
-                        host.setName(eventBean.getProbe());
-                        host.setNode(nodeName);
-                        host.setRefId(ref);
-                        host.setCred("dummmy");
-                        host.setAddress("127.0.0.1");
-                        host.setPort(22);
-                        host.setDescription("change desc");
-                        host.setHostType("collector");
-                        host.setAgent("indef");
-                        host.setCloudInstance("indef");
-                        eventBean.getHostsFacade().create(host);
-                    }
-                    
                     JSONObject nm = obj.getJSONObject("data");
                     
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -590,20 +503,13 @@ public class StatsManagement {
                     NodeMonitor node_monitor = new NodeMonitor();
                     
                     long eventsCRS = nm.getLong("crs");
-                    if (eventsCRS > 0) checkSensor(ref, nodeName, 0);
-                    
                     long eventsWaf = nm.getLong("waf");
-                    if (eventsWaf > 0) checkSensor(ref, nodeName, 1);
-                    
                     long eventsNids = nm.getLong("nids");
-                    if (eventsNids > 0) checkSensor(ref, nodeName, 2);
-                    
                     long eventsHids = nm.getLong("hids");
-                    if (eventsHids > 0) checkSensor(ref, nodeName, 3);
                     
                     node_monitor.setRefId(ref);
                     node_monitor.setNode(nodeName);
-                    node_monitor.setProbe(eventBean.getProbe());
+                    node_monitor.setHost(eventBean.getHost());
                     node_monitor.setEventsHids(eventsHids);
                     node_monitor.setEventsNids(eventsNids);
                     node_monitor.setEventsWaf(eventsWaf);
@@ -620,99 +526,6 @@ public class StatsManagement {
                     
                     break;
                 
-                case "net_stat": 
-                    
-                    if (project.getNetTimerange() == 0) return;
-
-                    arr = obj.getJSONArray("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                    for (int i = 0; i < arr.length(); i++) {
-
-                        NetStat net_stat = new NetStat();
-
-                        net_stat.setRefId(eventBean.getRefId());
-                        net_stat.setNode(eventBean.getNode());
-                        net_stat.setProbe(eventBean.getProbe());
-                        
-                        net_stat.setSensor(arr.getJSONObject(i).getString("ids"));
-
-                        net_stat.setInvalid(arr.getJSONObject(i).getLong("invalid"));
-
-                        net_stat.setPkts(arr.getJSONObject(i).getLong("pkts"));
-
-                        net_stat.setBytes(arr.getJSONObject(i).getLong("bytes"));
-
-                        net_stat.setEthernet(arr.getJSONObject(i).getLong("ethernet"));
-
-                        net_stat.setPpp(arr.getJSONObject(i).getLong("ppp"));
-
-                        net_stat.setPppoe(arr.getJSONObject(i).getLong("pppoe"));
-
-                        net_stat.setGre(arr.getJSONObject(i).getLong("gre"));
-
-                        net_stat.setVlan(arr.getJSONObject(i).getLong("vlan"));
-
-                        net_stat.setVlanQinq(arr.getJSONObject(i).getLong("vlan_qinq"));
-
-                        net_stat.setMpls(arr.getJSONObject(i).getLong("mpls"));
-
-                        net_stat.setIpv4(arr.getJSONObject(i).getLong("ipv4"));
-
-                        net_stat.setIpv6(arr.getJSONObject(i).getLong("ipv6"));
-
-                        net_stat.setTcp(arr.getJSONObject(i).getLong("tcp"));
-
-                        net_stat.setUdp(arr.getJSONObject(i).getLong("udp"));
-
-                        net_stat.setSctp(arr.getJSONObject(i).getLong("sctp"));
-
-                        net_stat.setIcmpv4(arr.getJSONObject(i).getLong("icmpv4"));
-
-                        net_stat.setIcmpv6(arr.getJSONObject(i).getLong("icmpv6"));
-
-                        net_stat.setTeredo(arr.getJSONObject(i).getLong("teredo"));
-
-                        net_stat.setIpv4InIpv6(arr.getJSONObject(i).getLong("ipv4_in_ipv6"));
-
-                        net_stat.setIpv6InIpv6(arr.getJSONObject(i).getLong("ipv6_in_ipv6"));
-
-                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
-                        net_stat.setTimeOfSurvey(date);
-
-                        eventBean.getNetStatFacade().create(net_stat);
-                    }
-
-                    break;
-                    
-                case "net_countries": {
-                    
-                    if (project.getNetTimerange() == 0) return;
-                    
-                    arr = obj.getJSONArray("data");
-                    
-                    formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        
-                    for (int i = 0; i < arr.length(); i++) {
-                            
-                        NetCountries net_country = new NetCountries();
-                    
-                        net_country.setRefId(eventBean.getRefId());
-                        net_country.setNode(eventBean.getNode());
-                        net_country.setProbe(eventBean.getProbe());
-                        net_country.setSensor(arr.getJSONObject(i).getString("sensor"));
-                        net_country.setCountry(arr.getJSONObject(i).getString("country"));
-                        net_country.setBytes(arr.getJSONObject(i).getLong("bytes"));
-                        net_country.setSessions(arr.getJSONObject(i).getLong("sessions"));
-                        date = formatter.parse(arr.getJSONObject(i).getString("time_of_survey"));
-                        net_country.setTimeOfSurvey(date);
-                        
-                        eventBean.getNetCountriesFacade().create(net_country);
-                    }
-                    break;
-                }
-                    
                 default:
                     break;
                     
@@ -723,67 +536,12 @@ public class StatsManagement {
         }
     }
     
-    public void checkSensor(String ref, String node, int type) {
-        
-        String sensorName;
-        String sensorType;
-        String probe = eventBean.getProbe();
-                
-        switch (type) {
-            case 0:
-                sensorName = probe + ".crs";
-                sensorType = "Falco";
-                break;
-                
-            case 1:
-                sensorName = probe + ".waf";
-                sensorType = "ModSecurity";
-                break;
-                    
-            case 2:
-                sensorName = probe + ".nids";
-                sensorType = "Suricata";
-                break;
-                
-            case 3:
-                sensorName = probe + ".hids";
-                sensorType = "Wazuh";
-                break;
-            
-            default:
-                return;
-        }
-
-        Sensor s = eventBean.getSensorFacade().findSensorByName(ref, node, sensorName);
-
-        if (s == null) {
-
-            SensorPK sensorPK = new SensorPK(ref, sensorName, node);
-            s = new Sensor(sensorPK);
-            s.setDescription(sensorType + " sensor");
-            s.setSensorType(sensorType);
-            s.setHostName(probe);
-            s.setAwsidsRulegroup("indef");
-            s.setK8sPolicy("indef");
-            s.setSuricataRule("indef");
-            s.setStatus(1);
-            eventBean.getSensorFacade().create(s);
-        
-        } else {
-            
-            if (s.getStatus() == 0) {
-                s.setStatus(1);
-                eventBean.getSensorFacade().edit(s);
-            }
-        }
-    }
-
     public void createNewAgentAlert(Agent ag) {
 
         Alert a = new Alert();
 
         a.setRefId(ag.getRefId());
-        a.setNodeId(ag.getNode());
+        a.setNode(ag.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(ag.getRefId(), "Alertflex");
@@ -793,7 +551,7 @@ public class StatsManagement {
 
         a.setAlertSource("Alertflex");
         a.setAlertType("HOST");
-        a.setSensorId(ag.getManager());
+        a.setProbe(ag.getProbe());
 
         a.setDescription("new agent in the system with id: " + ag.getAgentId() + " and name: " + ag.getName());
         a.setEventId("1");
@@ -841,7 +599,7 @@ public class StatsManagement {
         Alert a = new Alert();
 
         a.setRefId(c.getRefId());
-        a.setNodeId(c.getNode());
+        a.setNode(c.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(c.getRefId(), "Alertflex");
@@ -851,7 +609,7 @@ public class StatsManagement {
 
         a.setAlertSource("Alertflex");
         a.setAlertType("HOST");
-        a.setSensorId(c.getProbe());
+        a.setProbe(c.getProbe());
 
         a.setDescription("new container in the system with id: " + c.getContainerId());
         a.setEventId("2");
@@ -893,12 +651,12 @@ public class StatsManagement {
         eventBean.createAlert(a);
     }
     
-    public void createNewScaAlert(AgentSca as) {
+    public void createNewScaAlert(AgentSca as, String host) {
 
         Alert a = new Alert();
 
         a.setRefId(as.getRefId());
-        a.setNodeId(as.getNode());
+        a.setNode(as.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(as.getRefId(), "Alertflex");
@@ -908,7 +666,7 @@ public class StatsManagement {
 
         a.setAlertSource("Wazuh");
         a.setAlertType("HOST");
-        a.setSensorId("indef");
+        a.setProbe(host + ".hids");
 
         a.setDescription(as.getTitle());
         a.setEventId("3");
@@ -951,12 +709,12 @@ public class StatsManagement {
         eventBean.createAlert(a);
     }
     
-    public void createNewVulnAlert(AgentVul av) {
+    public void createNewVulnAlert(AgentVul av, String host) {
 
         Alert a = new Alert();
 
         a.setRefId(av.getRefId());
-        a.setNodeId(av.getNode());
+        a.setNode(av.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(av.getRefId(), "Alertflex");
@@ -966,7 +724,7 @@ public class StatsManagement {
 
         a.setAlertSource("Wazuh");
         a.setAlertType("HOST");
-        a.setSensorId("indef");
+        a.setProbe(host + ".hids");
 
         a.setDescription(av.getTitle());
         a.setEventId("4");

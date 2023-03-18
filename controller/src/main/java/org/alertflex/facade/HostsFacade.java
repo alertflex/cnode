@@ -38,23 +38,25 @@ public class HostsFacade extends AbstractFacade<Hosts> {
         super(Hosts.class);
     }
 
-    public Hosts findHost(String r, String n) {
+    public Hosts findHost(String r, String n, String hn) {
 
         Hosts h = null;
 
         try {
             em.flush();
 
-            Query hostQry = em.createQuery("SELECT h FROM Hosts h WHERE h.refId = :ref AND h.name = :name").setParameter("ref", r).setParameter("name", n);
+            Query hostQry = em.createQuery("SELECT h FROM Hosts h WHERE h.refId = :ref AND h.node = :node AND h.name = :name")
+                .setParameter("ref", r)
+                .setParameter("node", n)
+                .setParameter("name", hn);
 
             // Enable forced database query
             hostQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             h = (Hosts) hostQry.getSingleResult();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return h;
@@ -73,10 +75,8 @@ public class HostsFacade extends AbstractFacade<Hosts> {
             listHostQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             listHost = listHostQry.getResultList();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return listHost;
@@ -95,10 +95,9 @@ public class HostsFacade extends AbstractFacade<Hosts> {
             listHostQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             listHostName = listHostQry.getResultList();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return listHostName;
@@ -117,10 +116,8 @@ public class HostsFacade extends AbstractFacade<Hosts> {
             listHostQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             listHostName = listHostQry.getResultList();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return listHostName;
@@ -139,10 +136,8 @@ public class HostsFacade extends AbstractFacade<Hosts> {
             listHostsQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             listHosts = listHostsQry.getResultList();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return listHosts;
@@ -163,10 +158,8 @@ public class HostsFacade extends AbstractFacade<Hosts> {
             listHostsQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             listHosts = listHostsQry.getResultList();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return listHosts;
@@ -188,10 +181,8 @@ public class HostsFacade extends AbstractFacade<Hosts> {
             hostQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             h = (Hosts) hostQry.getSingleResult();
 
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Authenticated", ""));
         } catch (Exception e) {
-
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid query to DB", ""));
+            return null;
         }
 
         return h;

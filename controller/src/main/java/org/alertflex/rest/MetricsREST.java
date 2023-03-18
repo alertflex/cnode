@@ -25,16 +25,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.alertflex.entity.Node;
-import org.alertflex.entity.Sensor;
+import org.alertflex.entity.Probe;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
-import org.alertflex.entity.NetStat;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.NodeFacade;
-import org.alertflex.facade.SensorFacade;
+import org.alertflex.facade.ProbeFacade;
 import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
-import org.alertflex.facade.NetStatFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,16 +51,13 @@ public class MetricsREST {
     private NodeFacade nodeFacade;
 
     @EJB
-    private SensorFacade sensorFacade;
+    private ProbeFacade probeFacade;
 
     @EJB
     private NodeMonitorFacade nodeMonitorFacade;
 
     @EJB
     private NodeAlertsFacade nodeAlertsFacade;
-
-    @EJB
-    private NetStatFacade netStatFacade;
 
     StringBuilder sb;
 
@@ -114,30 +109,7 @@ public class MetricsREST {
                 if (nmon != null) {
                     metricsNodeMonitor(nodeId, nmon);
                 }
-
-                try {
-                    List<Sensor> sensorsList = sensorFacade.findSensorsByType(prj, nodeId, "Suricata");
-
-                    if (sensorsList != null || !sensorsList.isEmpty()) {
-                        
-                        for (Sensor sensor : sensorsList) {
-
-                            String nids = sensor.getSensorPK().getName();
-
-                            if (nids != null || !nids.isEmpty()) {
-
-                                NetStat ns = netStatFacade.getLastRecord(prj, nodeId, nids);
-                                if (ns != null) {
-                                    statNetwork(nodeId, nids, ns);
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
-
-            }
+}
         }
 
         return sb.toString();
@@ -316,117 +288,6 @@ public class MetricsREST {
         sb.append(template.toString());
         sb.append("waf_s3\"} ");
         sb.append(Long.toString(na.getWafS3()));
-        sb.append("\n");
-
-        sb.append("\n");
-    }
-
-    private void statNetwork(String nodeId, String ids, NetStat ns) {
-
-        StringBuilder template = new StringBuilder("alertflex_network_stat{node=\"");
-        template.append(nodeId);
-        template.append("\",ids=\"");
-        template.append(ids);
-        template.append("\",type=\"");
-
-        sb.append(template.toString());
-        sb.append("invalid\"} ");
-        sb.append(Long.toString(ns.getInvalid()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("pkts\"} ");
-        sb.append(Long.toString(ns.getPkts()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("bytes\"} ");
-        sb.append(Long.toString(ns.getBytes()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("ethernet\"} ");
-        sb.append(Long.toString(ns.getEthernet()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("ppp\"} ");
-        sb.append(Long.toString(ns.getPpp()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("pppoe\"} ");
-        sb.append(Long.toString(ns.getPppoe()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("gre\"} ");
-        sb.append(Long.toString(ns.getGre()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("vlan\"} ");
-        sb.append(Long.toString(ns.getVlan()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("vlan_qinq\"} ");
-        sb.append(Long.toString(ns.getVlanQinq()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("mpls\"} ");
-        sb.append(Long.toString(ns.getMpls()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("ipv4\"} ");
-        sb.append(Long.toString(ns.getIpv4()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("ipv6\"} ");
-        sb.append(Long.toString(ns.getIpv6()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("tcp\"} ");
-        sb.append(Long.toString(ns.getTcp()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("udp\"} ");
-        sb.append(Long.toString(ns.getUdp()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("sctp\"} ");
-        sb.append(Long.toString(ns.getSctp()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("icmpv4\"} ");
-        sb.append(Long.toString(ns.getIcmpv4()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("icmpv6\"} ");
-        sb.append(Long.toString(ns.getIcmpv6()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("teredo\"} ");
-        sb.append(Long.toString(ns.getTeredo()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("ipv4_in_ipv6\"} ");
-        sb.append(Long.toString(ns.getIpv4InIpv6()));
-        sb.append("\n");
-
-        sb.append(template.toString());
-        sb.append("ipv6_in_ipv6\"} ");
-        sb.append(Long.toString(ns.getIpv6InIpv6()));
         sb.append("\n");
 
         sb.append("\n");

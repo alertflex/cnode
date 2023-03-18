@@ -16,6 +16,7 @@
 package org.alertflex.facade;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.CacheRetrieveMode;
@@ -58,6 +59,30 @@ public class NodeMonitorFacade extends AbstractFacade<NodeMonitor> {
 
         return deletedCount;
     }
+    
+    public List<NodeMonitor> getOldStat(String ref, Timestamp timerange) {
+
+        List<NodeMonitor> l = null;
+
+        try {
+            em.flush();
+
+            Query listQry = em.createQuery( "SELECT n FROM NodeMonitor n WHERE n.refId = :ref AND n.timeOfSurvey < :timerange")
+                .setParameter("ref", ref)
+                .setParameter("timerange", timerange);
+
+            // Enable forced database query
+            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            l = listQry.getResultList();
+
+        } catch (Exception e) {
+
+            return null;
+        }
+
+        return l;
+
+    }
 
     public NodeMonitor getLastRecord(String r, String n, Timestamp start, Timestamp end) {
 
@@ -85,6 +110,30 @@ public class NodeMonitorFacade extends AbstractFacade<NodeMonitor> {
         }
 
         return nm;
+
+    }
+    
+    public List<NodeMonitor> findAllStatBetween(String r, String n, String h, Date start, Date end) {
+
+        List<NodeMonitor> pm = null;
+
+        try {
+            em.flush();
+
+            Query listQry = em.createQuery(
+                    "SELECT n FROM NodeMonitor n WHERE n.refId = :ref AND n.node = :node AND n.host = :host AND n.timeOfSurvey BETWEEN :start AND :end")
+                    .setParameter("ref", r).setParameter("node", n).setParameter("host", h).setParameter("start", start).setParameter("end", end);
+
+            // Enable forced database query
+            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            pm = listQry.getResultList();
+
+        } catch (Exception e) {
+
+            return null;
+        }
+
+        return pm;
 
     }
 }

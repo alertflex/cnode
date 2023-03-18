@@ -170,7 +170,7 @@ public class LogsManagement {
         String sha256 = "";
         String dns = "";
         String agent = "";
-        String sensor = "";
+        String probe = "";
         String hostname = "";
         String nodename = "";
         String filename = "indef";
@@ -185,7 +185,7 @@ public class LogsManagement {
 
             String message = obj.getString("short_message");
             nodename = obj.getString("node");
-            sensor = obj.getString("sensor");
+            probe = obj.getString("probe");
 
             Attributes attr;
 
@@ -214,7 +214,7 @@ public class LogsManagement {
                                 + md5
                                 + "\",\"message\": \"message digest MD5\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                     }
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(sha1, misp_sha1);
@@ -230,7 +230,7 @@ public class LogsManagement {
                                 + sha1
                                 + "\",\"message\": \"secure hash SHA1\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                     }
 
                     attr = eventBean.getAttributesFacade().findByValueAndType(sha256, misp_sha256);
@@ -246,7 +246,7 @@ public class LogsManagement {
                                 + sha256
                                 + "\",\"message\": \"secure hash SHA256\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                     }
 
                     return true;
@@ -269,7 +269,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -285,7 +285,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -295,8 +295,7 @@ public class LogsManagement {
                     
                     dstip = obj.getString("dstip");
                     srcip = obj.getString("srcip");
-                    agent = obj.getString("sensor");
-
+                    
                     if (!ipdstMap.containsKey(dstip)) {
 
                         attr = eventBean.getAttributesFacade().findByValueAndType(dstip, misp_ipdst);
@@ -309,7 +308,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -325,7 +324,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -349,7 +348,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -365,7 +364,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -381,7 +380,7 @@ public class LogsManagement {
                                     + dns
                                     + "\",\"message\": \"domain\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -404,7 +403,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\":\" destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -420,7 +419,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\":\" source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -444,7 +443,7 @@ public class LogsManagement {
                                     + hostname
                                     + "\",\"message\":\" url host name\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -470,7 +469,7 @@ public class LogsManagement {
                                 + md5
                                 + "\",\"message\": \"message digest before\" }]}";
 
-                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                        createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                     }
 
                     break;
@@ -493,7 +492,7 @@ public class LogsManagement {
                                     + dstip
                                     + "\",\"message\": \"destination ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -509,7 +508,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -518,8 +517,7 @@ public class LogsManagement {
                 case "alert-awswaf":
 
                     srcip = obj.getString("clientIp");
-                    sensor = obj.getString("sensor");
-
+                    
                     if (!ipsrcMap.containsKey(srcip)) {
 
                         attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
@@ -532,7 +530,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -543,8 +541,7 @@ public class LogsManagement {
                     awsWafEvent = true;
 
                     srcip = obj.getString("clientIp");
-                    sensor = obj.getString("sensor");
-
+                    
                     if (!ipsrcMap.containsKey(srcip)) {
 
                         attr = eventBean.getAttributesFacade().findByValueAndType(srcip, misp_ipsrc);
@@ -557,7 +554,7 @@ public class LogsManagement {
                                     + srcip
                                     + "\",\"message\": \"source ip\" }]}";
 
-                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, sensor);
+                            createIocAlert(r, attr, alert_type, artifacts, nodename, dstip, srcip, agent, filename, process, probe);
                         }
                     }
 
@@ -576,13 +573,13 @@ public class LogsManagement {
     }
 
     public void createIocAlert(String r, Attributes attr, int type, String artifacts, String node,
-            String dstip, String srcip, String agent, String filename, String process, String sensor) {
+            String dstip, String srcip, String agent, String filename, String process, String probe) {
 
         int srv = 0;
 
         Alert a = new Alert();
 
-        a.setNodeId(eventBean.getNode());
+        a.setNode(eventBean.getNode());
         a.setRefId(eventBean.getRefId());
         a.setAlertUuid(UUID.randomUUID().toString());
 
@@ -873,7 +870,7 @@ public class LogsManagement {
 
         }
 
-        a.setSensorId(sensor);
+        a.setProbe(probe);
         a.setLocation("indef");
         a.setAction("indef");
         a.setStatus("processed");

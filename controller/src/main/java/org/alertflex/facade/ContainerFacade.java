@@ -38,7 +38,7 @@ public class ContainerFacade extends AbstractFacade<Container> {
         super(Container.class);
     }
 
-    public List<Container> findBySensor(String ref, String node, String probe) {
+    public List<Container> findByProbe(String ref, String node, String probe) {
 
         List<Container> lc = null;
 

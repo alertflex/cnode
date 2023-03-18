@@ -138,7 +138,7 @@ public class ElasticSearch {
                 String time = formatter.format(date);
 
                 String alert = "{\"version\": \"1.1\",\"node\":\""
-                        + a.getNodeId()
+                        + a.getNode()
                         + "\",\"short_message\":\"alert-flex\""
                         + ",\"full_message\":\"Alert from Alertflex collector/controller\""
                         + ",\"level\":"
@@ -171,8 +171,8 @@ public class ElasticSearch {
                         + a.getDstHostname()
                         + "\",\"dst_port\":"
                         + a.getDstPort()
-                        + ",\"sensor\":\""
-                        + a.getSensorId()
+                        + ",\"probe\":\""
+                        + a.getProbe()
                         + "\",\"process\":\""
                         + a.getProcessName()
                         + "\",\"container\":\""

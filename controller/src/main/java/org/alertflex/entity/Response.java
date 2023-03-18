@@ -1,18 +1,8 @@
 /*
- *   Copyright 2021 Oleg Zharkov
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   A copy of the License is located at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   or in the "license" file accompanying this file. This file is distributed
- *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *   express or implied. See the License for the specific language governing
- *   permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package org.alertflex.entity;
 
 import java.io.Serializable;
@@ -29,37 +19,41 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author root
+ */
 @Entity
 @Table(name = "response")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Response.findAll", query = "SELECT r FROM Response r")
-    , @NamedQuery(name = "Response.findByRecId", query = "SELECT r FROM Response r WHERE r.recId = :recId")
-    , @NamedQuery(name = "Response.findByResId", query = "SELECT r FROM Response r WHERE r.resId = :resId")
-    , @NamedQuery(name = "Response.findByRefId", query = "SELECT r FROM Response r WHERE r.refId = :refId")
-    , @NamedQuery(name = "Response.findByStatus", query = "SELECT r FROM Response r WHERE r.status = :status")
-    , @NamedQuery(name = "Response.findByNode", query = "SELECT r FROM Response r WHERE r.node = :node")
-    , @NamedQuery(name = "Response.findByUserid", query = "SELECT r FROM Response r WHERE r.userid = :userid")
-    , @NamedQuery(name = "Response.findByResType", query = "SELECT r FROM Response r WHERE r.resType = :resType")
-    , @NamedQuery(name = "Response.findByResCause", query = "SELECT r FROM Response r WHERE r.resCause = :resCause")
-    , @NamedQuery(name = "Response.findByAlertSource", query = "SELECT r FROM Response r WHERE r.alertSource = :alertSource")
-    , @NamedQuery(name = "Response.findByAlertSeverity", query = "SELECT r FROM Response r WHERE r.alertSeverity = :alertSeverity")
-    , @NamedQuery(name = "Response.findByAlertUser", query = "SELECT r FROM Response r WHERE r.alertUser = :alertUser")
-    , @NamedQuery(name = "Response.findByAlertAgent", query = "SELECT r FROM Response r WHERE r.alertAgent = :alertAgent")
-    , @NamedQuery(name = "Response.findByAlertContainer", query = "SELECT r FROM Response r WHERE r.alertContainer = :alertContainer")
-    , @NamedQuery(name = "Response.findByAlertIp", query = "SELECT r FROM Response r WHERE r.alertIp = :alertIp")
-    , @NamedQuery(name = "Response.findByAlertSensor", query = "SELECT r FROM Response r WHERE r.alertSensor = :alertSensor")
-    , @NamedQuery(name = "Response.findByAlertFile", query = "SELECT r FROM Response r WHERE r.alertFile = :alertFile")
-    , @NamedQuery(name = "Response.findByAlertProcess", query = "SELECT r FROM Response r WHERE r.alertProcess = :alertProcess")
-    , @NamedQuery(name = "Response.findByAlertRegex", query = "SELECT r FROM Response r WHERE r.alertRegex = :alertRegex")
-    , @NamedQuery(name = "Response.findByBeginHour", query = "SELECT r FROM Response r WHERE r.beginHour = :beginHour")
-    , @NamedQuery(name = "Response.findByEndHour", query = "SELECT r FROM Response r WHERE r.endHour = :endHour")
-    , @NamedQuery(name = "Response.findByCorrelation", query = "SELECT r FROM Response r WHERE r.correlation = :correlation")
-    , @NamedQuery(name = "Response.findByAction", query = "SELECT r FROM Response r WHERE r.action = :action")
-    , @NamedQuery(name = "Response.findByNotifyUsers", query = "SELECT r FROM Response r WHERE r.notifyUsers = :notifyUsers")
-    , @NamedQuery(name = "Response.findByNotifyMsg", query = "SELECT r FROM Response r WHERE r.notifyMsg = :notifyMsg")
-    , @NamedQuery(name = "Response.findBySendSlack", query = "SELECT r FROM Response r WHERE r.sendSlack = :sendSlack")
-    , @NamedQuery(name = "Response.findByPlaybook", query = "SELECT r FROM Response r WHERE r.playbook = :playbook")})
+    @NamedQuery(name = "Response.findAll", query = "SELECT r FROM Response r"),
+    @NamedQuery(name = "Response.findByRecId", query = "SELECT r FROM Response r WHERE r.recId = :recId"),
+    @NamedQuery(name = "Response.findByResId", query = "SELECT r FROM Response r WHERE r.resId = :resId"),
+    @NamedQuery(name = "Response.findByRefId", query = "SELECT r FROM Response r WHERE r.refId = :refId"),
+    @NamedQuery(name = "Response.findByStatus", query = "SELECT r FROM Response r WHERE r.status = :status"),
+    @NamedQuery(name = "Response.findByNode", query = "SELECT r FROM Response r WHERE r.node = :node"),
+    @NamedQuery(name = "Response.findByUserid", query = "SELECT r FROM Response r WHERE r.userid = :userid"),
+    @NamedQuery(name = "Response.findByResType", query = "SELECT r FROM Response r WHERE r.resType = :resType"),
+    @NamedQuery(name = "Response.findByResCause", query = "SELECT r FROM Response r WHERE r.resCause = :resCause"),
+    @NamedQuery(name = "Response.findByAlertSource", query = "SELECT r FROM Response r WHERE r.alertSource = :alertSource"),
+    @NamedQuery(name = "Response.findByAlertSeverity", query = "SELECT r FROM Response r WHERE r.alertSeverity = :alertSeverity"),
+    @NamedQuery(name = "Response.findByAlertUser", query = "SELECT r FROM Response r WHERE r.alertUser = :alertUser"),
+    @NamedQuery(name = "Response.findByAlertAgent", query = "SELECT r FROM Response r WHERE r.alertAgent = :alertAgent"),
+    @NamedQuery(name = "Response.findByAlertContainer", query = "SELECT r FROM Response r WHERE r.alertContainer = :alertContainer"),
+    @NamedQuery(name = "Response.findByAlertIp", query = "SELECT r FROM Response r WHERE r.alertIp = :alertIp"),
+    @NamedQuery(name = "Response.findByAlertProbe", query = "SELECT r FROM Response r WHERE r.alertProbe = :alertProbe"),
+    @NamedQuery(name = "Response.findByAlertFile", query = "SELECT r FROM Response r WHERE r.alertFile = :alertFile"),
+    @NamedQuery(name = "Response.findByAlertProcess", query = "SELECT r FROM Response r WHERE r.alertProcess = :alertProcess"),
+    @NamedQuery(name = "Response.findByAlertRegex", query = "SELECT r FROM Response r WHERE r.alertRegex = :alertRegex"),
+    @NamedQuery(name = "Response.findByBeginHour", query = "SELECT r FROM Response r WHERE r.beginHour = :beginHour"),
+    @NamedQuery(name = "Response.findByEndHour", query = "SELECT r FROM Response r WHERE r.endHour = :endHour"),
+    @NamedQuery(name = "Response.findByCorrelation", query = "SELECT r FROM Response r WHERE r.correlation = :correlation"),
+    @NamedQuery(name = "Response.findByAction", query = "SELECT r FROM Response r WHERE r.action = :action"),
+    @NamedQuery(name = "Response.findByNotifyUsers", query = "SELECT r FROM Response r WHERE r.notifyUsers = :notifyUsers"),
+    @NamedQuery(name = "Response.findByNotifyMsg", query = "SELECT r FROM Response r WHERE r.notifyMsg = :notifyMsg"),
+    @NamedQuery(name = "Response.findBySendSlack", query = "SELECT r FROM Response r WHERE r.sendSlack = :sendSlack"),
+    @NamedQuery(name = "Response.findByPlaybook", query = "SELECT r FROM Response r WHERE r.playbook = :playbook")})
 public class Response implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -122,8 +116,8 @@ public class Response implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "alert_sensor")
-    private String alertSensor;
+    @Column(name = "alert_probe")
+    private String alertProbe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -178,7 +172,7 @@ public class Response implements Serializable {
         this.recId = recId;
     }
 
-    public Response(Integer recId, String resId, String refId, int status, String userid, String resCause, String alertSource, int alertSeverity, String alertSensor, String alertFile, String alertProcess, String alertRegex, int beginHour, int endHour, String correlation, String action, int sendSlack) {
+    public Response(Integer recId, String resId, String refId, int status, String userid, String resCause, String alertSource, int alertSeverity, String alertProbe, String alertFile, String alertProcess, String alertRegex, int beginHour, int endHour, String correlation, String action, int sendSlack) {
         this.recId = recId;
         this.resId = resId;
         this.refId = refId;
@@ -187,7 +181,7 @@ public class Response implements Serializable {
         this.resCause = resCause;
         this.alertSource = alertSource;
         this.alertSeverity = alertSeverity;
-        this.alertSensor = alertSensor;
+        this.alertProbe = alertProbe;
         this.alertFile = alertFile;
         this.alertProcess = alertProcess;
         this.alertRegex = alertRegex;
@@ -310,12 +304,12 @@ public class Response implements Serializable {
         this.alertIp = alertIp;
     }
 
-    public String getAlertSensor() {
-        return alertSensor;
+    public String getAlertProbe() {
+        return alertProbe;
     }
 
-    public void setAlertSensor(String alertSensor) {
-        this.alertSensor = alertSensor;
+    public void setAlertProbe(String alertProbe) {
+        this.alertProbe = alertProbe;
     }
 
     public String getAlertFile() {

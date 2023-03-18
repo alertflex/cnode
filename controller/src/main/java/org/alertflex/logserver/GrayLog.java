@@ -84,7 +84,7 @@ public class GrayLog {
                 String time = formatter.format(date);
                 
                 String alert = "{\"version\": \"1.1\",\"host\":\""
-                +  a.getNodeId()
+                +  a.getNode()
                 + "\",\"short_message\":\"alert-flex\""
                 + ",\"full_message\":\"Alert from Alertflex collector/controller\""
                 + ",\"level\":"
@@ -117,8 +117,8 @@ public class GrayLog {
                 + a.getDstHostname()
                 + "\",\"_dst_port\":"
                 + a.getDstPort()
-                + ",\"_sensor\":\""
-                + a.getSensorId()
+                + ",\"_probe\":\""
+                + a.getProbe()
                 + "\",\"_process\":\""
                 + a.getProcessName()
                 + "\",\"_container\":\""

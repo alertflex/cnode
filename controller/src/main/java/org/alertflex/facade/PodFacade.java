@@ -46,7 +46,7 @@ public class PodFacade extends AbstractFacade<Pod> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT p FROM Pod p WHERE p.nodeProbe = :node AND p.refId = :ref")
+                "SELECT p FROM Pod p WHERE p.node = :node AND p.refId = :ref")
                     .setParameter("ref", ref).setParameter("node", node);
 
             // Enable forced database query
@@ -68,7 +68,7 @@ public class PodFacade extends AbstractFacade<Pod> {
             em.flush();
 
             Query listQry = em.createQuery(
-                "SELECT p FROM Pod p WHERE p.nodeProbe = :node AND p.refId = :ref AND p.name = :name")
+                "SELECT p FROM Pod p WHERE p.node = :node AND p.refId = :ref AND p.name = :name")
                     .setParameter("ref", ref).setParameter("node", node).setParameter("name", name);
 
             // Enable forced database query

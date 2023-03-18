@@ -37,15 +37,15 @@ public class JasperDataCloud {
     private List<AlertsPie> dataPie;
     
     List<Finding> inspectorFindings;
-    List<Finding> sploitFindings;
-    List<Finding> tfsecFindings;
+    List<Finding> cformationFindings;
+    List<Finding> terraformFindings;
     
         
-    public JasperDataCloud(List<Finding> lif, List<Finding> lsf, List<Finding> ltf, List<Alert> al, Date s, Date e, int n) {
+    public JasperDataCloud(List<Finding> lif, List<Finding> lcf, List<Finding> ltf, List<Alert> al, Date s, Date e, int n) {
         
         inspectorFindings = lif;
-        sploitFindings = lsf;
-        tfsecFindings = ltf;
+        cformationFindings = lcf;
+        terraformFindings = ltf;
         
         start = new DateTime(s);
         end = new DateTime(e);
@@ -101,12 +101,12 @@ public class JasperDataCloud {
         return inspectorFindings;
     }
     
-    public Collection<Finding> getSploitFindings() {
-        return sploitFindings;
+    public Collection<Finding> getCformationFindings() {
+        return cformationFindings;
     }
     
-    public Collection<Finding> getTfsecFindings() {
-        return tfsecFindings;
+    public Collection<Finding> getTerraformFindings() {
+        return terraformFindings;
     }
 
 }

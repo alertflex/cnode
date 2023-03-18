@@ -25,18 +25,12 @@ import java.util.List;
 public class JasperDataScanners {
     
     
-    List<Finding> dependencyFindings;
-    List<Finding> nmapFindings;
-    List<Finding> sonarqubeFindings;
+    List<Finding> kubehunterFindings;
     List<Finding> zapFindings;
     
-    public JasperDataScanners(List<Finding> ldf, List<Finding> lnf,  List<Finding> lsf, List<Finding> lzf) {
+    public JasperDataScanners(List<Finding> lkf, List<Finding> lzf) {
         
-        dependencyFindings = ldf;
-        
-        nmapFindings = lnf;
-        
-        sonarqubeFindings = lsf;
+        kubehunterFindings = lkf;
         
         zapFindings = lzf;
     }
@@ -44,18 +38,10 @@ public class JasperDataScanners {
     /**
      *
      */
-    public Collection<Finding> getDependencyFindings() {
-        return dependencyFindings;
+    public Collection<Finding> getKubehunterFindings() {
+        return kubehunterFindings;
     }
 
-    public Collection<Finding> getNmapFindings() {
-        return nmapFindings;
-    }
-    
-    public Collection<Finding> getSonarqubeFindings() {
-        return sonarqubeFindings;
-    }
-    
     public Collection<Finding> getZapFindings() {
         return zapFindings;
     }

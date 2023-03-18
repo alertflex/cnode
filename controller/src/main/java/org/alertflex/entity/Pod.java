@@ -33,14 +33,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Pod.findAll", query = "SELECT p FROM Pod p"),
     @NamedQuery(name = "Pod.findByRecId", query = "SELECT p FROM Pod p WHERE p.recId = :recId"),
     @NamedQuery(name = "Pod.findByRefId", query = "SELECT p FROM Pod p WHERE p.refId = :refId"),
-    @NamedQuery(name = "Pod.findByNodeProbe", query = "SELECT p FROM Pod p WHERE p.nodeProbe = :nodeProbe"),
+    @NamedQuery(name = "Pod.findByNode", query = "SELECT p FROM Pod p WHERE p.node = :node"),
     @NamedQuery(name = "Pod.findByName", query = "SELECT p FROM Pod p WHERE p.name = :name"),
-    @NamedQuery(name = "Pod.findByNameSpace", query = "SELECT p FROM Pod p WHERE p.nameSpace = :nameSpace"),
+    @NamedQuery(name = "Pod.findByNamespace", query = "SELECT p FROM Pod p WHERE p.namespace = :namespace"),
     @NamedQuery(name = "Pod.findByUid", query = "SELECT p FROM Pod p WHERE p.uid = :uid"),
     @NamedQuery(name = "Pod.findByHostIp", query = "SELECT p FROM Pod p WHERE p.hostIp = :hostIp"),
     @NamedQuery(name = "Pod.findByPodIp", query = "SELECT p FROM Pod p WHERE p.podIp = :podIp"),
     @NamedQuery(name = "Pod.findByPhase", query = "SELECT p FROM Pod p WHERE p.phase = :phase"),
-    @NamedQuery(name = "Pod.findByNodeName", query = "SELECT p FROM Pod p WHERE p.nodeName = :nodeName"),
+    @NamedQuery(name = "Pod.findByK8sNode", query = "SELECT p FROM Pod p WHERE p.k8sNode = :k8sNode"),
     @NamedQuery(name = "Pod.findByCreationTimestamp", query = "SELECT p FROM Pod p WHERE p.creationTimestamp = :creationTimestamp"),
     @NamedQuery(name = "Pod.findByReportAdded", query = "SELECT p FROM Pod p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "Pod.findByReportUpdated", query = "SELECT p FROM Pod p WHERE p.reportUpdated = :reportUpdated")})
@@ -60,8 +60,8 @@ public class Pod implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "node_probe")
-    private String nodeProbe;
+    @Column(name = "node")
+    private String node;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -70,8 +70,8 @@ public class Pod implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "name_space")
-    private String nameSpace;
+    @Column(name = "namespace")
+    private String namespace;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -95,8 +95,8 @@ public class Pod implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "node_name")
-    private String nodeName;
+    @Column(name = "k8s_node")
+    private String k8sNode;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -116,17 +116,17 @@ public class Pod implements Serializable {
         this.recId = recId;
     }
 
-    public Pod(Integer recId, String refId, String nodeProbe, String name, String nameSpace, String uid, String hostIp, String podIp, String phase, String nodeName, String creationTimestamp) {
+    public Pod(Integer recId, String refId, String node, String name, String namespace, String uid, String hostIp, String podIp, String phase, String k8sNode, String creationTimestamp) {
         this.recId = recId;
         this.refId = refId;
-        this.nodeProbe = nodeProbe;
+        this.node = node;
         this.name = name;
-        this.nameSpace = nameSpace;
+        this.namespace = namespace;
         this.uid = uid;
         this.hostIp = hostIp;
         this.podIp = podIp;
         this.phase = phase;
-        this.nodeName = nodeName;
+        this.k8sNode = k8sNode;
         this.creationTimestamp = creationTimestamp;
     }
 
@@ -146,12 +146,12 @@ public class Pod implements Serializable {
         this.refId = refId;
     }
 
-    public String getNodeProbe() {
-        return nodeProbe;
+    public String getNode() {
+        return node;
     }
 
-    public void setNodeProbe(String nodeProbe) {
-        this.nodeProbe = nodeProbe;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public String getName() {
@@ -162,12 +162,12 @@ public class Pod implements Serializable {
         this.name = name;
     }
 
-    public String getNameSpace() {
-        return nameSpace;
+    public String getNamespace() {
+        return namespace;
     }
 
-    public void setNameSpace(String nameSpace) {
-        this.nameSpace = nameSpace;
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public String getUid() {
@@ -202,12 +202,12 @@ public class Pod implements Serializable {
         this.phase = phase;
     }
 
-    public String getNodeName() {
-        return nodeName;
+    public String getK8sNode() {
+        return k8sNode;
     }
 
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
+    public void setK8sNode(String k8sNode) {
+        this.k8sNode = k8sNode;
     }
 
     public String getCreationTimestamp() {

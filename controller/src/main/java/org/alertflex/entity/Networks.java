@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Networks.findByDescription", query = "SELECT n FROM Networks n WHERE n.description = :description"),
     @NamedQuery(name = "Networks.findByNetwork", query = "SELECT n FROM Networks n WHERE n.network = :network"),
     @NamedQuery(name = "Networks.findByNetmask", query = "SELECT n FROM Networks n WHERE n.netmask = :netmask"),
-    @NamedQuery(name = "Networks.findByNetAcl", query = "SELECT n FROM Networks n WHERE n.netAcl = :netAcl"),
     @NamedQuery(name = "Networks.findByNetType", query = "SELECT n FROM Networks n WHERE n.netType = :netType")})
 public class Networks implements Serializable {
 
@@ -71,11 +70,6 @@ public class Networks implements Serializable {
     private String netmask;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
-    @Column(name = "net_acl")
-    private String netAcl;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "net_type")
     private int netType;
 
@@ -86,14 +80,13 @@ public class Networks implements Serializable {
         this.recId = recId;
     }
 
-    public Networks(Integer recId, String refId, String node, String description, String network, String netmask, String netAcl, int netType) {
+    public Networks(Integer recId, String refId, String node, String description, String network, String netmask, int netType) {
         this.recId = recId;
         this.refId = refId;
         this.node = node;
         this.description = description;
         this.network = network;
         this.netmask = netmask;
-        this.netAcl = netAcl;
         this.netType = netType;
     }
 
@@ -143,14 +136,6 @@ public class Networks implements Serializable {
 
     public void setNetmask(String netmask) {
         this.netmask = netmask;
-    }
-
-    public String getNetAcl() {
-        return netAcl;
-    }
-
-    public void setNetAcl(String netAcl) {
-        this.netAcl = netAcl;
     }
 
     public int getNetType() {

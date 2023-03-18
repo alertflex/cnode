@@ -197,4 +197,28 @@ public class AlertFacade extends AbstractFacade<Alert> {
         return alerts;
 
     }
+    
+    public List findCountSeverities(String ref, String uuid) { 
+
+        List l = new ArrayList();
+
+        try {
+            em.flush();
+
+            Query listQry = em.createQuery(
+                    "SELECT a.alertSeverity, count(a) as Counter FROM Alert a WHERE a.refId = :ref AND a.processName = :uuid GROUP BY a.alertSeverity ORDER BY Counter DESC")
+                    .setParameter("ref", ref).setParameter("uuid", uuid);
+
+            // Enable forced database query
+            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            l = listQry.getResultList();
+
+        } catch (Exception e) {
+
+            l = new ArrayList();
+        }
+
+        return l;
+
+    }
 }

@@ -88,5 +88,4 @@ public class AgentVulFacade extends AbstractFacade<AgentVul> {
 
         return f;
     }
-
 }

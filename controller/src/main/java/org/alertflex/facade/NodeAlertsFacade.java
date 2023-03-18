@@ -58,6 +58,29 @@ public class NodeAlertsFacade extends AbstractFacade<NodeAlerts> {
 
         return deletedCount;
     }
+    
+    public List<NodeAlerts> getOldStat(String ref, Timestamp timerange) {
+
+        List<NodeAlerts> l = null;
+
+        try {
+            em.flush();
+
+            Query listQry = em.createQuery( "SELECT n FROM NodeAlerts n WHERE n.refId = :ref AND n.timeOfSurvey < :timerange")
+                .setParameter("ref", ref)
+                .setParameter("timerange", timerange);
+
+            // Enable forced database query
+            listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+            l = listQry.getResultList();
+
+        } catch (Exception e) {
+
+            return null;
+        }
+
+        return l;
+    }
 
     public NodeAlerts getLastRecord(String r, String n, Timestamp start, Timestamp end) {
 
