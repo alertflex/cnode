@@ -39,7 +39,7 @@ public class PosturePostBody {
     public void setDelay(Integer delay) {
         this.delay = delay;
     }
-
+    
     public String getPostureType() {
         return postureType;
     }

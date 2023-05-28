@@ -48,7 +48,7 @@ public class CloudFormation {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -178,23 +178,76 @@ public class CloudFormation {
                     
                         String sev =  arrMisconfigurations.getJSONObject(j).getString("Severity");
                         pc.setSeverity(sev);
+                        
+                        JSONObject causeMetadata = arrMisconfigurations.getJSONObject(j).getJSONObject("CauseMetadata");
+
+                        String provider = causeMetadata.getString("Provider");
+                        pc.setProvider(provider);
+
+                        String service = causeMetadata.getString("Service");
+                        pc.setService(service);
+
+                        int startLine = 0;
+                        if (causeMetadata.has("StartLine")) {
+                            startLine= causeMetadata.getInt("StartLine");
+                        }
+                        pc.setStartLine(startLine);
+
+                        int endLine = 0;
+                        if (causeMetadata.has("EndLine")) {
+                            endLine= causeMetadata.getInt("EndLine");
+                        }
+                        pc.setEndLine(endLine);
                     
                         pc.setReportAdded(date);
                         pc.setReportUpdated(date);
+                        pc.setStatus("processed");
+                        
+                        String alertUuid = "";
                     
                         PostureCloudformation pcExisting = eventBean.getPostureCloudformationFacade()
                             .findMisconfig(r, n, p, pc.getArtifactName(), pc.getTarget(), pc.getMisconfigAvdid());
 
                         if (pcExisting == null) {
-
+                            alertUuid = createPostureCloudformationAlert(pc);
+                            if (alertUuid != null) pc.setAlertUuid(alertUuid);
+                            else pc.setAlertUuid("indef");
                             eventBean.getPostureCloudformationFacade().create(pc);
-                        
-                            createPostureCloudformationAlert(pc);
                     
                         } else {
-
-                            pcExisting.setReportUpdated(date);
-                            eventBean.getPostureCloudformationFacade().edit(pcExisting);
+                            switch (alertType) {
+                        
+                                case 1: // all-existing
+                            
+                                    alertUuid = createPostureCloudformationAlert(pcExisting);
+                                    if (alertUuid != null) pcExisting.setAlertUuid(alertUuid);
+                                    else pcExisting.setAlertUuid("indef");
+                                
+                                    pcExisting.setReportUpdated(date);
+                                    eventBean.getPostureCloudformationFacade().edit(pcExisting);
+                            
+                                    break;
+                            
+                                case 2: // non confirmed 
+                            
+                                    if (!pcExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createPostureCloudformationAlert(pcExisting);
+                                        if (alertUuid != null) pcExisting.setAlertUuid(alertUuid);
+                                        else pcExisting.setAlertUuid("indef");
+                                    }
+                                
+                                    pcExisting.setReportUpdated(date);
+                                    eventBean.getPostureCloudformationFacade().edit(pcExisting);
+                                
+                                    break;
+                            
+                                case 3: // new
+                            
+                                    pcExisting.setReportUpdated(date);
+                                    eventBean.getPostureCloudformationFacade().edit(pcExisting);
+                                
+                                    break;
+                            }
                         }
                     }
                 }
@@ -204,7 +257,7 @@ public class CloudFormation {
         }
     }
 
-    public void createPostureCloudformationAlert(PostureCloudformation pc) {
+    public String createPostureCloudformationAlert(PostureCloudformation pc) {
 
         Alert a = new Alert();
 
@@ -220,7 +273,7 @@ public class CloudFormation {
         if (pc.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pc.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pc.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pc.getSeverity());
         a.setAlertSeverity(sev);
@@ -282,6 +335,7 @@ public class CloudFormation {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
-
+        
+        return a.getAlertUuid();
     }
 }

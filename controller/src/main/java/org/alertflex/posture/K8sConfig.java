@@ -48,7 +48,7 @@ public class K8sConfig {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -186,20 +186,53 @@ public class K8sConfig {
                     
                             pk.setReportAdded(date);
                             pk.setReportUpdated(date);
+                            pk.setStatus("processed");
+                            
+                            String alertUuid = "";
                     
                             PostureK8sconfig pkExisting = eventBean.getPostureK8sconfigFacade()
                                 .findMisconfig(r, n, p, pk.getClusterName(), pk.getNamespace(), pk.getTarget(), pk.getMisconfigAvdid());
 
                             if (pkExisting == null) {
-
+                                alertUuid = createPostureK8sconfigAlert(pk);
+                                if (alertUuid != null) pk.setAlertUuid(alertUuid);
+                                else pk.setAlertUuid("indef");
                                 eventBean.getPostureK8sconfigFacade().create(pk);
-                        
-                                createPostureK8sconfigAlert(pk);
-                    
+                
                             } else {
-
-                                pkExisting.setReportUpdated(date);
-                                eventBean.getPostureK8sconfigFacade().edit(pkExisting);
+                                switch (alertType) {
+                    
+                                    case 1: // all-existing
+                        
+                                        alertUuid = createPostureK8sconfigAlert(pkExisting);
+                                        if (alertUuid != null) pkExisting.setAlertUuid(alertUuid);
+                                        else pkExisting.setAlertUuid("indef");
+                            
+                                        pkExisting.setReportUpdated(date);
+                                        eventBean.getPostureK8sconfigFacade().edit(pkExisting);
+                        
+                                        break;
+                        
+                                    case 2: // non confirmed 
+                        
+                                        if (!pkExisting.getStatus().equals("confirmed")) {
+                                            alertUuid = createPostureK8sconfigAlert(pkExisting);
+                                            if (alertUuid != null) pkExisting.setAlertUuid(alertUuid);
+                                            else pkExisting.setAlertUuid("indef");
+                                        }
+                            
+                                        pkExisting.setReportUpdated(date);
+                                        eventBean.getPostureK8sconfigFacade().edit(pkExisting);
+                            
+                                        break;
+                        
+                                    case 3: // new
+                        
+                                        pkExisting.setReportUpdated(date);
+                                        eventBean.getPostureK8sconfigFacade().edit(pkExisting);
+                            
+                                        break;
+                                }
                             }
                         }
                     }
@@ -210,7 +243,7 @@ public class K8sConfig {
         }
     }
 
-    public void createPostureK8sconfigAlert(PostureK8sconfig pk) {
+    public String createPostureK8sconfigAlert(PostureK8sconfig pk) {
 
         Alert a = new Alert();
 
@@ -226,7 +259,7 @@ public class K8sConfig {
         if (pk.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pk.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pk.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pk.getSeverity());
         a.setAlertSeverity(sev);
@@ -288,6 +321,7 @@ public class K8sConfig {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
-
+        
+        return a.getAlertUuid();
     }
 }

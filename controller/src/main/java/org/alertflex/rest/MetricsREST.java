@@ -25,7 +25,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.alertflex.entity.Node;
-import org.alertflex.entity.Probe;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
 import org.alertflex.entity.Project;

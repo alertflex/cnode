@@ -27,12 +27,18 @@ public class JasperDataScanners {
     
     List<Finding> kubehunterFindings;
     List<Finding> zapFindings;
+    List<Finding> nmapFindings;
+    List<Finding> nucleiFindings;
     
-    public JasperDataScanners(List<Finding> lkf, List<Finding> lzf) {
+    public JasperDataScanners(List<Finding> lkf, List<Finding> lzf, List<Finding> lnmf, List<Finding> lnuf) {
         
         kubehunterFindings = lkf;
         
         zapFindings = lzf;
+        
+        nmapFindings = lnmf;
+        
+        nucleiFindings = lnuf;
     }
     
     /**
@@ -44,5 +50,13 @@ public class JasperDataScanners {
 
     public Collection<Finding> getZapFindings() {
         return zapFindings;
+    }
+    
+    public Collection<Finding> getNmapFindings() {
+        return nmapFindings;
+    }
+
+    public Collection<Finding> getNucleiFindings() {
+        return nucleiFindings;
     }
 }

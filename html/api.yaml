@@ -57,18 +57,54 @@ paths:
                       - Terraform
                       - KubeHunter
                       - ZAP
+                      - Nmap
+                      - Nuclei
+                      - Nikto
+                      - CloudSploit
+                      - Semgrep
+                      - SonarQube
                     description: |
                       Posture type translation to scanner type:
 
                       AppSecret - trivy scan
-
+                      
                       DockerConfig - trivy scan
-
+                      
                       K8sConfig - trivy scan
+                      
+                      AppVuln - trivy scan
+                      
+                      DockerVuln - trivy scan
+                      
+                      K8sVuln - trivy scan
+                      
+                      AppSbom - trivy scan
+                      
+                      DockerSbom - trivy scan
+                      
+                      CloudFormation - trivy scan
+                      
+                      Terraform - trivy scan
+                      
+                      KubeHunter - kubehunter scan
+                      
+                      ZAP - zap scan
+                      
+                      Nmap - nmap scan
+                      
+                      Nuclei - nuclei scan
+                      
+                      Nikto - nikto scan
+
+                      CloudSploit - cloudsploit scan
+
+                      Semgrep - semgrep scan
+
+                      SonarQube - sonarqube scan
 
                   target:
                     type: string
-                    description: Target for Kube-hunter, ZAP and Trivy 
+                    description: Target for CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
                   node:
                     type: string
                     description: Node name
@@ -85,7 +121,7 @@ paths:
         
   /alertflex-ctrl/rest/posture/json/{taskId}:
     get:
-      summary: Return JSON report from Trivy, ZAP and Kube-Hunter
+      summary: Return JSON report for target from CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
       parameters:
         - in: path
           name: taskId
@@ -153,18 +189,54 @@ paths:
                       - Terraform
                       - KubeHunter
                       - ZAP
+                      - Nmap
+                      - Nuclei
+                      - Nikto
+                      - CloudSploit
+                      - Semgrep
+                      - SonarQube
                     description: |
                       Posture type translation to scanner type:
 
                       AppSecret - trivy scan
-
+                      
                       DockerConfig - trivy scan
-
+                      
                       K8sConfig - trivy scan
+                      
+                      AppVuln - trivy scan
+                      
+                      DockerVuln - trivy scan
+                      
+                      K8sVuln - trivy scan
+                      
+                      AppSbom - trivy scan
+                      
+                      DockerSbom - trivy scan
+                      
+                      CloudFormation - trivy scan
+                      
+                      Terraform - trivy scan
+                      
+                      KubeHunter - kubehunter scan
+                      
+                      ZAP - zap scan
+                      
+                      Nmap - nmap scan
+                      
+                      Nuclei - nuclei scan
+                      
+                      Nikto - nikto scan
+
+                      CloudSploit - cloudsploit scan
+
+                      Semgrep - semgrep scan
+
+                      SonarQube - sonarqube scan
 
                 target:
                   type: string
-                  description: Target for Kube-Hunter, ZAP and Trivy 
+                  description: Target for CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
                 host:
                   type: string
                   description: Host name where scanner is

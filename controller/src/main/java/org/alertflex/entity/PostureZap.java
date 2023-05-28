@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureZap.findByRecId", query = "SELECT p FROM PostureZap p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureZap.findByRefId", query = "SELECT p FROM PostureZap p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureZap.findByScanUuid", query = "SELECT p FROM PostureZap p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureZap.findByAlertUuid", query = "SELECT p FROM PostureZap p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureZap.findByNode", query = "SELECT p FROM PostureZap p WHERE p.node = :node"),
     @NamedQuery(name = "PostureZap.findByProbe", query = "SELECT p FROM PostureZap p WHERE p.probe = :probe"),
     @NamedQuery(name = "PostureZap.findByTarget", query = "SELECT p FROM PostureZap p WHERE p.target = :target"),
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureZap.findByRemediation", query = "SELECT p FROM PostureZap p WHERE p.remediation = :remediation"),
     @NamedQuery(name = "PostureZap.findByReference", query = "SELECT p FROM PostureZap p WHERE p.reference = :reference"),
     @NamedQuery(name = "PostureZap.findBySeverity", query = "SELECT p FROM PostureZap p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureZap.findByStatus", query = "SELECT p FROM PostureZap p WHERE p.status = :status"),
     @NamedQuery(name = "PostureZap.findByReportAdded", query = "SELECT p FROM PostureZap p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureZap.findByReportUpdated", query = "SELECT p FROM PostureZap p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureZap implements Serializable {
@@ -64,6 +66,11 @@ public class PostureZap implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "scan_uuid")
     private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -113,6 +120,11 @@ public class PostureZap implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -127,10 +139,11 @@ public class PostureZap implements Serializable {
         this.recId = recId;
     }
 
-    public PostureZap(Long recId, String refId, String scanUuid, String node, String probe, String target, String alertRef, String alertName, int cweid, String description, String remediation, String reference, String severity) {
+    public PostureZap(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String target, String alertRef, String alertName, int cweid, String description, String remediation, String reference, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
         this.target = target;
@@ -141,6 +154,7 @@ public class PostureZap implements Serializable {
         this.remediation = remediation;
         this.reference = reference;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -165,6 +179,14 @@ public class PostureZap implements Serializable {
 
     public void setScanUuid(String scanUuid) {
         this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getNode() {
@@ -245,6 +267,14 @@ public class PostureZap implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

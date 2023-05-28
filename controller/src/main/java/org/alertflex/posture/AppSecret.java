@@ -48,7 +48,7 @@ public class AppSecret {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -146,20 +146,53 @@ public class AppSecret {
                     
                     pa.setReportAdded(date);
                     pa.setReportUpdated(date);
+                    pa.setStatus("processed");
+                    
+                    String alertUuid = "";
                     
                     PostureAppsecret paExisting = eventBean.getPostureAppsecretFacade()
                         .findSecret(r, n, p, pa.getArtifactName(), pa.getTarget(), pa.getRuleId(), pa.getStartLine(), pa.getEndLine());
-
+                    
                     if (paExisting == null) {
-
+                        alertUuid = createPostureAppsecretAlert(pa);
+                        if (alertUuid != null) pa.setAlertUuid(alertUuid);
+                        else pa.setAlertUuid("indef");
                         eventBean.getPostureAppsecretFacade().create(pa);
-                        
-                        createPostureAppsecretAlert(pa);
                     
                     } else {
-
-                        paExisting.setReportUpdated(date);
-                        eventBean.getPostureAppsecretFacade().edit(paExisting);
+                        switch (alertType) {
+                        
+                            case 1: // all-existing
+                            
+                                alertUuid = createPostureAppsecretAlert(paExisting);
+                                if (alertUuid != null) paExisting.setAlertUuid(alertUuid);
+                                else paExisting.setAlertUuid("indef");
+                                
+                                paExisting.setReportUpdated(date);
+                                eventBean.getPostureAppsecretFacade().edit(paExisting);
+                            
+                                break;
+                            
+                            case 2: // non confirmed 
+                            
+                                if (!paExisting.getStatus().equals("confirmed")) {
+                                    alertUuid = createPostureAppsecretAlert(paExisting);
+                                    if (alertUuid != null) paExisting.setAlertUuid(alertUuid);
+                                    else paExisting.setAlertUuid("indef");
+                                }
+                                
+                                paExisting.setReportUpdated(date);
+                                eventBean.getPostureAppsecretFacade().edit(paExisting);
+                                
+                                break;
+                            
+                            case 3: // new
+                            
+                                paExisting.setReportUpdated(date);
+                                eventBean.getPostureAppsecretFacade().edit(paExisting);
+                                
+                                break;
+                        }
                     }
                 }
             }
@@ -168,7 +201,7 @@ public class AppSecret {
         }
     }
 
-    public void createPostureAppsecretAlert(PostureAppsecret pa) {
+    public String createPostureAppsecretAlert(PostureAppsecret pa) {
 
         Alert a = new Alert();
 
@@ -184,7 +217,7 @@ public class AppSecret {
         if (pa.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pa.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pa.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pa.getSeverity());
         a.setAlertSeverity(sev);
@@ -246,6 +279,7 @@ public class AppSecret {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
-
+        
+        return a.getAlertUuid();
     }
 }

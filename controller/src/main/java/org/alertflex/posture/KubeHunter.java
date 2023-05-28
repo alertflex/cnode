@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 public class KubeHunter {
 
-    private static final Logger logger = LogManager.getLogger(AppSecret.class);
+    private static final Logger logger = LogManager.getLogger(KubeHunter.class);
 
     private InfoMessageBean eventBean;
     Project project;
@@ -48,7 +48,7 @@ public class KubeHunter {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -167,30 +167,64 @@ public class KubeHunter {
                 String avdRef = arr.getJSONObject(i).getString("avd_reference");
                 
                 String hunter = arr.getJSONObject(i).getString("hunter");
+                
+                pk.setLocation(loc);
+                pk.setVulnerabilityId(vid);
+                pk.setCategory(cat);
+                pk.setSeverity(severity);
+                pk.setTitle(vuln);
+                pk.setReference(avdRef);
+                pk.setTarget(target);
+                pk.setDescription(desc);
+                pk.setReportAdded(date);
+                pk.setReportUpdated(date);
+                pk.setStatus("processed");
+                
+                String alertUuid = "";
                         
                 PostureKubehunter pkExisting = eventBean.getPostureKubehunterFacade().findVulnerability(r, n, p, target, loc, vid, cat);
                         
                 if (pkExisting == null) {
-                    
-                    pk.setLocation(loc);
-                    pk.setVulnerabilityId(vid);
-                    pk.setCategory(cat);
-                    pk.setSeverity(severity);
-                    pk.setTitle(vuln);
-                    pk.setReference(avdRef);
-                    pk.setTarget(target);
-                    pk.setDescription(desc);
-                    pk.setReportAdded(date);
-                    pk.setReportUpdated(date);
+                    alertUuid = createPostureKubehunterAlert(pk);
+                    if (alertUuid != null) pk.setAlertUuid(alertUuid);
+                    else pk.setAlertUuid("indef");
                     eventBean.getPostureKubehunterFacade().create(pk);
-                    
-                    createHunterScanAlert(pk);
-                    
+                
                 } else {
-                    pkExisting.setReportUpdated(date);
-                    eventBean.getPostureKubehunterFacade().edit(pkExisting);
-                }
+                    switch (alertType) {
+                    
+                        case 1: // all-existing
                         
+                            alertUuid = createPostureKubehunterAlert(pkExisting);
+                            if (alertUuid != null) pkExisting.setAlertUuid(alertUuid);
+                            else pkExisting.setAlertUuid("indef");
+                            
+                            pkExisting.setReportUpdated(date);
+                            eventBean.getPostureKubehunterFacade().edit(pkExisting);
+                        
+                            break;
+                        
+                        case 2: // non confirmed 
+                        
+                            if (!pkExisting.getStatus().equals("confirmed")) {
+                                alertUuid = createPostureKubehunterAlert(pkExisting);
+                                if (alertUuid != null) pkExisting.setAlertUuid(alertUuid);
+                                else pkExisting.setAlertUuid("indef");
+                            }
+                            
+                            pkExisting.setReportUpdated(date);
+                            eventBean.getPostureKubehunterFacade().edit(pkExisting);
+                            
+                            break;
+                        
+                        case 3: // new
+                        
+                            pkExisting.setReportUpdated(date);
+                            eventBean.getPostureKubehunterFacade().edit(pkExisting);
+                            
+                            break;
+                    }
+                }
             }
             
         } catch (Exception e) {
@@ -198,7 +232,7 @@ public class KubeHunter {
         }
     }
 
-    public void createHunterScanAlert(PostureKubehunter pk) {
+    public String createPostureKubehunterAlert(PostureKubehunter pk) {
 
         Alert a = new Alert();
 
@@ -216,7 +250,7 @@ public class KubeHunter {
         if (pk.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pk.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pk.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setAlertSeverity(sev);
         
@@ -270,6 +304,7 @@ public class KubeHunter {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
-
+        
+        return a.getAlertUuid();
     }
 }

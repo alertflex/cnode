@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Zap {
 
-    private static final Logger logger = LogManager.getLogger(AppSecret.class);
+    private static final Logger logger = LogManager.getLogger(Zap.class);
 
     private InfoMessageBean eventBean;
     Project project;
@@ -48,7 +48,7 @@ public class Zap {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -151,8 +151,12 @@ public class Zap {
                     }
                     
                     if (arrayAlerts.getJSONObject(j).has("cweid")) {
-                        String cweid = arrayAlerts.getJSONObject(j).getString("cweid");
-                        pz.setCweid(Integer.parseInt(cweid));
+                        String strCweid = arrayAlerts.getJSONObject(j).getString("cweid");
+                        int cweid = Integer.parseInt(strCweid);
+                        if (cweid < 0) {
+                            cweid = 0;
+                        }
+                        pz.setCweid(cweid);
                     } else {
                         pz.setCweid(0);
                     }
@@ -164,18 +168,52 @@ public class Zap {
                     pz.setTarget(target);
                     pz.setReportAdded(date);
                     pz.setReportUpdated(date);
+                    pz.setStatus("processed");
+                    
+                    String alertUuid = "";
                     
                     PostureZap pzExisting = eventBean.getPostureZapFacade().findVulnerability(r, n, p, target, pz.getAlertRef());
                         
                     if (pzExisting == null) {
-                        
+                        alertUuid = createPostureZapAlert(pz);
+                        if (alertUuid != null) pz.setAlertUuid(alertUuid);
+                        else pz.setAlertUuid("indef");
                         eventBean.getPostureZapFacade().create(pz);
-                        
-                        createZapScanAlert(pz);
-                        
+                
                     } else {
-                        pzExisting.setReportUpdated(date);
-                        eventBean.getPostureZapFacade().edit(pzExisting);
+                        switch (alertType) {
+                    
+                            case 1: // all-existing
+                        
+                                alertUuid = createPostureZapAlert(pzExisting);
+                                if (alertUuid != null) pzExisting.setAlertUuid(alertUuid);
+                                else pzExisting.setAlertUuid("indef");
+                            
+                                pzExisting.setReportUpdated(date);
+                                eventBean.getPostureZapFacade().edit(pzExisting);
+                        
+                                break;
+                        
+                            case 2: // non confirmed 
+                        
+                                if (!pzExisting.getStatus().equals("confirmed")) {
+                                    alertUuid = createPostureZapAlert(pzExisting);
+                                    if (alertUuid != null) pzExisting.setAlertUuid(alertUuid);
+                                    else pzExisting.setAlertUuid("indef");
+                                }
+                            
+                                pzExisting.setReportUpdated(date);
+                                eventBean.getPostureZapFacade().edit(pzExisting);
+                            
+                                break;
+                        
+                            case 3: // new
+                        
+                                pzExisting.setReportUpdated(date);
+                                eventBean.getPostureZapFacade().edit(pzExisting);
+                            
+                            break;
+                        }
                     }
                 }
             }
@@ -185,7 +223,7 @@ public class Zap {
         }
     }
 
-    public void createZapScanAlert(PostureZap pz) {
+    public String createPostureZapAlert(PostureZap pz) {
 
         Alert a = new Alert();
 
@@ -201,7 +239,7 @@ public class Zap {
         if (pz.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pz.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pz.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pz.getSeverity());
         a.setAlertSeverity(sev);
@@ -264,5 +302,6 @@ public class Zap {
 
         eventBean.createAlert(a);
 
+        return a.getAlertUuid();
     }
 }

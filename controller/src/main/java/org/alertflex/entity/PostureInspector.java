@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureInspector.findAll", query = "SELECT p FROM PostureInspector p"),
     @NamedQuery(name = "PostureInspector.findByRecId", query = "SELECT p FROM PostureInspector p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureInspector.findByRefId", query = "SELECT p FROM PostureInspector p WHERE p.refId = :refId"),
+    @NamedQuery(name = "PostureInspector.findByScanUuid", query = "SELECT p FROM PostureInspector p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureInspector.findByAlertUuid", query = "SELECT p FROM PostureInspector p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureInspector.findByEc2Name", query = "SELECT p FROM PostureInspector p WHERE p.ec2Name = :ec2Name"),
     @NamedQuery(name = "PostureInspector.findByArn", query = "SELECT p FROM PostureInspector p WHERE p.arn = :arn"),
     @NamedQuery(name = "PostureInspector.findByAssetType", query = "SELECT p FROM PostureInspector p WHERE p.assetType = :assetType"),
@@ -41,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureInspector.findByDescription", query = "SELECT p FROM PostureInspector p WHERE p.description = :description"),
     @NamedQuery(name = "PostureInspector.findByRemediation", query = "SELECT p FROM PostureInspector p WHERE p.remediation = :remediation"),
     @NamedQuery(name = "PostureInspector.findBySeverity", query = "SELECT p FROM PostureInspector p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureInspector.findByStatus", query = "SELECT p FROM PostureInspector p WHERE p.status = :status"),
     @NamedQuery(name = "PostureInspector.findByReportAdded", query = "SELECT p FROM PostureInspector p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureInspector.findByReportUpdated", query = "SELECT p FROM PostureInspector p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureInspector implements Serializable {
@@ -56,6 +59,16 @@ public class PostureInspector implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "ref_id")
     private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "scan_uuid")
+    private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 256)
@@ -96,6 +109,11 @@ public class PostureInspector implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -110,9 +128,11 @@ public class PostureInspector implements Serializable {
         this.recId = recId;
     }
 
-    public PostureInspector(Long recId, String refId, String ec2Name, String arn, String assetType, String findingId, String title, String description, String remediation, String severity) {
+    public PostureInspector(Long recId, String refId, String scanUuid, String alertUuid, String ec2Name, String arn, String assetType, String findingId, String title, String description, String remediation, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
+        this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.ec2Name = ec2Name;
         this.arn = arn;
         this.assetType = assetType;
@@ -121,6 +141,7 @@ public class PostureInspector implements Serializable {
         this.description = description;
         this.remediation = remediation;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -137,6 +158,22 @@ public class PostureInspector implements Serializable {
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getScanUuid() {
+        return scanUuid;
+    }
+
+    public void setScanUuid(String scanUuid) {
+        this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getEc2Name() {
@@ -201,6 +238,14 @@ public class PostureInspector implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

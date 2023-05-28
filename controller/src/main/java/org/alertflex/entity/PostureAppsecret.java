@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureAppsecret.findByRecId", query = "SELECT p FROM PostureAppsecret p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureAppsecret.findByRefId", query = "SELECT p FROM PostureAppsecret p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureAppsecret.findByScanUuid", query = "SELECT p FROM PostureAppsecret p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureAppsecret.findByAlertUuid", query = "SELECT p FROM PostureAppsecret p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureAppsecret.findByNode", query = "SELECT p FROM PostureAppsecret p WHERE p.node = :node"),
     @NamedQuery(name = "PostureAppsecret.findByProbe", query = "SELECT p FROM PostureAppsecret p WHERE p.probe = :probe"),
     @NamedQuery(name = "PostureAppsecret.findByArtifactName", query = "SELECT p FROM PostureAppsecret p WHERE p.artifactName = :artifactName"),
@@ -46,6 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureAppsecret.findByStartLine", query = "SELECT p FROM PostureAppsecret p WHERE p.startLine = :startLine"),
     @NamedQuery(name = "PostureAppsecret.findByEndLine", query = "SELECT p FROM PostureAppsecret p WHERE p.endLine = :endLine"),
     @NamedQuery(name = "PostureAppsecret.findBySeverity", query = "SELECT p FROM PostureAppsecret p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureAppsecret.findByStatus", query = "SELECT p FROM PostureAppsecret p WHERE p.status = :status"),
     @NamedQuery(name = "PostureAppsecret.findByReportAdded", query = "SELECT p FROM PostureAppsecret p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureAppsecret.findByReportUpdated", query = "SELECT p FROM PostureAppsecret p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureAppsecret implements Serializable {
@@ -66,6 +68,11 @@ public class PostureAppsecret implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "scan_uuid")
     private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -124,6 +131,11 @@ public class PostureAppsecret implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -138,10 +150,11 @@ public class PostureAppsecret implements Serializable {
         this.recId = recId;
     }
 
-    public PostureAppsecret(Long recId, String refId, String scanUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String ruleId, String category, String title, int startLine, int endLine, String severity) {
+    public PostureAppsecret(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String ruleId, String category, String title, int startLine, int endLine, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
         this.artifactName = artifactName;
@@ -154,6 +167,7 @@ public class PostureAppsecret implements Serializable {
         this.startLine = startLine;
         this.endLine = endLine;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -178,6 +192,14 @@ public class PostureAppsecret implements Serializable {
 
     public void setScanUuid(String scanUuid) {
         this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getNode() {
@@ -274,6 +296,14 @@ public class PostureAppsecret implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

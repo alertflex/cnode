@@ -36,6 +36,8 @@ sudo cp ./reports/vuln_k8s.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanners_report.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_zap.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/scanner_kubehunter.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/scanner_nmap.jasper $PROJECT_PATH/reports/
+sudo cp ./reports/scanner_nuclei.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/cloud_report.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/cloud_ins.jasper $PROJECT_PATH/reports/
 sudo cp ./reports/cloud_gd.jasper $PROJECT_PATH/reports/
@@ -227,5 +229,7 @@ echo "*** clean env ***"
 # rm password.txt
 # rm -r ./configs
 
-echo "* Please, reboot the cnode *"
+echo "Project ID:"
+echo $PROJECT_ID
+echo "* Please, copy project id and reboot the cnode *"
 exit 0

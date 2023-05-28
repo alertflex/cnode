@@ -21,11 +21,10 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.alertflex.entity.AgentSca;
-import org.alertflex.reports.Finding;
+import org.alertflex.entity.PostureSonarqube;
 
 @Stateless
-public class AgentScaFacade extends AbstractFacade<AgentSca> {
+public class PostureSonarqubeFacade extends AbstractFacade<PostureSonarqube> {
 
     @PersistenceContext(unitName = "alertflex_PU")
     private EntityManager em;
@@ -35,34 +34,36 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
         return em;
     }
 
-    public AgentScaFacade() {
-        super(AgentSca.class);
+    public PostureSonarqubeFacade() {
+        super(PostureSonarqube.class);
     }
 
-    public AgentSca findSca(String ref, String node, String agent, int id, String policy) {
+    public PostureSonarqube findVulnerability(String ref, String node, String probe, String target, String component, String rule) {
 
-        AgentSca as;
+        PostureSonarqube ps = null;
 
         try {
             em.flush();
 
             Query qry = em.createQuery(
-                    "SELECT a FROM AgentSca a WHERE a.refId = :ref AND a.node = :node AND a.agent = :agent AND a.scaId = :id AND a.policyId = :policy")
-                    .setParameter("ref", ref)
-                    .setParameter("node", node)
-                    .setParameter("agent", agent)
-                    .setParameter("id", id)
-                    .setParameter("policy", policy);
-            qry.setMaxResults(1);
+                "SELECT p FROM PostureSonarqube p WHERE p.refId = :ref AND p.node = :node AND p.probe = :probe AND p.target = :target AND p.component = :component AND p.ruleId = :rule")
+                .setParameter("ref", ref)
+                .setParameter("node", node)
+                .setParameter("probe", probe)
+                .setParameter("target", target)
+                .setParameter("component", component)
+                .setParameter("rule", rule);
             // Enable forced database query
+            qry.setMaxResults(1);
+            
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-            as = (AgentSca) qry.getSingleResult();
+            ps = (PostureSonarqube) qry.getSingleResult();
 
         } catch (Exception e) {
-            as = null;
+            ps = null;
         }
 
-        return as;
+        return ps;
     }
     
     public List<Object[]> getFindings(String ref) {
@@ -71,15 +72,14 @@ public class AgentScaFacade extends AbstractFacade<AgentSca> {
 
         try {
             em.flush();
-
+            
             Query qry = em.createQuery(
-                    "SELECT a.agent, COUNT(a) FROM AgentSca a WHERE a.refId = :ref GROUP BY a.agent", Finding.class)
+                    "SELECT p.severity, COUNT(p) FROM PostureSonarqube p WHERE p.refId = :ref GROUP BY p.severity")
                     .setParameter("ref", ref);
             // Enable forced database query
-            qry.setMaxResults(10);
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
             
-            f = (List<Object[]>) qry.getResultList();
+            f =  (List<Object[]>) qry.getResultList();
 
         } catch (Exception e) {
             f = null;

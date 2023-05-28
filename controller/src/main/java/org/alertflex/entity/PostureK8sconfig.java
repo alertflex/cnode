@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureK8sconfig.findByRecId", query = "SELECT p FROM PostureK8sconfig p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureK8sconfig.findByRefId", query = "SELECT p FROM PostureK8sconfig p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureK8sconfig.findByScanUuid", query = "SELECT p FROM PostureK8sconfig p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureK8sconfig.findByAlertUuid", query = "SELECT p FROM PostureK8sconfig p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureK8sconfig.findByNode", query = "SELECT p FROM PostureK8sconfig p WHERE p.node = :node"),
     @NamedQuery(name = "PostureK8sconfig.findByProbe", query = "SELECT p FROM PostureK8sconfig p WHERE p.probe = :probe"),
     @NamedQuery(name = "PostureK8sconfig.findByClusterName", query = "SELECT p FROM PostureK8sconfig p WHERE p.clusterName = :clusterName"),
@@ -48,6 +49,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureK8sconfig.findByRemediation", query = "SELECT p FROM PostureK8sconfig p WHERE p.remediation = :remediation"),
     @NamedQuery(name = "PostureK8sconfig.findByReference", query = "SELECT p FROM PostureK8sconfig p WHERE p.reference = :reference"),
     @NamedQuery(name = "PostureK8sconfig.findBySeverity", query = "SELECT p FROM PostureK8sconfig p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureK8sconfig.findByStatus", query = "SELECT p FROM PostureK8sconfig p WHERE p.status = :status"),
     @NamedQuery(name = "PostureK8sconfig.findByReportAdded", query = "SELECT p FROM PostureK8sconfig p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureK8sconfig.findByReportUpdated", query = "SELECT p FROM PostureK8sconfig p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureK8sconfig implements Serializable {
@@ -68,6 +70,11 @@ public class PostureK8sconfig implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "scan_uuid")
     private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -138,6 +145,11 @@ public class PostureK8sconfig implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -152,10 +164,11 @@ public class PostureK8sconfig implements Serializable {
         this.recId = recId;
     }
 
-    public PostureK8sconfig(Long recId, String refId, String scanUuid, String node, String probe, String clusterName, String namespace, String target, String targetClass, String targetType, String misconfigType, String misconfigAvdid, String title, String description, String remediation, String reference, String severity) {
+    public PostureK8sconfig(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String clusterName, String namespace, String target, String targetClass, String targetType, String misconfigType, String misconfigAvdid, String title, String description, String remediation, String reference, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
         this.clusterName = clusterName;
@@ -170,6 +183,7 @@ public class PostureK8sconfig implements Serializable {
         this.remediation = remediation;
         this.reference = reference;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -194,6 +208,14 @@ public class PostureK8sconfig implements Serializable {
 
     public void setScanUuid(String scanUuid) {
         this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getNode() {
@@ -306,6 +328,14 @@ public class PostureK8sconfig implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

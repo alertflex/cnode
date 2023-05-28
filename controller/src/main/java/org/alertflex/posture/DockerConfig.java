@@ -48,7 +48,7 @@ public class DockerConfig {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -181,21 +181,56 @@ public class DockerConfig {
                     
                         pd.setReportAdded(date);
                         pd.setReportUpdated(date);
+                        pd.setStatus("processed");
+                        
+                        String alertUuid = "";
                     
                         PostureDockerconfig pdExisting = eventBean.getPostureDockerconfigFacade()
                             .findMisconfig(r, n, p, pd.getArtifactName(), pd.getTarget(), pd.getMisconfigAvdid());
-
-                        if (pdExisting == null) {
-
-                            eventBean.getPostureDockerconfigFacade().create(pd);
                         
-                            createPostureDockerconfigAlert(pd);
-                    
+                        if (pdExisting == null) {
+                            alertUuid = createPostureDockerconfigAlert(pd);
+                            if (alertUuid != null) pd.setAlertUuid(alertUuid);
+                            else pd.setAlertUuid("indef");
+                            eventBean.getPostureDockerconfigFacade().create(pd);
+                
                         } else {
-
+                            switch (alertType) {
+                    
+                                case 1: // all-existing
+                        
+                                    alertUuid = createPostureDockerconfigAlert(pdExisting);
+                                    if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
+                                    else pdExisting.setAlertUuid("indef");
+                            
                             pdExisting.setReportUpdated(date);
                             eventBean.getPostureDockerconfigFacade().edit(pdExisting);
-                        }
+                        
+                            break;
+                        
+                        case 2: // non confirmed 
+                        
+                            if (!pdExisting.getStatus().equals("confirmed")) {
+                                alertUuid = createPostureDockerconfigAlert(pdExisting);
+                                if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
+                                else pdExisting.setAlertUuid("indef");
+                            }
+                            
+                            pdExisting.setReportUpdated(date);
+                            eventBean.getPostureDockerconfigFacade().edit(pdExisting);
+                            
+                            break;
+                        
+                        case 3: // new
+                        
+                            pdExisting.setReportUpdated(date);
+                            eventBean.getPostureDockerconfigFacade().edit(pdExisting);
+                            
+                            break;
+                    }
+                }
+
+                        
                     }
                 }
             }
@@ -204,7 +239,7 @@ public class DockerConfig {
         }
     }
 
-    public void createPostureDockerconfigAlert(PostureDockerconfig pd) {
+    public String createPostureDockerconfigAlert(PostureDockerconfig pd) {
 
         Alert a = new Alert();
 
@@ -220,7 +255,7 @@ public class DockerConfig {
         if (pd.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pd.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pd.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pd.getSeverity());
         a.setAlertSeverity(sev);
@@ -283,5 +318,6 @@ public class DockerConfig {
 
         eventBean.createAlert(a);
 
+        return a.getAlertUuid();
     }
 }

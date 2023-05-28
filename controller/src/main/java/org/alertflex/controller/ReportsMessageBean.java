@@ -42,7 +42,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.Project;
-import org.alertflex.facade.AgentScaFacade;
+import org.alertflex.facade.AgentMisconfigFacade;
 import org.alertflex.facade.AgentVulFacade;
 import org.alertflex.facade.AlertFacade;
 import org.alertflex.facade.PostureAppsecretFacade;
@@ -54,6 +54,8 @@ import org.alertflex.facade.PostureDockervulnFacade;
 import org.alertflex.facade.PostureK8sconfigFacade;
 import org.alertflex.facade.PostureK8svulnFacade;
 import org.alertflex.facade.PostureKubehunterFacade;
+import org.alertflex.facade.PostureNmapFacade;
+import org.alertflex.facade.PostureNucleiFacade;
 import org.alertflex.facade.PostureTerraformFacade;
 import org.alertflex.facade.PostureZapFacade;
 import org.alertflex.reports.AlertsBar;
@@ -106,7 +108,7 @@ public class ReportsMessageBean implements MessageListener {
     private PostureK8svulnFacade postureK8svulnFacade;
     
     @EJB
-    private AgentScaFacade agentScaFacade;
+    private AgentMisconfigFacade agentScaFacade;
     
     @EJB
     private AgentVulFacade agentVulFacade;
@@ -125,6 +127,12 @@ public class ReportsMessageBean implements MessageListener {
     
     @EJB
     private PostureInspectorFacade postureInspectorFacade;
+    
+    @EJB
+    private PostureNmapFacade postureNmapFacade;
+    
+    @EJB
+    private PostureNucleiFacade postureNucleiFacade;
     
 
     @Override
@@ -343,9 +351,13 @@ public class ReportsMessageBean implements MessageListener {
             
             List<Finding> zapFindings = new ArrayList();
             List<Finding> kubehunterFindings = new ArrayList();
+            List<Finding> nmapFindings = new ArrayList();
+            List<Finding> nucleiFindings = new ArrayList();
             
             List<Object[]> zapObjects = postureZapFacade.getFindings(p.getRefId());
             List<Object[]> kubehunterObjects = postureKubehunterFacade.getFindings(p.getRefId());
+            List<Object[]> nmapObjects = postureNmapFacade.getFindings(p.getRefId());
+            List<Object[]> nucleiObjects = postureNucleiFacade.getFindings(p.getRefId());
                         
             if (zapObjects != null && zapObjects.size() > 0) {
                 
@@ -369,14 +381,38 @@ public class ReportsMessageBean implements MessageListener {
                 kubehunterFindings.add(new Finding("indef",1));
             }
             
+            if (nmapObjects != null && nmapObjects.size() > 0) {
+                
+                for (Object[] o: nmapObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    nmapFindings.add(new Finding(f,c.intValue()));
+                }
+            } else {
+                nmapFindings.add(new Finding("indef",1));
+            }
+            
+            if (nucleiObjects != null && nucleiObjects.size() > 0) {
+                
+                for (Object[] o: nucleiObjects) {
+                    String f = (String) o[0];
+                    Long c = (Long) o[1];
+                    nucleiFindings.add(new Finding(f,c.intValue()));
+                }
+            } else {
+                nucleiFindings.add(new Finding("indef",1));
+            }
+            
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportDir + "scanners_report.jasper");
                 
-            JasperDataScanners jasperDataScanners = new JasperDataScanners(kubehunterFindings, zapFindings);
+            JasperDataScanners jasperDataScanners = new JasperDataScanners(kubehunterFindings, zapFindings, nmapFindings, nucleiFindings);
             
             Map<String, Object> params = new HashMap<String, Object>();
 
             params.put("datasourceKubehunter", jasperDataScanners.getKubehunterFindings());
             params.put("datasourceZap", jasperDataScanners.getZapFindings());
+            params.put("datasourceNmap", jasperDataScanners.getNmapFindings());
+            params.put("datasourceNuclei", jasperDataScanners.getNucleiFindings());
             
             params.put("reportDir", reportDir);
 

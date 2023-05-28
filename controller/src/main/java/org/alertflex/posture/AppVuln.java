@@ -48,7 +48,7 @@ public class AppVuln {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -176,20 +176,53 @@ public class AppVuln {
                     
                         pa.setReportAdded(date);
                         pa.setReportUpdated(date);
+                        pa.setStatus("processed");
+                        
+                        String alertUuid = "";
                     
                         PostureAppvuln paExisting = eventBean.getPostureAppvulnFacade()
                             .findVulnerability(r, n, p, pa.getArtifactName(), pa.getTarget(), pa.getVulnerabilityId(),pa.getPkgName(), pa.getPkgVersion());
 
                         if (paExisting == null) {
-
+                            alertUuid = createPostureAppvulnAlert(pa);
+                            if (alertUuid != null) pa.setAlertUuid(alertUuid);
+                            else pa.setAlertUuid("indef");
                             eventBean.getPostureAppvulnFacade().create(pa);
-                        
-                            createPostureAppvulnAlert(pa);
                     
                         } else {
-
-                            paExisting.setReportUpdated(date);
-                            eventBean.getPostureAppvulnFacade().edit(paExisting);
+                            switch (alertType) {
+                        
+                                case 1: // all-existing
+                            
+                                    alertUuid = createPostureAppvulnAlert(paExisting);
+                                    if (alertUuid != null) paExisting.setAlertUuid(alertUuid);
+                                    else paExisting.setAlertUuid("indef");
+                                
+                                    paExisting.setReportUpdated(date);
+                                    eventBean.getPostureAppvulnFacade().edit(paExisting);
+                            
+                                    break;
+                            
+                                case 2: // non confirmed 
+                            
+                                    if (!paExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createPostureAppvulnAlert(paExisting);
+                                        if (alertUuid != null) paExisting.setAlertUuid(alertUuid);
+                                        else paExisting.setAlertUuid("indef");
+                                    }
+                                
+                                    paExisting.setReportUpdated(date);
+                                    eventBean.getPostureAppvulnFacade().edit(paExisting);
+                                
+                                    break;
+                            
+                                case 3: // new
+                            
+                                    paExisting.setReportUpdated(date);
+                                    eventBean.getPostureAppvulnFacade().edit(paExisting);
+                                
+                                    break;
+                            }
                         }
                     }
                 }
@@ -199,7 +232,7 @@ public class AppVuln {
         }
     }
 
-    public void createPostureAppvulnAlert(PostureAppvuln pa) {
+    public String createPostureAppvulnAlert(PostureAppvuln pa) {
 
         Alert a = new Alert();
 
@@ -215,7 +248,7 @@ public class AppVuln {
         if (pa.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pa.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pa.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pa.getSeverity());
         a.setAlertSeverity(sev);
@@ -277,6 +310,8 @@ public class AppVuln {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
+        
+        return a.getAlertUuid();
 
     }
 }

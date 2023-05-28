@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByProjectPath", query = "SELECT p FROM Project p WHERE p.projectPath = :projectPath"),
     @NamedQuery(name = "Project.findBySemActive", query = "SELECT p FROM Project p WHERE p.semActive = :semActive"),
     @NamedQuery(name = "Project.findByAlertLimit", query = "SELECT p FROM Project p WHERE p.alertLimit = :alertLimit"),
+    @NamedQuery(name = "Project.findByAlertType", query = "SELECT p FROM Project p WHERE p.alertType = :alertType"),
     @NamedQuery(name = "Project.findByAlertTimerange", query = "SELECT p FROM Project p WHERE p.alertTimerange = :alertTimerange"),
     @NamedQuery(name = "Project.findByNodeTimerange", query = "SELECT p FROM Project p WHERE p.nodeTimerange = :nodeTimerange"),
     @NamedQuery(name = "Project.findByTaskTimerange", query = "SELECT p FROM Project p WHERE p.taskTimerange = :taskTimerange"),
@@ -58,22 +59,26 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Project.findByGitlabUrl", query = "SELECT p FROM Project p WHERE p.gitlabUrl = :gitlabUrl"),
     @NamedQuery(name = "Project.findByGitlabKey", query = "SELECT p FROM Project p WHERE p.gitlabKey = :gitlabKey"),
     @NamedQuery(name = "Project.findByVtKey", query = "SELECT p FROM Project p WHERE p.vtKey = :vtKey"),
-    @NamedQuery(name = "Project.findByTwiliosmsAccount", query = "SELECT p FROM Project p WHERE p.twiliosmsAccount = :twiliosmsAccount"),
-    @NamedQuery(name = "Project.findByTwiliosmsToken", query = "SELECT p FROM Project p WHERE p.twiliosmsToken = :twiliosmsToken"),
-    @NamedQuery(name = "Project.findByTwiliosmsFrom", query = "SELECT p FROM Project p WHERE p.twiliosmsFrom = :twiliosmsFrom"),
-    @NamedQuery(name = "Project.findByTwiliomailKey", query = "SELECT p FROM Project p WHERE p.twiliomailKey = :twiliomailKey"),
-    @NamedQuery(name = "Project.findByTwiliomailFrom", query = "SELECT p FROM Project p WHERE p.twiliomailFrom = :twiliomailFrom"),
-    @NamedQuery(name = "Project.findBySlackHook", query = "SELECT p FROM Project p WHERE p.slackHook = :slackHook"),
     @NamedQuery(name = "Project.findByCuckooHost", query = "SELECT p FROM Project p WHERE p.cuckooHost = :cuckooHost"),
     @NamedQuery(name = "Project.findByCuckooPort", query = "SELECT p FROM Project p WHERE p.cuckooPort = :cuckooPort"),
     @NamedQuery(name = "Project.findByFalconUrl", query = "SELECT p FROM Project p WHERE p.falconUrl = :falconUrl"),
     @NamedQuery(name = "Project.findByFalconKey", query = "SELECT p FROM Project p WHERE p.falconKey = :falconKey"),
-    @NamedQuery(name = "Project.findByVmrayUrl", query = "SELECT p FROM Project p WHERE p.vmrayUrl = :vmrayUrl"),
-    @NamedQuery(name = "Project.findByVmrayKey", query = "SELECT p FROM Project p WHERE p.vmrayKey = :vmrayKey"),
+    @NamedQuery(name = "Project.findByMobsfUrl", query = "SELECT p FROM Project p WHERE p.mobsfUrl = :mobsfUrl"),
+    @NamedQuery(name = "Project.findByMobsfKey", query = "SELECT p FROM Project p WHERE p.mobsfKey = :mobsfKey"),
     @NamedQuery(name = "Project.findByXforceKey", query = "SELECT p FROM Project p WHERE p.xforceKey = :xforceKey"),
     @NamedQuery(name = "Project.findByXforcePass", query = "SELECT p FROM Project p WHERE p.xforcePass = :xforcePass"),
+    @NamedQuery(name = "Project.findBySonarUrl", query = "SELECT p FROM Project p WHERE p.sonarUrl = :sonarUrl"),
+    @NamedQuery(name = "Project.findBySonarUser", query = "SELECT p FROM Project p WHERE p.sonarUser = :sonarUser"),
+    @NamedQuery(name = "Project.findBySonarPass", query = "SELECT p FROM Project p WHERE p.sonarPass = :sonarPass"),
+    @NamedQuery(name = "Project.findByTrackUrl", query = "SELECT p FROM Project p WHERE p.trackUrl = :trackUrl"),
+    @NamedQuery(name = "Project.findByTrackKey", query = "SELECT p FROM Project p WHERE p.trackKey = :trackKey"),
+    @NamedQuery(name = "Project.findByTrackProject", query = "SELECT p FROM Project p WHERE p.trackProject = :trackProject"),
+    @NamedQuery(name = "Project.findByTrackVersion", query = "SELECT p FROM Project p WHERE p.trackVersion = :trackVersion"),
     @NamedQuery(name = "Project.findByAwsRegion", query = "SELECT p FROM Project p WHERE p.awsRegion = :awsRegion"),
-    @NamedQuery(name = "Project.findByAwsIpinsights", query = "SELECT p FROM Project p WHERE p.awsIpinsights = :awsIpinsights")})
+    @NamedQuery(name = "Project.findByAwsIpinsights", query = "SELECT p FROM Project p WHERE p.awsIpinsights = :awsIpinsights"),
+    @NamedQuery(name = "Project.findByChatgptUrl", query = "SELECT p FROM Project p WHERE p.chatgptUrl = :chatgptUrl"),
+    @NamedQuery(name = "Project.findByChatgptKey", query = "SELECT p FROM Project p WHERE p.chatgptKey = :chatgptKey"),
+    @NamedQuery(name = "Project.findByChatgptTemperature", query = "SELECT p FROM Project p WHERE p.chatgptTemperature = :chatgptTemperature")})
 public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -101,6 +106,10 @@ public class Project implements Serializable {
     @NotNull
     @Column(name = "alert_limit")
     private int alertLimit;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "alert_type")
+    private int alertType;
     @Basic(optional = false)
     @NotNull
     @Column(name = "alert_timerange")
@@ -226,36 +235,6 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "twiliosms_account")
-    private String twiliosmsAccount;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "twiliosms_token")
-    private String twiliosmsToken;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "twiliosms_from")
-    private String twiliosmsFrom;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "twiliomail_key")
-    private String twiliomailKey;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "twiliomail_from")
-    private String twiliomailFrom;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
-    @Column(name = "slack_hook")
-    private String slackHook;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
     @Column(name = "cuckoo_host")
     private String cuckooHost;
     @Basic(optional = false)
@@ -275,13 +254,13 @@ public class Project implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "vmray_url")
-    private String vmrayUrl;
+    @Column(name = "mobsf_url")
+    private String mobsfUrl;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
-    @Column(name = "vmray_key")
-    private String vmrayKey;
+    @Column(name = "mobsf_key")
+    private String mobsfKey;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -294,6 +273,41 @@ public class Project implements Serializable {
     private String xforcePass;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "sonar_url")
+    private String sonarUrl;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "sonar_user")
+    private String sonarUser;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "sonar_pass")
+    private String sonarPass;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "track_url")
+    private String trackUrl;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "track_key")
+    private String trackKey;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "track_project")
+    private String trackProject;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "track_version")
+    private String trackVersion;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "aws_region")
     private String awsRegion;
@@ -302,6 +316,20 @@ public class Project implements Serializable {
     @Size(min = 1, max = 256)
     @Column(name = "aws_ipinsights")
     private String awsIpinsights;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "chatgpt_url")
+    private String chatgptUrl;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "chatgpt_key")
+    private String chatgptKey;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "chatgpt_temperature")
+    private float chatgptTemperature;
 
     public Project() {
     }
@@ -310,12 +338,13 @@ public class Project implements Serializable {
         this.refId = refId;
     }
 
-    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertTimerange, int nodeTimerange, int taskTimerange, int postureTimerange, int sensorTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, int sendIncident, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String gitlabUrl, String gitlabKey, String vtKey, String twiliosmsAccount, String twiliosmsToken, String twiliosmsFrom, String twiliomailKey, String twiliomailFrom, String slackHook, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String vmrayUrl, String vmrayKey, String xforceKey, String xforcePass, String awsRegion, String awsIpinsights) {
+    public Project(String refId, String name, String projectPath, int semActive, int alertLimit, int alertType, int alertTimerange, int nodeTimerange, int taskTimerange, int postureTimerange, int sensorTimerange, int blockIprange, int iocCheck, int iocEvent, int prometheusStat, int sendNetflow, int sendIncident, String graylogHost, int graylogPort, String elkHost, int elkPort, String elkUser, String elkPass, String elkStorepass, String elkKeystore, String elkTruststore, String hiveUrl, String hiveKey, String mispUrl, String mispKey, String gitlabUrl, String gitlabKey, String vtKey, String cuckooHost, int cuckooPort, String falconUrl, String falconKey, String mobsfUrl, String mobsfKey, String xforceKey, String xforcePass, String sonarUrl, String sonarUser, String sonarPass, String trackUrl, String trackKey, String trackProject, String trackVersion, String awsRegion, String awsIpinsights, String chatgptUrl, String chatgptKey, float chatgptTemperature) {
         this.refId = refId;
         this.name = name;
         this.projectPath = projectPath;
         this.semActive = semActive;
         this.alertLimit = alertLimit;
+        this.alertType = alertType;
         this.alertTimerange = alertTimerange;
         this.nodeTimerange = nodeTimerange;
         this.taskTimerange = taskTimerange;
@@ -343,22 +372,26 @@ public class Project implements Serializable {
         this.gitlabUrl = gitlabUrl;
         this.gitlabKey = gitlabKey;
         this.vtKey = vtKey;
-        this.twiliosmsAccount = twiliosmsAccount;
-        this.twiliosmsToken = twiliosmsToken;
-        this.twiliosmsFrom = twiliosmsFrom;
-        this.twiliomailKey = twiliomailKey;
-        this.twiliomailFrom = twiliomailFrom;
-        this.slackHook = slackHook;
         this.cuckooHost = cuckooHost;
         this.cuckooPort = cuckooPort;
         this.falconUrl = falconUrl;
         this.falconKey = falconKey;
-        this.vmrayUrl = vmrayUrl;
-        this.vmrayKey = vmrayKey;
+        this.mobsfUrl = mobsfUrl;
+        this.mobsfKey = mobsfKey;
         this.xforceKey = xforceKey;
         this.xforcePass = xforcePass;
+        this.sonarUrl = sonarUrl;
+        this.sonarUser = sonarUser;
+        this.sonarPass = sonarPass;
+        this.trackUrl = trackUrl;
+        this.trackKey = trackKey;
+        this.trackProject = trackProject;
+        this.trackVersion = trackVersion;
         this.awsRegion = awsRegion;
         this.awsIpinsights = awsIpinsights;
+        this.chatgptUrl = chatgptUrl;
+        this.chatgptKey = chatgptKey;
+        this.chatgptTemperature = chatgptTemperature;
     }
 
     public String getRefId() {
@@ -399,6 +432,14 @@ public class Project implements Serializable {
 
     public void setAlertLimit(int alertLimit) {
         this.alertLimit = alertLimit;
+    }
+
+    public int getAlertType() {
+        return alertType;
+    }
+
+    public void setAlertType(int alertType) {
+        this.alertType = alertType;
     }
 
     public int getAlertTimerange() {
@@ -617,54 +658,6 @@ public class Project implements Serializable {
         this.vtKey = vtKey;
     }
 
-    public String getTwiliosmsAccount() {
-        return twiliosmsAccount;
-    }
-
-    public void setTwiliosmsAccount(String twiliosmsAccount) {
-        this.twiliosmsAccount = twiliosmsAccount;
-    }
-
-    public String getTwiliosmsToken() {
-        return twiliosmsToken;
-    }
-
-    public void setTwiliosmsToken(String twiliosmsToken) {
-        this.twiliosmsToken = twiliosmsToken;
-    }
-
-    public String getTwiliosmsFrom() {
-        return twiliosmsFrom;
-    }
-
-    public void setTwiliosmsFrom(String twiliosmsFrom) {
-        this.twiliosmsFrom = twiliosmsFrom;
-    }
-
-    public String getTwiliomailKey() {
-        return twiliomailKey;
-    }
-
-    public void setTwiliomailKey(String twiliomailKey) {
-        this.twiliomailKey = twiliomailKey;
-    }
-
-    public String getTwiliomailFrom() {
-        return twiliomailFrom;
-    }
-
-    public void setTwiliomailFrom(String twiliomailFrom) {
-        this.twiliomailFrom = twiliomailFrom;
-    }
-
-    public String getSlackHook() {
-        return slackHook;
-    }
-
-    public void setSlackHook(String slackHook) {
-        this.slackHook = slackHook;
-    }
-
     public String getCuckooHost() {
         return cuckooHost;
     }
@@ -697,20 +690,20 @@ public class Project implements Serializable {
         this.falconKey = falconKey;
     }
 
-    public String getVmrayUrl() {
-        return vmrayUrl;
+    public String getMobsfUrl() {
+        return mobsfUrl;
     }
 
-    public void setVmrayUrl(String vmrayUrl) {
-        this.vmrayUrl = vmrayUrl;
+    public void setMobsfUrl(String mobsfUrl) {
+        this.mobsfUrl = mobsfUrl;
     }
 
-    public String getVmrayKey() {
-        return vmrayKey;
+    public String getMobsfKey() {
+        return mobsfKey;
     }
 
-    public void setVmrayKey(String vmrayKey) {
-        this.vmrayKey = vmrayKey;
+    public void setMobsfKey(String mobsfKey) {
+        this.mobsfKey = mobsfKey;
     }
 
     public String getXforceKey() {
@@ -729,6 +722,62 @@ public class Project implements Serializable {
         this.xforcePass = xforcePass;
     }
 
+    public String getSonarUrl() {
+        return sonarUrl;
+    }
+
+    public void setSonarUrl(String sonarUrl) {
+        this.sonarUrl = sonarUrl;
+    }
+
+    public String getSonarUser() {
+        return sonarUser;
+    }
+
+    public void setSonarUser(String sonarUser) {
+        this.sonarUser = sonarUser;
+    }
+
+    public String getSonarPass() {
+        return sonarPass;
+    }
+
+    public void setSonarPass(String sonarPass) {
+        this.sonarPass = sonarPass;
+    }
+
+    public String getTrackUrl() {
+        return trackUrl;
+    }
+
+    public void setTrackUrl(String trackUrl) {
+        this.trackUrl = trackUrl;
+    }
+
+    public String getTrackKey() {
+        return trackKey;
+    }
+
+    public void setTrackKey(String trackKey) {
+        this.trackKey = trackKey;
+    }
+
+    public String getTrackProject() {
+        return trackProject;
+    }
+
+    public void setTrackProject(String trackProject) {
+        this.trackProject = trackProject;
+    }
+
+    public String getTrackVersion() {
+        return trackVersion;
+    }
+
+    public void setTrackVersion(String trackVersion) {
+        this.trackVersion = trackVersion;
+    }
+
     public String getAwsRegion() {
         return awsRegion;
     }
@@ -743,6 +792,30 @@ public class Project implements Serializable {
 
     public void setAwsIpinsights(String awsIpinsights) {
         this.awsIpinsights = awsIpinsights;
+    }
+
+    public String getChatgptUrl() {
+        return chatgptUrl;
+    }
+
+    public void setChatgptUrl(String chatgptUrl) {
+        this.chatgptUrl = chatgptUrl;
+    }
+
+    public String getChatgptKey() {
+        return chatgptKey;
+    }
+
+    public void setChatgptKey(String chatgptKey) {
+        this.chatgptKey = chatgptKey;
+    }
+
+    public float getChatgptTemperature() {
+        return chatgptTemperature;
+    }
+
+    public void setChatgptTemperature(float chatgptTemperature) {
+        this.chatgptTemperature = chatgptTemperature;
     }
 
     @Override

@@ -112,7 +112,10 @@ public class ProbesManagement {
             listTypesProbes.add("k8s");
             listTypesProbes.add("trivy");
             listTypesProbes.add("kube-hunter");
+            listTypesProbes.add("nmap");
+            listTypesProbes.add("nuclei");
             listTypesProbes.add("zap");
+            
             
             HashMap<String, String> probeTypeCastMap = new HashMap(0);
             probeTypeCastMap.put("crs", "Falco");
@@ -125,7 +128,10 @@ public class ProbesManagement {
             probeTypeCastMap.put("k8s", "Kubernetes");
             probeTypeCastMap.put("trivy", "Trivy");
             probeTypeCastMap.put("kube-hunter", "KubeHunter");
+            probeTypeCastMap.put("nmap", "Nmap");
+            probeTypeCastMap.put("nuclei", "Nuclei");
             probeTypeCastMap.put("zap", "ZAP");
+            
             
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date();

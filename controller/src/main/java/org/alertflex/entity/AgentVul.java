@@ -33,7 +33,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AgentVul.findAll", query = "SELECT a FROM AgentVul a"),
     @NamedQuery(name = "AgentVul.findByRecId", query = "SELECT a FROM AgentVul a WHERE a.recId = :recId"),
     @NamedQuery(name = "AgentVul.findByRefId", query = "SELECT a FROM AgentVul a WHERE a.refId = :refId"),
+    @NamedQuery(name = "AgentVul.findByAlertUuid", query = "SELECT a FROM AgentVul a WHERE a.alertUuid = :alertUuid"),
     @NamedQuery(name = "AgentVul.findByNode", query = "SELECT a FROM AgentVul a WHERE a.node = :node"),
+    @NamedQuery(name = "AgentVul.findByProbe", query = "SELECT a FROM AgentVul a WHERE a.probe = :probe"),
     @NamedQuery(name = "AgentVul.findByAgent", query = "SELECT a FROM AgentVul a WHERE a.agent = :agent"),
     @NamedQuery(name = "AgentVul.findByPkgName", query = "SELECT a FROM AgentVul a WHERE a.pkgName = :pkgName"),
     @NamedQuery(name = "AgentVul.findByPkgVersion", query = "SELECT a FROM AgentVul a WHERE a.pkgVersion = :pkgVersion"),
@@ -42,6 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AgentVul.findByDescription", query = "SELECT a FROM AgentVul a WHERE a.description = :description"),
     @NamedQuery(name = "AgentVul.findByVulnRef", query = "SELECT a FROM AgentVul a WHERE a.vulnRef = :vulnRef"),
     @NamedQuery(name = "AgentVul.findBySeverity", query = "SELECT a FROM AgentVul a WHERE a.severity = :severity"),
+    @NamedQuery(name = "AgentVul.findByStatus", query = "SELECT a FROM AgentVul a WHERE a.status = :status"),
     @NamedQuery(name = "AgentVul.findByReportAdded", query = "SELECT a FROM AgentVul a WHERE a.reportAdded = :reportAdded"),
     @NamedQuery(name = "AgentVul.findByReportUpdated", query = "SELECT a FROM AgentVul a WHERE a.reportUpdated = :reportUpdated")})
 public class AgentVul implements Serializable {
@@ -59,9 +62,19 @@ public class AgentVul implements Serializable {
     private String refId;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "node")
     private String node;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -102,6 +115,11 @@ public class AgentVul implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -116,10 +134,12 @@ public class AgentVul implements Serializable {
         this.recId = recId;
     }
 
-    public AgentVul(Long recId, String refId, String node, String agent, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity) {
+    public AgentVul(Long recId, String refId, String alertUuid, String node, String probe, String agent, String pkgName, String pkgVersion, String vulnerability, String title, String description, String vulnRef, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
+        this.alertUuid = alertUuid;
         this.node = node;
+        this.probe = probe;
         this.agent = agent;
         this.pkgName = pkgName;
         this.pkgVersion = pkgVersion;
@@ -128,6 +148,7 @@ public class AgentVul implements Serializable {
         this.description = description;
         this.vulnRef = vulnRef;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -146,12 +167,28 @@ public class AgentVul implements Serializable {
         this.refId = refId;
     }
 
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
+    }
+
     public String getNode() {
         return node;
     }
 
     public void setNode(String node) {
         this.node = node;
+    }
+
+    public String getProbe() {
+        return probe;
+    }
+
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public String getAgent() {
@@ -216,6 +253,14 @@ public class AgentVul implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

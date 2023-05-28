@@ -34,8 +34,11 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureCloudformation.findByRecId", query = "SELECT p FROM PostureCloudformation p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureCloudformation.findByRefId", query = "SELECT p FROM PostureCloudformation p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureCloudformation.findByScanUuid", query = "SELECT p FROM PostureCloudformation p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureCloudformation.findByAlertUuid", query = "SELECT p FROM PostureCloudformation p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureCloudformation.findByNode", query = "SELECT p FROM PostureCloudformation p WHERE p.node = :node"),
     @NamedQuery(name = "PostureCloudformation.findByProbe", query = "SELECT p FROM PostureCloudformation p WHERE p.probe = :probe"),
+    @NamedQuery(name = "PostureCloudformation.findByProvider", query = "SELECT p FROM PostureCloudformation p WHERE p.provider = :provider"),
+    @NamedQuery(name = "PostureCloudformation.findByService", query = "SELECT p FROM PostureCloudformation p WHERE p.service = :service"),
     @NamedQuery(name = "PostureCloudformation.findByArtifactName", query = "SELECT p FROM PostureCloudformation p WHERE p.artifactName = :artifactName"),
     @NamedQuery(name = "PostureCloudformation.findByArtifactType", query = "SELECT p FROM PostureCloudformation p WHERE p.artifactType = :artifactType"),
     @NamedQuery(name = "PostureCloudformation.findByTarget", query = "SELECT p FROM PostureCloudformation p WHERE p.target = :target"),
@@ -46,8 +49,11 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureCloudformation.findByTitle", query = "SELECT p FROM PostureCloudformation p WHERE p.title = :title"),
     @NamedQuery(name = "PostureCloudformation.findByDescription", query = "SELECT p FROM PostureCloudformation p WHERE p.description = :description"),
     @NamedQuery(name = "PostureCloudformation.findByRemediation", query = "SELECT p FROM PostureCloudformation p WHERE p.remediation = :remediation"),
+    @NamedQuery(name = "PostureCloudformation.findByStartLine", query = "SELECT p FROM PostureCloudformation p WHERE p.startLine = :startLine"),
+    @NamedQuery(name = "PostureCloudformation.findByEndLine", query = "SELECT p FROM PostureCloudformation p WHERE p.endLine = :endLine"),
     @NamedQuery(name = "PostureCloudformation.findByReference", query = "SELECT p FROM PostureCloudformation p WHERE p.reference = :reference"),
     @NamedQuery(name = "PostureCloudformation.findBySeverity", query = "SELECT p FROM PostureCloudformation p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureCloudformation.findByStatus", query = "SELECT p FROM PostureCloudformation p WHERE p.status = :status"),
     @NamedQuery(name = "PostureCloudformation.findByReportAdded", query = "SELECT p FROM PostureCloudformation p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureCloudformation.findByReportUpdated", query = "SELECT p FROM PostureCloudformation p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureCloudformation implements Serializable {
@@ -70,6 +76,11 @@ public class PostureCloudformation implements Serializable {
     private String scanUuid;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "node")
     private String node;
@@ -78,6 +89,16 @@ public class PostureCloudformation implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "probe")
     private String probe;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "provider")
+    private String provider;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 512)
+    @Column(name = "service")
+    private String service;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 512)
@@ -130,6 +151,14 @@ public class PostureCloudformation implements Serializable {
     private String remediation;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "start_line")
+    private int startLine;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "end_line")
+    private int endLine;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 1024)
     @Column(name = "reference")
     private String reference;
@@ -138,6 +167,11 @@ public class PostureCloudformation implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -152,12 +186,15 @@ public class PostureCloudformation implements Serializable {
         this.recId = recId;
     }
 
-    public PostureCloudformation(Long recId, String refId, String scanUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String targetType, String misconfigType, String misconfigAvdid, String title, String description, String remediation, String reference, String severity) {
+    public PostureCloudformation(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String provider, String service, String artifactName, String artifactType, String target, String targetClass, String targetType, String misconfigType, String misconfigAvdid, String title, String description, String remediation, int startLine, int endLine, String reference, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
+        this.provider = provider;
+        this.service = service;
         this.artifactName = artifactName;
         this.artifactType = artifactType;
         this.target = target;
@@ -168,8 +205,11 @@ public class PostureCloudformation implements Serializable {
         this.title = title;
         this.description = description;
         this.remediation = remediation;
+        this.startLine = startLine;
+        this.endLine = endLine;
         this.reference = reference;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -196,6 +236,14 @@ public class PostureCloudformation implements Serializable {
         this.scanUuid = scanUuid;
     }
 
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
+    }
+
     public String getNode() {
         return node;
     }
@@ -210,6 +258,22 @@ public class PostureCloudformation implements Serializable {
 
     public void setProbe(String probe) {
         this.probe = probe;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
     }
 
     public String getArtifactName() {
@@ -292,6 +356,22 @@ public class PostureCloudformation implements Serializable {
         this.remediation = remediation;
     }
 
+    public int getStartLine() {
+        return startLine;
+    }
+
+    public void setStartLine(int startLine) {
+        this.startLine = startLine;
+    }
+
+    public int getEndLine() {
+        return endLine;
+    }
+
+    public void setEndLine(int endLine) {
+        this.endLine = endLine;
+    }
+
     public String getReference() {
         return reference;
     }
@@ -306,6 +386,14 @@ public class PostureCloudformation implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

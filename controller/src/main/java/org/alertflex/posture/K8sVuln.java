@@ -48,7 +48,7 @@ public class K8sVuln {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -181,20 +181,53 @@ public class K8sVuln {
                     
                             pv.setReportAdded(date);
                             pv.setReportUpdated(date);
+                            pv.setStatus("processed");
+                            
+                            String alertUuid = "";
                     
                             PostureK8svuln pvExisting = eventBean.getPostureK8svulnFacade()
                                 .findVulnerability(r, n, p, pv.getClusterName(), pv.getNamespace(), pv.getTarget(), pv.getVulnerabilityId(), pv.getPkgName(), pv.getPkgVersion());
 
                             if (pvExisting == null) {
-
+                                alertUuid = createPostureK8svulnAlert(pv);
+                                if (alertUuid != null) pv.setAlertUuid(alertUuid);
+                                else pv.setAlertUuid("indef");
                                 eventBean.getPostureK8svulnFacade().create(pv);
-                        
-                                createPostureK8svulnAlert(pv);
-                    
+                
                             } else {
-
-                                pvExisting.setReportUpdated(date);
-                                eventBean.getPostureK8svulnFacade().edit(pvExisting);
+                                switch (alertType) {
+                    
+                                    case 1: // all-existing
+                        
+                                        alertUuid = createPostureK8svulnAlert(pvExisting);
+                                        if (alertUuid != null) pvExisting.setAlertUuid(alertUuid);
+                                        else pvExisting.setAlertUuid("indef");
+                            
+                                        pvExisting.setReportUpdated(date);
+                                        eventBean.getPostureK8svulnFacade().edit(pvExisting);
+                        
+                                        break;
+                        
+                                    case 2: // non confirmed 
+                        
+                                        if (!pvExisting.getStatus().equals("confirmed")) {
+                                            alertUuid = createPostureK8svulnAlert(pvExisting);
+                                            if (alertUuid != null) pvExisting.setAlertUuid(alertUuid);
+                                            else pvExisting.setAlertUuid("indef");
+                                        }
+                            
+                                        pvExisting.setReportUpdated(date);
+                                        eventBean.getPostureK8svulnFacade().edit(pvExisting);
+                            
+                                        break;
+                        
+                                    case 3: // new
+                        
+                                        pvExisting.setReportUpdated(date);
+                                        eventBean.getPostureK8svulnFacade().edit(pvExisting);
+                            
+                                        break;
+                                }
                             }
                         }
                     }
@@ -205,7 +238,7 @@ public class K8sVuln {
         }
     }
 
-    public void createPostureK8svulnAlert(PostureK8svuln pv) {
+    public String createPostureK8svulnAlert(PostureK8svuln pv) {
 
         Alert a = new Alert();
 
@@ -221,7 +254,7 @@ public class K8sVuln {
         if (pv.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pv.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pv.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pv.getSeverity());
         a.setAlertSeverity(sev);
@@ -283,6 +316,7 @@ public class K8sVuln {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
-
+        
+        return a.getAlertUuid();
     }
 }

@@ -6,6 +6,7 @@ CREATE TABLE `project` (
   `project_path` varchar(512) NOT NULL DEFAULT '',
   `sem_active` int(2) unsigned NOT NULL DEFAULT '0',
   `alert_limit` int(10) unsigned NOT NULL DEFAULT '0',
+  `alert_type` int(2) unsigned NOT NULL DEFAULT '3',
   `alert_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `node_timerange` int(10) unsigned NOT NULL DEFAULT '0',
   `task_timerange` int(10) unsigned NOT NULL DEFAULT '0',
@@ -33,26 +34,67 @@ CREATE TABLE `project` (
   `gitlab_url` varchar(512) NOT NULL DEFAULT '',
   `gitlab_key` varchar(512) NOT NULL DEFAULT '',
   `vt_key` varchar(512) NOT NULL DEFAULT '',
+  `cuckoo_host` varchar(512) NOT NULL DEFAULT '',
+  `cuckoo_port` int(10) unsigned NOT NULL DEFAULT '0',
+  `falcon_url` varchar(512) NOT NULL DEFAULT '',
+  `falcon_key` varchar(512) NOT NULL DEFAULT '',
+  `mobsf_url` varchar(512) NOT NULL DEFAULT '', -- change to mobsf instead vmray
+  `mobsf_key` varchar(512) NOT NULL DEFAULT '', -- change to mobsf instead vmray
+  `xforce_key` varchar(512) NOT NULL DEFAULT '',
+  `xforce_pass` varchar(512) NOT NULL DEFAULT '',
+  `sonar_url` varchar(512) NOT NULL DEFAULT '',
+  `sonar_user` varchar(512) NOT NULL DEFAULT '',
+  `sonar_pass` varchar(512) NOT NULL DEFAULT '',
+  `track_url` varchar(512) NOT NULL DEFAULT '',
+  `track_key` varchar(512) NOT NULL DEFAULT '',
+  `track_project` varchar(512) NOT NULL DEFAULT '',
+  `track_version` varchar(512) NOT NULL DEFAULT '',
+  `aws_region` varchar(128) NOT NULL DEFAULT '',
+  `aws_ipinsights` varchar(256) NOT NULL DEFAULT '',
+  `chatgpt_url` varchar(512) NOT NULL DEFAULT '',
+  `chatgpt_key` varchar(512) NOT NULL DEFAULT '',
+  `chatgpt_temperature` float NOT NULL default 0.0,
+  PRIMARY KEY (`ref_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 3, 0, 0, 0, 0, 30, 100, 0, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0.7);
+
+CREATE TABLE `integration_notify` (
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
   `twiliosms_account` varchar(512) NOT NULL DEFAULT '',
   `twiliosms_token` varchar(512) NOT NULL DEFAULT '',
   `twiliosms_from` varchar(512) NOT NULL DEFAULT '',
   `twiliomail_key` varchar(512) NOT NULL DEFAULT '',
   `twiliomail_from` varchar(512) NOT NULL DEFAULT '',
+  `mailgun_domain` varchar(512) NOT NULL DEFAULT '',
+  `mailgun_privatekey` varchar(512) NOT NULL DEFAULT '',
   `slack_hook` varchar(512) NOT NULL DEFAULT '',
-  `cuckoo_host` varchar(512) NOT NULL DEFAULT '',
-  `cuckoo_port` int(10) unsigned NOT NULL DEFAULT '0',
-  `falcon_url` varchar(512) NOT NULL DEFAULT '',
-  `falcon_key` varchar(512) NOT NULL DEFAULT '',
-  `vmray_url` varchar(512) NOT NULL DEFAULT '',
-  `vmray_key` varchar(512) NOT NULL DEFAULT '',
-  `xforce_key` varchar(512) NOT NULL DEFAULT '',
-  `xforce_pass` varchar(512) NOT NULL DEFAULT '',
-  `aws_region` varchar(128) NOT NULL DEFAULT '',
-  `aws_ipinsights` varchar(256) NOT NULL DEFAULT '',
+  `discord_hook` varchar(512) NOT NULL DEFAULT '',
+  `telegram_chatid` varchar(128) NOT NULL DEFAULT '',
+  `telegram_key` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO project VALUES ("_project_id","_project_name", "_project_path", 1, 10000, 0, 0, 0, 0, 30, 100, 0, 0, 0, 0, 0, "", 0, "", 9200, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "https://www.hybrid-analysis.com", "", "https://cloud.vmray.com", "", "", "", "", "");
+INSERT INTO `integration_notify` VALUES ("_project_id", "", "", "", "", "", "", "", "", "", "", "");
+
+CREATE TABLE `integration_issue` (
+  `ref_id` varchar(255) NOT NULL DEFAULT '',
+  `jira_url` varchar(512) NOT NULL DEFAULT '',
+  `jira_user` varchar(512) NOT NULL DEFAULT '',
+  `jira_pass` varchar(512) NOT NULL DEFAULT '',
+  `jira_project` varchar(512) NOT NULL DEFAULT '',
+  `jira_type` varchar(512) NOT NULL DEFAULT '',
+  `github_profile` varchar(512) NOT NULL DEFAULT '',
+  `github_repo` varchar(512) NOT NULL DEFAULT '',
+  `github_key` varchar(512) NOT NULL DEFAULT '',
+  `youtrack_token` varchar(512) NOT NULL DEFAULT '',
+  `youtrack_projectid` varchar(512) NOT NULL DEFAULT '',
+  `gitlab_token` varchar(512) NOT NULL DEFAULT '',
+  `gitlab_projectid` varchar(512) NOT NULL DEFAULT '',
+  PRIMARY KEY (`ref_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `integration_issue` VALUES ("_project_id", "", "", "", "", "", "", "", "", "", "", "", "");
 
 CREATE TABLE `users` (
   `userid` varchar(150) NOT NULL,
@@ -216,10 +258,12 @@ CREATE TABLE `agent` (
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `agent_sca` (
+CREATE TABLE `agent_misconfig` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `node` varchar(128) NOT NULL DEFAULT '',
   `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
   `agent` varchar(128) NOT NULL DEFAULT '',
   `policy_id` varchar(512) NOT NULL DEFAULT '',
   `sca_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -227,6 +271,8 @@ CREATE TABLE `agent_sca` (
   `title` varchar(1024) NOT NULL DEFAULT '',
   `rationale` varchar(2048) NOT NULL DEFAULT '',
   `remediation` varchar(2048) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -235,7 +281,9 @@ CREATE TABLE `agent_sca` (
 CREATE TABLE `agent_vul` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
   `agent` varchar(128) NOT NULL DEFAULT '',
   `pkg_name` varchar(512) NOT NULL DEFAULT '',
   `pkg_version` varchar(512) NOT NULL DEFAULT '',
@@ -244,6 +292,7 @@ CREATE TABLE `agent_vul` (
   `description` varchar(2048) NOT NULL DEFAULT '',
   `vuln_ref` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -528,6 +577,7 @@ CREATE TABLE `posture_appsecret` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `artifact_name` varchar(512) NOT NULL DEFAULT '',
@@ -540,6 +590,7 @@ CREATE TABLE `posture_appsecret` (
   `start_line` int(10) unsigned NOT NULL DEFAULT '0',
   `end_line` int(10) unsigned NOT NULL DEFAULT '0',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -549,6 +600,7 @@ CREATE TABLE `posture_dockerconfig` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `artifact_name` varchar(512) NOT NULL DEFAULT '',
@@ -563,6 +615,7 @@ CREATE TABLE `posture_dockerconfig` (
   `remediation` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -572,6 +625,7 @@ CREATE TABLE `posture_k8sconfig` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `cluster_name` varchar(512) NOT NULL DEFAULT '',
@@ -586,6 +640,7 @@ CREATE TABLE `posture_k8sconfig` (
   `remediation` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -595,6 +650,7 @@ CREATE TABLE `posture_appvuln` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `artifact_name` varchar(512) NOT NULL DEFAULT '',
@@ -610,6 +666,7 @@ CREATE TABLE `posture_appvuln` (
   `description` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -619,6 +676,7 @@ CREATE TABLE `posture_dockervuln` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `artifact_name` varchar(512) NOT NULL DEFAULT '',
@@ -634,6 +692,7 @@ CREATE TABLE `posture_dockervuln` (
   `description` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -643,6 +702,7 @@ CREATE TABLE `posture_k8svuln` (
   `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `cluster_name` varchar(512) NOT NULL DEFAULT '',
@@ -658,52 +718,7 @@ CREATE TABLE `posture_k8svuln` (
   `description` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
-  `report_added` datetime DEFAULT NULL,
-  `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `posture_terraform` (
-  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
-  `node` varchar(128) NOT NULL DEFAULT '',
-  `probe` varchar(128) NOT NULL DEFAULT '',
-  `artifact_name` varchar(512) NOT NULL DEFAULT '',
-  `artifact_type` varchar(512) NOT NULL DEFAULT '',
-  `target` varchar(512) NOT NULL DEFAULT '',
-  `target_class` varchar(512) NOT NULL DEFAULT '',
-  `target_type` varchar(512) NOT NULL DEFAULT '',
-  `misconfig_type` varchar(512) NOT NULL DEFAULT '',
-  `misconfig_avdid` varchar(128) NOT NULL DEFAULT '',
-  `title` varchar(1024) NOT NULL DEFAULT '',
-  `description` varchar(2048) NOT NULL DEFAULT '',
-  `remediation` varchar(2048) NOT NULL DEFAULT '',
-  `reference` varchar(1024) NOT NULL DEFAULT '',
-  `severity` varchar(128) NOT NULL DEFAULT '',
-  `report_added` datetime DEFAULT NULL,
-  `report_updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `posture_cloudformation` (
-  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_id` varchar(150) NOT NULL DEFAULT '',
-  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
-  `node` varchar(128) NOT NULL DEFAULT '',
-  `probe` varchar(128) NOT NULL DEFAULT '',
-  `artifact_name` varchar(512) NOT NULL DEFAULT '',
-  `artifact_type` varchar(512) NOT NULL DEFAULT '',
-  `target` varchar(512) NOT NULL DEFAULT '',
-  `target_class` varchar(512) NOT NULL DEFAULT '',
-  `target_type` varchar(512) NOT NULL DEFAULT '',
-  `misconfig_type` varchar(512) NOT NULL DEFAULT '',
-  `misconfig_avdid` varchar(128) NOT NULL DEFAULT '',
-  `title` varchar(1024) NOT NULL DEFAULT '',
-  `description` varchar(2048) NOT NULL DEFAULT '',
-  `remediation` varchar(2048) NOT NULL DEFAULT '',
-  `reference` varchar(1024) NOT NULL DEFAULT '',
-  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -713,6 +728,7 @@ CREATE TABLE `posture_kubehunter` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `target` varchar(512) NOT NULL DEFAULT '',
@@ -725,6 +741,7 @@ CREATE TABLE `posture_kubehunter` (
   `description` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(1024) NOT NULL DEFAULT '',
   `severity` varchar(1024) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -734,6 +751,7 @@ CREATE TABLE `posture_zap` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
   `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `node` varchar(128) NOT NULL DEFAULT '',
   `probe` varchar(128) NOT NULL DEFAULT '',
   `target` varchar(512) NOT NULL DEFAULT '',
@@ -744,6 +762,52 @@ CREATE TABLE `posture_zap` (
   `remediation` varchar(2048) NOT NULL DEFAULT '',
   `reference` varchar(2048) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_nikto` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `ip` varchar(128) NOT NULL DEFAULT '',
+  `port` varchar(128) NOT NULL DEFAULT '',
+  `banner` varchar(512) NOT NULL DEFAULT '',
+  `vuln_id` varchar(128) NOT NULL DEFAULT '',
+  `vuln_osvdb` varchar(128) NOT NULL DEFAULT '',
+  `vuln_method` varchar(512) NOT NULL DEFAULT '',
+  `vuln_url` varchar(1024) NOT NULL DEFAULT '',
+  `vuln_msg` varchar(2048) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_cloudsploit` (
+  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `cloud_type` varchar(128) NOT NULL DEFAULT '',
+  `plugin` varchar(128) NOT NULL DEFAULT '',
+  `category` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(512) NOT NULL DEFAULT '',
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  `resources` varchar(128) NOT NULL DEFAULT '',
+  `region` varchar(128) NOT NULL DEFAULT '',
+  `message` varchar(1024) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -752,6 +816,8 @@ CREATE TABLE `posture_zap` (
 CREATE TABLE `posture_inspector` (
   `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
   `ec2_name` varchar(256) NOT NULL DEFAULT '',
   `arn` varchar(300) NOT NULL DEFAULT '',
   `asset_type` varchar(128) NOT NULL DEFAULT '',
@@ -760,6 +826,154 @@ CREATE TABLE `posture_inspector` (
   `description` varchar(2048) NOT NULL DEFAULT '',
   `remediation` varchar(2048) NOT NULL DEFAULT '',
   `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_nuclei` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `alert_ref` varchar(1024) NOT NULL DEFAULT '',
+  `alert_name` varchar(512) NOT NULL DEFAULT '',
+  `alert_id` varchar(512) NOT NULL DEFAULT '',
+  `description` varchar(2048) NOT NULL DEFAULT '',
+  `target_host` varchar(512) NOT NULL DEFAULT '',
+  `target_ip` varchar(512) NOT NULL DEFAULT '',
+  `target_type` varchar(512) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_nmap` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `target` varchar(128) NOT NULL DEFAULT '',
+  `protocol` varchar(128) NOT NULL DEFAULT '',
+  `port_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `port_name` varchar(128) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_terraform` (
+  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `provider` varchar(128) NOT NULL DEFAULT '', -- AWS
+  `service` varchar(512) NOT NULL DEFAULT '',
+  `artifact_name` varchar(512) NOT NULL DEFAULT '',
+  `artifact_type` varchar(512) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `target_class` varchar(512) NOT NULL DEFAULT '',
+  `target_type` varchar(512) NOT NULL DEFAULT '',
+  `misconfig_type` varchar(512) NOT NULL DEFAULT '',
+  `misconfig_avdid` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(1024) NOT NULL DEFAULT '',
+  `description` varchar(2048) NOT NULL DEFAULT '',
+  `remediation` varchar(2048) NOT NULL DEFAULT '',
+  `start_line` int(10) unsigned NOT NULL DEFAULT '0', -- start.line
+  `end_line` int(10) unsigned NOT NULL DEFAULT '0', -- end.line
+  `reference` varchar(1024) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_cloudformation` (
+  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `provider` varchar(128) NOT NULL DEFAULT '', -- AWS
+  `service` varchar(512) NOT NULL DEFAULT '',
+  `artifact_name` varchar(512) NOT NULL DEFAULT '',
+  `artifact_type` varchar(512) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `target_class` varchar(512) NOT NULL DEFAULT '',
+  `target_type` varchar(512) NOT NULL DEFAULT '',
+  `misconfig_type` varchar(512) NOT NULL DEFAULT '',
+  `misconfig_avdid` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(1024) NOT NULL DEFAULT '',
+  `description` varchar(2048) NOT NULL DEFAULT '',
+  `remediation` varchar(2048) NOT NULL DEFAULT '',
+  `start_line` int(10) unsigned NOT NULL DEFAULT '0', -- start.line
+  `end_line` int(10) unsigned NOT NULL DEFAULT '0', -- end.line
+  `reference` varchar(1024) NOT NULL DEFAULT '',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_added` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_sonarqube` (
+  `rec_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `component` varchar(1024) NOT NULL DEFAULT '',
+  `categories` varchar(512) NOT NULL DEFAULT '', 
+  `message` varchar(2048) NOT NULL DEFAULT '',
+  `rule_id` varchar(512) NOT NULL DEFAULT '', 
+  `start_line` int(10) unsigned NOT NULL DEFAULT '0',
+  `end_line` int(10) unsigned NOT NULL DEFAULT '0',
+  `severity` varchar(128) NOT NULL DEFAULT '',
+  `issue_status` varchar(128) NOT NULL DEFAULT '',
+  `issue_created` datetime DEFAULT NULL,
+  `issue_updated` datetime DEFAULT NULL,
+  `status` varchar(32) NOT NULL DEFAULT '',
+  `report_created` datetime DEFAULT NULL,
+  `report_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`rec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `posture_semgrep` (
+  `rec_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ref_id` varchar(150) NOT NULL DEFAULT '',
+  `scan_uuid` varchar(150) NOT NULL DEFAULT '',
+  `alert_uuid` varchar(150) NOT NULL DEFAULT '',
+  `node` varchar(128) NOT NULL DEFAULT '',
+  `probe` varchar(128) NOT NULL DEFAULT '',
+  `target` varchar(512) NOT NULL DEFAULT '',
+  `component` varchar(1024) NOT NULL DEFAULT '', -- path
+  `categories` varchar(512) NOT NULL DEFAULT '', -- metadata.category
+  `message` varchar(2048) NOT NULL DEFAULT '', -- extra.message
+  `cwe` varchar(1024) NOT NULL DEFAULT '', -- metadata.cwe
+  `rule_id` varchar(512) NOT NULL DEFAULT '', 
+  `rule_origin` varchar(512) NOT NULL DEFAULT '', -- metadata.category
+  `vuln_line` varchar(1024) NOT NULL DEFAULT '', -- extra.lines
+  `start_line` int(10) unsigned NOT NULL DEFAULT '0', -- start.line
+  `end_line` int(10) unsigned NOT NULL DEFAULT '0', -- end.line
+  `reference` varchar(2048) NOT NULL DEFAULT '', -- metadata.references
+  `severity` varchar(128) NOT NULL DEFAULT '', -- metadata.confidence
+  `status` varchar(32) NOT NULL DEFAULT '', 
   `report_added` datetime DEFAULT NULL,
   `report_updated` datetime DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
@@ -802,14 +1016,22 @@ INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`,
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (11,'_project_id','VirusTotal','VirusTotal', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (12,'_project_id','Cuckoo','Cuckoo', 1, 3, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (13,'_project_id','HybridAnalysis','HybridAnalysis', 'no specific threat', 'suspicious', 'malicious',1,2,3);
-INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (14,'_project_id','VMRay','VMRay', 'not_suspicious', 'suspicious', 'malicious',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (14,'_project_id','mobSF','mobSF', 1, 3, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (15,'_project_id','AmazonInspector','Amazon Inspector', 'Informational', 'Low', 'Medium', 'High', 1,1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (16,'_project_id','AnomalyDetection','OpenSerach Anomaly Detection', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (17,'_project_id','AmazonGuardduty','Amazon GuardDuty', 3, 5, 7);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (18,'_project_id','ZAP','OWASP ZAP', 'False', 'Informational', 'Low', 'Medium', 'High', 0,0,1,2,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (19,'_project_id','KubeHunter','Kube-Hunter', 'info', 'low', 'medium', 'high', 'critical', 0,1,2,3,3);
 INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (20,'_project_id','Trivy','Trivy', 'UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 0,1,2,3,3);
-
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (21,'_project_id','Nmap','Nmap', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (22,'_project_id','Nuclei','Nuclei', 'info', 'low', 'medium', 'high', 'critical', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (23,'_project_id','Nikto','Nikto', 1);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `value1`, `value2`, `value3`, `value4`) VALUES (24,'_project_id','CloudSploit','CloudSploit', 'OK', 'UNKNOWN', 'WARN', 'FAIL', 0,1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`,`value1`, `value2`, `value3`) VALUES (25,'_project_id','Semgrep','Semgrep', 'INFO', 'WARNING', 'ERROR',1,2,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`text1`, `text2`, `text3`, `text4`, `text5`,`value1`, `value2`, `value3`, `value4`, `value5`) VALUES (26,'_project_id','SonarQube','SonarQube', 'INFO', 'MINOR', 'MAJOR', 'CRITICAL', 'BLOCKER', 0,1,2,3,3);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (27,'_project_id','IpInsight','IpInsight', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`minor_threshold`, `major_threshold`, `critical_threshold`) VALUES (28,'_project_id','CloudTrail','CloudTrail', 3, 5, 7);
+INSERT INTO `alert_priority` (`rec_id`,`ref_id`,`source`, `description`,`severity_default`) VALUES (29,'_project_id','WazuhMisconfig','WazuhMisconfig', 1);
 
 CREATE TABLE `alert_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

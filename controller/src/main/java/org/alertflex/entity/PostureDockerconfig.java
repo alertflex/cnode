@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureDockerconfig.findByRecId", query = "SELECT p FROM PostureDockerconfig p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureDockerconfig.findByRefId", query = "SELECT p FROM PostureDockerconfig p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureDockerconfig.findByScanUuid", query = "SELECT p FROM PostureDockerconfig p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureDockerconfig.findByAlertUuid", query = "SELECT p FROM PostureDockerconfig p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureDockerconfig.findByNode", query = "SELECT p FROM PostureDockerconfig p WHERE p.node = :node"),
     @NamedQuery(name = "PostureDockerconfig.findByProbe", query = "SELECT p FROM PostureDockerconfig p WHERE p.probe = :probe"),
     @NamedQuery(name = "PostureDockerconfig.findByArtifactName", query = "SELECT p FROM PostureDockerconfig p WHERE p.artifactName = :artifactName"),
@@ -48,6 +49,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureDockerconfig.findByRemediation", query = "SELECT p FROM PostureDockerconfig p WHERE p.remediation = :remediation"),
     @NamedQuery(name = "PostureDockerconfig.findByReference", query = "SELECT p FROM PostureDockerconfig p WHERE p.reference = :reference"),
     @NamedQuery(name = "PostureDockerconfig.findBySeverity", query = "SELECT p FROM PostureDockerconfig p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureDockerconfig.findByStatus", query = "SELECT p FROM PostureDockerconfig p WHERE p.status = :status"),
     @NamedQuery(name = "PostureDockerconfig.findByReportAdded", query = "SELECT p FROM PostureDockerconfig p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureDockerconfig.findByReportUpdated", query = "SELECT p FROM PostureDockerconfig p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureDockerconfig implements Serializable {
@@ -68,6 +70,11 @@ public class PostureDockerconfig implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "scan_uuid")
     private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -138,6 +145,11 @@ public class PostureDockerconfig implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -152,10 +164,11 @@ public class PostureDockerconfig implements Serializable {
         this.recId = recId;
     }
 
-    public PostureDockerconfig(Long recId, String refId, String scanUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String targetType, String misconfigType, String misconfigAvdid, String title, String description, String remediation, String reference, String severity) {
+    public PostureDockerconfig(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String targetType, String misconfigType, String misconfigAvdid, String title, String description, String remediation, String reference, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
         this.artifactName = artifactName;
@@ -170,6 +183,7 @@ public class PostureDockerconfig implements Serializable {
         this.remediation = remediation;
         this.reference = reference;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -194,6 +208,14 @@ public class PostureDockerconfig implements Serializable {
 
     public void setScanUuid(String scanUuid) {
         this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getNode() {
@@ -306,6 +328,14 @@ public class PostureDockerconfig implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

@@ -87,9 +87,6 @@ public class AlertsMessageBean implements MessageListener {
     @EJB
     private ResponseFacade responseFacade;
     
-    @EJB
-    private ProbeFacade sensorFacade;
-    
     Alert a = null;
     
     @Override

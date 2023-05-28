@@ -207,7 +207,8 @@ public class AlertFacade extends AbstractFacade<Alert> {
 
             Query listQry = em.createQuery(
                     "SELECT a.alertSeverity, count(a) as Counter FROM Alert a WHERE a.refId = :ref AND a.processName = :uuid GROUP BY a.alertSeverity ORDER BY Counter DESC")
-                    .setParameter("ref", ref).setParameter("uuid", uuid);
+                    .setParameter("ref", ref)
+                    .setParameter("uuid", uuid);
 
             // Enable forced database query
             listQry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

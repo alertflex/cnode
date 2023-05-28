@@ -48,7 +48,7 @@ public class DockerVuln {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -176,20 +176,53 @@ public class DockerVuln {
                     
                         pd.setReportAdded(date);
                         pd.setReportUpdated(date);
+                        pd.setStatus("processed");
+                        
+                        String alertUuid = "";
                     
                         PostureDockervuln pdExisting = eventBean.getPostureDockervulnFacade()
                             .findVulnerability(r, n, p, pd.getArtifactName(), pd.getTarget(), pd.getVulnerabilityId(),pd.getPkgName(), pd.getPkgVersion());
 
                         if (pdExisting == null) {
-
+                            alertUuid = createPostureDockervulnAlert(pd);
+                            if (alertUuid != null) pd.setAlertUuid(alertUuid);
+                            else pd.setAlertUuid("indef");
                             eventBean.getPostureDockervulnFacade().create(pd);
-                        
-                            createPostureDockervulnAlert(pd);
-                    
+                
                         } else {
-
-                            pdExisting.setReportUpdated(date);
-                            eventBean.getPostureDockervulnFacade().edit(pdExisting);
+                            switch (alertType) {
+                    
+                                case 1: // all-existing
+                        
+                                    alertUuid = createPostureDockervulnAlert(pdExisting);
+                                    if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
+                                    else pdExisting.setAlertUuid("indef");
+                            
+                                    pdExisting.setReportUpdated(date);
+                                    eventBean.getPostureDockervulnFacade().edit(pdExisting);
+                        
+                                    break;
+                        
+                                case 2: // non confirmed 
+                        
+                                    if (!pdExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createPostureDockervulnAlert(pdExisting);
+                                        if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
+                                        else pdExisting.setAlertUuid("indef");
+                                    }
+                            
+                                    pdExisting.setReportUpdated(date);
+                                    eventBean.getPostureDockervulnFacade().edit(pdExisting);
+                            
+                                    break;
+                        
+                                case 3: // new
+                        
+                                    pdExisting.setReportUpdated(date);
+                                    eventBean.getPostureDockervulnFacade().edit(pdExisting);
+                            
+                                    break;
+                            }
                         }
                     }
                 }
@@ -199,7 +232,7 @@ public class DockerVuln {
         }
     }
 
-    public void createPostureDockervulnAlert(PostureDockervuln pd) {
+    public String createPostureDockervulnAlert(PostureDockervuln pd) {
 
         Alert a = new Alert();
 
@@ -215,7 +248,7 @@ public class DockerVuln {
         if (pd.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pd.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pd.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pd.getSeverity());
         a.setAlertSeverity(sev);
@@ -277,6 +310,7 @@ public class DockerVuln {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
-
+        
+        return a.getAlertUuid();
     }
 }

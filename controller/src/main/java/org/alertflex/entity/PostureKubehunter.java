@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureKubehunter.findByRecId", query = "SELECT p FROM PostureKubehunter p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureKubehunter.findByRefId", query = "SELECT p FROM PostureKubehunter p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureKubehunter.findByScanUuid", query = "SELECT p FROM PostureKubehunter p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureKubehunter.findByAlertUuid", query = "SELECT p FROM PostureKubehunter p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureKubehunter.findByNode", query = "SELECT p FROM PostureKubehunter p WHERE p.node = :node"),
     @NamedQuery(name = "PostureKubehunter.findByProbe", query = "SELECT p FROM PostureKubehunter p WHERE p.probe = :probe"),
     @NamedQuery(name = "PostureKubehunter.findByTarget", query = "SELECT p FROM PostureKubehunter p WHERE p.target = :target"),
@@ -46,6 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureKubehunter.findByDescription", query = "SELECT p FROM PostureKubehunter p WHERE p.description = :description"),
     @NamedQuery(name = "PostureKubehunter.findByReference", query = "SELECT p FROM PostureKubehunter p WHERE p.reference = :reference"),
     @NamedQuery(name = "PostureKubehunter.findBySeverity", query = "SELECT p FROM PostureKubehunter p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureKubehunter.findByStatus", query = "SELECT p FROM PostureKubehunter p WHERE p.status = :status"),
     @NamedQuery(name = "PostureKubehunter.findByReportAdded", query = "SELECT p FROM PostureKubehunter p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureKubehunter.findByReportUpdated", query = "SELECT p FROM PostureKubehunter p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureKubehunter implements Serializable {
@@ -66,6 +68,11 @@ public class PostureKubehunter implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "scan_uuid")
     private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -126,6 +133,11 @@ public class PostureKubehunter implements Serializable {
     @Size(min = 1, max = 1024)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -140,10 +152,11 @@ public class PostureKubehunter implements Serializable {
         this.recId = recId;
     }
 
-    public PostureKubehunter(Long recId, String refId, String scanUuid, String node, String probe, String target, String kubeType, String services, String location, String vulnerabilityId, String category, String title, String description, String reference, String severity) {
+    public PostureKubehunter(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String target, String kubeType, String services, String location, String vulnerabilityId, String category, String title, String description, String reference, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
         this.target = target;
@@ -156,6 +169,7 @@ public class PostureKubehunter implements Serializable {
         this.description = description;
         this.reference = reference;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -180,6 +194,14 @@ public class PostureKubehunter implements Serializable {
 
     public void setScanUuid(String scanUuid) {
         this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getNode() {
@@ -276,6 +298,14 @@ public class PostureKubehunter implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {

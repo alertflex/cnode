@@ -73,7 +73,7 @@ public class PostureZapFacade extends AbstractFacade<PostureZap> {
             em.flush();
             
             Query qry = em.createQuery(
-                    "SELECT p.severity, COUNT(z) FROM PostureZap p WHERE p.refId = :ref GROUP BY p.severity")
+                    "SELECT p.severity, COUNT(p) FROM PostureZap p WHERE p.refId = :ref GROUP BY p.severity")
                     .setParameter("ref", ref);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

@@ -114,7 +114,9 @@ public class PostureREST {
             
             try {
                 ProjectRepository pr = new ProjectRepository(p);
+                
                 String posturePath = pr.getCtrlPostureDir() + id + ".json";
+                if (pt.getPostureType().equals("Nmap")) posturePath = pr.getCtrlPostureDir() + id + ".xml";
                 
                 java.nio.file.Path fp = Paths.get(posturePath);
                 InputStream in = Files.newInputStream(fp);
@@ -308,8 +310,6 @@ public class PostureREST {
         if (project == null) return Response.status(404).entity("Error proectId").build();
         
         int postureParam = 0;
-        
-        
         switch (postureType) {
             case "AppSecret" : postureParam = 4;
                 break;
@@ -335,12 +335,23 @@ public class PostureREST {
                 break;
             case "ZAP" : postureParam = 15;
                 break;
+            case "Nmap" : postureParam = 16;
+                break;
+            case "Nuclei" : postureParam = 17;
+                break;
+            case "Nikto" : postureParam = 18;
+                break;
+            case "CloudSploit" : postureParam = 19;
+                break;
+            case "Semgrep" : postureParam = 20;
+                break;
+            case "SonarQube" : postureParam = 21;
+                break;
             default:
                 postureParam = 0;
         }
         
         if (postureParam == 0) return Response.status(404).entity("Error").build();
-        
         
         String postureId = sendToScanner(project, postureBody, postureParam);
         String jsonRespons = "";
@@ -381,6 +392,7 @@ public class PostureREST {
             pb.getProject() + "\"} }, \"args\": { \"delay\": " +
             Long.toString(wait) +  ",\"posture_type\": " +
             Integer.toString(postureType) + "} }";
+            
         
         
         return sendRequest(p.getRefId(), pb.getNode(), pb.getHost(), msg, wait);

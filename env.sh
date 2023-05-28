@@ -4,8 +4,8 @@
 # Technical project data for Cnode #
 ####################################
 
-export INSTALL_PATH=/home/alertflex/cnode
-export PROJECT_PATH=/home/alertflex/
+export INSTALL_PATH=/home/xxxxx/cnode
+export PROJECT_PATH=/home/xxxxx/
 
 # Settings for connection to ActiveMQ broker, 
 # The Common Name (AKA CN) represents the server name protected by the SSL certificate.
@@ -31,7 +31,7 @@ export DB_USER=xxxxx
 export DB_PWD=*****
 
 # install Alertflex Management console
-export INSTALL_MC=yes
+export INSTALL_MC=no
 
 
 

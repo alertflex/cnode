@@ -74,7 +74,7 @@ public class PostureKubehunterFacade extends AbstractFacade<PostureKubehunter> {
             em.flush();
             
             Query qry = em.createQuery(
-                    "SELECT p.severity, COUNT(h) FROM PostureKubehunter p WHERE p.refId = :ref GROUP BY p.severity")
+                    "SELECT p.severity, COUNT(p) FROM PostureKubehunter p WHERE p.refId = :ref GROUP BY p.severity")
                     .setParameter("ref", ref);
             // Enable forced database query
             qry.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);

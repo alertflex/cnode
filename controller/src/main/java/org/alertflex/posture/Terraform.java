@@ -48,7 +48,7 @@ public class Terraform {
 
     }
 
-    public void saveReport(String results, String target, String uuid) {
+    public void saveReport(String results, String target, String uuid, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -178,23 +178,76 @@ public class Terraform {
                     
                         String sev =  arrMisconfigurations.getJSONObject(j).getString("Severity");
                         pt.setSeverity(sev);
+                        
+                        JSONObject causeMetadata = arrMisconfigurations.getJSONObject(j).getJSONObject("CauseMetadata");
+
+                        String provider = causeMetadata.getString("Provider");
+                        pt.setProvider(provider);
+
+                        String service = causeMetadata.getString("Service");
+                        pt.setService(service);
+
+                        int startLine = 0;
+                        if (causeMetadata.has("StartLine")) {
+                            startLine= causeMetadata.getInt("StartLine");
+                        }
+                        pt.setStartLine(startLine);
+
+                        int endLine = 0;
+                        if (causeMetadata.has("EndLine")) {
+                            endLine= causeMetadata.getInt("EndLine");
+                        }
+                        pt.setEndLine(endLine);
                     
                         pt.setReportAdded(date);
                         pt.setReportUpdated(date);
+                        pt.setStatus("processed");
+                        
+                        String alertUuid = "";
                     
                         PostureTerraform ptExisting = eventBean.getPostureTerraformFacade()
                             .findMisconfig(r, n, p, pt.getArtifactName(), pt.getTarget(), pt.getMisconfigAvdid());
 
                         if (ptExisting == null) {
-
+                            alertUuid = createPostureTerraformAlert(pt);
+                            if (alertUuid != null) pt.setAlertUuid(alertUuid);
+                            else pt.setAlertUuid("indef");
                             eventBean.getPostureTerraformFacade().create(pt);
-                        
-                            createPostureTerraformAlert(pt);
-                    
+                
                         } else {
-
-                            ptExisting.setReportUpdated(date);
-                            eventBean.getPostureTerraformFacade().edit(ptExisting);
+                            switch (alertType) {
+                    
+                                case 1: // all-existing
+                        
+                                    alertUuid = createPostureTerraformAlert(ptExisting);
+                                    if (alertUuid != null) ptExisting.setAlertUuid(alertUuid);
+                                    else ptExisting.setAlertUuid("indef");
+                            
+                                    ptExisting.setReportUpdated(date);
+                                    eventBean.getPostureTerraformFacade().edit(ptExisting);
+                        
+                                    break;
+                        
+                                case 2: // non confirmed 
+                        
+                                    if (!ptExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createPostureTerraformAlert(ptExisting);
+                                        if (alertUuid != null) ptExisting.setAlertUuid(alertUuid);
+                                        else ptExisting.setAlertUuid("indef");
+                                    }
+                            
+                                    ptExisting.setReportUpdated(date);
+                                    eventBean.getPostureTerraformFacade().edit(ptExisting);
+                            
+                                    break;
+                        
+                                case 3: // new
+                        
+                                    ptExisting.setReportUpdated(date);
+                                    eventBean.getPostureTerraformFacade().edit(ptExisting);
+                            
+                                    break;
+                            }
                         }
                     }
                 }
@@ -204,7 +257,7 @@ public class Terraform {
         }
     }
 
-    public void createPostureTerraformAlert(PostureTerraform pt) {
+    public String createPostureTerraformAlert(PostureTerraform pt) {
 
         Alert a = new Alert();
 
@@ -220,7 +273,7 @@ public class Terraform {
         if (pt.getSeverity().equals(ap.getText3())) sev = ap.getValue3();
         if (pt.getSeverity().equals(ap.getText4())) sev = ap.getValue4();
         if (pt.getSeverity().equals(ap.getText5())) sev = ap.getValue5();
-        if (sev < ap.getSeverityThreshold()) return;
+        if (sev < ap.getSeverityThreshold()) return null;
         
         a.setEventSeverity(pt.getSeverity());
         a.setAlertSeverity(sev);
@@ -283,5 +336,6 @@ public class Terraform {
 
         eventBean.createAlert(a);
 
+        return a.getAlertUuid();
     }
 }

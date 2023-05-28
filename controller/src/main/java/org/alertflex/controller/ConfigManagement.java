@@ -53,6 +53,7 @@ public class ConfigManagement {
     static final int TIMER_INTERVAL = 60000; // 1 min
     
     int alertTimerange = 0;
+    int alertType = 0;
     int nodeTimerange = 0;
     int postureTimerange = 0;
     int iocCheck = 0;
@@ -76,6 +77,15 @@ public class ConfigManagement {
     
     String gitlabURL = "";
     String gitlabKey = "";
+    
+    String sonarURL="";
+    String sonarUser="";
+    String sonarPass="";
+
+    String trackURL="";
+    String trackKey="";
+    String trackProject="";
+    String trackVersion="";
 
     @PostConstruct
     public void init() {
@@ -116,6 +126,9 @@ public class ConfigManagement {
 
         alertTimerange = Integer.parseInt(prop.getProperty("alert_timerange"));
         project.setAlertTimerange(alertTimerange);
+        
+        alertType = Integer.parseInt(prop.getProperty("alert_type"));
+        project.setAlertType(alertType);
                 
         nodeTimerange = Integer.parseInt(prop.getProperty("node_timerange"));
         project.setNodeTimerange(nodeTimerange);
@@ -173,6 +186,27 @@ public class ConfigManagement {
         
         gitlabKey = prop.getProperty("gitlab_key");
         project.setGitlabKey(gitlabKey);
+        
+        sonarURL = prop.getProperty("sonar_url");
+        project.setSonarUrl(sonarURL);
+        
+        sonarUser = prop.getProperty("sonar_user");
+        project.setSonarUser(sonarUser);
+        
+        sonarPass = prop.getProperty("sonar_pass");
+        project.setSonarPass(sonarPass);
+        
+        trackURL = prop.getProperty("track_url");
+        project.setTrackUrl(trackURL);
+        
+        trackKey = prop.getProperty("track_key");
+        project.setTrackKey(trackKey);
+        
+        trackProject = prop.getProperty("track_project");
+        project.setTrackProject(trackProject);
+        
+        trackVersion = prop.getProperty("track_version");
+        project.setTrackVersion(trackVersion);
         
         projectFacade.edit(project);
         

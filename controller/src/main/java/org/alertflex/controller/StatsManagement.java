@@ -28,7 +28,7 @@ import org.alertflex.entity.Agent;
 import org.alertflex.entity.Alert;
 import org.alertflex.entity.NodeAlerts;
 import org.alertflex.entity.NodeMonitor;
-import org.alertflex.entity.AgentSca;
+import org.alertflex.entity.AgentMisconfig;
 import org.alertflex.entity.AgentVul;
 import org.alertflex.entity.AlertPriority;
 import org.alertflex.entity.Container;
@@ -285,7 +285,7 @@ public class StatsManagement {
 
                     break;
                 
-                case "sca":
+                case "misconfig":
                     
                     agent = obj.getString("agent");
 
@@ -348,33 +348,82 @@ public class StatsManagement {
                             remediation = remediationTmp.substring(0, 2046);    
                         } else remediation = remediationTmp;
                         
-                        AgentSca scaExisting = eventBean.getAgentScaFacade().findSca(ref, nodeName, agent, id, policyId);
+                        AgentMisconfig am = new AgentMisconfig();
+                        am.setRefId(ref);
+                        am.setNode(nodeName);
+                        String probeName = eventBean.getHost() + ".hids";
+                        am.setProbe(probeName);
+                        am.setAgent(agent);
+                        am.setScaId(id);
+                        am.setPolicyId(policyId);
+                        am.setDescription(description);
+                        am.setRationale(rationale);
+                        am.setRemediation(remediation);
+                        am.setTitle(title);
+                        am.setReportAdded(date);
+                        am.setReportUpdated(date);
+                        am.setStatus("processed");
+                        
+                        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(am.getRefId(), "WazuhMisconfig");
+                        int alertSeverity = ap.getSeverityDefault();
+                        String severity = "low";
+            
+                        switch (alertSeverity) {
+                            case 0 : severity = "info";
+                                break;
+                            case 1 : severity = "low";
+                                break;
+                            case 2 : severity = "medium";
+                                break;
+                            case 3 : severity = "high";
+                                break;
+                        }
+                        
+                        am.setSeverity(severity);
+                        String alertUuid = "";
+                        
+                        AgentMisconfig amExisting = eventBean.getAgentMisconfigFacade().findMisconfigurations(ref, nodeName, agent, id, policyId);
 
-                        if (scaExisting == null) {
-
-                            AgentSca a = new AgentSca();
-
-                            a.setRefId(ref);
-                            a.setNode(nodeName);
-                            a.setAgent(agent);
-                            a.setScaId(id);
-                            a.setPolicyId(policyId);
-                            a.setDescription(description);
-                            
-                            
-                            a.setRationale(rationale);
-                            a.setRemediation(remediation);
-                            a.setTitle(title);
-                            a.setReportAdded(date);
-                            a.setReportUpdated(date);
-
-                            eventBean.getAgentScaFacade().create(a);
-
-                            createNewScaAlert(a, eventBean.getHost());
-                            
+                        if (amExisting == null) {
+                            alertUuid = createAgentMisconfigAlert(am, alertSeverity);
+                            if (alertUuid != null) am.setAlertUuid(alertUuid);
+                            else am.setAlertUuid("indef");
+                            eventBean.getAgentMisconfigFacade().create(am);
+                
                         } else {
-                            scaExisting.setReportUpdated(date);
-                            eventBean.getAgentScaFacade().edit(scaExisting);
+                            switch (project.getAlertType()) {
+                    
+                                case 1: // all-existing
+                        
+                                    alertUuid = createAgentMisconfigAlert(am, alertSeverity);
+                                    if (alertUuid != null) amExisting.setAlertUuid(alertUuid);
+                                    else amExisting.setAlertUuid("indef");
+                            
+                                    amExisting.setReportUpdated(date);
+                                    eventBean.getAgentMisconfigFacade().edit(amExisting);
+                        
+                                    break;
+                        
+                                case 2: // non confirmed 
+                        
+                                    if (!amExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createAgentMisconfigAlert(am, alertSeverity);
+                                        if (alertUuid != null) amExisting.setAlertUuid(alertUuid);
+                                        else amExisting.setAlertUuid("indef");
+                                    }
+                            
+                                    amExisting.setReportUpdated(date);
+                                    eventBean.getAgentMisconfigFacade().edit(amExisting);
+                            
+                                    break;
+                        
+                                case 3: // new
+                        
+                                    amExisting.setReportUpdated(date);
+                                    eventBean.getAgentMisconfigFacade().edit(amExisting);
+                            
+                                    break;
+                            }
                         }
                     }
 
@@ -386,13 +435,15 @@ public class StatsManagement {
                     
                     formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                    AgentVul v = new AgentVul();
+                    AgentVul av = new AgentVul();
 
-                    v.setRefId(eventBean.getRefId());
-                    v.setNode(eventBean.getNode());
-                    v.setAgent(jv.getString("agent"));
-                    v.setVulnerability(jv.getString("cve"));
-                    v.setSeverity(jv.getString("severity"));
+                    av.setRefId(eventBean.getRefId());
+                    av.setNode(eventBean.getNode());
+                    String probeName = eventBean.getHost() + ".hids";
+                    av.setProbe(probeName);
+                    av.setAgent(jv.getString("agent"));
+                    av.setVulnerability(jv.getString("cve"));
+                    av.setSeverity(jv.getString("severity"));
                     
                     String vulnRef = "indef";
                     if (jv.has("reference")) {
@@ -400,48 +451,81 @@ public class StatsManagement {
                     }
                     if (vulnRef.length() >= 1024) {
                         String substrReferences = vulnRef.substring(0, 1022);
-                        v.setVulnRef(substrReferences);
+                        av.setVulnRef(substrReferences);
                     } else {
-                        v.setVulnRef(vulnRef);
+                        av.setVulnRef(vulnRef);
                     }
                     
                     String desc = "indef";
                     if (jv.has("description")) {
                         desc = jv.getString("description");
                     }
-                    v.setDescription(desc);
+                    av.setDescription(desc);
                     
                     String title = "indef";
                     if (jv.has("title")) {
                         title = jv.getString("title");
                     }
-                    v.setTitle(title);
+                    av.setTitle(title);
                     
-                    v.setPkgName(jv.getString("pkg_name"));
-                    v.setPkgVersion(jv.getString("pkg_version"));
+                    av.setPkgName(jv.getString("pkg_name"));
+                    av.setPkgVersion(jv.getString("pkg_version"));
                     
                     date = formatter.parse(jv.getString("time_of_survey"));
 
-                    v.setReportAdded(date);
-                    v.setReportUpdated(date);
+                    av.setReportAdded(date);
+                    av.setReportUpdated(date);
+                    av.setStatus("processed");
+                    
+                    String alertUuid = "";
+                    
+                    AgentVul avExisting = eventBean.getAgentVulFacade().findVulnerability(av.getRefId(),
+                            av.getNode(),
+                            av.getAgent(),
+                            av.getVulnerability(),
+                            av.getPkgName());
 
-                    AgentVul vExisting = eventBean.getAgentVulFacade().findVulnerability(v.getRefId(),
-                            v.getNode(),
-                            v.getAgent(),
-                            v.getVulnerability(),
-                            v.getPkgName());
-
-                    if (vExisting == null) {
-
-                        eventBean.getAgentVulFacade().create(v);
-
-                        createNewVulnAlert(v, eventBean.getHost());
+                    if (avExisting == null) {
+                            alertUuid = createAgentVulnAlert(av);
+                            if (alertUuid != null) av.setAlertUuid(alertUuid);
+                            else av.setAlertUuid("indef");
+                            eventBean.getAgentVulFacade().create(av);
+                
+                        } else {
+                            switch (project.getAlertType()) {
+                    
+                                case 1: // all-existing
                         
-                    } else {
-
-                        vExisting.setReportUpdated(date);
-                        eventBean.getAgentVulFacade().edit(vExisting);
-                    }
+                                    alertUuid = createAgentVulnAlert(av);
+                                    if (alertUuid != null) avExisting.setAlertUuid(alertUuid);
+                                    else avExisting.setAlertUuid("indef");
+                            
+                                    avExisting.setReportUpdated(date);
+                                    eventBean.getAgentVulFacade().edit(avExisting);
+                        
+                                    break;
+                        
+                                case 2: // non confirmed 
+                        
+                                    if (!avExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createAgentVulnAlert(av);
+                                        if (alertUuid != null) avExisting.setAlertUuid(alertUuid);
+                                        else avExisting.setAlertUuid("indef");
+                                    }
+                            
+                                    avExisting.setReportUpdated(date);
+                                    eventBean.getAgentVulFacade().edit(avExisting);
+                            
+                                    break;
+                        
+                                case 3: // new
+                        
+                                    avExisting.setReportUpdated(date);
+                                    eventBean.getAgentVulFacade().edit(avExisting);
+                            
+                                    break;
+                            }
+                        }
 
                     break;
 
@@ -651,24 +735,22 @@ public class StatsManagement {
         eventBean.createAlert(a);
     }
     
-    public void createNewScaAlert(AgentSca as, String host) {
+    public String createAgentMisconfigAlert(AgentMisconfig am, int sev) {
 
         Alert a = new Alert();
 
-        a.setRefId(as.getRefId());
-        a.setNode(as.getNode());
+        a.setRefId(am.getRefId());
+        a.setNode(am.getNode());
         a.setAlertUuid(UUID.randomUUID().toString());
 
-        AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(as.getRefId(), "Alertflex");
-        int sev = ap.getSeverityDefault();
         a.setAlertSeverity(sev);
-        a.setEventSeverity(Integer.toString(sev));
+        a.setEventSeverity(am.getSeverity());
 
         a.setAlertSource("Wazuh");
         a.setAlertType("HOST");
-        a.setProbe(host + ".hids");
+        a.setProbe(am.getProbe());
 
-        a.setDescription(as.getTitle());
+        a.setDescription(am.getTitle());
         a.setEventId("3");
         a.setLocation("indef");
         a.setAction("indef");
@@ -678,12 +760,12 @@ public class StatsManagement {
 
         a.setTimeEvent("");
         Date date = new Date();
-        a.setTimeCollr(as.getReportUpdated());
+        a.setTimeCollr(am.getReportUpdated());
         a.setTimeCntrl(date);
 
-        a.setAgentName(as.getAgent());
+        a.setAgentName(am.getAgent());
         a.setUserName("indef");
-        a.setCategories("sca");
+        a.setCategories("misconfig");
         a.setSrcIp("indef");
         a.setDstIp("indef");
         a.setDstPort(0);
@@ -707,9 +789,11 @@ public class StatsManagement {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
+        
+        return a.getAlertUuid();
     }
     
-    public void createNewVulnAlert(AgentVul av, String host) {
+    public String createAgentVulnAlert(AgentVul av) {
 
         Alert a = new Alert();
 
@@ -720,11 +804,11 @@ public class StatsManagement {
         AlertPriority ap = eventBean.getAlertPriorityFacade().findPriorityBySource(av.getRefId(), "Alertflex");
         int sev = ap.getSeverityDefault();
         a.setAlertSeverity(sev);
-        a.setEventSeverity(Integer.toString(sev));
+        a.setEventSeverity(av.getSeverity());
 
         a.setAlertSource("Wazuh");
         a.setAlertType("HOST");
-        a.setProbe(host + ".hids");
+        a.setProbe(av.getProbe());
 
         a.setDescription(av.getTitle());
         a.setEventId("4");
@@ -765,6 +849,8 @@ public class StatsManagement {
         a.setIncidentExt("indef");
 
         eventBean.createAlert(a);
+        
+        return a.getAlertUuid();
     }
     
     public byte[] compress(String str) throws IOException {

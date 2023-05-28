@@ -27,23 +27,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author root
  */
 @Entity
-@Table(name = "agent_sca")
+@Table(name = "agent_misconfig")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AgentSca.findAll", query = "SELECT a FROM AgentSca a"),
-    @NamedQuery(name = "AgentSca.findByRecId", query = "SELECT a FROM AgentSca a WHERE a.recId = :recId"),
-    @NamedQuery(name = "AgentSca.findByNode", query = "SELECT a FROM AgentSca a WHERE a.node = :node"),
-    @NamedQuery(name = "AgentSca.findByRefId", query = "SELECT a FROM AgentSca a WHERE a.refId = :refId"),
-    @NamedQuery(name = "AgentSca.findByAgent", query = "SELECT a FROM AgentSca a WHERE a.agent = :agent"),
-    @NamedQuery(name = "AgentSca.findByPolicyId", query = "SELECT a FROM AgentSca a WHERE a.policyId = :policyId"),
-    @NamedQuery(name = "AgentSca.findByScaId", query = "SELECT a FROM AgentSca a WHERE a.scaId = :scaId"),
-    @NamedQuery(name = "AgentSca.findByDescription", query = "SELECT a FROM AgentSca a WHERE a.description = :description"),
-    @NamedQuery(name = "AgentSca.findByTitle", query = "SELECT a FROM AgentSca a WHERE a.title = :title"),
-    @NamedQuery(name = "AgentSca.findByRationale", query = "SELECT a FROM AgentSca a WHERE a.rationale = :rationale"),
-    @NamedQuery(name = "AgentSca.findByRemediation", query = "SELECT a FROM AgentSca a WHERE a.remediation = :remediation"),
-    @NamedQuery(name = "AgentSca.findByReportAdded", query = "SELECT a FROM AgentSca a WHERE a.reportAdded = :reportAdded"),
-    @NamedQuery(name = "AgentSca.findByReportUpdated", query = "SELECT a FROM AgentSca a WHERE a.reportUpdated = :reportUpdated")})
-public class AgentSca implements Serializable {
+    @NamedQuery(name = "AgentMisconfig.findAll", query = "SELECT a FROM AgentMisconfig a"),
+    @NamedQuery(name = "AgentMisconfig.findByRecId", query = "SELECT a FROM AgentMisconfig a WHERE a.recId = :recId"),
+    @NamedQuery(name = "AgentMisconfig.findByRefId", query = "SELECT a FROM AgentMisconfig a WHERE a.refId = :refId"),
+    @NamedQuery(name = "AgentMisconfig.findByAlertUuid", query = "SELECT a FROM AgentMisconfig a WHERE a.alertUuid = :alertUuid"),
+    @NamedQuery(name = "AgentMisconfig.findByNode", query = "SELECT a FROM AgentMisconfig a WHERE a.node = :node"),
+    @NamedQuery(name = "AgentMisconfig.findByProbe", query = "SELECT a FROM AgentMisconfig a WHERE a.probe = :probe"),
+    @NamedQuery(name = "AgentMisconfig.findByAgent", query = "SELECT a FROM AgentMisconfig a WHERE a.agent = :agent"),
+    @NamedQuery(name = "AgentMisconfig.findByPolicyId", query = "SELECT a FROM AgentMisconfig a WHERE a.policyId = :policyId"),
+    @NamedQuery(name = "AgentMisconfig.findByScaId", query = "SELECT a FROM AgentMisconfig a WHERE a.scaId = :scaId"),
+    @NamedQuery(name = "AgentMisconfig.findByDescription", query = "SELECT a FROM AgentMisconfig a WHERE a.description = :description"),
+    @NamedQuery(name = "AgentMisconfig.findByTitle", query = "SELECT a FROM AgentMisconfig a WHERE a.title = :title"),
+    @NamedQuery(name = "AgentMisconfig.findByRationale", query = "SELECT a FROM AgentMisconfig a WHERE a.rationale = :rationale"),
+    @NamedQuery(name = "AgentMisconfig.findByRemediation", query = "SELECT a FROM AgentMisconfig a WHERE a.remediation = :remediation"),
+    @NamedQuery(name = "AgentMisconfig.findBySeverity", query = "SELECT a FROM AgentMisconfig a WHERE a.severity = :severity"),
+    @NamedQuery(name = "AgentMisconfig.findByStatus", query = "SELECT a FROM AgentMisconfig a WHERE a.status = :status"),
+    @NamedQuery(name = "AgentMisconfig.findByReportAdded", query = "SELECT a FROM AgentMisconfig a WHERE a.reportAdded = :reportAdded"),
+    @NamedQuery(name = "AgentMisconfig.findByReportUpdated", query = "SELECT a FROM AgentMisconfig a WHERE a.reportUpdated = :reportUpdated")})
+public class AgentMisconfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -53,14 +57,24 @@ public class AgentSca implements Serializable {
     private Long recId;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "ref_id")
+    private String refId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "node")
     private String node;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 150)
-    @Column(name = "ref_id")
-    private String refId;
+    @Size(min = 1, max = 128)
+    @Column(name = "probe")
+    private String probe;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -95,6 +109,16 @@ public class AgentSca implements Serializable {
     @Size(min = 1, max = 2048)
     @Column(name = "remediation")
     private String remediation;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "severity")
+    private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -102,17 +126,19 @@ public class AgentSca implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportUpdated;
 
-    public AgentSca() {
+    public AgentMisconfig() {
     }
 
-    public AgentSca(Long recId) {
+    public AgentMisconfig(Long recId) {
         this.recId = recId;
     }
 
-    public AgentSca(Long recId, String node, String refId, String agent, String policyId, int scaId, String description, String title, String rationale, String remediation) {
+    public AgentMisconfig(Long recId, String refId, String alertUuid, String node, String probe, String agent, String policyId, int scaId, String description, String title, String rationale, String remediation, String severity, String status) {
         this.recId = recId;
-        this.node = node;
         this.refId = refId;
+        this.alertUuid = alertUuid;
+        this.node = node;
+        this.probe = probe;
         this.agent = agent;
         this.policyId = policyId;
         this.scaId = scaId;
@@ -120,6 +146,8 @@ public class AgentSca implements Serializable {
         this.title = title;
         this.rationale = rationale;
         this.remediation = remediation;
+        this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -130,6 +158,22 @@ public class AgentSca implements Serializable {
         this.recId = recId;
     }
 
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
+    }
+
     public String getNode() {
         return node;
     }
@@ -138,12 +182,12 @@ public class AgentSca implements Serializable {
         this.node = node;
     }
 
-    public String getRefId() {
-        return refId;
+    public String getProbe() {
+        return probe;
     }
 
-    public void setRefId(String refId) {
-        this.refId = refId;
+    public void setProbe(String probe) {
+        this.probe = probe;
     }
 
     public String getAgent() {
@@ -202,6 +246,22 @@ public class AgentSca implements Serializable {
         this.remediation = remediation;
     }
 
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public Date getReportAdded() {
         return reportAdded;
     }
@@ -228,10 +288,10 @@ public class AgentSca implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AgentSca)) {
+        if (!(object instanceof AgentMisconfig)) {
             return false;
         }
-        AgentSca other = (AgentSca) object;
+        AgentMisconfig other = (AgentMisconfig) object;
         if ((this.recId == null && other.recId != null) || (this.recId != null && !this.recId.equals(other.recId))) {
             return false;
         }
@@ -240,7 +300,7 @@ public class AgentSca implements Serializable {
 
     @Override
     public String toString() {
-        return "org.alertflex.entity.AgentSca[ recId=" + recId + " ]";
+        return "org.alertflex.entity.AgentMisconfig[ recId=" + recId + " ]";
     }
     
 }

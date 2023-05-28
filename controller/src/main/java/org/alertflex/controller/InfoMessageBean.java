@@ -49,7 +49,7 @@ import org.alertflex.facade.NodeAlertsFacade;
 import org.alertflex.facade.NodeMonitorFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.facade.AgentVulFacade;
-import org.alertflex.facade.AgentScaFacade;
+import org.alertflex.facade.AgentMisconfigFacade;
 import org.alertflex.facade.AlertPriorityFacade;
 import org.alertflex.facade.ContainerFacade;
 import org.alertflex.facade.PodFacade;
@@ -63,7 +63,13 @@ import org.alertflex.facade.PostureDockervulnFacade;
 import org.alertflex.facade.PostureTerraformFacade;
 import org.alertflex.facade.PostureK8svulnFacade;
 import org.alertflex.facade.PostureCloudformationFacade;
+import org.alertflex.facade.PostureCloudsploitFacade;
 import org.alertflex.facade.PostureKubehunterFacade;
+import org.alertflex.facade.PostureNiktoFacade;
+import org.alertflex.facade.PostureNmapFacade;
+import org.alertflex.facade.PostureNucleiFacade;
+import org.alertflex.facade.PostureSemgrepFacade;
+import org.alertflex.facade.PostureSonarqubeFacade;
 import org.alertflex.facade.PostureZapFacade;
 import org.alertflex.facade.ProbeFacade;
 import org.alertflex.logserver.ElasticSearch;
@@ -72,12 +78,18 @@ import org.alertflex.logserver.GrayLog;
 import org.alertflex.posture.AppSbom;
 import org.alertflex.posture.AppVuln;
 import org.alertflex.posture.CloudFormation;
+import org.alertflex.posture.Cloudsploit;
 import org.alertflex.posture.DockerConfig;
 import org.alertflex.posture.DockerSbom;
 import org.alertflex.posture.DockerVuln;
 import org.alertflex.posture.K8sConfig;
 import org.alertflex.posture.K8sVuln;
 import org.alertflex.posture.KubeHunter;
+import org.alertflex.posture.Nikto;
+import org.alertflex.posture.Nmap;
+import org.alertflex.posture.Nuclei;
+import org.alertflex.posture.Semgrep;
+import org.alertflex.posture.Sonarqube;
 import org.alertflex.posture.Terraform;
 import org.alertflex.posture.Zap;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -137,7 +149,7 @@ public class InfoMessageBean implements MessageListener {
     private AgentVulFacade agentVulFacade;
 
     @EJB
-    private AgentScaFacade agentScaFacade;
+    private AgentMisconfigFacade agentMisconfigFacade;
     
     @EJB 
     private PodFacade podFacade;
@@ -186,6 +198,24 @@ public class InfoMessageBean implements MessageListener {
     
     @EJB
     private PostureZapFacade postureZapFacade;
+    
+    @EJB
+    private PostureNmapFacade postureNmapFacade;
+    
+    @EJB
+    private PostureNucleiFacade postureNucleiFacade;
+    
+    @EJB
+    private PostureNiktoFacade postureNiktoFacade;
+    
+    @EJB
+    private PostureSonarqubeFacade postureSonarqubeFacade;
+    
+    @EJB
+    private PostureCloudsploitFacade postureCloudsploitFacade;
+    
+    @EJB
+    private PostureSemgrepFacade postureSemgrepFacade;
 
     public AgentFacade getAgentFacade() {
         return this.agentFacade;
@@ -247,8 +277,8 @@ public class InfoMessageBean implements MessageListener {
         return this.agentVulFacade;
     }
 
-    public AgentScaFacade getAgentScaFacade() {
-        return this.agentScaFacade;
+    public AgentMisconfigFacade getAgentMisconfigFacade() {
+        return this.agentMisconfigFacade;
     }
     
     public PostureTaskFacade getPostureTaskFacade() {
@@ -293,6 +323,30 @@ public class InfoMessageBean implements MessageListener {
     
     public PostureZapFacade getPostureZapFacade() {
         return this.postureZapFacade;
+    }
+    
+    public PostureNmapFacade getPostureNmapFacade() {
+        return this.postureNmapFacade;
+    }
+    
+    public PostureNucleiFacade getPostureNucleiFacade() {
+        return this.postureNucleiFacade;
+    }
+    
+    public PostureNiktoFacade getPostureNiktoFacade() {
+        return this.postureNiktoFacade;
+    }
+    
+    public PostureSonarqubeFacade getPostureSonarqubeFacade() {
+        return this.postureSonarqubeFacade;
+    }
+    
+    public PostureCloudsploitFacade getPostureCloudsploitFacade() {
+        return this.postureCloudsploitFacade;
+    }
+    
+    public PostureSemgrepFacade getPostureSemgrepFacade() {
+        return this.postureSemgrepFacade;
     }
     
     public PodFacade getPodFacade() {
@@ -352,8 +406,8 @@ public class InfoMessageBean implements MessageListener {
                         return;
                     }
                     
-                    String target;
-
+                    String target = "";
+                    
                     switch (msgType) {
                         case 1:
                             StatsManagement sm = new StatsManagement(this);
@@ -376,84 +430,126 @@ public class InfoMessageBean implements MessageListener {
                             AppSecret appSecret = new AppSecret(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            appSecret.saveReport(data, target, uuid);
+                            appSecret.saveReport(data, target, uuid, project.getAlertType());
                             break;
 
                         case 5: // dockerConfig
                             DockerConfig dockerConfig = new DockerConfig(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dockerConfig.saveReport(data, target, uuid);
+                            dockerConfig.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 6: // k8sConfig
                             K8sConfig k8sConfig = new K8sConfig(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            k8sConfig.saveReport(data, target, uuid);
+                            k8sConfig.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 7: // appVuln
                             AppVuln appVuln = new AppVuln(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            appVuln.saveReport(data, target, uuid);
+                            appVuln.saveReport(data, target, uuid, project.getAlertType());
                             break;
 
                         case 8: // dockerVuln
                             DockerVuln dockerVuln = new DockerVuln(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dockerVuln.saveReport(data, target, uuid);
+                            dockerVuln.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 9: // k8sVuln
                             K8sVuln k8sVuln = new K8sVuln(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            k8sVuln.saveReport(data, target, uuid);
+                            k8sVuln.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 10: // appSbom
                             AppSbom appSbom = new AppSbom(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            appSbom.saveReport(data, target, uuid);
+                            appSbom.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 11: // dockerSbom
                             DockerSbom dockerSbom = new DockerSbom(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dockerSbom.saveReport(data, target, uuid);
+                            dockerSbom.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 12: // cloudFormation
                             CloudFormation cloudFormation = new CloudFormation(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            cloudFormation.saveReport(data, target, uuid);
+                            cloudFormation.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 13: // terraform
                             Terraform terraform = new Terraform(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            terraform.saveReport(data, target, uuid);
+                            terraform.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         case 14: // kube-hunter
                             KubeHunter kubeHunter = new KubeHunter(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            kubeHunter.saveReport(data, target, uuid);
+                            kubeHunter.saveReport(data, target, uuid, project.getAlertType());
                             break;
                                                         
                         case 15: // zap
                             Zap zap = new Zap(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            zap.saveReport(data, target, uuid);
+                            zap.saveReport(data, target, uuid, project.getAlertType());
+                            break;
+                            
+                        case 16: // nmap
+                            Nmap nmap = new Nmap(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            nmap.saveReport(data, target, uuid, project.getAlertType());
+                            break;
+                            
+                        case 17: // nuclei
+                            Nuclei nuclei = new Nuclei(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            nuclei.saveReport(data, target, uuid, project.getAlertType());
+                            break;
+                            
+                        case 18: // nikto
+                            Nikto nikto = new Nikto(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            nikto.saveReport(data, target, uuid, project.getAlertType());
+                            break;
+                            
+                        case 19: // cloudsploit
+                            Cloudsploit cloudsploit = new Cloudsploit(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            cloudsploit.saveReport(data, target, uuid, project.getAlertType());
+                            break;
+                            
+                        case 20: // semgrep
+                            Semgrep semgrep = new Semgrep(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            semgrep.saveReport(data, target, uuid, project.getAlertType());
+                            break;
+                            
+                        case 21: // sonarqube
+                            Sonarqube sonarqube = new Sonarqube(this);
+                            uuid = bytesMessage.getStringProperty("uuid");
+                            target = bytesMessage.getStringProperty("target");
+                            sonarqube.saveReport(data, target, uuid, project.getAlertType());
                             break;
                             
                         default:

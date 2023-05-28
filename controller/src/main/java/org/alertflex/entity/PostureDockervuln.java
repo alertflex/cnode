@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureDockervuln.findByRecId", query = "SELECT p FROM PostureDockervuln p WHERE p.recId = :recId"),
     @NamedQuery(name = "PostureDockervuln.findByRefId", query = "SELECT p FROM PostureDockervuln p WHERE p.refId = :refId"),
     @NamedQuery(name = "PostureDockervuln.findByScanUuid", query = "SELECT p FROM PostureDockervuln p WHERE p.scanUuid = :scanUuid"),
+    @NamedQuery(name = "PostureDockervuln.findByAlertUuid", query = "SELECT p FROM PostureDockervuln p WHERE p.alertUuid = :alertUuid"),
     @NamedQuery(name = "PostureDockervuln.findByNode", query = "SELECT p FROM PostureDockervuln p WHERE p.node = :node"),
     @NamedQuery(name = "PostureDockervuln.findByProbe", query = "SELECT p FROM PostureDockervuln p WHERE p.probe = :probe"),
     @NamedQuery(name = "PostureDockervuln.findByArtifactName", query = "SELECT p FROM PostureDockervuln p WHERE p.artifactName = :artifactName"),
@@ -49,6 +50,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PostureDockervuln.findByDescription", query = "SELECT p FROM PostureDockervuln p WHERE p.description = :description"),
     @NamedQuery(name = "PostureDockervuln.findByReference", query = "SELECT p FROM PostureDockervuln p WHERE p.reference = :reference"),
     @NamedQuery(name = "PostureDockervuln.findBySeverity", query = "SELECT p FROM PostureDockervuln p WHERE p.severity = :severity"),
+    @NamedQuery(name = "PostureDockervuln.findByStatus", query = "SELECT p FROM PostureDockervuln p WHERE p.status = :status"),
     @NamedQuery(name = "PostureDockervuln.findByReportAdded", query = "SELECT p FROM PostureDockervuln p WHERE p.reportAdded = :reportAdded"),
     @NamedQuery(name = "PostureDockervuln.findByReportUpdated", query = "SELECT p FROM PostureDockervuln p WHERE p.reportUpdated = :reportUpdated")})
 public class PostureDockervuln implements Serializable {
@@ -69,6 +71,11 @@ public class PostureDockervuln implements Serializable {
     @Size(min = 1, max = 150)
     @Column(name = "scan_uuid")
     private String scanUuid;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 150)
+    @Column(name = "alert_uuid")
+    private String alertUuid;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -144,6 +151,11 @@ public class PostureDockervuln implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "severity")
     private String severity;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "status")
+    private String status;
     @Column(name = "report_added")
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportAdded;
@@ -158,10 +170,11 @@ public class PostureDockervuln implements Serializable {
         this.recId = recId;
     }
 
-    public PostureDockervuln(Long recId, String refId, String scanUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String targetType, String vulnerabilityId, String pkgName, String pkgVersion, String cweid, String title, String description, String reference, String severity) {
+    public PostureDockervuln(Long recId, String refId, String scanUuid, String alertUuid, String node, String probe, String artifactName, String artifactType, String target, String targetClass, String targetType, String vulnerabilityId, String pkgName, String pkgVersion, String cweid, String title, String description, String reference, String severity, String status) {
         this.recId = recId;
         this.refId = refId;
         this.scanUuid = scanUuid;
+        this.alertUuid = alertUuid;
         this.node = node;
         this.probe = probe;
         this.artifactName = artifactName;
@@ -177,6 +190,7 @@ public class PostureDockervuln implements Serializable {
         this.description = description;
         this.reference = reference;
         this.severity = severity;
+        this.status = status;
     }
 
     public Long getRecId() {
@@ -201,6 +215,14 @@ public class PostureDockervuln implements Serializable {
 
     public void setScanUuid(String scanUuid) {
         this.scanUuid = scanUuid;
+    }
+
+    public String getAlertUuid() {
+        return alertUuid;
+    }
+
+    public void setAlertUuid(String alertUuid) {
+        this.alertUuid = alertUuid;
     }
 
     public String getNode() {
@@ -321,6 +343,14 @@ public class PostureDockervuln implements Serializable {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getReportAdded() {
