@@ -48,7 +48,7 @@ public class K8sVuln {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -195,14 +195,26 @@ public class K8sVuln {
                                 eventBean.getPostureK8svulnFacade().create(pv);
                 
                             } else {
-                                switch (alertType) {
+                                int corr = 0;
+                        
+                                switch (alertCorr) {
+                                    case "AllFindings": corr = 1;
+                                        break;
+                                    case "NonConfirmed": corr = 2;
+                                        break;
+                                    case "OnlyNew": corr = 3;
+                                        break;
+                                }
+                        
+                                if (corr == 0) corr = alertType;
+                        
+                                switch (corr) {
                     
                                     case 1: // all-existing
                         
-                                        alertUuid = createPostureK8svulnAlert(pvExisting);
+                                        alertUuid = createPostureK8svulnAlert(pv);
                                         if (alertUuid != null) pvExisting.setAlertUuid(alertUuid);
-                                        else pvExisting.setAlertUuid("indef");
-                            
+                                                                    
                                         pvExisting.setReportUpdated(date);
                                         eventBean.getPostureK8svulnFacade().edit(pvExisting);
                         
@@ -211,9 +223,8 @@ public class K8sVuln {
                                     case 2: // non confirmed 
                         
                                         if (!pvExisting.getStatus().equals("confirmed")) {
-                                            alertUuid = createPostureK8svulnAlert(pvExisting);
+                                            alertUuid = createPostureK8svulnAlert(pv);
                                             if (alertUuid != null) pvExisting.setAlertUuid(alertUuid);
-                                            else pvExisting.setAlertUuid("indef");
                                         }
                             
                                         pvExisting.setReportUpdated(date);

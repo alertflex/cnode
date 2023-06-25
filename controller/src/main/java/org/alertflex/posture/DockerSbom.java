@@ -53,7 +53,7 @@ public class DockerSbom {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();

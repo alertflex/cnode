@@ -48,7 +48,7 @@ public class Semgrep {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -195,14 +195,26 @@ public class Semgrep {
                     eventBean.getPostureSemgrepFacade().create(ps);
                 
                 } else {
-                    switch (alertType) {
+                    int corr = 0;
+                        
+                    switch (alertCorr) {
+                        case "AllFindings": corr = 1;
+                            break;
+                        case "NonConfirmed": corr = 2;
+                            break;
+                        case "OnlyNew": corr = 3;
+                            break;
+                    }
+                    
+                    if (corr == 0) corr = alertType;
+                    
+                    switch (corr) {
                     
                         case 1: // all-existing
                         
-                            alertUuid = createPostureSemgrepAlert(psExisting);
+                            alertUuid = createPostureSemgrepAlert(ps);
                             if (alertUuid != null) psExisting.setAlertUuid(alertUuid);
-                            else psExisting.setAlertUuid("indef");
-                            
+                                                        
                             psExisting.setReportUpdated(date);
                             eventBean.getPostureSemgrepFacade().edit(psExisting);
                         
@@ -211,9 +223,8 @@ public class Semgrep {
                         case 2: // non confirmed 
                         
                             if (!psExisting.getStatus().equals("confirmed")) {
-                                alertUuid = createPostureSemgrepAlert(psExisting);
+                                alertUuid = createPostureSemgrepAlert(ps);
                                 if (alertUuid != null) psExisting.setAlertUuid(alertUuid);
-                                else psExisting.setAlertUuid("indef");
                             }
                             
                             psExisting.setReportUpdated(date);

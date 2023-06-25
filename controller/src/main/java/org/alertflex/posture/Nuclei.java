@@ -50,7 +50,7 @@ public class Nuclei {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -156,14 +156,26 @@ public class Nuclei {
                     eventBean.getPostureNucleiFacade().create(pn);
                 
                 } else {
-                    switch (alertType) {
+                    int corr = 0;
+                        
+                    switch (alertCorr) {
+                        case "AllFindings": corr = 1;
+                            break;
+                        case "NonConfirmed": corr = 2;
+                            break;
+                        case "OnlyNew": corr = 3;
+                            break;
+                    }
+                    
+                    if (corr == 0) corr = alertType;
+                    
+                    switch (corr) {
                     
                         case 1: // all-existing
                         
-                            alertUuid = createPostureNucleiAlert(pnExisting);
+                            alertUuid = createPostureNucleiAlert(pn);
                             if (alertUuid != null) pnExisting.setAlertUuid(alertUuid);
-                            else pnExisting.setAlertUuid("indef");
-                            
+                                                        
                             pnExisting.setReportUpdated(date);
                             eventBean.getPostureNucleiFacade().edit(pnExisting);
                         
@@ -172,9 +184,8 @@ public class Nuclei {
                         case 2: // non confirmed 
                         
                             if (!pnExisting.getStatus().equals("confirmed")) {
-                                alertUuid = createPostureNucleiAlert(pnExisting);
+                                alertUuid = createPostureNucleiAlert(pn);
                                 if (alertUuid != null) pnExisting.setAlertUuid(alertUuid);
-                                else pnExisting.setAlertUuid("indef");
                             }
                             
                             pnExisting.setReportUpdated(date);

@@ -48,7 +48,7 @@ public class DockerConfig {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -195,42 +195,51 @@ public class DockerConfig {
                             eventBean.getPostureDockerconfigFacade().create(pd);
                 
                         } else {
-                            switch (alertType) {
+                            int corr = 0;
+                        
+                            switch (alertCorr) {
+                                case "AllFindings": corr = 1;
+                                    break;
+                                case "NonConfirmed": corr = 2;
+                                    break;
+                                case "OnlyNew": corr = 3;
+                                    break;
+                            }
+                        
+                            if (corr == 0) corr = alertType;
+                        
+                            switch (corr) {
                     
                                 case 1: // all-existing
                         
-                                    alertUuid = createPostureDockerconfigAlert(pdExisting);
+                                    alertUuid = createPostureDockerconfigAlert(pd);
                                     if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
-                                    else pdExisting.setAlertUuid("indef");
+                                                                
+                                    pdExisting.setReportUpdated(date);
+                                    eventBean.getPostureDockerconfigFacade().edit(pdExisting);
+                        
+                                    break;
+                        
+                                case 2: // non confirmed 
+                        
+                                    if (!pdExisting.getStatus().equals("confirmed")) {
+                                        alertUuid = createPostureDockerconfigAlert(pd);
+                                        if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
+                                    }
                             
-                            pdExisting.setReportUpdated(date);
-                            eventBean.getPostureDockerconfigFacade().edit(pdExisting);
+                                    pdExisting.setReportUpdated(date);
+                                    eventBean.getPostureDockerconfigFacade().edit(pdExisting);
+                            
+                                    break;
                         
-                            break;
+                                case 3: // new
                         
-                        case 2: // non confirmed 
-                        
-                            if (!pdExisting.getStatus().equals("confirmed")) {
-                                alertUuid = createPostureDockerconfigAlert(pdExisting);
-                                if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
-                                else pdExisting.setAlertUuid("indef");
+                                    pdExisting.setReportUpdated(date);
+                                    eventBean.getPostureDockerconfigFacade().edit(pdExisting);
+                            
+                                    break;
                             }
-                            
-                            pdExisting.setReportUpdated(date);
-                            eventBean.getPostureDockerconfigFacade().edit(pdExisting);
-                            
-                            break;
-                        
-                        case 3: // new
-                        
-                            pdExisting.setReportUpdated(date);
-                            eventBean.getPostureDockerconfigFacade().edit(pdExisting);
-                            
-                            break;
-                    }
-                }
-
-                        
+                        }
                     }
                 }
             }

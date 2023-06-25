@@ -407,6 +407,7 @@ public class InfoMessageBean implements MessageListener {
                     }
                     
                     String target = "";
+                    String alertCorr = "";
                     
                     switch (msgType) {
                         case 1:
@@ -430,126 +431,143 @@ public class InfoMessageBean implements MessageListener {
                             AppSecret appSecret = new AppSecret(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            appSecret.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            appSecret.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
 
                         case 5: // dockerConfig
                             DockerConfig dockerConfig = new DockerConfig(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dockerConfig.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            dockerConfig.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 6: // k8sConfig
                             K8sConfig k8sConfig = new K8sConfig(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            k8sConfig.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            k8sConfig.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 7: // appVuln
                             AppVuln appVuln = new AppVuln(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            appVuln.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            appVuln.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
 
                         case 8: // dockerVuln
                             DockerVuln dockerVuln = new DockerVuln(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dockerVuln.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            dockerVuln.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 9: // k8sVuln
                             K8sVuln k8sVuln = new K8sVuln(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            k8sVuln.saveReport(data, target, uuid, project.getAlertType());
+                            k8sVuln.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 10: // appSbom
                             AppSbom appSbom = new AppSbom(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            appSbom.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            appSbom.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 11: // dockerSbom
                             DockerSbom dockerSbom = new DockerSbom(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            dockerSbom.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            dockerSbom.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 12: // cloudFormation
                             CloudFormation cloudFormation = new CloudFormation(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            cloudFormation.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            cloudFormation.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 13: // terraform
                             Terraform terraform = new Terraform(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            terraform.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            terraform.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 14: // kube-hunter
                             KubeHunter kubeHunter = new KubeHunter(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            kubeHunter.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            kubeHunter.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                                                         
                         case 15: // zap
                             Zap zap = new Zap(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            zap.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            zap.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 16: // nmap
                             Nmap nmap = new Nmap(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            nmap.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            nmap.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 17: // nuclei
                             Nuclei nuclei = new Nuclei(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            nuclei.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            nuclei.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 18: // nikto
                             Nikto nikto = new Nikto(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            nikto.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            nikto.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 19: // cloudsploit
                             Cloudsploit cloudsploit = new Cloudsploit(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            cloudsploit.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            cloudsploit.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 20: // semgrep
                             Semgrep semgrep = new Semgrep(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            semgrep.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            semgrep.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         case 21: // sonarqube
                             Sonarqube sonarqube = new Sonarqube(this);
                             uuid = bytesMessage.getStringProperty("uuid");
                             target = bytesMessage.getStringProperty("target");
-                            sonarqube.saveReport(data, target, uuid, project.getAlertType());
+                            alertCorr = bytesMessage.getStringProperty("alert_corr");
+                            sonarqube.saveReport(data, target, uuid, alertCorr, project.getAlertType());
                             break;
                             
                         default:

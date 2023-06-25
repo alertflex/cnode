@@ -48,7 +48,7 @@ public class AppSecret {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -160,25 +160,37 @@ public class AppSecret {
                         eventBean.getPostureAppsecretFacade().create(pa);
                     
                     } else {
-                        switch (alertType) {
                         
-                            case 1: // all-existing
+                        int corr = 0;
+                        
+                        switch (alertCorr) {
+                            case "AllFindings": corr = 1;
+                                break;
+                            case "NonConfirmed": corr = 2;
+                                break;
+                            case "OnlyNew": corr = 3;
+                                break;
+                        }
+                        
+                        if (corr == 0) corr = alertType;
+                        
+                        switch (corr) {
+                        
+                            case 1: // all_findings
                             
-                                alertUuid = createPostureAppsecretAlert(paExisting);
+                                alertUuid = createPostureAppsecretAlert(pa);
                                 if (alertUuid != null) paExisting.setAlertUuid(alertUuid);
-                                else paExisting.setAlertUuid("indef");
-                                
+                                                                
                                 paExisting.setReportUpdated(date);
                                 eventBean.getPostureAppsecretFacade().edit(paExisting);
                             
                                 break;
                             
-                            case 2: // non confirmed 
+                            case 2: // not_confirmed
                             
                                 if (!paExisting.getStatus().equals("confirmed")) {
-                                    alertUuid = createPostureAppsecretAlert(paExisting);
+                                    alertUuid = createPostureAppsecretAlert(pa);
                                     if (alertUuid != null) paExisting.setAlertUuid(alertUuid);
-                                    else paExisting.setAlertUuid("indef");
                                 }
                                 
                                 paExisting.setReportUpdated(date);
@@ -186,7 +198,7 @@ public class AppSecret {
                                 
                                 break;
                             
-                            case 3: // new
+                            case 3: // only_new
                             
                                 paExisting.setReportUpdated(date);
                                 eventBean.getPostureAppsecretFacade().edit(paExisting);

@@ -122,7 +122,7 @@ public class ConfigManagement {
         }
         
         int updateProperties = Integer.parseInt(prop.getProperty("update_properties"));
-        if (updateProperties == 0) return;
+        if (updateProperties == 0 ) return;
 
         alertTimerange = Integer.parseInt(prop.getProperty("alert_timerange"));
         project.setAlertTimerange(alertTimerange);

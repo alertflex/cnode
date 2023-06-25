@@ -5,10 +5,11 @@ info:
   version: 0.1
 
 servers:
-  - url: http://127.0.0.1:8080
+  - url: http://_admin_host:8080
     description: HTTP access
-  - url: https://127.0.0.1:8181
+  - url: https://_admin_host:8181
     description: HTTPS access
+  
 
 paths:
   /alertflex-ctrl/rest/posture/alerts/{taskId}:
@@ -105,9 +106,9 @@ paths:
                   target:
                     type: string
                     description: Target for CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
-                  node:
+                  vrn:
                     type: string
-                    description: Node name
+                    description: VRN name
                   host:
                     type: string
                     description: Host name where scanner is
@@ -121,7 +122,7 @@ paths:
         
   /alertflex-ctrl/rest/posture/json/{taskId}:
     get:
-      summary: Return JSON report for target from CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
+      summary: Return report for target from CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
       parameters:
         - in: path
           name: taskId
@@ -132,27 +133,6 @@ paths:
       responses:
         '200':
           description: Return id of task
-          content:
-            application/json:
-              schema:
-                title: JSON object
-                type: object
-        '204':
-          description: No Content
-
-  /alertflex-ctrl/rest/posture/status/{nodeId}:
-    get:
-      summary: Return status of sensors and scanners grid for Node in JSON format
-      parameters:
-        - in: path
-          name: nodeId
-          schema:
-            type: string
-          required: true
-          description: Node ID/Name
-      responses:
-        '200':
-          description: Return status
           content:
             application/json:
               schema:
@@ -173,7 +153,21 @@ paths:
               properties:
                 delay:
                   type: integer
-                  description: Delay of scan process
+                  description: 
+                alertCorr:
+                    type: string
+                    enum:
+                      - AllFindings
+                      - NonConfirmed
+                      - OnlyNew
+                    description: |
+                      Type of correlation of alerts:
+
+                      AllFindings - create alerts for all findings
+                      
+                      NonConfirmed - create alerts for non confirmed alerts
+                      
+                      OnlyNew - create only for new alerts
                 postureType:
                     type: string
                     enum:
@@ -240,17 +234,18 @@ paths:
                 host:
                   type: string
                   description: Host name where scanner is
-                node:
+                vrn:
                   type: string
-                  description: Node name
+                  description: VRN name
                 project:
                   type: string
                   description: Project Id
               required:
                 - project
-                - node
+                - vrn
                 - host
                 - postureType
+                - alertCorr
                 - delay
       responses:
         '200':
@@ -266,6 +261,60 @@ paths:
                     description: UUID of task
                 required:
                   - taskId
+        '404':
+          description: Return error
+          content:
+            application/json:
+              schema:
+                title: Error
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: error of task
+                required:
+                  - error
+                  
+  /alertflex-ctrl/rest/vrn/status/{projectId}:
+    get:
+      summary: Return status of sensors and scanners grid for Project ID
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: string
+          required: true
+          description: Project ID
+      responses:
+        '200':
+          description: Return status
+          content:
+            application/json:
+              schema:
+                title: JSON object
+                type: object
+        '204':
+          description: No Content
+          
+  /alertflex-ctrl/rest/vrn/filters/{vrnName}:
+    post:
+      summary: Send filters to VRN
+      parameters:
+        - in: path
+          name: vrnName
+          schema:
+            type: string
+          required: true
+          description: VRN name
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Filters for VRN
+              type: object
+      responses:
+        '200':
+          description: No Content
         '404':
           description: Return error
           content:

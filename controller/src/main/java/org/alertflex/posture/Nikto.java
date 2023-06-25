@@ -48,7 +48,7 @@ public class Nikto {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -160,14 +160,26 @@ public class Nikto {
                     eventBean.getPostureNiktoFacade().create(pn);
                 
                 } else {
-                    switch (alertType) {
+                    int corr = 0;
+                        
+                    switch (alertCorr) {
+                        case "AllFindings": corr = 1;
+                            break;
+                        case "NonConfirmed": corr = 2;
+                            break;
+                        case "OnlyNew": corr = 3;
+                            break;
+                    }
+                    
+                    if (corr == 0) corr = alertType;
+                    
+                    switch (corr) {
                     
                         case 1: // all-existing
                         
-                            alertUuid = createPostureNiktoAlert(pnExisting, severity, alertSeverity);
+                            alertUuid = createPostureNiktoAlert(pn, severity, alertSeverity);
                             if (alertUuid != null) pnExisting.setAlertUuid(alertUuid);
-                            else pnExisting.setAlertUuid("indef");
-                            
+                                                        
                             pnExisting.setReportUpdated(date);
                             eventBean.getPostureNiktoFacade().edit(pnExisting);
                         
@@ -176,9 +188,8 @@ public class Nikto {
                         case 2: // non confirmed 
                         
                             if (!pnExisting.getStatus().equals("confirmed")) {
-                                alertUuid = createPostureNiktoAlert(pnExisting, severity, alertSeverity);
+                                alertUuid = createPostureNiktoAlert(pn, severity, alertSeverity);
                                 if (alertUuid != null) pnExisting.setAlertUuid(alertUuid);
-                                else pnExisting.setAlertUuid("indef");
                             }
                             
                             pnExisting.setReportUpdated(date);

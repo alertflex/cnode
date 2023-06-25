@@ -47,7 +47,7 @@ public class Cloudsploit {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -177,14 +177,26 @@ public class Cloudsploit {
                     eventBean.getPostureCloudsploitFacade().create(pc);
                 
                 } else {
-                    switch (alertType) {
+                    int corr = 0;
+                        
+                    switch (alertCorr) {
+                        case "AllFindings": corr = 1;
+                            break;
+                        case "NonConfirmed": corr = 2;
+                            break;
+                        case "OnlyNew": corr = 3;
+                            break;
+                    }
+                    
+                    if (corr == 0) corr = alertType;
+                    
+                    switch (corr) {
                     
                         case 1: // all-existing
                         
-                            alertUuid = createPostureCloudsploitAlert(pcExisting);
+                            alertUuid = createPostureCloudsploitAlert(pc);
                             if (alertUuid != null) pcExisting.setAlertUuid(alertUuid);
-                            else pcExisting.setAlertUuid("indef");
-                            
+                                                        
                             pcExisting.setReportUpdated(date);
                             eventBean.getPostureCloudsploitFacade().edit(pcExisting);
                         
@@ -193,9 +205,8 @@ public class Cloudsploit {
                         case 2: // non confirmed 
                         
                             if (!pcExisting.getStatus().equals("confirmed")) {
-                                alertUuid = createPostureCloudsploitAlert(pcExisting);
+                                alertUuid = createPostureCloudsploitAlert(pc);
                                 if (alertUuid != null) pcExisting.setAlertUuid(alertUuid);
-                                else pcExisting.setAlertUuid("indef");
                             }
                             
                             pcExisting.setReportUpdated(date);

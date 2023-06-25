@@ -78,7 +78,7 @@ public class ProbesManagement {
                 node.setVpc("indef");
                 node.setNetAcl("indef");
                 node.setCommandsControl(0);
-                node.setFiltersControl(0);
+                node.setFiltersControl(1);
                 eventBean.getNodeFacade().create(node);
             }
             

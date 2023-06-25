@@ -116,7 +116,7 @@ public class MetricsREST {
 
     private void metricsNodeMonitor(String nodeId, NodeMonitor nm) {
 
-        StringBuilder template = new StringBuilder("alertflex_node_monitor{node=\"");
+        StringBuilder template = new StringBuilder("alertflex_node_monitor{vrn=\"");
         template.append(nodeId);
         template.append("\",type=\"");
 
@@ -165,7 +165,7 @@ public class MetricsREST {
 
     private void metricsNodeAlerts(String nodeId, NodeAlerts na) {
 
-        StringBuilder template = new StringBuilder("alertflex_node_alerts{node=\"");
+        StringBuilder template = new StringBuilder("alertflex_node_alerts{vrn=\"");
         template.append(nodeId);
         template.append("\",type=\"");
 

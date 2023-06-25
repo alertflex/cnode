@@ -57,7 +57,7 @@ public class Nmap {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
 
         
             String r = eventBean.getRefId();
@@ -157,14 +157,26 @@ public class Nmap {
                     eventBean.getPostureNmapFacade().create(pn);
                 
                 } else {
-                    switch (alertType) {
+                    int corr = 0;
+                        
+                    switch (alertCorr) {
+                        case "AllFindings": corr = 1;
+                            break;
+                        case "NonConfirmed": corr = 2;
+                            break;
+                        case "OnlyNew": corr = 3;
+                            break;
+                    }
+                    
+                    if (corr == 0) corr = alertType;
+                    
+                    switch (corr) {
                     
                         case 1: // all-existing
                         
-                            alertUuid = createPostureNmapAlert(pnExisting, severity, alertSeverity);
+                            alertUuid = createPostureNmapAlert(pn, severity, alertSeverity);
                             if (alertUuid != null) pnExisting.setAlertUuid(alertUuid);
-                            else pnExisting.setAlertUuid("indef");
-                            
+                                                        
                             pnExisting.setReportUpdated(date);
                             eventBean.getPostureNmapFacade().edit(pnExisting);
                         
@@ -173,9 +185,8 @@ public class Nmap {
                         case 2: // non confirmed 
                         
                             if (!pnExisting.getStatus().equals("confirmed")) {
-                                alertUuid = createPostureNmapAlert(pnExisting, severity, alertSeverity);
+                                alertUuid = createPostureNmapAlert(pn, severity, alertSeverity);
                                 if (alertUuid != null) pnExisting.setAlertUuid(alertUuid);
-                                else pnExisting.setAlertUuid("indef");
                             }
                             
                             pnExisting.setReportUpdated(date);

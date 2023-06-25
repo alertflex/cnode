@@ -48,7 +48,7 @@ public class CloudFormation {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -215,14 +215,26 @@ public class CloudFormation {
                             eventBean.getPostureCloudformationFacade().create(pc);
                     
                         } else {
-                            switch (alertType) {
+                            int corr = 0;
+                        
+                            switch (alertCorr) {
+                                case "AllFindings": corr = 1;
+                                    break;
+                                case "NonConfirmed": corr = 2;
+                                    break;
+                                case "OnlyNew": corr = 3;
+                                    break;
+                            }
+                        
+                            if (corr == 0) corr = alertType;
+                        
+                            switch (corr) {
                         
                                 case 1: // all-existing
                             
-                                    alertUuid = createPostureCloudformationAlert(pcExisting);
+                                    alertUuid = createPostureCloudformationAlert(pc);
                                     if (alertUuid != null) pcExisting.setAlertUuid(alertUuid);
-                                    else pcExisting.setAlertUuid("indef");
-                                
+                                    
                                     pcExisting.setReportUpdated(date);
                                     eventBean.getPostureCloudformationFacade().edit(pcExisting);
                             
@@ -231,9 +243,8 @@ public class CloudFormation {
                                 case 2: // non confirmed 
                             
                                     if (!pcExisting.getStatus().equals("confirmed")) {
-                                        alertUuid = createPostureCloudformationAlert(pcExisting);
+                                        alertUuid = createPostureCloudformationAlert(pc);
                                         if (alertUuid != null) pcExisting.setAlertUuid(alertUuid);
-                                        else pcExisting.setAlertUuid("indef");
                                     }
                                 
                                     pcExisting.setReportUpdated(date);

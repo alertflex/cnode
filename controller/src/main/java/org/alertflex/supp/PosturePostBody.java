@@ -26,10 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PosturePostBody {
 
     @XmlElement public Integer delay;
+    @XmlElement public String alertCorr;
     @XmlElement public String postureType;
     @XmlElement public String target;
     @XmlElement public String host;
-    @XmlElement public String node;
+    @XmlElement public String vrn;
     @XmlElement public String project;
     
     public Integer getDelay() {
@@ -38,6 +39,14 @@ public class PosturePostBody {
     
     public void setDelay(Integer delay) {
         this.delay = delay;
+    }
+    
+    public String getAlertCorr() {
+        return alertCorr;
+    }
+    
+    public void setAlertCorr(String alertCorr) {
+        this.alertCorr = alertCorr;
     }
     
     public String getPostureType() {
@@ -64,12 +73,12 @@ public class PosturePostBody {
         this.host = host;
     }
     
-    public String getNode() {
-        return node;
+    public String getVrn() {
+        return vrn;
     }
     
-    public void setNode(String node) {
-        this.node = node;
+    public void setVrn(String vrn) {
+        this.vrn = vrn;
     }
     
     public String getProject() {

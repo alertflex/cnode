@@ -48,7 +48,7 @@ public class K8sConfig {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -200,14 +200,26 @@ public class K8sConfig {
                                 eventBean.getPostureK8sconfigFacade().create(pk);
                 
                             } else {
-                                switch (alertType) {
+                                int corr = 0;
+                        
+                                switch (alertCorr) {
+                                    case "AllFindings": corr = 1;
+                                        break;
+                                    case "NonConfirmed": corr = 2;
+                                        break;
+                                    case "OnlyNew": corr = 3;
+                                        break;
+                                }
+                        
+                                if (corr == 0) corr = alertType;
+                        
+                                switch (corr) {
                     
                                     case 1: // all-existing
                         
-                                        alertUuid = createPostureK8sconfigAlert(pkExisting);
+                                        alertUuid = createPostureK8sconfigAlert(pk);
                                         if (alertUuid != null) pkExisting.setAlertUuid(alertUuid);
-                                        else pkExisting.setAlertUuid("indef");
-                            
+                                                                    
                                         pkExisting.setReportUpdated(date);
                                         eventBean.getPostureK8sconfigFacade().edit(pkExisting);
                         
@@ -216,9 +228,8 @@ public class K8sConfig {
                                     case 2: // non confirmed 
                         
                                         if (!pkExisting.getStatus().equals("confirmed")) {
-                                            alertUuid = createPostureK8sconfigAlert(pkExisting);
+                                            alertUuid = createPostureK8sconfigAlert(pk);
                                             if (alertUuid != null) pkExisting.setAlertUuid(alertUuid);
-                                            else pkExisting.setAlertUuid("indef");
                                         }
                             
                                         pkExisting.setReportUpdated(date);

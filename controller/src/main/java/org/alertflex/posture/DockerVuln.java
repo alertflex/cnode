@@ -48,7 +48,7 @@ public class DockerVuln {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -190,14 +190,26 @@ public class DockerVuln {
                             eventBean.getPostureDockervulnFacade().create(pd);
                 
                         } else {
-                            switch (alertType) {
+                            int corr = 0;
+                        
+                            switch (alertCorr) {
+                                case "AllFindings": corr = 1;
+                                    break;
+                                case "NonConfirmed": corr = 2;
+                                    break;
+                                case "OnlyNew": corr = 3;
+                                    break;
+                            }
+                        
+                            if (corr == 0) corr = alertType;
+                        
+                            switch (corr) {
                     
                                 case 1: // all-existing
                         
-                                    alertUuid = createPostureDockervulnAlert(pdExisting);
+                                    alertUuid = createPostureDockervulnAlert(pd);
                                     if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
-                                    else pdExisting.setAlertUuid("indef");
-                            
+                                                                
                                     pdExisting.setReportUpdated(date);
                                     eventBean.getPostureDockervulnFacade().edit(pdExisting);
                         
@@ -206,9 +218,8 @@ public class DockerVuln {
                                 case 2: // non confirmed 
                         
                                     if (!pdExisting.getStatus().equals("confirmed")) {
-                                        alertUuid = createPostureDockervulnAlert(pdExisting);
+                                        alertUuid = createPostureDockervulnAlert(pd);
                                         if (alertUuid != null) pdExisting.setAlertUuid(alertUuid);
-                                        else pdExisting.setAlertUuid("indef");
                                     }
                             
                                     pdExisting.setReportUpdated(date);

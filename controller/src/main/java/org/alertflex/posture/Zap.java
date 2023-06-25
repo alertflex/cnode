@@ -48,7 +48,7 @@ public class Zap {
 
     }
 
-    public void saveReport(String results, String target, String uuid, int alertType) {
+    public void saveReport(String results, String target, String uuid, String alertCorr, int alertType) {
         
         String r = eventBean.getRefId();
         String n = eventBean.getNode();
@@ -181,14 +181,26 @@ public class Zap {
                         eventBean.getPostureZapFacade().create(pz);
                 
                     } else {
-                        switch (alertType) {
+                        int corr = 0;
+                        
+                        switch (alertCorr) {
+                            case "AllFindings": corr = 1;
+                                break;
+                            case "NonConfirmed": corr = 2;
+                                break;
+                            case "OnlyNew": corr = 3;
+                                break;
+                        }
+                        
+                        if (corr == 0) corr = alertType;
+                        
+                        switch (corr) {
                     
                             case 1: // all-existing
                         
-                                alertUuid = createPostureZapAlert(pzExisting);
+                                alertUuid = createPostureZapAlert(pz);
                                 if (alertUuid != null) pzExisting.setAlertUuid(alertUuid);
-                                else pzExisting.setAlertUuid("indef");
-                            
+                                                            
                                 pzExisting.setReportUpdated(date);
                                 eventBean.getPostureZapFacade().edit(pzExisting);
                         
@@ -197,9 +209,8 @@ public class Zap {
                             case 2: // non confirmed 
                         
                                 if (!pzExisting.getStatus().equals("confirmed")) {
-                                    alertUuid = createPostureZapAlert(pzExisting);
+                                    alertUuid = createPostureZapAlert(pz);
                                     if (alertUuid != null) pzExisting.setAlertUuid(alertUuid);
-                                    else pzExisting.setAlertUuid("indef");
                                 }
                             
                                 pzExisting.setReportUpdated(date);

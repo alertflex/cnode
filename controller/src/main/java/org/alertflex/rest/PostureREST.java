@@ -50,17 +50,13 @@ import org.apache.logging.log4j.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import org.alertflex.entity.PostureTask;
-import org.alertflex.entity.Probe;
 import org.alertflex.supp.PosturePostBody;
 import org.alertflex.entity.Project;
 import org.alertflex.facade.AlertFacade;
-import org.alertflex.facade.ProbeFacade;
 import org.alertflex.facade.PostureTaskFacade;
 import org.alertflex.facade.ProjectFacade;
 import org.alertflex.supp.ProjectRepository;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 @Stateless
@@ -74,9 +70,6 @@ public class PostureREST {
     
     @EJB
     private AlertFacade alertFacade;
-    
-    @EJB
-    private ProbeFacade probeFacade;
     
     @EJB
     private PostureTaskFacade postureTaskFacade;
@@ -144,74 +137,7 @@ public class PostureREST {
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
     
-    @GET
-    @Path("/status/{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response status(@PathParam("id") String id, @Context SecurityContext sc) {
-        
-        if (id == null || id.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        
-        List<Project> projectList = projectFacade.findAll();
-
-        if (projectList == null || projectList.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-        if (projectList.get(0).getPrometheusStat() == 0) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-        String prj = projectList.get(0).getRefId();
-
-        List<Probe> probeList = probeFacade.findProbesByNode(prj, id);
-        
-        if (probeList == null || probeList.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        
-        JSONArray array = new JSONArray();
-        
-        try {
-        
-            for (Probe p: probeList) {
-            
-                JSONObject obj = new JSONObject();
-            
-                obj.put("probe", p.getProbePK().getName());
-                obj.put("type", p.getProbeType());
-                obj.put("host", p.getHostName());
-                
-                String status;
-                switch(p.getStatus()) {
-                    case 0 : status = "disable";
-                        break;
-                    case 1 : status = "active";
-                        break;
-                    case 2 : status = "inactive";
-                        break;
-                    default: status = "disable";
-                        break;
-                }
-                
-                obj.put("status", status);
-                obj.put("update", p.getStatusUpdated());
-            
-                array.put(obj);
-            }
-        } catch (JSONException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        
-        String status = array.toString();
-            
-        return Response
-            .status(Response.Status.OK)
-            .entity(status)
-            .build();
-    }
-    
+       
     @GET
     @Path("/alerts/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -296,8 +222,9 @@ public class PostureREST {
         
         Integer delay = postureBody.getDelay();
         String postureType = postureBody.getPostureType();
+        String alertCorr = postureBody.getAlertCorr();
         String target = postureBody.getTarget();
-        String node = postureBody.getNode();
+        String node = postureBody.getVrn();
         String host = postureBody.host;
         String projectId = postureBody.getProject();
         
@@ -353,7 +280,7 @@ public class PostureREST {
         
         if (postureParam == 0) return Response.status(404).entity("Error").build();
         
-        String postureId = sendToScanner(project, postureBody, postureParam);
+        String postureId = sendToScanner(project, postureBody, postureParam, alertCorr);
         String jsonRespons = "";
         
         if (isValidUUID(postureId)) {
@@ -380,7 +307,7 @@ public class PostureREST {
         return UUID_REGEX_PATTERN.matcher(str).matches();
     }
     
-    public String sendToScanner(Project p, PosturePostBody pb, int postureType) {
+    public String sendToScanner(Project p, PosturePostBody pb, int postureType, String alertCorr) {
         
         int wait = pb.getDelay();
         if (wait == 0) wait = 60; //1 min
@@ -391,11 +318,12 @@ public class PostureREST {
             pb.getTarget() + "\" } }, \"actuator\": {\"x-alertflex\": {\"project\": \"" +
             pb.getProject() + "\"} }, \"args\": { \"delay\": " +
             Long.toString(wait) +  ",\"posture_type\": " +
-            Integer.toString(postureType) + "} }";
+            Integer.toString(postureType) + ",\"alert_corr\": \"" +
+            alertCorr + "\"} }";
             
         
         
-        return sendRequest(p.getRefId(), pb.getNode(), pb.getHost(), msg, wait);
+        return sendRequest(p.getRefId(), pb.getVrn(), pb.getHost(), msg, wait);
     }
     
     public String sendRequest(String ref, String node, String host, String msg, int wait) {
