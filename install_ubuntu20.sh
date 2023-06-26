@@ -59,13 +59,13 @@ sudo apt-get -y install zulu-8 unzip
 echo "*** Installation Nginx and web site ***"
 sudo apt-get -y install nginx
 sudo adduser --system --no-create-home --shell /bin/false --group --disabled-login nginx
+sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./html/api.yaml
 sudo cp -r ./html/* /usr/share/nginx/html
 sudo chown -R www-data:www-data /usr/share/nginx/html
 sudo mkdir /etc/nginx/ssl
 sudo chmod 700 /etc/nginx/ssl/
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -subj "/CN=$ADMIN_HOST"
 sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./configs/default.conf
-sudo sed -i "s/_admin_host/$ADMIN_HOST/g" ./html/api.yaml
 sudo cp $INSTALL_PATH/configs/default.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/ssl.conf /etc/nginx/conf.d/
 sudo cp $INSTALL_PATH/configs/nginx.conf /etc/nginx/
