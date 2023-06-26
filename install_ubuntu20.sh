@@ -46,6 +46,7 @@ sudo cp ./reports/cloud_terra.jasper $PROJECT_PATH/reports/
 
 sudo mkdir -p $PROJECT_PATH/filters
 sudo cp ./configs/enterprise-attack.json $PROJECT_PATH/
+sudo cp ./configs/project.properties $PROJECT_PATH/
 
 #set project id
 export PROJECT_ID=$(cat /proc/sys/kernel/random/uuid)
