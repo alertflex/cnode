@@ -12,12 +12,12 @@ servers:
   
 
 paths:
-  /alertflex-ctrl/rest/posture/alerts/{taskId}:
+  /alertflex-ctrl/rest/posture/alerts/{id}:
     get:
       summary: Return alerts counters 
       parameters:
         - in: path
-          name: taskId
+          name: id
           schema:
             type: string
           required: true
@@ -120,12 +120,12 @@ paths:
         '204':
           description: No Content
         
-  /alertflex-ctrl/rest/posture/json/{taskId}:
+  /alertflex-ctrl/rest/posture/json/{id}:
     get:
       summary: Return report for target from CloudSploit, KubeHunter, Nmap, Nuclei, Nikto, Semgrep, Sonarqube, Trivy and ZAP 
       parameters:
         - in: path
-          name: taskId
+          name: id
           schema:
             type: string
           required: true
@@ -275,12 +275,12 @@ paths:
                 required:
                   - error
                   
-  /alertflex-ctrl/rest/vrn/status/{projectId}:
+  /alertflex-ctrl/rest/vrn/status/{id}:
     get:
       summary: Return status of sensors and scanners grid for Project ID
       parameters:
         - in: path
-          name: projectId
+          name: id
           schema:
             type: string
           required: true
@@ -296,12 +296,12 @@ paths:
         '204':
           description: No Content
           
-  /alertflex-ctrl/rest/vrn/filters/{vrnName}:
+  /alertflex-ctrl/rest/vrn/filters/{id}:
     post:
       summary: Send filters to VRN
       parameters:
         - in: path
-          name: vrnName
+          name: id
           schema:
             type: string
           required: true

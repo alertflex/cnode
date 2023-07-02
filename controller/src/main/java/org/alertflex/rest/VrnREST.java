@@ -80,9 +80,9 @@ public class VrnREST {
     }
     
     @GET
-    @Path("/status/{projectId}")
+    @Path("/status/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response status(@PathParam("projectId") String id, @Context SecurityContext sc) {
+    public Response status(@PathParam("id") String id, @Context SecurityContext sc) {
         
         if (id == null || id.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -137,13 +137,13 @@ public class VrnREST {
     }
     
     @POST
-    @Path("/filters/{vrnName}")
+    @Path("/filters/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response filters(@PathParam("vrnName") String vrnName, String postBody) {
+    public Response filters(@PathParam("id") String id, String body) {
         
-        JSONObject filters = new JSONObject(postBody);
+        JSONObject filters = new JSONObject(body);
         String projectId = filters.getString("ref_id");
-        String node = vrnName;
+        String node = id;
         
         Project project = projectFacade.findProjectByRef(projectId);
         
@@ -169,7 +169,7 @@ public class VrnREST {
         
         for (Hosts h: listHosts) {
             if (h.getHostType().equals("collector"))
-            sendFilters(projectId, node, h.getName(), postBody);
+            sendFilters(projectId, node, h.getName(), body);
         }
         
         return Response
