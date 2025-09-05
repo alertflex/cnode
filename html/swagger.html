@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alertflex | DevSecOps orchestration platform</title>
+    <meta name="description" content="Alertflex orchestration platform for automation testing and monitoring web services">
+    
+    <!-- Bootstrap 5 CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/swagger-ui.css">
+    <link rel="stylesheet" href="css/style.css">  
+    <!-- Bootstrap Icons -->
+	<link rel="stylesheet" href="font/bootstrap-icons.css">
+    
+    <link rel="icon" href="img/alertflex.ico">
+    <link rel="shortcut icon" href="img/alertflex.ico">
+</head>
+<body class="bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="index.html">
+                <i class="bi bi-diagram-3-fill me-2"></i>ALERTFLEX
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-5 pt-4"> <!-- Added padding-top to account for fixed navbar -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div id="swagger-ui"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/swagger-ui-bundle.js"></script>
+    <!-- Bootstrap 5 JS Bundle with Popper (no jQuery needed) -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        window.addEventListener('load', function() {
+            // Begin Swagger UI call region
+            const ui = SwaggerUIBundle({
+                url: "api.yaml", // Location of Open API spec in the repo
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+            });
+            window.ui = ui;
+        });
+    </script>
+    
+</body>
+</html>

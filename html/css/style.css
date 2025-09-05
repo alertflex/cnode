@@ -1,0 +1,154 @@
+:root {
+    --primary-color: #25A4D4;
+    --primary-hover: #288BCC;
+    --text-color: #424242;
+    --bg-color: #ECF0F1;
+    --border-color: #F2F2F2;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+p {
+    color: var(--text-color);
+    font-weight: 300;
+    line-height: 1.5;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+a.dropdown-item:hover {
+  color: var(--primary-hover);
+  background-color: var(--bg-color);
+}
+
+h1, .h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Navbar Styles */
+.navbar {
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+}
+
+.navbar-brand {
+    padding: 0.5rem 1rem;
+    color: var(--primary-color) !important;
+    font-weight: bold;
+}
+
+.navbar-brand:hover, 
+.navbar-brand:focus {
+    color: var(--primary-hover) !important;
+}
+
+.nav-link {
+    color: var(--text-color);
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover, 
+.nav-link:focus {
+    color: var(--primary-hover) !important;
+    background-color: white;
+    border-bottom: 3px solid var(--primary-hover);
+}
+
+/* Button Styles */
+.btn {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    color: black;
+    background-color: white;
+    border-color: white;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    color: black;
+    background-color: #355c68;
+    border-color: white;
+}
+
+.btn-info {
+    color: white;
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+    color: white;
+    background-color: #046A81;
+    border-color: #046A81;
+}
+
+/* Dropdown Styles */
+.dropdown-item:hover,
+.dropdown-item:focus {
+    color: black;
+    background-color: #355c68;
+}
+
+/* Spacing Utilities */
+.EmptyBox5 { height: 0.3125rem; }
+.EmptyBox10 { height: 0.625rem; }
+.EmptyBox20 { height: 1.25rem; }
+
+/* Jumbotron Replacement (Bootstrap 5 uses .bg-light and padding utilities) */
+.hero-section {
+    padding: 5rem 0;
+    background-color: var(--bg-color);
+    text-align: center;
+}
+
+.hero-section h1,
+.hero-section h2,
+.hero-section h3,
+.hero-section h4,
+.hero-section h5,
+.hero-section h6 {
+    line-height: 1.4;
+}
+
+.hero-section p {
+    font-size: 1rem;
+    margin: 1.3125rem 0 0.65625rem;
+    line-height: 1.4;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .nav-link {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar-brand {
+        padding: 0.5rem;
+    }
+    
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+}

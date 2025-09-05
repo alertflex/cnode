@@ -1,0 +1,338 @@
+openapi: 3.0.1
+info:
+  title: Pipeline Management API
+  description: API for running pipelines and checking their status and reports
+  version: 1.0.0
+
+servers:
+  - url: http://{alertflex}:8080/alertflex-mc/api/v1
+    description: Development server (HTTP)
+    variables:
+      alertflex:
+        default: "127.0.0.1"
+        description: Hostname or IP of the Alertflex server
+  - url: https://{alertflex}:8080/alertflex-mc/api/v1
+    description: Production server (HTTPS)
+    variables:
+      alertflex:
+        default: "alertflex.org"
+        description: Hostname or IP of the Alertflex server
+tags:
+  - name: pipelines
+    description: Pipeline operations
+
+paths:
+  /run/name/{pipeline_name}:
+    get:
+      tags: [pipelines]
+      summary: Run a pipeline by name
+      description: Execute a pipeline identified by its name
+      operationId: runPipelineByName
+      parameters:
+        - $ref: '#/components/parameters/pipelineName'
+        - $ref: '#/components/parameters/authHeader'
+      responses:
+        '200':
+          description: Pipeline started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          description: Unauthorized - Invalid API key or API access disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Pipeline not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /run/uuid/{pipeline_uuid}:
+    get:
+      tags: [pipelines]
+      summary: Run a pipeline by UUID
+      description: Execute a pipeline identified by its UUID
+      operationId: runPipelineByUuid
+      parameters:
+        - $ref: '#/components/parameters/pipelineUuid'
+      responses:
+        '200':
+          description: Pipeline started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          description: Unauthorized - Invalid pipeline UUID or API access disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Pipeline not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /status/name/{pipeline_name}:
+    get:
+      tags: [pipelines]
+      summary: Get pipeline status by name
+      description: |
+        Retrieve the status of a pipeline identified by its name.
+        Returns different HTTP codes based on status:
+        - 200 OK (finished)
+        - 202 Accepted (running)
+        - 204 No Content (waiting)
+        - 410 Gone (aborted)
+      operationId: getPipelineStatusByName
+      parameters:
+        - $ref: '#/components/parameters/pipelineName'
+        - $ref: '#/components/parameters/authHeader'
+      responses:
+        '200':
+          description: Pipeline has finished successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '202':
+          description: Pipeline is currently running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '204':
+          description: Pipeline is waiting to be executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '410':
+          description: Pipeline execution was aborted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '401':
+          description: Unauthorized - Invalid API key or API access disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Pipeline or status not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /status/uuid/{pipeline_uuid}:
+    get:
+      tags: [pipelines]
+      summary: Get pipeline status by UUID
+      description: |
+        Retrieve the status of a pipeline identified by its UUID.
+        Returns different HTTP codes based on status:
+        - 200 OK (finished)
+        - 202 Accepted (running)
+        - 204 No Content (waiting)
+        - 410 Gone (aborted)
+      operationId: getPipelineStatusByUuid
+      parameters:
+        - $ref: '#/components/parameters/pipelineUuid'
+      responses:
+        '200':
+          description: Pipeline has finished successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '202':
+          description: Pipeline is currently running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '204':
+          description: Pipeline is waiting to be executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '410':
+          description: Pipeline execution was aborted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '401':
+          description: Unauthorized - Invalid pipeline UUID or API access disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Pipeline not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /report/name/{pipeline_name}:
+    get:
+      tags: [pipelines]
+      summary: Get pipeline report by name
+      description: Retrieve the report of a pipeline identified by its name
+      operationId: getPipelineReportByName
+      parameters:
+        - $ref: '#/components/parameters/pipelineName'
+        - $ref: '#/components/parameters/authHeader'
+      responses:
+        '200':
+          description: Pipeline report retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                description: SARIF format report
+            application/xml:
+              schema:
+                type: string
+                description: XML format report
+        '204':
+          description: Pipeline not in finished state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid API key or API access disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Pipeline or report not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /report/uuid/{pipeline_uuid}:
+    get:
+      tags: [pipelines]
+      summary: Get pipeline report by UUID
+      description: Retrieve the report of a pipeline identified by its UUID
+      operationId: getPipelineReportByUuid
+      parameters:
+        - $ref: '#/components/parameters/pipelineUuid'
+      responses:
+        '200':
+          description: Pipeline report retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                description: SARIF format report
+            application/xml:
+              schema:
+                type: string
+                description: XML format report
+        '204':
+          description: Pipeline not in finished state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid pipeline UUID or API access disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Pipeline or report not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    TaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: Unique identifier for the pipeline task
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          description: Current status of the pipeline task
+          example: "running"
+    StatusResponse:
+      type: object
+      properties:
+        pipeline_status:
+          type: string
+          description: Current status of the pipeline (waiting, running, finished, aborted)
+          example: "running"
+        qgs_status:
+          type: string
+          description: Current status of QGS (if applicable)
+          example: "completed"
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+          example: "Invalid API key"
+  parameters:
+    pipelineName:
+      name: pipeline_name
+      in: path
+      description: Name of the pipeline
+      required: true
+      schema:
+        type: string
+    pipelineUuid:
+      name: pipeline_uuid
+      in: path
+      description: UUID of the pipeline
+      required: true
+      schema:
+        type: string
+        format: uuid
+    authHeader:
+      name: Authorization
+      in: header
+      description: Bearer token for authentication
+      required: true
+      schema:
+        type: string
+        example: "Bearer your_api_key_here"
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []

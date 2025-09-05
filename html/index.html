@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alertflex | DevSecOps orchestration platform</title>
+    <meta name="description" content="Alertflex orchestration platform for automation testing and monitoring web services">
+    
+    <!-- Bootstrap 5 CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/swagger-ui.css">
+    <link rel="stylesheet" href="css/style.css">  
+    <!-- Bootstrap Icons -->
+	<link rel="stylesheet" href="font/bootstrap-icons.css">
+    
+    <link rel="icon" href="img/alertflex.ico">
+    <link rel="shortcut icon" href="img/alertflex.ico">
+</head>
+<body class="bg-light">
+    <!-- Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow">
+		<div class="container">
+			<a class="navbar-brand fw-bold d-flex align-items-center" href="index.html">
+				<i class="bi bi-diagram-3-fill me-2"></i>ALERTFLEX
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle btn btn-outline-light me-2" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+							<i class="bi bi-gear me-1"></i> Admin panels
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end">
+							<li>
+								<a class="dropdown-item" onclick="window.location.assign('https://' + window.location.hostname + '/admin')">
+									<i class="bi bi-speedometer2 me-2"></i> ActiveMQ Console
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item" onclick="window.location.assign('https://' + window.location.hostname + ':4848')">
+									<i class="bi bi-tools me-2"></i> Payara Admin
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+    <!-- Hero Section -->
+    <main class="container-fluid min-vh-100 d-flex align-items-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-center text-lg-start">
+					<div class="d-flex gap-3">
+						<a href="swagger.html" class="btn btn-outline-info btn-lg px-4">
+                            <i class="bi bi-code-slash me-2"></i> API
+                        </a>
+                        <a class="btn btn-info btn-lg px-4" 
+                           onclick="window.location.assign('https://' + window.location.hostname + '/alertflex-mc/user/login.xhtml');">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Login
+                        </a>
+						<a href="#" class="btn btn-outline-info btn-lg px-4">
+                            <i class="bi bi-globe me-2"></i> Online service
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block">
+                    <img src="img/on-premise.png" alt="Alertflex Illustration" class="img-fluid mx-auto d-block">
+                </div>
+			</div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/swagger-ui-bundle.js"></script>
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
