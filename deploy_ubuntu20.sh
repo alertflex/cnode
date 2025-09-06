@@ -62,9 +62,8 @@ sudo mv *5.2020.5.zip payara-5.2020.5.zip
 sudo unzip payara-5.2020.5.zip
 sudo rm payara-5.2020.5.zip
 
-sudo wget --no-check-certificate http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.35.zip
-sudo unzip mysql-connector-java-5.1.35.zip mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar
-sudo cp mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar $GLASSFISH_PATH/glassfish/domains/domain1/lib/ext/
+sudo wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.35/mysql-connector-java-5.1.35.jar
+sudo cp mysql-connector-java-5.1.35.jar $GLASSFISH_PATH/glassfish/domains/domain1/lib/ext/
 
 cd $INSTALL_PATH
 
